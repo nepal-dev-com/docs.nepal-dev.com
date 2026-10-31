@@ -1,0 +1,48 @@
+---
+title: "Data classification"
+---
+
+- **Status:** Proposed with ADR-0005 — binding once approved
+- **Last updated:** 2026-10-31
+- **Related ADRs:** ADR-0005
+
+> Snapshot of the system as it stands today. Edit in place; never record what changed.
+
+Every piece of content, every stored field and every piece of data that leaves the system has
+one level. When a level is unclear, **ask** — never assign one by assumption
+([ADR-0004](../adr/ADR-0004-ask-never-guess.mdx)).
+
+## Levels
+
+| Level | Meaning | Examples | Handling |
+|---|---|---|---|
+| **Public** | Safe for anyone, anywhere | Documentation of public packages and public projects; the Algolia app ID and search-only key | May go on every published surface |
+| **Internal** | Not secret, not meant for readers | Build configuration, unfixed security findings | Stays in the repository or with the owner; never in `content/docs/` |
+| **Confidential** | Belongs to a private project | Its documentation, architecture, internal APIs, roadmap, hostnames | Never on a public surface; served only as its ADR decides, to the readers it names |
+| **Restricted** | Disclosure enables abuse or harms someone else | Secrets and API keys, client names and client data, personal data | Never in content, examples, screenshots, logs or the search index; secrets only in environment files and secret stores |
+
+## Classified so far
+
+| Data | Level | Why |
+|---|---|---|
+| `content/docs/` (two placeholder pages) | Public | Published on every surface today |
+| `content/docs/documentation/` (this site's decisions, design and security documents) | Public | Published by the owner's decision (ADR-0002); holds variable names, never values |
+| `NEXT_PUBLIC_ALGOLIA_APP_ID`, `NEXT_PUBLIC_ALGOLIA_SEARCH_KEY` | Public | Shipped to every browser by design |
+| `ALGOLIA_WRITE_KEY` | Restricted | Write access to the live search index |
+
+## Rules that follow
+
+- **A page's level is decided before it is written.** If a project's visibility is not
+  recorded, ask.
+- **Published surfaces carry Public content only**, until an ADR defines how Confidential
+  content is served.
+- **Third-party crossings** (`content/docs/documentation/dfd/`) state the level of everything sent.
+- **Examples use invented values**, so they stay Public whatever they document.
+
+## Open
+
+For the owner to decide with the private-documentation ADR:
+
+- Where Confidential content lives: a separate repository, a separate deployment, or this site
+  behind authentication.
+- Whether a private project's *existence* (its name in a list) is Public or Confidential.

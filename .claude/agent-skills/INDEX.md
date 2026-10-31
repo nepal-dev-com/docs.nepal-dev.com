@@ -1,7 +1,7 @@
 # Agent skills — index
 
 The router for this repository's trusted skills
-([ADR-0009](../../content/docs/documentation/adr/ADR-0009-trusted-agent-skills-are-vendored.md)).
+([ADR-0009](../../content/docs/documentation/adr/ADR-0009-trusted-agent-skills-are-vendored.mdx)).
 Where each skill comes from and why it is trusted is in [`SOURCES.md`](./SOURCES.md).
 
 **How to use this file**
@@ -71,6 +71,8 @@ Paths below are relative to this file.
 | Task | Load |
 |---|---|
 | **Any** diagram or flow: architecture, workflow, sequence, data flow, lifecycle, ERD, class, tree, timeline (always) | `archify` (installed, project copy in `.claude/skills/archify`), plus the Mermaid version the page keeps (`AGENTS.md` §8) |
+| An app flow's screens as a low-fidelity wireframe: structure, hierarchy, navigation, click-through | [html-wireframe](./plannotator-effective-html/skills/html-wireframe/SKILL.md) |
+| An app flow's screens as a working prototype: states, input, feedback, recovery | [html-prototype](./plannotator-effective-html/skills/html-prototype/SKILL.md) |
 
 ### Search (Algolia)
 
@@ -85,7 +87,7 @@ Paths below are relative to this file.
 | Task | Load |
 |---|---|
 | A route handler, env var, secret, user input, third-party call or private-content decision (`AGENTS.md` §9) | [security-and-hardening](./addyosmani-agent-skills/skills/security-and-hardening/SKILL.md) |
-| A full pre-deploy or pre-release audit | security-and-hardening + [`references/security-checklist.md`](./addyosmani-agent-skills/references/security-checklist.md), alongside `content/docs/documentation/security/checklist.md` |
+| A full pre-deploy or pre-release audit | security-and-hardening + [`references/security-checklist.md`](./addyosmani-agent-skills/references/security-checklist.md), alongside `content/docs/documentation/security/checklist.mdx` |
 | Adding or upgrading a dependency, or auditing the dependency tree | [supply-chain-risk-auditor](./trailofbits-skills/plugins/supply-chain-risk-auditor/skills/supply-chain-risk-auditor/SKILL.md) |
 
 No row fits? Use default behaviour under `AGENTS.md`. If a skill would serve the task better,
@@ -116,7 +118,7 @@ be used.
 | Skill | Override |
 |---|---|
 | brainstorming | The "design doc" is a Proposed ADR plus the design documents `AGENTS.md` §8 requires, and an app flow if the UI changes (ADR-0008). Its hard gate is the owner approving that ADR. After approval, do **not** invoke `writing-plans`: the ADR's *Implementation notes* are the plan, carried out in one pass (`AGENTS.md` §3). The visual companion is unavailable (its scripts are not vendored). |
-| documentation-and-adrs | ADRs live in `content/docs/documentation/adr/`, from `_templates/adr.md`, numbered from `adr/index.md`. Its approval states, immutability and supersession follow ADR-0001. Its README and comment advice yields to `AGENTS.md` §5 commands and §7 comments. |
+| documentation-and-adrs | ADRs live in `content/docs/documentation/adr/`, from `_templates/adr.mdx`, numbered from `adr/index.mdx`. Its approval states, immutability and supersession follow ADR-0001. Its README and comment advice yields to `AGENTS.md` §5 commands and §7 comments. |
 | source-driven-development | The primary source is what is installed: `node_modules/next/dist/docs/`, Fumadocs' source and types in `node_modules`, and a documented package's own source and manifest (`AGENTS.md` §4, §6.2). Web documentation is a fallback, cited, and pinned to the installed version. |
 | systematic-debugging | `find-polluter.sh` runs only with the owner's yes. `condition-based-waiting-example.ts` is not vendored; the technique is in `condition-based-waiting.md`. A bug fix starts with a failing test (ADR-0007). |
 | test-driven-development | Examples use `npm test`. No test runner is installed yet; use the one ADR-0007 approves, through Bun. Until then, record the manual check that stands in for each test and say so. |
@@ -125,6 +127,7 @@ be used.
 | receiving-code-review | Feedback that would change an approved ADR's decision needs a superseding ADR, not an edit. |
 | writing-guidelines | Read `./vercel-labs-writing-guidelines/command.md` instead of fetching it. Skip the Vercel-specific rules: `meta.contentType`, `meta.category` and `meta.navLabel`, dashboard deep links, product links, model strings, ACME screenshots, `vercel/examples` and the PR process. Where a rule contradicts a convention this repository already uses (hard-wrapped Markdown, em dashes in titles, `<slug>` placeholders in the Documentation project), keep the repository's convention. Adopting the rule instead, or an MDX component such as `<Steps/>`, is a cross-cutting convention change and needs an ADR (`AGENTS.md` §2, §8). |
 | writing-for-agents | `agents/openai.yaml` is for another agent runtime; ignore it. |
+| html-wireframe, html-prototype | Used for app flows (ADR-0008), with the page keeping its Mermaid wireframes. The look comes from this site's prototype theme once ADR-0011 defines it: that is "the project's established design language" in html-prototype's order of authority, so don't invent a per-prototype direction. `design-artifact` is not vendored; skip the steps that read it. *Verify and hand off* opens a browser: don't, unless the owner asks; list the checks left unverified instead, as html-prototype allows. Deliver the file where ADR-0011 says, never into `content/docs/`, and until it is approved keep it in `.prototypes/` (gitignored) and give the owner the path. `agents/openai.yaml` is for another agent runtime; ignore it. |
 | frontend-design | Applies only after the UI change's ADR and app flow are approved (ADR-0008). New fonts, icon sets or libraries are dependencies and need an ADR. Use the existing Tailwind 4 and Fumadocs UI setup. |
 | web-design-guidelines | Read `./vercel-labs-web-interface-guidelines/command.md` instead of fetching it. Findings on an unapproved change go into its app flow, not into code. Its *Content & Copy* rules (Title Case headings) contradict writing-guidelines (sentence case). No convention is decided yet, so raise it with the owner (`AGENTS.md` §4). |
 | react-best-practices | Load `SKILL.md`, then only the `rules/*.md` files whose topic matches. `AGENTS.md` and `README.md` inside that skill are the compiled full rule set and upstream notes; don't load them. |

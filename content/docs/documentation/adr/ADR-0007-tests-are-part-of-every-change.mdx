@@ -1,0 +1,80 @@
+---
+title: "ADR-0007 — Tests are part of every change"
+---
+
+- **Status:** Proposed
+- **Date:** 2026-10-31
+- **Deciders:** Puncoz Nepal
+- **Approved by:** —
+- **Approved on:** —
+- **Supersedes:** —
+- **Superseded by:** —
+- **Design documents:** `AGENTS.md` §3, §5, §11
+
+## Context
+
+Most of this site is content, but the code around it decides what is published and where: the
+content loader, the Markdown and `llms.txt` routes, the search records and their sync, and —
+once private documentation exists — whatever keeps private pages off public surfaces. Errors
+there are silent: a page goes missing from search, or a private page appears in it.
+
+No test runner is installed. Bun is the package manager and has a built-in test runner; the
+choice of runner is left to its own ADR so it can be weighed against what the site's code needs.
+
+## Decision
+
+1. **Every change ships tests** for its happy path and its obvious failure paths — empty or
+   missing input, the boundary and the first value past it, the wrong shape or an unknown
+   value, and **the rejection the code exists to perform** (a private page refused, a malformed
+   frontmatter rejected). Part of being done, not a follow-up.
+2. **A bug fix starts with a test that fails for the bug's reason.**
+3. **A test must have been seen to fail** (written first, or checked by breaking the code)
+   before it counts.
+4. **The runner is chosen by its own ADR**, before the first code change that needs tests.
+   Until then, a change is verified with `bun run lint`, `bun run types:check` and
+   `bunx next build`, and the ADR's implementation notes say what was verified instead.
+5. **Unit tests are pure**: no live search index, network or real private content. Fixtures are
+   invented.
+6. **Content is verified by the build.** `bunx next build` fails on invalid MDX or frontmatter;
+   link and example checks, if wanted, are decided by their own ADR.
+7. **Exempt from unit tests**: config modules, pure layout and styling. Anything that needs a
+   browser says so in the ADR's implementation notes, with what was verified instead.
+
+## Options considered
+
+| Option | Pros | Cons | Verdict |
+|---|---|---|---|
+| A — Tests with every change; runner chosen by its own ADR | The rule holds from now; the runner is a deliberate choice | No runner until that ADR lands | Chosen |
+| B — Pick a runner in this ADR | Tests can start immediately | Decides tooling before there is code that needs it | Rejected |
+| C — Tests optional for small changes | Faster small changes | Publishing bugs hide in small changes | Rejected |
+
+## Consequences
+
+**Positive**
+
+- The code that decides what is published has a safety net from its first line.
+
+**Negative / accepted trade-offs**
+
+- Every change takes longer. Accepted.
+
+## Content invariants
+
+Guards §6.1 (private stays private) and §6.5 (every page readable as Markdown) through tests on
+the code that serves them.
+
+## Security considerations
+
+Tests must never contain a real secret, a real search key, or private project content.
+Visibility code is tested for refusals, not only for success.
+
+## Implementation notes
+
+- [ ] A test-runner ADR before the first code change that needs tests.
+- Tests: not applicable (process only).
+
+## Docs to update on implementation
+
+- [ ] `AGENTS.md` §5 — the runner and its command, once its ADR is approved.
+- [ ] `README.md` scripts — the test command.
+- [ ] `content/docs/documentation/adr/index.mdx` — status.

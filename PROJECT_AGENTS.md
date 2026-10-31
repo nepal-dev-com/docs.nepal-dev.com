@@ -6,7 +6,7 @@ own documentation into it. This guide is for the people and AI agents working in
 repositories.
 
 > **Status.** The convention below is set out in
-> [ADR-0010](content/docs/documentation/adr/ADR-0010-projects-document-themselves-through-a-submodule.md),
+> [ADR-0010](content/docs/documentation/adr/ADR-0010-projects-document-themselves-through-a-submodule.mdx),
 > **Proposed**. Until the owner approves it, treat it as the intended rule and raise any
 > disagreement as a question.
 
@@ -73,6 +73,9 @@ These are this site's content invariants (`AGENTS.md` §6):
 
 Format:
 
+- **Every page is `.mdx`.** Write Markdown, plus a registered component where it helps. In
+  prose, MDX reads `<` and `{` as JSX: put a `<slug>`-style placeholder in backticks or escape
+  it (`\<slug>`), close void tags (`<br />`), and use `{/* … */}` for comments.
 - Frontmatter `title` is required (`pageSchema` in `src/lib/source.ts`). Fumadocs renders it,
   so don't repeat it as an `#` heading.
 - Links between pages are relative paths that **start with `./` or `../`**
@@ -89,9 +92,12 @@ Format:
   ```
 
   Don't run `finalize`, `browser-check` or `visual-check` (they launch Chrome) unless the owner
-  asks. Never upgrade Archify; tell the owner when it reports an update. Until ADR-0011 is
-  approved, keep Archify's HTML out of `content/docs/` and `public/`, and give the owner its
-  path.
+  asks. Never upgrade Archify; tell the owner when it reports an update.
+- **Prototypes and HTML wireframes** of your screens: the vendored `html-wireframe` and
+  `html-prototype` skills (`.claude/agent-skills/INDEX.md`), in this site's prototype theme,
+  phone width first, with a Mermaid `block-beta` version kept in the page.
+- Until ADR-0011 is approved, keep Archify and prototype HTML out of `content/docs/` and
+  `public/`, and give the owner its path. Once approved, pages embed it with `<HtmlEmbed>`.
 - No binary or externally hosted images.
 
 ## 5. Git: edit only

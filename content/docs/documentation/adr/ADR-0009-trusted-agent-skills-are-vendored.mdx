@@ -1,0 +1,134 @@
+---
+title: "ADR-0009 — Trusted agent skills are vendored in .claude/agent-skills/, routed by an index"
+---
+
+- **Status:** Proposed
+- **Date:** 2026-10-31
+- **Deciders:** Puncoz Nepal
+- **Approved by:** —
+- **Approved on:** —
+- **Supersedes:** —
+- **Superseded by:** —
+- **Design documents:** `.claude/agent-skills/INDEX.md`, `.claude/agent-skills/SOURCES.md`,
+  `AGENTS.md` §12, [`../index.mdx`](../index.mdx)
+
+## Context
+
+ADR-0006 makes skills advisory and this repository binding. Two problems remain:
+
+- **Trust.** Skills are instructions an agent follows. Registries hold hundreds of thousands of
+  them, most from unknown authors, some without a licence. A malicious or careless skill is a
+  supply-chain risk: it can tell an agent to run commands, exfiltrate data, or quietly bypass
+  this repository's rules.
+- **Context cost.** Loading many skills at once wastes the model's context and blurs which
+  guidance applies. The owner wants agents to load only what a task needs.
+
+Only trusted skills may be used: ones trusted by many, ones from the owner of the package,
+library or service they cover, or ones from another source of high trust. Untrusted ones must be
+put to the owner with better alternatives. `AGENTS.md` always ranks above skills.
+
+The skills are tooling for contributors, not documentation for readers, so they do not belong
+in `content/docs/`, where every file is published (ADR-0002).
+
+## Decision
+
+1. **Trusted skills are vendored** — copied into
+   `.claude/agent-skills/<owner>-<repository>/<upstream path>` at a pinned upstream commit, with
+   the upstream licence and unmodified files. Upstream paths are kept so a skill's relative
+   links resolve. JavaScript/TypeScript files are omitted so lint and the build ignore the
+   folder; omissions are listed.
+2. **A skill is trusted** when at least one holds: it comes from the owner of what it covers
+   (the maintainer of a package, library or service this site uses); it is trusted by many
+   (wide, visible adoption from a recognised maintainer); or its source has otherwise high
+   trust (an established security or engineering reputation, the agent's own vendor). It must
+   also be licensed for copying, scanned, and pinned.
+3. **`.claude/agent-skills/SOURCES.md`** records the trust policy, every source (repository,
+   commit, date, licence, trust basis), what was read in full and what was scanned, omissions,
+   rejected candidates, and how to update.
+4. **`.claude/agent-skills/INDEX.md` is the router.** Agents read it, then load only the one or
+   two `SKILL.md` files their task needs. Its *Overrides* state how each conflicting skill
+   instruction is handled here, generally and per skill.
+5. **Not `.claude/skills/`.** Claude Code auto-loads skills from `.claude/skills/`; these are
+   read through the index instead, so the overrides are applied every time and nothing loads
+   unasked.
+6. **In-house skills**, when the owner wants one, live in `.claude/agent-skills/local/` and are
+   reviewed like any design document.
+7. **Untrusted skills are not used.** Anything not in this folder, including skills installed
+   as plugins, needs the owner's approval first. The request names the trusted alternatives.
+   Where an installed plugin has a skill of the same name, the pinned copy wins.
+8. **The set grows as work needs it, with the owner's yes first.** An agent that finds a task
+   better served by a skill that is not vendored proposes trusted candidates, with a
+   recommendation. Nothing is cloned, downloaded or added until the owner approves
+   (`SOURCES.md` § Adding a skill).
+9. **Owner-approved installed skills are the exception to vendoring.** The owner approved skill
+   sets that they install themselves: impeccable, ui-ux-pro-max, the taste skills, hallmark and
+   Archify. They are listed in `SOURCES.md` and routed, with overrides, in `INDEX.md`.
+   They are not pinned, so they are re-reviewed after an update.
+10. **Remote instructions are pinned.** A skill that fetches its rules at run time uses a pinned
+   local snapshot instead.
+11. **Precedence is unchanged:** `AGENTS.md` > ADRs and `content/docs/documentation/` > skills >
+   default behaviour.
+
+## Options considered
+
+| Option | Pros | Cons | Verdict |
+|---|---|---|---|
+| A — Vendor pinned copies in `.claude/agent-skills/` + index router | Reviewed content; immune to upstream changes; minimal context via routing; works for any agent; not published | Manual updates; repository size grows (~1 MB) | Chosen |
+| B — Vendor into `.claude/skills/` for auto-loading | Skills appear in the agent's skill list | Every skill's description loads into every session; the overrides can be skipped | Rejected |
+| C — Vendor into `content/docs/documentation/agent-skills/` | Visible on the site | Published to the site, search index and `llms.txt`; third-party text presented as this site's documentation | Rejected |
+| D — Install from registries (`npx skills add`) per machine | Always current | Unpinned; content can change under us; differs by machine; harder to review | Rejected |
+| E — Link to upstream only | No copying | Agents fetch live, unreviewed instructions | Rejected |
+
+## Consequences
+
+**Positive**
+
+- Every instruction an agent follows from a skill has been read or scanned, pinned and
+  attributed.
+- Agents load a small, task-specific slice of guidance.
+
+**Negative / accepted trade-offs**
+
+- Vendored skills go stale; updates are a deliberate review (`SOURCES.md` § Updating).
+- Some skills duplicate installed plugins; the index states the pinned copy wins.
+- The approved installed UI/UX skills are not pinned: an update can change what an agent
+  follows before anyone re-reviews it.
+- An agent that does not read `AGENTS.md` will not find the skills; `AGENTS.md` §12 points to
+  the index.
+
+## Content invariants
+
+None directly. The overrides protect the process rules (no commits, ADR gate, no unapproved
+dependencies, secrets or publishing).
+
+## Security considerations
+
+This decision is a supply-chain control. Vendored content is scanned for command execution,
+network calls, credential handling and instruction-override text before copying. Findings are
+neutralised by the overrides in `INDEX.md`. Bundled scripts are never run without approval: the
+supply-chain auditor's scripts call registry, advisory and GitHub APIs and read `gh auth token`.
+Licences with attribution or share-alike terms (CC-BY-SA-4.0 for the Trail of Bits skill) apply
+to the files they cover. `.claude/` is not under `content/docs/`, so none of it is published.
+
+## Implementation notes
+
+- [x] `.claude/agent-skills/INDEX.md` and `SOURCES.md` exist, with the trust policy and
+      overrides.
+- [x] The first sources are vendored, scanned, recorded in `SOURCES.md` and routed in
+      `INDEX.md`: obra/superpowers, addyosmani/agent-skills, vercel-labs/agent-skills (with the
+      writing and web-interface guideline snapshots), vercel/next.js, anthropics/skills,
+      mattpocock/skills, trailofbits/skills, algolia/skills.
+- [ ] The owner reviews the selection. vercel-labs/agent-skills states MIT in its README but has
+      no `LICENSE` file.
+- [x] ESLint ignores `.claude/**` (`eslint.config.mjs`), by the owner's decision: installed skills
+      (hallmark, design-taste-frontend v2) ship `.mjs` scripts and `.tsx` fixtures there.
+- Tests: not applicable (documentation). Verified that no `.js`, `.cjs`, `.mjs`, `.ts`, `.tsx`
+  or `.jsx` file is vendored, and that `bunx next build` is unaffected.
+
+## Docs to update on implementation
+
+- [x] `AGENTS.md` §10, §11, §12
+- [x] `README.md` — project structure, skills, decisions table
+- [x] [`../index.mdx`](../index.mdx) — directory map
+- [x] [`./index.mdx`](./index.mdx) — title
+- [ ] [`./index.mdx`](./index.mdx) — status on approval

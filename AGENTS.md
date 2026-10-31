@@ -39,11 +39,11 @@ It is a [Fumadocs](https://fumadocs.dev) site on Next.js. Every page a reader se
 - **Consumed as a git submodule.** The owner's project and package repositories include this
   repository as a submodule and write their own pages into it, each in its own root folder
   `content/docs/<project-slug>/`. Their guide is [`PROJECT_AGENTS.md`](PROJECT_AGENTS.md)
-  ([ADR-0010](content/docs/documentation/adr/ADR-0010-projects-document-themselves-through-a-submodule.md)).
+  ([ADR-0010](content/docs/documentation/adr/ADR-0010-projects-document-themselves-through-a-submodule.mdx)).
   If you are working here from a consuming repository, read that first.
 - The overview and getting started are in [`README.md`](README.md). The map of the
   Documentation project is
-  [`content/docs/documentation/index.md`](content/docs/documentation/index.md).
+  [`content/docs/documentation/index.mdx`](content/docs/documentation/index.mdx).
 
 **Current state:** the Fumadocs scaffold, unchanged. A placeholder home page at `/`, two
 placeholder pages under `/docs` (`content/docs/index.mdx`, `content/docs/test.mdx`), Algolia
@@ -57,17 +57,17 @@ versioning, are not decided yet.
 
 **Every feature and functional change starts with an ADR, and no implementation begins
 before the repository owner approves it.** The full decision is
-[ADR-0001](content/docs/documentation/adr/ADR-0001-adr-driven-development-workflow.md).
+[ADR-0001](content/docs/documentation/adr/ADR-0001-adr-driven-development-workflow.mdx).
 
 ### Workflow
 
-1. **Propose.** Copy [`content/docs/documentation/_templates/adr.md`](content/docs/documentation/_templates/adr.md) to
-   `content/docs/documentation/adr/ADR-NNNN-kebab-title.md` using the *next free number* from
-   [`content/docs/documentation/adr/index.md`](content/docs/documentation/adr/index.md). Set **`Status: Proposed`** and add the index
+1. **Propose.** Copy [`content/docs/documentation/_templates/adr.mdx`](content/docs/documentation/_templates/adr.mdx) to
+   `content/docs/documentation/adr/ADR-NNNN-kebab-title.mdx` using the *next free number* from
+   [`content/docs/documentation/adr/index.mdx`](content/docs/documentation/adr/index.mdx). Set **`Status: Proposed`** and add the index
    row straight away, so ADRs in flight cannot collide on a number.
    **If the change reaches the UI, write its app flow in the same change**
-   ([ADR-0008](content/docs/documentation/adr/ADR-0008-a-ui-change-ships-an-app-flow.md)):
-   `content/docs/documentation/app-flow/<feature-slug>.md`. See *App flow* below.
+   ([ADR-0008](content/docs/documentation/adr/ADR-0008-a-ui-change-ships-an-app-flow.mdx)):
+   `content/docs/documentation/app-flow/<feature-slug>.mdx`. See *App flow* below.
 2. **Stop.** Do not write application code. Tell the owner the ADR, and its app flow if it has
    one, are ready for review.
 3. **Revise** in place while the owner has feedback — status stays `Proposed`.
@@ -96,21 +96,22 @@ Unclear which side the change falls on? It needs an ADR.
 
 ### App flow — required with every ADR that changes the UI
 
-[ADR-0008](content/docs/documentation/adr/ADR-0008-a-ui-change-ships-an-app-flow.md). An ADR that adds or changes
+[ADR-0008](content/docs/documentation/adr/ADR-0008-a-ui-change-ships-an-app-flow.mdx). An ADR that adds or changes
 anything a person sees — a page type, route, nav item, sidebar, search, dialog, or a page's
-layout, controls or states — ships `content/docs/documentation/app-flow/<feature-slug>.md`, and the two are reviewed
+layout, controls or states — ships `content/docs/documentation/app-flow/<feature-slug>.mdx`, and the two are reviewed
 together. It shows:
 
 - **entry points**: where a person reaches the feature from, and who does not see it;
 - **the flow**: the screens and the transitions between them, made with Archify, plus its
   Mermaid flowchart version (§8);
 - **one wireframe per screen**, as a Mermaid `block-beta` diagram with invented sample values,
-  at phone width first;
+  at phone width first; and, when clicking through or seeing states would settle a question,
+  an HTML wireframe or prototype (§8);
 - **each screen's states**: empty, loading, not found, refused, error, degraded, success.
 
 Not needed for a bug fix, for content within the approved conventions, or for an ADR that
 changes nothing visible. Unsure whether a person would notice? Write it. Template:
-[`content/docs/documentation/_templates/app-flow.md`](content/docs/documentation/_templates/app-flow.md).
+[`content/docs/documentation/_templates/app-flow.mdx`](content/docs/documentation/_templates/app-flow.mdx).
 
 ## 3. Execution rules
 
@@ -143,7 +144,7 @@ changes nothing visible. Unsure whether a person would notice? Write it. Templat
   `README.md`, the design documents and the ADR index reflect it (§8).
 - **Keep tests in the same change.** A change is not complete without tests for its happy path
   and its obvious failure paths — small changes included
-  ([ADR-0007](content/docs/documentation/adr/ADR-0007-tests-are-part-of-every-change.md)). A bug fix starts with a
+  ([ADR-0007](content/docs/documentation/adr/ADR-0007-tests-are-part-of-every-change.mdx)). A bug fix starts with a
   test that fails for the bug's reason.
 - **Leave the managed Next.js block alone.** `next dev` rewrites the content between
   `<!-- BEGIN:nextjs-agent-rules -->` and `<!-- END:nextjs-agent-rules -->`. Never edit
@@ -157,7 +158,7 @@ changes nothing visible. Unsure whether a person would notice? Write it. Templat
 
 ## 4. Never guess — ask
 
-[ADR-0004](content/docs/documentation/adr/ADR-0004-ask-never-guess.md). Picking something plausible and moving on
+[ADR-0004](content/docs/documentation/adr/ADR-0004-ask-never-guess.mdx). Picking something plausible and moving on
 is the failure mode this rule exists to stop: the assumption looks finished, gives no signal
 it was made, and is found late. In documentation a plausible wrong guess — an install command,
 a function signature, a default value, a supported version — is published as fact and copied
@@ -254,7 +255,7 @@ needs an ADR that says so.
 
 ## 7. Code style — comments
 
-[ADR-0003](content/docs/documentation/adr/ADR-0003-code-comment-policy.md). **Comments explain *why*. The code
+[ADR-0003](content/docs/documentation/adr/ADR-0003-code-comment-policy.mdx). **Comments explain *why*. The code
 explains *what*. If the code is self-explanatory, write no comment at all.**
 
 A comment is warranted only when the reasoning, trade-off, edge case or constraint cannot be
@@ -287,8 +288,8 @@ pages.push(page)
 
 ## 8. Documentation duties
 
-[ADR-0002](content/docs/documentation/adr/ADR-0002-living-design-documentation.md). The map of what lives where is
-[`content/docs/documentation/index.md`](content/docs/documentation/index.md); each directory's `index.md` holds its own conventions.
+[ADR-0002](content/docs/documentation/adr/ADR-0002-living-design-documentation.mdx). The map of what lives where is
+[`content/docs/documentation/index.mdx`](content/docs/documentation/index.mdx); each directory's `index.mdx` holds its own conventions.
 
 ### Three kinds of document
 
@@ -310,16 +311,20 @@ build log. They are not published. They hold
 product truth and the visual system only: decisions still go in ADRs, and design documents in
 `content/docs/documentation/`. Keep `PRODUCT.md` a snapshot, like any living document.
 
-### Format of a page in the Documentation project
+### Format of a page
 
-- Markdown (`.md`), compiled as plain Markdown, so `<slug>`-style placeholders need no escaping.
+- **Every page under `content/docs/` is `.mdx`** (ADR-0012), so a page can use an MDX component
+  when it needs one. Write it as Markdown otherwise. MDX reads `<` and `{` in prose as JSX: put
+  a `<slug>`-style placeholder in backticks or escape it (`\<slug>`), write void tags closed
+  (`<br />`), and use `{/* … */}` instead of an HTML comment. Code blocks and frontmatter need
+  no escaping.
 - **Frontmatter `title`** (required by `pageSchema`) instead of an `#` heading; Fumadocs
   renders the title. `description` is optional.
-- A folder's overview is its `index.md`. Order and the root-folder setting are in
+- A folder's overview is its `index.mdx`. Order and the root-folder setting are in
   `content/docs/documentation/meta.json`.
 - Links between pages are relative file paths that **start with `./` or `../`**
-  (`./adr/index.md`, `../adr/ADR-0001-….md`). Only those are resolved to page URLs; a bare
-  `adr/index.md` is left as a broken link.
+  (`./adr/index.mdx`, `../adr/ADR-0001-….mdx`). Only those are resolved to page URLs; a bare
+  `adr/index.mdx` is left as a broken link.
 
 ### Living documents are snapshots, not changelogs
 
@@ -337,16 +342,16 @@ moves.
 | **App flow** | `content/docs/documentation/app-flow/` | **Any ADR that adds or changes something a person sees (§2, ADR-0008)** |
 | PRD + user stories | `content/docs/documentation/prd/` | Any reader-facing feature |
 | Architecture / HLD | `content/docs/documentation/architecture/` | A new module, content source, build step, background job or external integration |
-| ERD | `content/docs/documentation/erd/` | Any persisted data — `erd/system.md` is created by the first ADR that adds some |
+| ERD | `content/docs/documentation/erd/` | Any persisted data — `erd/system.mdx` is created by the first ADR that adds some |
 | DFD | `content/docs/documentation/dfd/` | Data crosses a trust boundary or reaches an external system (search, hosting, analytics, CI), or private content moves between processes |
 | State diagram | `content/docs/documentation/state/` | An entity has more than two states, or guarded / timed transitions (a page's draft → published, a package version's lifecycle) |
 | Sequence diagram | `content/docs/documentation/sequence/` | A flow spans several actors or systems, is async, or has failure/retry behaviour (build and index sync, docs generation from a package) |
 | API spec | `content/docs/documentation/api/` | Any route handler or endpoint another client or system calls (`llms.txt`, `static.json`, per-page Markdown) |
 | RBAC matrix | `content/docs/documentation/rbac/` | Visibility or permitted actions depend on who the reader is — private project documentation |
-| Security analysis | `content/docs/documentation/security/` | The change introduces an attack surface worth its own analysis. `secrets.md` and `threat-model.md` are updated whenever they stop being accurate. |
+| Security analysis | `content/docs/documentation/security/` | The change introduces an attack surface worth its own analysis. `secrets.mdx` and `threat-model.mdx` are updated whenever they stop being accurate. |
 
 Judgement applies — a small change may need none of them. **If it is unclear whether one is
-required, write it.** Start from [`content/docs/documentation/_templates/`](content/docs/documentation/_templates/index.md).
+required, write it.** Start from [`content/docs/documentation/_templates/`](content/docs/documentation/_templates/index.mdx).
 
 **Diagrams and flows are made with Archify**, always: architecture, workflow, sequence, data
 flow, lifecycle, ERD, class, tree and timeline diagrams. This is the owner's standing choice.
@@ -368,10 +373,15 @@ HTML file.
   when the owner asks, for a broken diagram. The update check inside `deliver` may run. When it
   reports a new version, tell the owner and never upgrade without their yes. Working folders go
   in `.archify/` (gitignored).
-- **How Archify's HTML is stored and shown on the site is decided by its own ADR**, because it
-  is a UI change: ADR-0011, proposed. Until it is approved, the site shows the Mermaid version
-  as highlighted code, and Archify files stay out of `content/docs/` and `public/`: save them
-  outside the published folders and give the owner the path.
+- **Prototypes and HTML wireframes of an app flow's screens** are made with the vendored
+  `html-wireframe` (structure, navigation, click-through) and `html-prototype` (states, input,
+  feedback) skills, in this site's prototype theme, phone width first. The Mermaid
+  `block-beta` wireframe stays in the page. Working files go in `.prototypes/` (gitignored).
+- **How this HTML is stored and shown on the site is decided by its own ADR**, because it is a
+  UI change: ADR-0011, proposed (embedded with an `<HtmlEmbed>` component in a sandboxed
+  frame). Until it is approved, the site shows the Mermaid version as highlighted code, and
+  Archify and prototype files stay out of `content/docs/` and `public/`: save them outside the
+  published folders and give the owner the path.
 - No binary or externally hosted images.
 
 ### Always check these
@@ -382,18 +392,18 @@ HTML file.
 | `AGENTS.md` (this file) | The way work is done changes — conventions, commands, structure, rules, stack |
 | `README.md` | What the project is, how to run it, or how it is laid out changes |
 | `PROJECT_AGENTS.md` | Anything changes how consuming repositories work here: folder layout, page format, invariants, git flow, commands, or a rule in this file they must follow. **Keep it in step with `AGENTS.md` in the same change.** |
-| `content/docs/documentation/adr/index.md` | An ADR is written or changes status — keep the index and the next free number accurate |
+| `content/docs/documentation/adr/index.mdx` | An ADR is written or changes status — keep the index and the next free number accurate |
 
 ## 9. Security and privacy
 
-[ADR-0005](content/docs/documentation/adr/ADR-0005-security-as-a-standing-practice.md). This site will hold
+[ADR-0005](content/docs/documentation/adr/ADR-0005-security-as-a-standing-practice.mdx). This site will hold
 documentation for **private projects** next to public packages. A flaw here is not a broken
 page. It is a private project's architecture, internal API or client name published on the
 open web, indexed by a search engine and copied into an LLM's training data — where it cannot
 be taken back.
 
 Security is a property of **every change**, not a pre-deploy event. Full documents live in
-[`content/docs/documentation/security/`](content/docs/documentation/security/index.md).
+[`content/docs/documentation/security/`](content/docs/documentation/security/index.mdx).
 
 ### Never guess at a security decision
 
@@ -405,7 +415,7 @@ provider, what a published example may contain — **the owner decides, and it i
 
 | If the change… | Check |
 |---|---|
-| Introduces or reads a secret / env var | Not a literal in source · **`NEXT_PUBLIC_` publishes to the world** · added to `content/docs/documentation/security/secrets.md` **and** `.env.example` |
+| Introduces or reads a secret / env var | Not a literal in source · **`NEXT_PUBLIC_` publishes to the world** · added to `content/docs/documentation/security/secrets.mdx` **and** `.env.example` |
 | Adds a page to `content/docs/` | Belongs to a public package or project (§6.1) · no secret, token, internal hostname, client name or personal data in text, examples or screenshots |
 | Adds a route handler or endpoint | Says what it exposes, to whom · documented in `content/docs/documentation/api/` · private content excluded or authorization enforced server-side |
 | Sends anything to a third party (search, analytics, hosting) | Exactly what is sent, minimised · recorded as a DFD boundary crossing · never private content without an approved ADR |
@@ -414,7 +424,7 @@ provider, what a published example may contain — **the owner decides, and it i
 
 ### Full audits at gates
 
-The audits in [`content/docs/documentation/security/checklist.md`](content/docs/documentation/security/checklist.md) run **before the first
+The audits in [`content/docs/documentation/security/checklist.mdx`](content/docs/documentation/security/checklist.mdx) run **before the first
 internet-reachable deployment** and **before each release** of the site. Findings are reported
 as: what it is · where it is · how it would be exploited · the fix. Fix data exposure and
 unauthorized access first, abuse and logic flaws second. **Findings go to the owner, not into
@@ -435,7 +445,7 @@ the Documentation project**, until they are fixed: those pages are published (AD
 ### Tool-specific rules
 
 Algolia is adopted; its checks are in
-[`content/docs/documentation/security/checklist.md`](content/docs/documentation/security/checklist.md#tool-specific-checks). **The ADR that
+[`content/docs/documentation/security/checklist.mdx`](content/docs/documentation/security/checklist.mdx#tool-specific-checks). **The ADR that
 adopts a host, analytics, CI or an authentication provider adds its own checks** there.
 
 ## 10. Repository map
@@ -452,7 +462,7 @@ adopts a host, analytics, CI or an authentication provider adds its own checks**
 │   ├── index.mdx, test.mdx  # scaffold placeholders
 │   └── documentation/   # the "Documentation" project (root folder): this site's own docs
 │       ├── meta.json    # title, root: true, page order
-│       ├── index.md     # documentation map — what lives where
+│       ├── index.mdx    # documentation map — what lives where
 │       ├── _templates/  # a starting point for each document type
 │       ├── adr/         # binding decisions — immutable once approved
 │       ├── app-flow/    # Mermaid flows + screen wireframes, one per feature — with every UI-changing ADR
@@ -479,15 +489,15 @@ adopts a host, analytics, CI or an authentication provider adds its own checks**
 └── tsconfig.json        # strict; @/* → ./src/*
 ```
 
-The system as built is described in [`content/docs/documentation/architecture/system.md`](content/docs/documentation/architecture/system.md).
+The system as built is described in [`content/docs/documentation/architecture/system.mdx`](content/docs/documentation/architecture/system.mdx).
 
 ## 11. Quick checklist
 
-- [ ] Read `AGENTS.md`, [`content/docs/documentation/index.md`](content/docs/documentation/index.md) and the relevant ADRs.
+- [ ] Read `AGENTS.md`, [`content/docs/documentation/index.mdx`](content/docs/documentation/index.mdx) and the relevant ADRs.
 - [ ] Which skills fit this task? Look them up in `.claude/agent-skills/INDEX.md`, load only those,
       and name them — process skills first (§12).
 - [ ] Does this need an ADR? If yes — write it, `Status: Proposed`, index it, and stop.
-- [ ] Does it change the UI? Then write `content/docs/documentation/app-flow/<feature>.md` with it.
+- [ ] Does it change the UI? Then write `content/docs/documentation/app-flow/<feature>.mdx` with it.
 - [ ] Any undetermined product, content or privacy decision? Ask with options and a
       recommendation (§4).
 - [ ] Which design documents does §8 require? Write them with the ADR.
@@ -499,14 +509,14 @@ The system as built is described in [`content/docs/documentation/architecture/sy
 - [ ] Comments only where they explain *why* (§7).
 - [ ] Security: run the per-change rows that apply (§9). Any doubt → ask, never assume.
 - [ ] Living design documents updated in place to match the code.
-- [ ] `AGENTS.md`, `README.md`, `content/docs/documentation/adr/index.md` updated as needed.
+- [ ] `AGENTS.md`, `README.md`, `content/docs/documentation/adr/index.mdx` updated as needed.
 - [ ] Tests written or updated — happy path **and** the obvious failures (ADR-0007).
 - [ ] `bun run lint`, `bun run types:check` and `bunx next build` pass.
 - [ ] Leave everything uncommitted for the owner's review.
 
 ## 12. Skills
 
-[ADR-0006](content/docs/documentation/adr/ADR-0006-agent-skills-are-advisory.md). Contributors here — human and AI —
+[ADR-0006](content/docs/documentation/adr/ADR-0006-agent-skills-are-advisory.mdx). Contributors here — human and AI —
 have a library of installed **skills**: packaged workflows for brainstorming, debugging,
 technical writing, API design, UI work and more. **Use them.** Left alone, they go unused, and
 the same task gets a rigorous treatment one day and an ad-hoc one the next.
@@ -542,10 +552,11 @@ violation is invisible in the diff, because the diff looks like good work.
 
 ### 12.2 Which skill, when — trusted skills only
 
-[ADR-0009](content/docs/documentation/adr/ADR-0009-trusted-agent-skills-are-vendored.md). The trusted skills for
+[ADR-0009](content/docs/documentation/adr/ADR-0009-trusted-agent-skills-are-vendored.mdx). The trusted skills for
 this repository are **vendored** in [`.claude/agent-skills/`](.claude/agent-skills/INDEX.md) at pinned
 commits: process skills (brainstorming, debugging, TDD, verification, code review), ADRs and
-source-driven work, writing, front end, Next.js bundles, Algolia, security and supply chain.
+source-driven work, writing, front end, prototypes, Next.js bundles, Algolia, security and
+supply chain.
 They sit outside `content/docs/`, so they are not published, and outside `.claude/skills/`, so
 Claude Code does not auto-load them.
 

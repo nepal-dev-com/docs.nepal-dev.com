@@ -51,7 +51,7 @@ sync script runs on Node; the owner's machine has v24).
    ```
 
 2. **Configure search.** Create `.env.local` with the three Algolia variables listed in
-   [`content/docs/documentation/security/secrets.md`](content/docs/documentation/security/secrets.md). `.env.local` is gitignored; never
+   [`content/docs/documentation/security/secrets.mdx`](content/docs/documentation/security/secrets.mdx). `.env.local` is gitignored; never
    commit it.
 
 3. **Run.**
@@ -85,7 +85,7 @@ Open [http://localhost:3000](http://localhost:3000). The docs are at `/docs`.
 ├── PROJECT_AGENTS.md    # for project repositories that include this one as a git submodule
 ├── .claude/agent-skills/  # trusted agent skills, pinned; INDEX.md says which to load when
 ├── content/docs/        # every published page
-│   └── documentation/   # the "Documentation" project: this site's own docs — index.md is the map
+│   └── documentation/   # the "Documentation" project: this site's own docs — index.mdx is the map
 │       ├── adr/         # Architecture Decision Records — immutable once approved
 │       ├── app-flow/    # Mermaid flows + screen wireframes, with every UI-changing ADR
 │       ├── prd/         # product requirements + user stories
@@ -121,8 +121,8 @@ decisions and design documents. Like every other page, it is published.
 **Every feature and functional change starts with an ADR, and no implementation begins until
 the repository owner has approved it.**
 
-1. Write an ADR in [`content/docs/documentation/adr/`](content/docs/documentation/adr/index.md) from
-   [`_templates/adr.md`](content/docs/documentation/_templates/adr.md) with `Status: Proposed`, alongside the design
+1. Write an ADR in [`content/docs/documentation/adr/`](content/docs/documentation/adr/index.mdx) from
+   [`_templates/adr.mdx`](content/docs/documentation/_templates/adr.mdx) with `Status: Proposed`, alongside the design
    documents the change needs (app flow, PRD, DFD, RBAC…).
 2. The owner reviews it, and it is revised in place until it is right.
 3. On approval the status becomes `Approved`, with the approver and date recorded.
@@ -134,7 +134,7 @@ Design documents work the opposite way: they are **living snapshots**, edited in
 Writing a package's pages within the approved content conventions needs no ADR.
 
 Anything genuinely undetermined is raised as a question with options and a recommendation,
-not settled by assumption ([ADR-0004](content/docs/documentation/adr/ADR-0004-ask-never-guess.md)).
+not settled by assumption ([ADR-0004](content/docs/documentation/adr/ADR-0004-ask-never-guess.mdx)).
 
 Contributors — human or AI — read [`AGENTS.md`](AGENTS.md) first. It is the authoritative
 working agreement for this repository.
@@ -145,7 +145,7 @@ Project and package repositories include this repository as a **git submodule** 
 their pages into their own folder, `content/docs/<project-slug>/`. Their agents follow
 [`PROJECT_AGENTS.md`](PROJECT_AGENTS.md): edit only that folder, never commit inside the submodule,
 public projects only for now
-([ADR-0010](content/docs/documentation/adr/ADR-0010-projects-document-themselves-through-a-submodule.md)).
+([ADR-0010](content/docs/documentation/adr/ADR-0010-projects-document-themselves-through-a-submodule.mdx)).
 
 ### Skills
 
@@ -154,23 +154,25 @@ more — are vendored from trusted sources in [`.claude/agent-skills/`](.claude/
 pinned to reviewed commits: Next.js, Algolia, Vercel, Anthropic, Trail of Bits and widely used
 community libraries. Agents read [`INDEX.md`](.claude/agent-skills/INDEX.md) and load only
 the skills a task needs; [`SOURCES.md`](.claude/agent-skills/SOURCES.md) records where each comes from. Skills from anywhere else need the owner's approval
-([ADR-0009](content/docs/documentation/adr/ADR-0009-trusted-agent-skills-are-vendored.md)). Skills are advice about
+([ADR-0009](content/docs/documentation/adr/ADR-0009-trusted-agent-skills-are-vendored.mdx)). Skills are advice about
 *method*, not authority: **`AGENTS.md` and `content/docs/documentation/` outrank every skill**
-([ADR-0006](content/docs/documentation/adr/ADR-0006-agent-skills-are-advisory.md)).
+([ADR-0006](content/docs/documentation/adr/ADR-0006-agent-skills-are-advisory.mdx)).
 
 ### Documentation
 
-[`content/docs/documentation/index.md`](content/docs/documentation/index.md) is the map: what each directory holds, which documents a
+[`content/docs/documentation/index.mdx`](content/docs/documentation/index.mdx) is the map: what each directory holds, which documents a
 change requires, and the conventions for each. Diagrams and flows are made with
-[Archify](https://github.com/tt-a1i/archify), and every page also keeps a Mermaid version, so
-it stays readable as Markdown, renders on GitHub and diffs as text.
+[Archify](https://github.com/tt-a1i/archify), and app-flow prototypes with the vendored
+effective-html skills in this site's prototype theme. Every page also keeps a Mermaid version,
+so it stays readable as Markdown, renders on GitHub and diffs as text. Pages are `.mdx`
+(ADR-0012), so they can embed components where needed.
 
 ### Security and privacy
 
 This site will document private projects next to public packages, so security is a property of
 every change rather than a pre-deploy event. Every ADR carries a mandatory security section; the
 threat model, data classification, secrets inventory and audit checklist live in
-[`content/docs/documentation/security/`](content/docs/documentation/security/index.md).
+[`content/docs/documentation/security/`](content/docs/documentation/security/index.mdx).
 
 > **If a secret is ever committed, rotate it immediately.** Removing it from the working tree,
 > or from git history, is not enough. Treat any value that was pushed as compromised from that
@@ -180,14 +182,15 @@ threat model, data classification, secrets inventory and audit checklist live in
 
 | ADR | Title | Status |
 |---|---|---|
-| [0001](content/docs/documentation/adr/ADR-0001-adr-driven-development-workflow.md) | Every change starts with an approved ADR | Proposed |
-| [0002](content/docs/documentation/adr/ADR-0002-living-design-documentation.md) | Design documents are living snapshots, published as the Documentation project | Proposed |
-| [0003](content/docs/documentation/adr/ADR-0003-code-comment-policy.md) | Comments explain why; every branch takes a block | Proposed |
-| [0004](content/docs/documentation/adr/ADR-0004-ask-never-guess.md) | Resolve ambiguity by asking, never by guessing | Proposed |
-| [0005](content/docs/documentation/adr/ADR-0005-security-as-a-standing-practice.md) | Security and privacy are a standing practice | Proposed |
-| [0006](content/docs/documentation/adr/ADR-0006-agent-skills-are-advisory.md) | Agent skills are advisory; this repository's documentation is binding | Proposed |
-| [0007](content/docs/documentation/adr/ADR-0007-tests-are-part-of-every-change.md) | Tests are part of every change | Proposed |
-| [0008](content/docs/documentation/adr/ADR-0008-a-ui-change-ships-an-app-flow.md) | A UI change ships an app flow, drawn in Mermaid | Proposed |
-| [0009](content/docs/documentation/adr/ADR-0009-trusted-agent-skills-are-vendored.md) | Trusted agent skills are vendored in `.claude/agent-skills/`, routed by an index | Proposed |
-| [0010](content/docs/documentation/adr/ADR-0010-projects-document-themselves-through-a-submodule.md) | Projects document themselves here through a git submodule, one root folder each | Proposed |
-| [0011](content/docs/documentation/adr/ADR-0011-archify-diagrams-are-published-as-standalone-pages.md) | Archify diagrams are published as standalone pages, linked from the page that keeps the Mermaid version | Proposed |
+| [0001](content/docs/documentation/adr/ADR-0001-adr-driven-development-workflow.mdx) | Every change starts with an approved ADR | Proposed |
+| [0002](content/docs/documentation/adr/ADR-0002-living-design-documentation.mdx) | Design documents are living snapshots, published as the Documentation project | Proposed |
+| [0003](content/docs/documentation/adr/ADR-0003-code-comment-policy.mdx) | Comments explain why; every branch takes a block | Proposed |
+| [0004](content/docs/documentation/adr/ADR-0004-ask-never-guess.mdx) | Resolve ambiguity by asking, never by guessing | Proposed |
+| [0005](content/docs/documentation/adr/ADR-0005-security-as-a-standing-practice.mdx) | Security and privacy are a standing practice | Proposed |
+| [0006](content/docs/documentation/adr/ADR-0006-agent-skills-are-advisory.mdx) | Agent skills are advisory; this repository's documentation is binding | Proposed |
+| [0007](content/docs/documentation/adr/ADR-0007-tests-are-part-of-every-change.mdx) | Tests are part of every change | Proposed |
+| [0008](content/docs/documentation/adr/ADR-0008-a-ui-change-ships-an-app-flow.mdx) | A UI change ships an app flow, drawn in Mermaid | Proposed |
+| [0009](content/docs/documentation/adr/ADR-0009-trusted-agent-skills-are-vendored.mdx) | Trusted agent skills are vendored in `.claude/agent-skills/`, routed by an index | Proposed |
+| [0010](content/docs/documentation/adr/ADR-0010-projects-document-themselves-through-a-submodule.mdx) | Projects document themselves here through a git submodule, one root folder each | Proposed |
+| [0011](content/docs/documentation/adr/ADR-0011-diagrams-and-prototypes-are-embedded-from-sandboxed-html.mdx) | Archify diagrams and HTML prototypes are embedded in pages from sandboxed HTML files | Proposed |
+| [0012](content/docs/documentation/adr/ADR-0012-every-page-is-mdx.mdx) | Every page in `content/docs` is MDX | Approved |
