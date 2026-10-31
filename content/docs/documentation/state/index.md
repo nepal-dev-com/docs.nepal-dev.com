@@ -1,0 +1,25 @@
+---
+title: "State machines"
+---
+
+Lifecycles of entities with more than two states or guarded / timed transitions — a page's
+draft → published → deprecated, a package version from pre-release to end of life, a private
+project made public.
+
+> **Living snapshots.** Edit in place so each file describes the system as it is right now. No
+> revision tables, no "previously X, now Y" — delete what is no longer true
+> ([ADR-0002](../adr/ADR-0002-living-design-documentation.md)).
+
+## Conventions
+
+- File name: `<entity>.md`.
+- Mermaid `stateDiagram-v2`, then tables of states, transitions (trigger, guard, side effects — including what is published or removed) and terminal states.
+
+**Template:** [`../_templates/state.md`](../_templates/state.md)
+
+## Documents
+
+| Document | Status | ADR |
+|---|---|---|
+
+None yet: a page has one state today — published.

@@ -1,0 +1,27 @@
+---
+title: "Access control"
+---
+
+Who may read and do what — public readers, people given access to a private project, and the
+owner — on every surface a page appears on.
+
+> **Living snapshots.** Edit in place so each file describes the system as it is right now. No
+> revision tables, no "previously X, now Y" — delete what is no longer true
+> ([ADR-0002](../adr/ADR-0002-living-design-documentation.md)).
+
+## Conventions
+
+- File name: `<feature-slug>.md`; `system.md` once more than one feature has access rules.
+- Action matrix plus surface-level visibility: a page's access rule applies to its Markdown, `llms.txt` entry, OG image and search record too.
+- State whether a denied page is hidden (404) or visible-but-locked (403), and why.
+- Authorization is enforced server-side; the matrix says where.
+
+**Template:** [`../_templates/rbac.md`](../_templates/rbac.md)
+
+## Documents
+
+| Document | Status | ADR |
+|---|---|---|
+
+None: there is no access control. Every page is public to everyone. The ADR that decides how
+private project documentation is served writes the first matrix.
