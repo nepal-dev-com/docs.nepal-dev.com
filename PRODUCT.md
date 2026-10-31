@@ -12,6 +12,9 @@ web
   open-source packages (npm, PHP / Composer, and other ecosystems). They arrive mid-task, from
   a registry page, a README or a search, looking for an install command, an API, an option, a
   default or a supported version.
+- **Maintainers** — the people who look after a package or project: they need its
+  architecture, local setup, tests, release process and contribution notes. Each package and
+  project has a Maintain track for them beside the Use track (owner's decision, 2026-10-31).
 - **Project stakeholders** — collaborators, clients or teammates reading the documentation of
   Puncoz Nepal's public and private projects.
 - **The owner, as reference** — Puncoz Nepal's own single source of truth across everything
@@ -57,14 +60,22 @@ installed version) without leaving for the source code.
   project content is added.
 - Every change starts with an ADR approved by the owner; UI changes also ship an app flow
   (`AGENTS.md`).
-- Undecided: how content is laid out per ecosystem, package and project; versioning of package
-  documentation; the site's name (today the scaffold placeholder "My App"); the GitHub link in
-  the header (today the scaffold's).
+- Packages carry released and unreleased versions, and npm packages in particular can have
+  live demos. How they are laid out (tracks, version lines, demos) is proposed in ADR-0013.
+- Signed-out visitors see nothing of private projects: no name, no count, no placeholder
+  (owner's decision, 2026-10-31). Sign-in will use WorkOS, in a later ADR.
+- Undecided: the site's final name, and the GitHub link in the header (today the scaffold's).
 
 ## Brand Commitments
 
 - Owner and author: Puncoz Nepal.
-- The site name is undecided. No logo, voice guide or identity assets exist yet.
+- Working name: **Puncoz Docs**. The final name will include neither the owner's name nor
+  "docs"; it is not chosen yet. No logo, voice guide or identity assets exist yet.
+- Craft bar: the documentation of **Stripe, Linear and Resend** (owner's choice, 2026-10-31).
+- Look: cool, modern and technical, with motion and graphics; search is the first thing a reader
+  uses (owner's steer, 2026-10-31). Not wanted: a warm, earthy palette, or a hero that makes the
+  reader choose between options before they can search. The design decisions inside that steer
+  are delegated to the builder and recorded in ADR-0014.
 
 ## Evidence on Hand
 

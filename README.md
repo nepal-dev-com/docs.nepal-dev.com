@@ -3,8 +3,9 @@
 > One place for the documentation of everything Puncoz Nepal builds: open-source packages and
 > libraries across ecosystems, and public and private projects.
 
-**Status:** the Fumadocs scaffold, with placeholder pages. No package or project is documented
-yet. · **Owner:** Puncoz Nepal
+**Status:** **Puncoz Docs** (a working name). The catalogue shape and the search-first home page
+are built; no package or project is documented yet, so the home page shows its empty states.
+· **Owner:** Puncoz Nepal
 
 ---
 
@@ -14,11 +15,22 @@ yet. · **Owner:** Puncoz Nepal
   and libraries for any other ecosystem.
 - **Projects** — public ones, and private ones.
 
-How content is organised per ecosystem, package and project, how versions are handled, and how
-private project documentation is kept away from the public site are open decisions. Each one
-arrives through its own ADR. Until the private-documentation ADR is approved, **no private
-project content goes into `content/docs/`**: everything there is published to the site, the
-search index and `llms.txt`.
+Every package and project has the same shape
+([ADR-0013](content/docs/documentation/adr/ADR-0013-packages-and-projects-share-one-catalogue-shape.mdx)):
+- an overview;
+- a **Use** track for people using it, with one folder per documented major version (`v3/`,
+  plus `next/` for an unreleased one);
+- a **Maintain** track for the people who look after it.
+
+The build checks that shape. `/docs/<slug>/use/latest/…` always redirects to the current
+release. The home page
+([ADR-0014](content/docs/documentation/adr/ADR-0014-home-page-is-a-search-first-release-map.mdx))
+is a map of every release with one search field in front of it.
+
+How private project documentation is kept away from the public site is still open, and demos
+wait for ADR-0011. Until the private-documentation ADR is approved, **no private project content
+goes into `content/docs/`**: everything there is published to the site, the search index and
+`llms.txt`, and the build refuses a catalogue entry that is not `public`.
 
 ---
 
@@ -71,7 +83,7 @@ Open [http://localhost:3000](http://localhost:3000). The docs are at `/docs`.
 | `bun run build` | Production build, **then push every page to the live Algolia index** |
 | `bun run start` | Serve the production build |
 | `bun run types:check` | Generate route types and type-check |
-| `bun run lint` | Lint with ESLint |
+| `bun run lint` | Lint with ESLint — **does not run today**: `typescript-eslint` does not support TypeScript 7 |
 
 ---
 
@@ -82,9 +94,11 @@ Open [http://localhost:3000](http://localhost:3000). The docs are at `/docs`.
 ├── AGENTS.md            # working agreement — read before contributing (CLAUDE.md imports it)
 ├── CLAUDE.md            # → @AGENTS.md
 ├── PRODUCT.md           # who the site is for and what it must do — read by UI design skills
+├── DESIGN.md            # the home page's visual system: colours, type, components, motion
 ├── PROJECT_AGENTS.md    # for project repositories that include this one as a git submodule
 ├── .claude/agent-skills/  # trusted agent skills, pinned; INDEX.md says which to load when
 ├── content/docs/        # every published page
+│   ├── <project-slug>/  # one folder per package or project: catalogue entry, use/, maintain/
 │   └── documentation/   # the "Documentation" project: this site's own docs — index.mdx is the map
 │       ├── adr/         # Architecture Decision Records — immutable once approved
 │       ├── app-flow/    # Mermaid flows + screen wireframes, with every UI-changing ADR
@@ -99,10 +113,10 @@ Open [http://localhost:3000](http://localhost:3000). The docs are at `/docs`.
 │       ├── security/    # threat model, classification, secrets, audit checklist
 │       └── _templates/  # a starting point for each document type
 ├── src/
-│   ├── proxy.ts         # Markdown versions of pages
+│   ├── proxy.ts         # version-line redirects and Markdown versions of pages
 │   ├── app/             # home, docs pages, llms.txt, OG images, search records
-│   ├── components/      # MDX components, search dialog
-│   └── lib/             # content loader, site settings, shared layout
+│   ├── components/      # MDX components, search dialog, docs/ (track switch, version banners), home/
+│   └── lib/             # content loader, catalogue schema and checks, search client, site settings
 ├── scripts/
 │   └── sync-content.ts  # pushes search records to Algolia after a build
 ├── next.config.mjs
@@ -194,3 +208,5 @@ threat model, data classification, secrets inventory and audit checklist live in
 | [0010](content/docs/documentation/adr/ADR-0010-projects-document-themselves-through-a-submodule.mdx) | Projects document themselves here through a git submodule, one root folder each | Proposed |
 | [0011](content/docs/documentation/adr/ADR-0011-diagrams-and-prototypes-are-embedded-from-sandboxed-html.mdx) | Archify diagrams and HTML prototypes are embedded in pages from sandboxed HTML files | Proposed |
 | [0012](content/docs/documentation/adr/ADR-0012-every-page-is-mdx.mdx) | Every page in `content/docs` is MDX | Approved |
+| [0013](content/docs/documentation/adr/ADR-0013-packages-and-projects-share-one-catalogue-shape.mdx) | Packages and projects share one catalogue shape: two tracks, version lines and demos | Approved |
+| [0014](content/docs/documentation/adr/ADR-0014-home-page-is-a-search-first-release-map.mdx) | The home page is a search-first map of every release | Approved |

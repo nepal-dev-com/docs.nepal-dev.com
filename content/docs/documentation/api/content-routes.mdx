@@ -4,7 +4,7 @@ title: "API — Machine-readable content routes"
 
 - **Status:** Current
 - **Last updated:** 2026-10-31
-- **Related ADRs:** none yet — scaffold routes
+- **Related ADRs:** [ADR-0013](../adr/ADR-0013-packages-and-projects-share-one-catalogue-shape.mdx)
 
 > Snapshot of the system as it stands today. Edit in place; never record what changed.
 
@@ -15,6 +15,8 @@ return **every page in `content/docs/`**. None filters anything out.
 
 | Method | Path | Purpose | Auth |
 |---|---|---|---|
+| GET | `/docs/<package>/use/latest/<path>` | 307 to the same path in the line marked `latest` (also with `.md`) | None |
+| GET | `/docs/<package>/use/<line>/<path>` for a line that no longer exists | 307 to the same path in `latest`; 404 there if the page doesn't exist | None |
 | GET | `/docs/<slug>.md` | One page as Markdown (rewritten by `src/proxy.ts`) | None |
 | GET | `/docs/<slug>` with `Accept` preferring Markdown | One page as Markdown (rewritten by `src/proxy.ts`) | None |
 | GET | `/llms.mdx/docs/<slug>/content.md` | One page as Markdown | None |
@@ -27,7 +29,8 @@ return **every page in `content/docs/`**. None filters anything out.
 
 ### `GET /llms.mdx/docs/<slug>/content.md`
 
-**Purpose.** The processed Markdown of one page, headed `# <title> (<url>)`.
+**Purpose.** The processed Markdown of one page, headed `# <title> (<url>)`. A page in a
+package's version line follows the heading with `> Documents <package> <version> (<line>, <latest | unreleased | older version>).`
 
 **Authorisation.** Public. Nothing keeps private content out — see `AGENTS.md` §6.1.
 
@@ -46,7 +49,8 @@ rewritten here by `src/proxy.ts`; the second adds `Vary: Accept`.
 ### `GET /llms.txt` and `GET /llms-full.txt`
 
 **Purpose.** `llms.txt` lists every page; `llms-full.txt` returns all of their Markdown in one
-response. Both come from `docsLlms` in `src/lib/source.ts`.
+response. Both come from `docsLlms` in `src/lib/source.ts`. In `llms.txt`, each version line
+is named with its version and channel, such as `v4 — 4.0.1, latest`.
 
 **Authorisation.** Public.
 
@@ -78,6 +82,14 @@ name (`appName`).
 
 **Purpose.** Every page as an Algolia `DocumentRecord`, from `toDocuments(source)`. The
 build reads this route's output and pushes it to the index (`scripts/sync-content.ts`).
+
+**Fields added here (ADR-0013 decision 8).** `tag` is the page's scope, the index's one facet:
+`<package>`, `<package>:maintain`, `<package>:use` or `<package>:use:<line>` for catalogue
+pages, `documentation` for this site's own pages and `site` for the rest. The home page's
+search filters on it. Catalogue pages also carry `extra_data` with `package`, `kind`,
+`ecosystem`, `track`, `line` and `channel`; these reach the index, but the current index
+settings neither retrieve nor rank on them. Ranking `latest` and Maintain pages first needs an
+index settings change, which is publishing and waits for the owner.
 
 **Authorisation.** Public — it is served by the deployed site as well as read by the build.
 

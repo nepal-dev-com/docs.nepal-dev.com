@@ -45,13 +45,23 @@ It is a [Fumadocs](https://fumadocs.dev) site on Next.js. Every page a reader se
   Documentation project is
   [`content/docs/documentation/index.mdx`](content/docs/documentation/index.mdx).
 
-**Current state:** the Fumadocs scaffold, unchanged. A placeholder home page at `/`, two
-placeholder pages under `/docs` (`content/docs/index.mdx`, `content/docs/test.mdx`), Algolia
-search, `llms.txt` / `llms-full.txt`, per-page Markdown and Open Graph images. The site name
-(`appName = 'My App'`) and the GitHub link (`gitConfig`) in `src/lib/shared.ts` are still the
-scaffold's placeholders. **No package or project is documented yet.** Each will get a root
-folder `content/docs/<project-slug>/` (ADR-0010); how pages are structured inside a folder, and
-versioning, are not decided yet.
+**Current state:** the site is named **Puncoz Docs** (`appName` in `src/lib/shared.ts`, a
+working name) and links to GitHub `puncoz-official/docs`. **No package or project is documented
+yet**, so the home page shows its empty states.
+
+- **The catalogue shape is built** (ADR-0013). Each package or project gets a root folder
+  `content/docs/<project-slug>/` (ADR-0010). The folder has a `catalog` entry in its
+  `meta.json`, a `use/` track (version lines `v<major>/` and `next/`, each with `version` and
+  `channel`) and a `maintain/` track.
+- **The build checks the shape.** Line redirects, version banners, scoped sidebars, search
+  fields and `llms.txt` labels all come from it.
+- **The home page is a search-first release map** (ADR-0014): an orbit map, a hero search with
+  filter chips, the catalogue, a tracks preview, version rails and "Read it anywhere".
+- **Still here:** two scaffold placeholder pages under `/docs` (`content/docs/index.mdx`,
+  `content/docs/test.mdx`), Algolia search, `llms.txt` / `llms-full.txt`, per-page Markdown and
+  Open Graph images.
+- **Not published:** demos and private projects. Demos wait for ADR-0011; private projects wait
+  for their own ADR.
 
 ## 2. The ADR gate — non-negotiable
 
@@ -203,11 +213,13 @@ What is installed **today** (verified from `package.json`, `node_modules` and th
 | Framework | Next.js **16.4.2**, App Router, `src/app/` |
 | Docs framework | Fumadocs: `fumadocs-core` 16.17.9, `fumadocs-mdx` 15.4.10, `fumadocs-ui` 16.17.9 (installed as `@fumadocs/base-ui`) |
 | Content source | `defineDocs` from `fumadocs-mdx/macro` in `src/lib/source.ts`, reading `content/docs/`; no `source.config.ts`; generated files in `.source/` (gitignored) |
+| Catalogue | `src/lib/catalog-schema.ts` (meta schema with `catalog`, `version`, `channel`), `src/lib/catalog-plugin.ts` (build checks, typed roots), `src/lib/catalog.ts` (entries for pages and the home page), `src/lib/catalog-routes.ts` (line redirects in the proxy) — ADR-0013 |
+| Home page | `src/app/(home)/` and `src/components/home/`; styles in `src/app/(home)/home.css` and `.home` tokens in `global.css`; fonts Bricolage Grotesque, Onest and JetBrains Mono through `next/font/google`; visual system in `DESIGN.md` — ADR-0014 |
 | UI runtime | React 19.3 |
 | Language | TypeScript 7, `strict`; `@/*` → `./src/*` |
 | Styling | Tailwind CSS 4 through `@tailwindcss/postcss`; global styles in `src/app/global.css` |
-| Search | Algolia: `src/app/static.json/route.ts` emits the records, `scripts/sync-content.ts` pushes them after `next build`, `src/components/search.tsx` queries with the search-only key |
-| Linting | ESLint 9 + `eslint-config-next` (core-web-vitals); ignores `.claude/**` (agent skills, ADR-0009) |
+| Search | Algolia: `src/app/static.json/route.ts` emits the records (scope `tag` plus catalogue fields), `scripts/sync-content.ts` pushes them after `next build`; `src/lib/algolia.ts` is the search-only client used by `src/components/search.tsx` and the home page's hero search |
+| Linting | ESLint 9 + `eslint-config-next` (core-web-vitals); ignores `.claude/**` (agent skills, ADR-0009). **`bun run lint` does not run today:** `typescript-eslint` does not support TypeScript 7; fixing it needs its own ADR |
 | Testing | None installed — chosen by its own ADR (ADR-0007) |
 | Package manager | Bun (`bun.lock`; 1.4.4 on the owner's machine). `scripts/sync-content.ts` runs on Node (v24) |
 
@@ -232,7 +244,8 @@ What is installed **today** (verified from `package.json`, `node_modules` and th
 
 `bun run build` reads `.env.local` and writes to the live search index with
 `ALGOLIA_WRITE_KEY`; never run it to verify a change. Run `bun run lint`,
-`bun run types:check` and `bunx next build` before declaring work complete.
+`bun run types:check` and `bunx next build` before declaring work complete, and report the lint
+failure above while it stands.
 
 ## 6. Content invariants
 
@@ -247,7 +260,8 @@ needs an ADR that says so.
 2. **Documentation is checked against the code.** Install commands, signatures, options,
    defaults and supported versions are read from the documented package's source and
    manifest, never written from memory (§4).
-3. **Every package page says which version it documents.**
+3. **Every package page says which version it documents.** A version line's `version` states
+   it on every page in the line, and in its Markdown (ADR-0013).
 4. **Examples run.** A code example works against the version the page documents, with
    invented values; no real credentials, customer data or personal data.
 5. **Every page is readable as Markdown.** The per-page Markdown route and `llms.txt` stay
@@ -305,9 +319,9 @@ The **Documentation** project is about this site only. A package's or project's 
 and design notes go in that package's or project's pages, not here.
 
 **The one exception: design-tool context at the root.** By the owner's decision,
-[`PRODUCT.md`](PRODUCT.md) sits at the repository root, where the impeccable skill reads it, and
-so would its `DESIGN.md` and `.impeccable/` once written, and hallmark's `.hallmark/` cache and
-build log. They are not published. They hold
+[`PRODUCT.md`](PRODUCT.md) sits at the repository root, where the impeccable skill reads it, with
+its [`DESIGN.md`](DESIGN.md) (the home page's visual system) and `.impeccable/design.json`, and
+so would hallmark's `.hallmark/` cache and build log. They are not published. They hold
 product truth and the visual system only: decisions still go in ADRs, and design documents in
 `content/docs/documentation/`. Keep `PRODUCT.md` a snapshot, like any living document.
 
@@ -457,9 +471,11 @@ adopts a host, analytics, CI or an authentication provider adds its own checks**
 ├── .claude/agent-skills/  # trusted, pinned agent skills — start at INDEX.md (§12, ADR-0009); not published
 ├── README.md            # project overview and getting started
 ├── PRODUCT.md           # product truth for UI work (impeccable reads it); not published (§8)
+├── DESIGN.md            # the home page's visual system, with .impeccable/design.json; not published (§8)
 ├── PROJECT_AGENTS.md    # guide for repositories that include this one as a git submodule (§1)
 ├── content/docs/        # PUBLISHED — every page readers see
 │   ├── index.mdx, test.mdx  # scaffold placeholders
+│   ├── <project-slug>/  # one catalogue entry per package or project: meta.json `catalog`, use/, maintain/ (ADR-0013)
 │   └── documentation/   # the "Documentation" project (root folder): this site's own docs
 │       ├── meta.json    # title, root: true, page order
 │       ├── index.mdx    # documentation map — what lives where
@@ -476,11 +492,13 @@ adopts a host, analytics, CI or an authentication provider adds its own checks**
 │       ├── rbac/        # access matrices (public vs private documentation)
 │       └── security/    # threat model, data classification, secrets, audit checklist
 ├── src/
-│   ├── proxy.ts         # serves /docs/<page>.md, and Markdown when the request prefers it
-│   ├── app/             # App Router: (home)/, docs/[[...slug]]/, llms.txt, llms-full.txt,
-│   │                    #   llms.mdx/docs/, og/docs/, static.json
-│   ├── components/      # mdx.tsx (MDX components), search.tsx (Algolia search dialog)
-│   └── lib/             # source.ts (content loader), shared.ts (site name, routes, GitHub), layout.shared.tsx
+│   ├── proxy.ts         # line redirects (use/latest, removed lines), then /docs/<page>.md and Markdown negotiation
+│   ├── app/             # App Router: (home)/ (home page, home.css), docs/[[...slug]]/, llms.txt,
+│   │                    #   llms-full.txt, llms.mdx/docs/, og/docs/, static.json
+│   ├── components/      # mdx.tsx, search.tsx (search dialog), docs/ (track switch, version notice),
+│   │                    #   home/ (orbit map, hero search, catalogue, previews, terminal)
+│   └── lib/             # source.ts (content loader), catalog*.ts (catalogue schema, checks, entries, redirects),
+│                        #   search-scope.ts, algolia.ts, shared.ts (site name, routes, GitHub), layout.shared.tsx
 ├── scripts/
 │   └── sync-content.ts  # after next build: pushes static.json records to Algolia
 ├── next.config.mjs      # Fumadocs MDX plugin

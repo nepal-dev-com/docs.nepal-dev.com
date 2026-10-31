@@ -1,0 +1,75 @@
+---
+title: "PRD — home page and catalogue"
+---
+
+- **Status:** Current
+- **Last updated:** 2026-10-31
+- **Related ADRs:** [ADR-0014](../adr/ADR-0014-home-page-is-a-search-first-release-map.mdx),
+  [ADR-0013](../adr/ADR-0013-packages-and-projects-share-one-catalogue-shape.mdx)
+
+> Snapshot of the system as it stands today. Edit in place; never record what changed.
+
+## Problem
+
+The site's root shows the scaffold's "Hello World". A developer arriving from a registry or a
+README has no way to see what is documented, which version a page covers, or whether a package
+has a demo, short of guessing URLs or searching. A maintainer has nowhere to find a package's
+release or contribution notes. A visitor curious about the owner's work sees nothing of it.
+
+## Goal
+
+- From `/`, a reader reaches any public page in two interactions or fewer: type, then choose.
+- The first screen shows the shape of the whole collection: ecosystems, packages, projects,
+  version lines, and what is unreleased.
+- Every catalogue row shows the latest released version, and any unreleased `next` version, as
+  read from the content.
+- Every package and project has a Use track, and can have a Maintain track, reachable from the
+  home page and its overview.
+- Nothing about a private project is visible to a signed-out visitor, anywhere on the page.
+
+## Non-goals
+
+- Sign-in and private projects: a later ADR (WorkOS).
+- Documentation page design: its own ADR.
+- Usage figures, download counts, testimonials: none are on hand, and none are invented
+  (`PRODUCT.md`).
+
+## User stories
+
+| # | Story | Acceptance criteria |
+|---|---|---|
+| US-1 | As a **package user**, I want **to search for a package or page from the first screen**, so that **I reach its docs without guessing a URL**. | - The search field is in the hero and takes focus on `⌘K`, `Ctrl K` or `/`.<br />- Typing shows matching pages, each tagged with its line and version or `maintain`.<br />- Arrow keys and Enter open a result; Escape closes the list.<br />- With no query, the list offers each package's first Use page. |
+| US-2 | As a **package user**, I want **to narrow the search by ecosystem or by unreleased versions**, so that **I see only what applies to me**. | - Typing `npm`, `composer`, `pypi`, `go`, `cargo`, `projects`, `maintain` or `next` and a space turns the word into a chip.<br />- Each chip has a remove button; Backspace in an empty field removes the last chip.<br />- The results, the map and the catalogue all apply the chips. |
+| US-3 | As a **package user**, I want **to see which version is documented**, so that **I know the docs match what I installed**. | - Each catalogue row shows the `latest` line's exact version.<br />- A package with a `next` line also shows `next <version>` on a dashed tag.<br />- An unreleased package shows "unreleased".<br />- The map draws one moon per line, unreleased ones outlined on a dashed orbit. |
+| US-4 | As a **developer evaluating a package**, I want **to try a demo**, so that **I can judge it before installing**. | - Catalogue rows link to the latest line's `demo` page when it has one.<br />- A demo that runs on the page, and a demo section on the home page, wait for ADR-0011's sandboxed embed. |
+| US-5 | As a **maintainer**, I want **to reach a package's Maintain track**, so that **I find the release and contribution notes**. | - Every catalogue row links to Maintain when the track exists.<br />- The `maintain` chip limits results to Maintain pages.<br />- The home page shows what each track holds. |
+| US-6 | As a **project stakeholder**, I want **to find a public project**, so that **I can read its documentation**. | - Projects appear in the catalogue with an outlined dot and their status, and on the map's outer ring.<br />- The `projects` chip lists only projects. |
+| US-7 | As a **signed-out visitor**, I must **see nothing of private projects**, so that **no private name or count leaks**. | - No private name, count, map body, lock icon or placeholder appears on the page, in its HTML, in its data or in search suggestions. |
+| US-8 | As an **AI tool or agent**, I want **a machine-readable list of the docs**, so that **I can read them without the site**. | - "Read it anywhere" links to `/llms.txt`, `/llms-full.txt` and explains per-page `.md`.<br />- `llms.txt` lists every package and project. |
+| US-9 | As a **reader who prefers less motion or uses a keyboard or screen reader**, I want **the same information without the animation**, so that **the page works for me**. | - Under reduced motion the map is still, the placeholder doesn't type and nothing enters or draws.<br />- The catalogue holds everything the map shows, as text.<br />- Every control is reachable and visible on focus. |
+
+## Rules and edge cases
+
+- Entries come only from content folders with a valid `catalog` (ADR-0013); the
+  Documentation project is not listed.
+- Counts are computed from the same entries: public packages and public projects.
+- An ecosystem with no packages has no ring on the map. With no public entries at all, the map
+  draws faint default rings (npm, Composer, PyPI, Go, projects) with no bodies, and the catalogue
+  shows "No packages or projects yet".
+- Only the listed filter words become chips (`php`, `python`, `rust` and `unreleased` are aliases);
+  anything else is free text.
+- If Algolia is unreachable, page results show a notice and the chips keep filtering the map and
+  the catalogue.
+- More than 40 entries: grouping in the catalogue, decided in its own ADR.
+- The version rails show featured packages with two or more lines. The tracks preview shows the
+  first entry that has both tracks.
+
+## Out of scope for now
+
+- Sign-in and the signed-in view of private projects: waiting for the private-documentation ADR.
+- A changelog or "recent releases" feed: no release data source is decided.
+- Open Graph image for the home page: the existing OG route covers documentation pages only.
+
+## Open questions
+
+- None open in this document; see ADR-0013 and ADR-0014 for the decisions still to confirm.

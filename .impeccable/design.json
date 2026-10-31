@@ -1,0 +1,788 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-10-31T14:04:34+00:00",
+  "title": "Design System: Puncoz Docs",
+  "extensions": {
+    "scope": "Home page only: tokens on .home (light) and .dark .home (dark) in src/app/global.css as --home-*; component styles in src/app/(home)/home.css. Documentation pages use Fumadocs' neutral theme with Inter. CSS variables in component snippets resolve only inside the .home scope.",
+    "colorMeta": {
+      "signal-teal": {
+        "role": "primary",
+        "displayName": "Signal Teal (dark)",
+        "tonalRamp": [
+          "oklch(15% 0.064 175)",
+          "oklch(25% 0.087 175)",
+          "oklch(36% 0.109 175)",
+          "oklch(48% 0.129 175)",
+          "oklch(60% 0.132 175)",
+          "oklch(72% 0.112 175)",
+          "oklch(84% 0.089 175)",
+          "oklch(95% 0.064 175)"
+        ]
+      },
+      "signal-teal-light": {
+        "role": "primary",
+        "displayName": "Signal Teal (light)",
+        "tonalRamp": [
+          "oklch(15% 0.064 175)",
+          "oklch(25% 0.087 175)",
+          "oklch(36% 0.109 175)",
+          "oklch(48% 0.129 175)",
+          "oklch(60% 0.132 175)",
+          "oklch(72% 0.112 175)",
+          "oklch(84% 0.089 175)",
+          "oklch(95% 0.064 175)"
+        ]
+      },
+      "signal-teal-soft": {
+        "role": "primary",
+        "displayName": "Teal Wash (dark)",
+        "tonalRamp": [
+          "oklch(15% 0.064 175)",
+          "oklch(25% 0.087 175)",
+          "oklch(36% 0.109 175)",
+          "oklch(48% 0.129 175)",
+          "oklch(60% 0.132 175)",
+          "oklch(72% 0.112 175)",
+          "oklch(84% 0.089 175)",
+          "oklch(95% 0.064 175)"
+        ]
+      },
+      "signal-teal-soft-light": {
+        "role": "primary",
+        "displayName": "Teal Wash (light)",
+        "tonalRamp": [
+          "oklch(15% 0.064 175)",
+          "oklch(25% 0.087 175)",
+          "oklch(36% 0.109 175)",
+          "oklch(48% 0.129 175)",
+          "oklch(60% 0.132 175)",
+          "oklch(72% 0.112 175)",
+          "oklch(84% 0.089 175)",
+          "oklch(95% 0.064 175)"
+        ]
+      },
+      "signal-teal-ink": {
+        "role": "primary",
+        "displayName": "Teal Ink (dark)",
+        "tonalRamp": [
+          "oklch(15% 0.018 175)",
+          "oklch(25% 0.025 175)",
+          "oklch(36% 0.031 175)",
+          "oklch(48% 0.037 175)",
+          "oklch(60% 0.038 175)",
+          "oklch(72% 0.032 175)",
+          "oklch(84% 0.026 175)",
+          "oklch(95% 0.018 175)"
+        ]
+      },
+      "signal-teal-ink-light": {
+        "role": "primary",
+        "displayName": "Teal Ink (light)",
+        "tonalRamp": [
+          "oklch(15% 0.018 175)",
+          "oklch(25% 0.025 175)",
+          "oklch(36% 0.031 175)",
+          "oklch(48% 0.037 175)",
+          "oklch(60% 0.038 175)",
+          "oklch(72% 0.032 175)",
+          "oklch(84% 0.026 175)",
+          "oklch(95% 0.018 175)"
+        ]
+      },
+      "eco-npm": {
+        "role": "secondary",
+        "displayName": "npm Coral (dark)",
+        "tonalRamp": [
+          "oklch(15% 0.078 28)",
+          "oklch(25% 0.106 28)",
+          "oklch(36% 0.132 28)",
+          "oklch(48% 0.157 28)",
+          "oklch(60% 0.161 28)",
+          "oklch(72% 0.136 28)",
+          "oklch(84% 0.108 28)",
+          "oklch(95% 0.078 28)"
+        ]
+      },
+      "eco-npm-light": {
+        "role": "secondary",
+        "displayName": "npm Coral (light)",
+        "tonalRamp": [
+          "oklch(15% 0.078 28)",
+          "oklch(25% 0.106 28)",
+          "oklch(36% 0.132 28)",
+          "oklch(48% 0.157 28)",
+          "oklch(60% 0.161 28)",
+          "oklch(72% 0.136 28)",
+          "oklch(84% 0.108 28)",
+          "oklch(95% 0.078 28)"
+        ]
+      },
+      "eco-composer": {
+        "role": "secondary",
+        "displayName": "Composer Violet (dark)",
+        "tonalRamp": [
+          "oklch(15% 0.078 285)",
+          "oklch(25% 0.106 285)",
+          "oklch(36% 0.132 285)",
+          "oklch(48% 0.157 285)",
+          "oklch(60% 0.161 285)",
+          "oklch(72% 0.136 285)",
+          "oklch(84% 0.108 285)",
+          "oklch(95% 0.078 285)"
+        ]
+      },
+      "eco-composer-light": {
+        "role": "secondary",
+        "displayName": "Composer Violet (light)",
+        "tonalRamp": [
+          "oklch(15% 0.078 285)",
+          "oklch(25% 0.106 285)",
+          "oklch(36% 0.132 285)",
+          "oklch(48% 0.157 285)",
+          "oklch(60% 0.161 285)",
+          "oklch(72% 0.136 285)",
+          "oklch(84% 0.108 285)",
+          "oklch(95% 0.078 285)"
+        ]
+      },
+      "eco-pypi": {
+        "role": "secondary",
+        "displayName": "PyPI Gold (dark)",
+        "tonalRamp": [
+          "oklch(15% 0.069 85)",
+          "oklch(25% 0.093 85)",
+          "oklch(36% 0.116 85)",
+          "oklch(48% 0.138 85)",
+          "oklch(60% 0.142 85)",
+          "oklch(72% 0.120 85)",
+          "oklch(84% 0.096 85)",
+          "oklch(95% 0.069 85)"
+        ]
+      },
+      "eco-pypi-light": {
+        "role": "secondary",
+        "displayName": "PyPI Gold (light)",
+        "tonalRamp": [
+          "oklch(15% 0.069 85)",
+          "oklch(25% 0.093 85)",
+          "oklch(36% 0.116 85)",
+          "oklch(48% 0.138 85)",
+          "oklch(60% 0.142 85)",
+          "oklch(72% 0.120 85)",
+          "oklch(84% 0.096 85)",
+          "oklch(95% 0.069 85)"
+        ]
+      },
+      "eco-go": {
+        "role": "secondary",
+        "displayName": "Go Cyan (dark)",
+        "tonalRamp": [
+          "oklch(15% 0.055 225)",
+          "oklch(25% 0.075 225)",
+          "oklch(36% 0.093 225)",
+          "oklch(48% 0.111 225)",
+          "oklch(60% 0.113 225)",
+          "oklch(72% 0.096 225)",
+          "oklch(84% 0.077 225)",
+          "oklch(95% 0.055 225)"
+        ]
+      },
+      "eco-go-light": {
+        "role": "secondary",
+        "displayName": "Go Cyan (light)",
+        "tonalRamp": [
+          "oklch(15% 0.055 225)",
+          "oklch(25% 0.075 225)",
+          "oklch(36% 0.093 225)",
+          "oklch(48% 0.111 225)",
+          "oklch(60% 0.113 225)",
+          "oklch(72% 0.096 225)",
+          "oklch(84% 0.077 225)",
+          "oklch(95% 0.055 225)"
+        ]
+      },
+      "eco-cargo": {
+        "role": "secondary",
+        "displayName": "Cargo Amber (dark)",
+        "tonalRamp": [
+          "oklch(15% 0.060 55)",
+          "oklch(25% 0.081 55)",
+          "oklch(36% 0.101 55)",
+          "oklch(48% 0.120 55)",
+          "oklch(60% 0.123 55)",
+          "oklch(72% 0.104 55)",
+          "oklch(84% 0.083 55)",
+          "oklch(95% 0.060 55)"
+        ]
+      },
+      "eco-cargo-light": {
+        "role": "secondary",
+        "displayName": "Cargo Amber (light)",
+        "tonalRamp": [
+          "oklch(15% 0.060 55)",
+          "oklch(25% 0.081 55)",
+          "oklch(36% 0.101 55)",
+          "oklch(48% 0.120 55)",
+          "oklch(60% 0.123 55)",
+          "oklch(72% 0.104 55)",
+          "oklch(84% 0.083 55)",
+          "oklch(95% 0.060 55)"
+        ]
+      },
+      "graphite-ground": {
+        "role": "neutral",
+        "displayName": "Graphite Ground (dark)",
+        "tonalRamp": [
+          "oklch(15% 0.007 265)",
+          "oklch(25% 0.009 265)",
+          "oklch(36% 0.012 265)",
+          "oklch(48% 0.014 265)",
+          "oklch(60% 0.014 265)",
+          "oklch(72% 0.012 265)",
+          "oklch(84% 0.010 265)",
+          "oklch(95% 0.007 265)"
+        ]
+      },
+      "graphite-ground-light": {
+        "role": "neutral",
+        "displayName": "Graphite Ground (light)",
+        "tonalRamp": [
+          "oklch(15% 0.007 265)",
+          "oklch(25% 0.009 265)",
+          "oklch(36% 0.012 265)",
+          "oklch(48% 0.014 265)",
+          "oklch(60% 0.014 265)",
+          "oklch(72% 0.012 265)",
+          "oklch(84% 0.010 265)",
+          "oklch(95% 0.007 265)"
+        ]
+      },
+      "graphite-ground-2": {
+        "role": "neutral",
+        "displayName": "Graphite Ground 2 (dark)",
+        "tonalRamp": [
+          "oklch(15% 0.007 265)",
+          "oklch(25% 0.009 265)",
+          "oklch(36% 0.012 265)",
+          "oklch(48% 0.014 265)",
+          "oklch(60% 0.014 265)",
+          "oklch(72% 0.012 265)",
+          "oklch(84% 0.010 265)",
+          "oklch(95% 0.007 265)"
+        ]
+      },
+      "graphite-ground-2-light": {
+        "role": "neutral",
+        "displayName": "Graphite Ground 2 (light)",
+        "tonalRamp": [
+          "oklch(15% 0.007 265)",
+          "oklch(25% 0.009 265)",
+          "oklch(36% 0.012 265)",
+          "oklch(48% 0.014 265)",
+          "oklch(60% 0.014 265)",
+          "oklch(72% 0.012 265)",
+          "oklch(84% 0.010 265)",
+          "oklch(95% 0.007 265)"
+        ]
+      },
+      "graphite-panel": {
+        "role": "neutral",
+        "displayName": "Graphite Panel (dark)",
+        "tonalRamp": [
+          "oklch(15% 0.009 265)",
+          "oklch(25% 0.012 265)",
+          "oklch(36% 0.016 265)",
+          "oklch(48% 0.018 265)",
+          "oklch(60% 0.019 265)",
+          "oklch(72% 0.016 265)",
+          "oklch(84% 0.013 265)",
+          "oklch(95% 0.009 265)"
+        ]
+      },
+      "graphite-panel-light": {
+        "role": "neutral",
+        "displayName": "Graphite Panel (light)",
+        "tonalRamp": [
+          "oklch(15% 0.009 265)",
+          "oklch(25% 0.012 265)",
+          "oklch(36% 0.016 265)",
+          "oklch(48% 0.018 265)",
+          "oklch(60% 0.019 265)",
+          "oklch(72% 0.016 265)",
+          "oklch(84% 0.013 265)",
+          "oklch(95% 0.009 265)"
+        ]
+      },
+      "graphite-panel-2": {
+        "role": "neutral",
+        "displayName": "Graphite Panel 2 (dark)",
+        "tonalRamp": [
+          "oklch(15% 0.009 265)",
+          "oklch(25% 0.012 265)",
+          "oklch(36% 0.016 265)",
+          "oklch(48% 0.018 265)",
+          "oklch(60% 0.019 265)",
+          "oklch(72% 0.016 265)",
+          "oklch(84% 0.013 265)",
+          "oklch(95% 0.009 265)"
+        ]
+      },
+      "graphite-panel-2-light": {
+        "role": "neutral",
+        "displayName": "Graphite Panel 2 (light)",
+        "tonalRamp": [
+          "oklch(15% 0.009 265)",
+          "oklch(25% 0.012 265)",
+          "oklch(36% 0.016 265)",
+          "oklch(48% 0.018 265)",
+          "oklch(60% 0.019 265)",
+          "oklch(72% 0.016 265)",
+          "oklch(84% 0.013 265)",
+          "oklch(95% 0.009 265)"
+        ]
+      },
+      "graphite-line": {
+        "role": "neutral",
+        "displayName": "Graphite Line (dark)",
+        "tonalRamp": [
+          "oklch(15% 0.011 265)",
+          "oklch(25% 0.016 265)",
+          "oklch(36% 0.019 265)",
+          "oklch(48% 0.023 265)",
+          "oklch(60% 0.024 265)",
+          "oklch(72% 0.020 265)",
+          "oklch(84% 0.016 265)",
+          "oklch(95% 0.011 265)"
+        ]
+      },
+      "graphite-line-light": {
+        "role": "neutral",
+        "displayName": "Graphite Line (light)",
+        "tonalRamp": [
+          "oklch(15% 0.011 265)",
+          "oklch(25% 0.016 265)",
+          "oklch(36% 0.019 265)",
+          "oklch(48% 0.023 265)",
+          "oklch(60% 0.024 265)",
+          "oklch(72% 0.020 265)",
+          "oklch(84% 0.016 265)",
+          "oklch(95% 0.011 265)"
+        ]
+      },
+      "graphite-line-2": {
+        "role": "neutral",
+        "displayName": "Graphite Line 2 (dark)",
+        "tonalRamp": [
+          "oklch(15% 0.011 265)",
+          "oklch(25% 0.016 265)",
+          "oklch(36% 0.019 265)",
+          "oklch(48% 0.023 265)",
+          "oklch(60% 0.024 265)",
+          "oklch(72% 0.020 265)",
+          "oklch(84% 0.016 265)",
+          "oklch(95% 0.011 265)"
+        ]
+      },
+      "graphite-line-2-light": {
+        "role": "neutral",
+        "displayName": "Graphite Line 2 (light)",
+        "tonalRamp": [
+          "oklch(15% 0.011 265)",
+          "oklch(25% 0.016 265)",
+          "oklch(36% 0.019 265)",
+          "oklch(48% 0.023 265)",
+          "oklch(60% 0.024 265)",
+          "oklch(72% 0.020 265)",
+          "oklch(84% 0.016 265)",
+          "oklch(95% 0.011 265)"
+        ]
+      },
+      "frost-ink": {
+        "role": "neutral",
+        "displayName": "Frost Ink (dark)",
+        "tonalRamp": [
+          "oklch(15% 0.005 265)",
+          "oklch(25% 0.006 265)",
+          "oklch(36% 0.008 265)",
+          "oklch(48% 0.009 265)",
+          "oklch(60% 0.009 265)",
+          "oklch(72% 0.008 265)",
+          "oklch(84% 0.006 265)",
+          "oklch(95% 0.005 265)"
+        ]
+      },
+      "frost-ink-light": {
+        "role": "neutral",
+        "displayName": "Frost Ink (light)",
+        "tonalRamp": [
+          "oklch(15% 0.005 265)",
+          "oklch(25% 0.006 265)",
+          "oklch(36% 0.008 265)",
+          "oklch(48% 0.009 265)",
+          "oklch(60% 0.009 265)",
+          "oklch(72% 0.008 265)",
+          "oklch(84% 0.006 265)",
+          "oklch(95% 0.005 265)"
+        ]
+      },
+      "steel-muted": {
+        "role": "neutral",
+        "displayName": "Steel Muted (dark)",
+        "tonalRamp": [
+          "oklch(15% 0.014 265)",
+          "oklch(25% 0.019 265)",
+          "oklch(36% 0.023 265)",
+          "oklch(48% 0.028 265)",
+          "oklch(60% 0.028 265)",
+          "oklch(72% 0.024 265)",
+          "oklch(84% 0.019 265)",
+          "oklch(95% 0.014 265)"
+        ]
+      },
+      "steel-muted-light": {
+        "role": "neutral",
+        "displayName": "Steel Muted (light)",
+        "tonalRamp": [
+          "oklch(15% 0.014 265)",
+          "oklch(25% 0.019 265)",
+          "oklch(36% 0.023 265)",
+          "oklch(48% 0.028 265)",
+          "oklch(60% 0.028 265)",
+          "oklch(72% 0.024 265)",
+          "oklch(84% 0.019 265)",
+          "oklch(95% 0.014 265)"
+        ]
+      },
+      "steel-faint": {
+        "role": "neutral",
+        "displayName": "Steel Faint (dark)",
+        "tonalRamp": [
+          "oklch(15% 0.014 265)",
+          "oklch(25% 0.019 265)",
+          "oklch(36% 0.023 265)",
+          "oklch(48% 0.028 265)",
+          "oklch(60% 0.028 265)",
+          "oklch(72% 0.024 265)",
+          "oklch(84% 0.019 265)",
+          "oklch(95% 0.014 265)"
+        ]
+      },
+      "steel-faint-light": {
+        "role": "neutral",
+        "displayName": "Steel Faint (light)",
+        "tonalRamp": [
+          "oklch(15% 0.014 265)",
+          "oklch(25% 0.019 265)",
+          "oklch(36% 0.023 265)",
+          "oklch(48% 0.028 265)",
+          "oklch(60% 0.028 265)",
+          "oklch(72% 0.024 265)",
+          "oklch(84% 0.019 265)",
+          "oklch(95% 0.014 265)"
+        ]
+      },
+      "shadow": {
+        "role": "neutral",
+        "displayName": "Shadow (dark)",
+        "tonalRamp": [
+          "oklch(15% 0.000 265)",
+          "oklch(25% 0.000 265)",
+          "oklch(36% 0.000 265)",
+          "oklch(48% 0.000 265)",
+          "oklch(60% 0.000 265)",
+          "oklch(72% 0.000 265)",
+          "oklch(84% 0.000 265)",
+          "oklch(95% 0.000 265)"
+        ]
+      },
+      "shadow-light": {
+        "role": "neutral",
+        "displayName": "Shadow (light)",
+        "tonalRamp": [
+          "oklch(15% 0.000 265)",
+          "oklch(25% 0.000 265)",
+          "oklch(36% 0.000 265)",
+          "oklch(48% 0.000 265)",
+          "oklch(60% 0.000 265)",
+          "oklch(72% 0.000 265)",
+          "oklch(84% 0.000 265)",
+          "oklch(95% 0.000 265)"
+        ]
+      }
+    },
+    "typographyMeta": {
+      "display": {
+        "displayName": "Display",
+        "purpose": "Hero headline only."
+      },
+      "headline": {
+        "displayName": "Headline",
+        "purpose": "Section headings."
+      },
+      "title": {
+        "displayName": "Title",
+        "purpose": "Page title inside a preview window."
+      },
+      "wordmark": {
+        "displayName": "Wordmark",
+        "purpose": "Brand name in the header."
+      },
+      "lead": {
+        "displayName": "Lead",
+        "purpose": "Hero subline."
+      },
+      "body": {
+        "displayName": "Body",
+        "purpose": "Base reading text and section ledes."
+      },
+      "body-sm": {
+        "displayName": "Body small",
+        "purpose": "Row descriptions, preview bodies, nav."
+      },
+      "label": {
+        "displayName": "Label",
+        "purpose": "Legend, result group labels, footer hints."
+      },
+      "search-input": {
+        "displayName": "Search input",
+        "purpose": "The hero search field; 16px under 860px."
+      },
+      "data": {
+        "displayName": "Data",
+        "purpose": "Package names; JetBrains Mono for data only."
+      },
+      "data-sm": {
+        "displayName": "Data small",
+        "purpose": "Tags, chips, suggestions, keys, version labels."
+      }
+    },
+    "shadows": [
+      {
+        "name": "search-lift",
+        "value": "0 22px 60px -22px var(--home-shadow), 0 2px 6px var(--home-shadow-near)",
+        "purpose": "Search field at rest."
+      },
+      {
+        "name": "search-focus",
+        "value": "0 24px 70px -20px var(--home-shadow), 0 0 0 4px var(--home-accent-soft)",
+        "purpose": "Search field while focused."
+      },
+      {
+        "name": "dropdown",
+        "value": "0 30px 80px -20px var(--home-shadow)",
+        "purpose": "Results list."
+      },
+      {
+        "name": "window",
+        "value": "0 30px 80px -30px var(--home-shadow)",
+        "purpose": "Preview and terminal windows."
+      },
+      {
+        "name": "tooltip",
+        "value": "0 18px 40px -16px var(--home-shadow)",
+        "purpose": "Orbit tooltip."
+      },
+      {
+        "name": "knob",
+        "value": "0 2px 8px var(--home-shadow)",
+        "purpose": "Segmented control knob."
+      }
+    ],
+    "motion": [
+      {
+        "name": "home-ease",
+        "value": "cubic-bezier(0.16, 1, 0.3, 1)",
+        "purpose": "The single ease for every transition on the page."
+      },
+      {
+        "name": "orbit",
+        "value": "inner ring ~100s per revolution; 15% speed under pointer",
+        "purpose": "The one authored, continuous moment; paused off-screen, static under reduced motion."
+      },
+      {
+        "name": "reveal",
+        "value": "0.8s rise 18px + blur 4px to 0, once",
+        "purpose": "Section parts entering; only after scripts run; none under reduced motion."
+      },
+      {
+        "name": "rail-draw",
+        "value": "1.6s stroke-dashoffset, once",
+        "purpose": "Released span of a version rail."
+      },
+      {
+        "name": "track-crossfade",
+        "value": "0.3s opacity and 6px blur, 0.45s 8px rise",
+        "purpose": "Track preview body switch."
+      },
+      {
+        "name": "knob-slide",
+        "value": "0.45s transform",
+        "purpose": "Segmented control knob."
+      },
+      {
+        "name": "chip-pop",
+        "value": "0.35s scale 0.8 to 1",
+        "purpose": "Search chip arrival."
+      },
+      {
+        "name": "dropdown",
+        "value": "0.2s opacity, 0.3s 6px settle",
+        "purpose": "Results list opening."
+      }
+    ],
+    "breakpoints": [
+      {
+        "name": "single-column",
+        "value": "860px",
+        "purpose": "At or below: one column, header nav, keyboard hints and map legend hidden."
+      }
+    ]
+  },
+  "components": [
+    {
+      "name": "Search field",
+      "kind": "input",
+      "refersTo": "search-bar",
+      "description": "The hero's one control: a large raised field with chips, focus halo and keyboard hints.",
+      "html": "<label class=\"ds-bar\"><svg class=\"ds-bar-icon\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\"><circle cx=\"11\" cy=\"11\" r=\"7\"/><path d=\"m20 20-3.5-3.5\"/></svg><span class=\"ds-chip\">npm<button aria-label=\"Remove npm\"><svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\"><path d=\"M18 6 6 18M6 6l12 12\"/></svg></button></span><input type=\"search\" placeholder=\"Search packages, projects and pages\"><kbd class=\"ds-kbd\">/</kbd></label>",
+      "css": ".ds-bar{display:flex;align-items:center;gap:10px;min-height:64px;padding:8px 14px 8px 20px;background:var(--home-panel);border:1px solid var(--home-line-2);border-radius:14px;box-shadow:0 22px 60px -22px var(--home-shadow),0 2px 6px rgb(0 0 0 / .12);cursor:text;transition:border-color .2s,box-shadow .3s var(--home-ease)}.ds-bar:focus-within{border-color:var(--home-accent);box-shadow:0 24px 70px -20px var(--home-shadow),0 0 0 4px var(--home-accent-soft)}.ds-bar-icon{width:18px;height:18px;color:var(--home-muted)}.ds-bar input{flex:1;min-width:140px;height:44px;font:400 18px var(--home-font-text);color:var(--home-ink);background:none;border:0;outline:0}.ds-bar input::placeholder{color:var(--home-faint)}.ds-chip{display:inline-flex;align-items:center;gap:6px;padding:4px 4px 4px 9px;font:500 13px var(--home-font-data);color:var(--home-ink);background:var(--home-accent-soft);border:1px solid color-mix(in srgb,var(--home-accent) 45%,transparent);border-radius:8px}.ds-chip button{display:grid;place-items:center;width:20px;height:20px;padding:0;color:var(--home-muted);background:none;border:0;border-radius:5px;cursor:pointer}.ds-chip button:hover{color:var(--home-ink)}.ds-chip svg{width:13px;height:13px}.ds-kbd{padding:2px 7px;font:12px var(--home-font-data);color:var(--home-muted);background:var(--home-bg-2);border:1px solid var(--home-line-2);border-bottom-width:2px;border-radius:6px}"
+    },
+    {
+      "name": "Try suggestion",
+      "kind": "chip",
+      "refersTo": "try-suggestion",
+      "description": "A real query offered under the search field.",
+      "html": "<button class=\"ds-try\">install</button>",
+      "css": ".ds-try{padding:5px 10px;font:500 13px var(--home-font-data);color:var(--home-muted);background:var(--home-bg-2);border:1px solid var(--home-line);border-radius:8px;cursor:pointer;transition:color .2s,border-color .2s,transform .2s var(--home-ease)}.ds-try:hover{color:var(--home-ink);border-color:var(--home-line-2);transform:translateY(-1px)}.ds-try:focus-visible{outline:2px solid var(--home-accent);outline-offset:2px}"
+    },
+    {
+      "name": "Tag",
+      "kind": "chip",
+      "refersTo": "tag",
+      "description": "Version and kind labels; dashed for an unreleased next line.",
+      "html": "<span class=\"ds-tag\">v2.4.1</span> <span class=\"ds-tag ds-next\">next 3.0.0-beta.2</span> <span class=\"ds-tag ds-accent\">latest</span>",
+      "css": ".ds-tag{font:12px var(--home-font-data);color:var(--home-muted);border:1px solid var(--home-line);border-radius:6px;padding:2px 6px;white-space:nowrap}.ds-next{border-style:dashed}.ds-accent{color:var(--home-accent);border-color:color-mix(in srgb,var(--home-accent) 40%,transparent)}"
+    },
+    {
+      "name": "Ghost button",
+      "kind": "button",
+      "refersTo": "button-ghost",
+      "description": "Quiet bordered button, used for GitHub in the header.",
+      "html": "<a class=\"ds-ghost\" href=\"#\"><svg viewBox=\"0 0 24 24\"><path d=\"M15 22v-4a4.8 4.8 0 0 0-1-3.5c3 0 6-2 6-5.5.08-1.25-.27-2.48-1-3.5.28-1.15.28-2.35 0-3.5 0 0-1 0-3 1.5-2.64-.5-5.36-.5-8 0C6 2 5 2 5 2c-.3 1.15-.3 2.35 0 3.5A5.4 5.4 0 0 0 4 9c0 3.5 3 5.5 6 5.5-.39.49-.68 1.05-.85 1.65-.17.6-.22 1.23-.15 1.85v4\"/></svg>GitHub</a>",
+      "css": ".ds-ghost{display:inline-flex;align-items:center;gap:8px;font:14px var(--home-font-text);color:var(--home-muted);padding:6px 10px;border:1px solid var(--home-line);border-radius:8px;text-decoration:none;transition:color .2s,border-color .2s}.ds-ghost:hover{color:var(--home-ink);border-color:var(--home-line-2)}.ds-ghost:focus-visible{outline:2px solid var(--home-accent);outline-offset:2px}.ds-ghost svg{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:1.75;stroke-linecap:round;stroke-linejoin:round}"
+    },
+    {
+      "name": "Segmented control",
+      "kind": "custom",
+      "refersTo": "segmented-control",
+      "description": "Two-option track switch with a sliding knob (Use / Maintain).",
+      "html": "<div class=\"ds-seg\" role=\"tablist\"><button role=\"tab\" aria-selected=\"true\">Use</button><button role=\"tab\" aria-selected=\"false\">Maintain</button><span class=\"ds-knob\"></span></div>",
+      "css": ".ds-seg{position:relative;display:inline-grid;grid-template-columns:1fr 1fr;padding:4px;background:var(--home-bg-2);border:1px solid var(--home-line);border-radius:12px}.ds-seg button{position:relative;z-index:1;padding:10px 22px;font:500 15px var(--home-font-text);color:var(--home-muted);background:none;border:0;cursor:pointer}.ds-seg button[aria-selected=true]{color:var(--home-ink)}.ds-seg button:hover{color:var(--home-ink)}.ds-seg button:focus-visible{outline:2px solid var(--home-accent);outline-offset:2px;border-radius:6px}.ds-knob{position:absolute;top:4px;bottom:4px;left:4px;width:calc(50% - 4px);background:var(--home-panel);border-radius:9px;box-shadow:0 2px 8px var(--home-shadow);transition:transform .45s var(--home-ease)}"
+    },
+    {
+      "name": "Catalogue row",
+      "kind": "custom",
+      "refersTo": "catalogue-item",
+      "description": "Ruled list row: ecosystem dot, mono package name, description, version tags.",
+      "html": "<div class=\"ds-item\"><span class=\"ds-dot\"></span><div><h3><a href=\"#\">fetch-retry</a></h3><p>Retries failed fetch requests with backoff.</p></div><div class=\"ds-versions\"><span class=\"ds-tag\">v2.4.1</span><span class=\"ds-tag ds-next\">next 3.0.0</span></div></div>",
+      "css": ".ds-item{display:grid;grid-template-columns:auto 1fr auto;align-items:start;gap:14px;padding:18px 4px;border-top:1px solid var(--home-line);border-bottom:1px solid var(--home-line);transition:background .25s}.ds-item:hover{background:linear-gradient(90deg,var(--home-bg-2),transparent)}.ds-dot{width:10px;height:10px;margin-top:8px;border-radius:50%;background:var(--home-npm)}.ds-item h3{margin:0;font:500 16px var(--home-font-data);letter-spacing:-.01em;color:var(--home-ink)}.ds-item a{color:inherit;text-decoration:none}.ds-item a:hover{color:var(--home-accent)}.ds-item a:focus-visible{outline:2px solid var(--home-accent);outline-offset:2px}.ds-item p{margin:2px 0 0;font:14px var(--home-font-text);color:var(--home-muted)}.ds-versions{display:flex;flex-direction:column;align-items:end;gap:6px}.ds-tag{font:12px var(--home-font-data);color:var(--home-muted);border:1px solid var(--home-line);border-radius:6px;padding:2px 6px}.ds-next{border-style:dashed}"
+    },
+    {
+      "name": "Result row",
+      "kind": "custom",
+      "refersTo": "result-row",
+      "description": "A search result in the dropdown; selected row on panel-2, matches in teal.",
+      "html": "<div class=\"ds-results\"><p class=\"ds-group\">Pages</p><div class=\"ds-result\" aria-selected=\"true\"><span class=\"ds-dot\"></span><span><span class=\"ds-title\"><mark>Install</mark>ation</span><br><span class=\"ds-pkg\">fetch-retry</span></span><span class=\"ds-tag\">v2.4.1</span></div><div class=\"ds-result\"><span class=\"ds-dot\"></span><span><span class=\"ds-title\">Configuration</span><br><span class=\"ds-pkg\">fetch-retry</span></span><span class=\"ds-tag\">v2.4.1</span></div></div>",
+      "css": ".ds-results{padding:8px;background:var(--home-panel);border:1px solid var(--home-line-2);border-radius:14px;box-shadow:0 30px 80px -20px var(--home-shadow)}.ds-group{margin:0;padding:10px 12px 4px;font:12px var(--home-font-text);color:var(--home-faint)}.ds-result{display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:12px;padding:10px 12px;border-radius:9px;cursor:pointer;color:var(--home-ink);font-family:var(--home-font-text)}.ds-result:hover,.ds-result[aria-selected=true]{background:var(--home-panel-2)}.ds-title{font-weight:500}.ds-pkg{font-size:13px;color:var(--home-muted)}.ds-result mark{color:var(--home-accent);background:none}.ds-dot{width:8px;height:8px;border-radius:50%;background:var(--home-composer)}.ds-tag{font:12px var(--home-font-data);color:var(--home-muted);border:1px solid var(--home-line);border-radius:6px;padding:2px 6px}"
+    },
+    {
+      "name": "Window",
+      "kind": "card",
+      "refersTo": "window",
+      "description": "Framed preview with a chrome bar; hosts the track preview and the terminal.",
+      "html": "<div class=\"ds-window\"><div class=\"ds-chrome\"><i></i><i></i><i></i><span>terminal</span></div><pre class=\"ds-term\"><span class=\"ds-prompt\">$ </span><span class=\"ds-cmd\">curl -s https://example.com/llms.txt | head -6</span>\n# Puncoz Docs\n<span class=\"ds-prompt\">$ </span><span class=\"ds-cursor\"></span></pre></div>",
+      "css": ".ds-window{overflow:hidden;background:var(--home-panel);border:1px solid var(--home-line-2);border-radius:14px;box-shadow:0 30px 80px -30px var(--home-shadow)}.ds-chrome{display:flex;align-items:center;gap:8px;padding:12px 14px;font:12px var(--home-font-data);color:var(--home-faint);border-bottom:1px solid var(--home-line)}.ds-chrome i{width:10px;height:10px;background:var(--home-line-2);border-radius:50%}.ds-chrome span{margin-left:10px}.ds-term{margin:0;padding:18px 20px;font:13.5px/1.75 var(--home-font-data);color:var(--home-muted);white-space:pre-wrap}.ds-prompt{color:var(--home-accent)}.ds-cmd{color:var(--home-ink)}.ds-cursor{display:inline-block;width:8px;height:16px;vertical-align:-3px;background:var(--home-accent);animation:ds-blink 1.1s steps(1) infinite}@keyframes ds-blink{50%{opacity:0}}@media (prefers-reduced-motion:reduce){.ds-cursor{animation:none}}"
+    },
+    {
+      "name": "Header",
+      "kind": "nav",
+      "description": "Sticky translucent header: brand mark and wordmark, muted links, ghost GitHub button.",
+      "html": "<header class=\"ds-header\"><a class=\"ds-brand\" href=\"#\"><span class=\"ds-mark\"></span>Puncoz Docs</a><nav><a href=\"#\">Packages</a><a href=\"#\">Projects</a><a href=\"#\">llms.txt</a></nav><span style=\"flex:1\"></span></header>",
+      "css": ".ds-header{display:flex;align-items:center;gap:28px;height:60px;padding:0 24px;background:color-mix(in srgb,var(--home-bg) 80%,transparent);backdrop-filter:saturate(1.4) blur(12px);border-bottom:1px solid var(--home-line)}.ds-brand{display:flex;align-items:center;gap:10px;font:600 17px var(--home-font-display);letter-spacing:-.01em;color:var(--home-ink);text-decoration:none}.ds-mark{position:relative;width:22px;height:22px}.ds-mark::before{content:'';position:absolute;inset:0;border:1.5px solid var(--home-ink);border-radius:50%;transform:scaleY(.45) rotate(-18deg)}.ds-mark::after{content:'';position:absolute;left:7px;top:7px;width:8px;height:8px;border-radius:50%;background:var(--home-accent)}.ds-header nav{display:flex;gap:22px;font:14px var(--home-font-text)}.ds-header nav a{color:var(--home-muted);text-decoration:none}.ds-header nav a:hover{color:var(--home-ink)}.ds-header a:focus-visible{outline:2px solid var(--home-accent);outline-offset:2px;border-radius:6px}"
+    }
+  ],
+  "narrative": {
+    "northStar": "The Release Map",
+    "overview": "The home page is a calm graphite instrument with one moving part: a slowly turning orbital map of every documented release, and a search field held in front of it. Each ecosystem is an elliptical ring, each package or project a body on it, each documented version a small moon. The search field is the page's one control, and when a reader types, the map answers: matching bodies light up and the rest dim. Everything below the hero restates the map as plain, ruled text a reader can scan and a screen reader can read.\n\nThe surface is cool, technical and quiet: near-black graphite (dark is the default theme) or cool paper in light, hairline rules instead of boxes, one teal accent, and colour reserved for the ecosystems the map is about. Density is moderate: generous section gaps, tight rows inside a list. Depth is soft and rare; only things that float (the search field, its results, preview windows, the tooltip) lift off the ground.",
+    "keyCharacteristics": [
+      "Graphite neutrals with a single signal-teal accent; ecosystem hues mark shapes, never text.",
+      "Three faces with fixed jobs: Bricolage Grotesque for display, Onest for reading and controls, JetBrains Mono for data only.",
+      "Ruled lists over cards; panels only for things that float or frame a preview.",
+      "One authored motion moment, the orbit; everything else is a short, single entrance.",
+      "Every state readable without scripts and without motion."
+    ],
+    "rules": [
+      {
+        "name": "The One Signal Rule",
+        "body": "Teal is the only accent on the page. If something needs to stand out and it is not focus, a match, the latest release or a forward link, it gets weight or size, not colour.",
+        "section": "colors"
+      },
+      {
+        "name": "The Shapes, Not Words Rule",
+        "body": "Ecosystem hues fill dots, bodies, moons and ring strokes. Text beside them is always Frost Ink or Steel Muted, and every coloured mark has a text equivalent (a legend label, or a screen-reader-only ecosystem name in the catalogue).",
+        "section": "colors"
+      },
+      {
+        "name": "The Token-Only Surface Rule",
+        "body": "The browser's own surfaces (selection, caret, scrollbar, focus ring) and the canvas read their colours from the tokens; the map re-reads them when the theme changes.",
+        "section": "colors"
+      },
+      {
+        "name": "The Data Voice Rule",
+        "body": "JetBrains Mono is for package names, versions, URLs, commands, code and counts, nothing else. Headings, buttons with words on them and prose stay in Onest or Bricolage.",
+        "section": "typography"
+      },
+      {
+        "name": "The Tight Display Rule",
+        "body": "Display and headline faces track negative (-0.04em to -0.01em, never tighter than -0.04em) and balance their lines; text faces keep default tracking.",
+        "section": "typography"
+      },
+      {
+        "name": "The Float-Only Rule",
+        "body": "A surface gets a shadow only if it sits over something (the map, the page) or frames a preview. Rows, tags, chips and link cards stay flat and separate by border or tone.",
+        "section": "elevation"
+      },
+      {
+        "name": "The Hollow and Dashed Rule",
+        "body": "Hollow means project; dashed means not released yet. Never use either for decoration.",
+        "section": "shapes"
+      },
+      {
+        "name": "The One Orbit Rule",
+        "body": "The map is the only continuous motion on the page. New motion is a single, short response to arrival or input, never a second loop.",
+        "section": "components"
+      },
+      {
+        "name": "The Visible-By-Default Rule",
+        "body": "Content is hidden for an entrance only after scripts run; with no scripts or with reduced motion, everything is already in place.",
+        "section": "components"
+      }
+    ],
+    "dos": [
+      "Do take every colour from the `--home-*` tokens, in both themes, including canvas strokes, selection, caret, scrollbar and focus.",
+      "Do keep text on Frost Ink, Steel Muted or Steel Faint; check new pairs against Graphite Ground and Graphite Panel at 4.5:1 or more.",
+      "Do give every coloured or drawn mark a text equivalent: a legend label, a screen-reader name, or the catalogue row that restates the map.",
+      "Do mark unreleased lines dashed and projects hollow wherever versions or entries are drawn.",
+      "Do use JetBrains Mono for package names, versions, URLs, commands, code and counts, with tabular numerals.",
+      "Do ship a reduced-motion state and a no-script state with every new animation."
+    ],
+    "donts": [
+      "Don't set text in an ecosystem colour, or let colour alone distinguish an ecosystem.",
+      "Don't add a second accent or a second continuous animation.",
+      "Don't turn the catalogue into a grid of boxed cards; rows are separated by hairlines.",
+      "Don't put a shadow on a surface that does not float or frame a preview.",
+      "Don't use monospace for headings, prose or button labels.",
+      "Don't apply these tokens or faces to the documentation pages; they keep Fumadocs' neutral theme and Inter until their own ADR."
+    ]
+  }
+}

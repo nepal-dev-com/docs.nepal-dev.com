@@ -12,6 +12,8 @@ import { getMDXComponents } from '@/components/mdx';
 import type { Metadata } from 'next';
 import { createRelativeLink } from 'fumadocs-ui/mdx';
 import { getPageImageUrl, getPageMarkdownUrl, gitConfig } from '@/lib/shared';
+import { getPageContext, pageInLine } from '@/lib/catalog';
+import { VersionNotice } from '@/components/docs/version-notice';
 
 export default async function Page(props: PageProps<'/docs/[[...slug]]'>) {
   const params = await props.params;
@@ -20,11 +22,24 @@ export default async function Page(props: PageProps<'/docs/[[...slug]]'>) {
 
   const MDX = page.data.body;
   const markdownUrl = getPageMarkdownUrl(page).url;
+  const context = getPageContext(page);
+  const latest = context?.entry.latest;
+  const version = context?.version;
 
   return (
     <DocsPage toc={page.data.toc} full={page.data.full}>
       <DocsTitle>{page.data.title}</DocsTitle>
       <DocsDescription className="mb-0">{page.data.description}</DocsDescription>
+      {version && (
+        <VersionNotice
+          version={version}
+          latest={
+            latest && latest.name !== version.line
+              ? { version: latest.version, url: pageInLine(page, latest) }
+              : undefined
+          }
+        />
+      )}
       <div className="flex flex-row gap-2 items-center border-b pb-6">
         <MarkdownCopyButton markdownUrl={markdownUrl} />
         <ViewOptionsPopover

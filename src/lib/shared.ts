@@ -1,14 +1,15 @@
 import { createGetUrl } from 'fumadocs-core/source';
 
-export const appName = 'My App';
+// A working name until the final one is chosen (ADR-0014 open question).
+export const appName = 'Puncoz Docs';
 export const docsRoute = '/docs';
 export const docsImageRoute = '/og/docs';
 export const docsContentRoute = '/llms.mdx/docs';
 
-// fill this with your actual GitHub info, for example:
+// The owner's choice, ADR-0014.
 export const gitConfig = {
-  user: 'fuma-nama',
-  repo: 'fumadocs',
+  user: 'puncoz-official',
+  repo: 'docs',
   branch: 'main',
 };
 

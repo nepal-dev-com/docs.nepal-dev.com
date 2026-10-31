@@ -8,7 +8,9 @@ repositories.
 > **Status.** The convention below is set out in
 > [ADR-0010](content/docs/documentation/adr/ADR-0010-projects-document-themselves-through-a-submodule.mdx),
 > **Proposed**. Until the owner approves it, treat it as the intended rule and raise any
-> disagreement as a question.
+> disagreement as a question. The shape of your folder (§3) is
+> [ADR-0013](content/docs/documentation/adr/ADR-0013-packages-and-projects-share-one-catalogue-shape.mdx),
+> **Approved**.
 
 Everything outside your project's folder is governed by [`AGENTS.md`](AGENTS.md), this
 repository's working agreement. Where this guide is silent, `AGENTS.md` applies.
@@ -42,16 +44,66 @@ permanent.
 
 ## 3. Where your pages go
 
-Each project or package has one folder: **`content/docs/<project-slug>/`**. It is a Fumadocs
-root folder, so it gets its own entry in the sidebar's switcher.
+Each project or package has one folder: **`content/docs/<project-slug>/`**. Its shape is fixed
+by [ADR-0013](content/docs/documentation/adr/ADR-0013-packages-and-projects-share-one-catalogue-shape.mdx):
+an overview, a **Use** track for people using it and a **Maintain** track for people who look
+after it. A package's Use track has one folder per documented major version, called a **line**.
 
 ```
 content/docs/<project-slug>/
-├── meta.json      # {"title": "...", "description": "...", "root": true, "pages": ["index", ...]}
-├── index.mdx      # the project's overview — frontmatter `title` (required), `description`
-└── ...            # further pages and subfolders
+├── meta.json          # title, description and the `catalog` entry (below)
+├── index.mdx          # the overview, at /docs/<project-slug>
+├── use/
+│   ├── meta.json      # {"title": "Use"}
+│   ├── v3/            # one line per documented major version: v<major>
+│   │   ├── meta.json  # {"title": "v3", "version": "3.2.0", "channel": "latest"}
+│   │   ├── index.mdx
+│   │   └── ...
+│   ├── v2/            # an older line: "channel": "legacy"
+│   └── next/          # an unreleased major: "channel": "next", "version": "4.0.0-beta.1"
+└── maintain/          # not versioned: describes the default branch
+    ├── meta.json      # {"title": "Maintain"}
+    └── ...            # architecture, local setup, tests, releasing, contributing
 ```
 
+The root `meta.json` carries the catalogue entry that the home page, search and `llms.txt` are
+built from:
+
+```json
+{
+  "title": "lodestar",
+  "description": "Keyboard-first command palette for React.",
+  "root": true,
+  "catalog": {
+    "kind": "package",
+    "ecosystem": "npm",
+    "visibility": "public",
+    "repository": "https://github.com/example/lodestar",
+    "registry": "https://www.npmjs.com/package/lodestar",
+    "featured": false
+  }
+}
+```
+
+- `kind` is `package` or `project`. `ecosystem` is required for a package: `npm`, `composer`,
+  `pypi`, `go`, `cargo` or `other`. `visibility` must be `public`. `repository` and `registry`
+  are optional `https` URLs. `featured` (default `false`) is the owner's call: ask.
+- **A line's `version` is the exact version it documents**, read from your manifest (§4), and
+  its `channel` is `latest`, `next` or `legacy`. A released package has exactly one `latest` line
+  and at most one `next`. A package with only `next` is unreleased. When `next` is released,
+  rename `next/` to its `v<major>/`, make it `latest`, and make the previous `latest` `legacy`.
+  Old URLs redirect to the same path in `latest`.
+- **A project is unversioned by default**: its `use/` holds pages directly. A project that ships
+  releases may use lines like a package.
+- **Either track may be missing**; the Use | Maintain switch then hides it.
+- **Link to `/docs/<project-slug>/use/latest/…`** from your README and registry page. It
+  redirects to the line marked `latest`, so the link never goes stale.
+- **No `demo.mdx` yet.** Demos wait for
+  [ADR-0011](content/docs/documentation/adr/ADR-0011-diagrams-and-prototypes-are-embedded-from-sandboxed-html.mdx).
+- **The build checks the shape** and fails, naming the file, on: a root folder without a
+  `catalog`, an invalid or non-`public` `catalog`, a line without `version` or `channel`, two
+  `latest` or two `next` lines, and `legacy` lines without a `latest`. Fix the folder rather
+  than working around the check.
 - **The slug is agreed with the owner** when the folder is first created. Don't invent one.
 - **Edit only your folder.** A change anywhere else, such as another project's pages, `src/`,
   configuration, dependencies, `AGENTS.md` or the Documentation project, is a change to the
@@ -65,7 +117,8 @@ These are this site's content invariants (`AGENTS.md` §6):
 
 1. **Checked against the code.** Install commands, signatures, options, defaults and supported
    versions are read from your repository's source and manifest, never written from memory.
-2. **States the version it documents.**
+2. **States the version it documents.** The line's `version` does this for every page in it:
+   the site prints it under the description and in the page's Markdown.
 3. **Examples run** against that version, with invented values.
 4. **Readable as Markdown.** Plain Markdown and the MDX components registered in
    `src/components/mdx.tsx` (Fumadocs' defaults) only. Another component is a site change

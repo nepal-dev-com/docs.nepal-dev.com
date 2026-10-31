@@ -13,15 +13,13 @@ import {
 } from 'fumadocs-ui/components/dialog/search';
 import { useI18n } from 'fumadocs-ui/contexts/i18n';
 import { useAlgoliaSearch } from 'fumadocs-core/search/client';
-import { liteClient } from 'algoliasearch/lite';
-
-const algolia = liteClient(process.env.NEXT_PUBLIC_ALGOLIA_APP_ID!, process.env.NEXT_PUBLIC_ALGOLIA_SEARCH_KEY!);
+import { searchClient, searchIndexName } from '@/lib/algolia';
 
 export default function CustomSearchDialog(props: SharedProps) {
   const { locale } = useI18n();
   const search = useAlgoliaSearch({
-    client: algolia,
-    indexName: 'document',
+    client: searchClient,
+    indexName: searchIndexName,
     locale,
   });
 

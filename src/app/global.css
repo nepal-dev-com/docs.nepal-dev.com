@@ -10,3 +10,58 @@ html > body[data-scroll-locked] {
   margin-right: 0px !important;
   --removed-body-scroll-bar-size: 0px !important;
 }
+
+/* Home page tokens, home page only (ADR-0014 decision 6). Light first, then dark. */
+.home {
+  color-scheme: light;
+  --home-bg: #f6f7f9;
+  --home-bg-2: #eef0f4;
+  --home-panel: #ffffff;
+  --home-panel-2: #f1f3f7;
+  --home-line: #dde1e9;
+  --home-line-2: #c4cbd8;
+  --home-ink: #0d1016;
+  --home-muted: #4f586b;
+  --home-faint: #5f6880;
+  --home-accent: #077a63;
+  --home-accent-ink: #ffffff;
+  --home-accent-soft: rgb(7 122 99 / 0.1);
+  --home-npm: #d4382b;
+  --home-composer: #5b48e0;
+  --home-pypi: #9a6d00;
+  --home-go: #0a7fa6;
+  --home-cargo: #a8541c;
+  --home-other: #4f586b;
+  --home-project: #0d1016;
+  --home-shadow: rgb(13 16 22 / 0.12);
+  --home-shadow-near: rgb(13 16 22 / 0.08);
+  --home-font-display: var(--font-home-display), var(--font-home-text), ui-sans-serif, system-ui, sans-serif;
+  --home-font-text: var(--font-home-text), ui-sans-serif, system-ui, sans-serif;
+  --home-font-data: var(--font-home-data), ui-monospace, 'SF Mono', Menlo, monospace;
+  --home-ease: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.dark .home {
+  color-scheme: dark;
+  --home-bg: #0a0c10;
+  --home-bg-2: #0f1218;
+  --home-panel: #141821;
+  --home-panel-2: #1a1f2a;
+  --home-line: #232937;
+  --home-line-2: #323a4c;
+  --home-ink: #e9ecf2;
+  --home-muted: #9ba4b6;
+  --home-faint: #7f889e;
+  --home-accent: #3ddbb6;
+  --home-accent-ink: #04120e;
+  --home-accent-soft: rgb(61 219 182 / 0.13);
+  --home-npm: #ff6f61;
+  --home-composer: #a394ff;
+  --home-pypi: #ffd166;
+  --home-go: #56cdf2;
+  --home-cargo: #f0a86a;
+  --home-other: #9ba4b6;
+  --home-project: #e9ecf2;
+  --home-shadow: rgb(0 0 0 / 0.6);
+  --home-shadow-near: rgb(0 0 0 / 0.12);
+}
