@@ -12,7 +12,8 @@ that changes the UI ([ADR-0008](../adr/ADR-0008-a-ui-change-ships-an-app-flow.md
 ## Conventions
 
 - File name: `<feature-slug>.md`, matching the feature's PRD slug.
-- Flow as a Mermaid `flowchart`; one Mermaid `block-beta` wireframe per screen, **phone width first**.
+- Flow made with Archify, plus its Mermaid `flowchart` version in the page; one Mermaid
+  `block-beta` wireframe per screen, **phone width first**.
 - Every screen lists its states: empty, loading, not found, refused, error, degraded, success.
   *Degraded* is what the person sees when an external service (search, for one) is
   unavailable: a clear notice, never a hang or a raw error.
@@ -27,3 +28,4 @@ that changes the UI ([ADR-0008](../adr/ADR-0008-a-ui-change-ships-an-app-flow.md
 | Document | Status | ADR |
 |---|---|---|
 | [Project root folders](./project-root-folders.md) | Draft | [ADR-0010](../adr/ADR-0010-projects-document-themselves-through-a-submodule.md) |
+| [Diagram pages](./diagram-pages.md) | Draft | [ADR-0011](../adr/ADR-0011-archify-diagrams-are-published-as-standalone-pages.md) |

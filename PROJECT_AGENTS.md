@@ -77,7 +77,22 @@ Format:
   so don't repeat it as an `#` heading.
 - Links between pages are relative paths that **start with `./` or `../`**
   (`./getting-started.mdx`). Only those resolve to page URLs.
-- Diagrams are Mermaid in fenced code blocks; no binary or externally hosted images.
+- **Diagrams and flows: always Archify**, the skill installed in this repository at
+  `.claude/skills/archify`. It produces a standalone HTML file. **Also put a Mermaid version of
+  each diagram** in a fenced code block in the page, so the page stays readable as Markdown;
+  that version is what the site shows until an ADR here decides how Archify diagrams appear on
+  pages (ADR-0011, proposed). Run it without the browser gate, from the submodule root:
+
+  ```sh
+  node .claude/skills/archify/bin/archify.mjs deliver <type> <candidate.json> <output.html> --quality showcase --json
+  node .claude/skills/archify/bin/archify.mjs check <output.html> --require-provenance
+  ```
+
+  Don't run `finalize`, `browser-check` or `visual-check` (they launch Chrome) unless the owner
+  asks. Never upgrade Archify; tell the owner when it reports an update. Until ADR-0011 is
+  approved, keep Archify's HTML out of `content/docs/` and `public/`, and give the owner its
+  path.
+- No binary or externally hosted images.
 
 ## 5. Git: edit only
 
@@ -107,9 +122,12 @@ Format:
   anything outside them (other projects, the home directory, dotfiles, global config) unless the
   owner asks for that place.
 - **Run freely:** read-only commands, such as `git status`, `git diff`, `git log`, `ls`,
-  `grep` and reading files.
-- **Hand to the human:** anything that installs, deletes, moves, commits, pushes, writes outside
-  your folder or publishes. That includes `bun install` and `bun add` inside the submodule.
+  `grep` and reading files; and commands that create, edit, move or delete files inside your
+  own folder. Look at a target before deleting or overwriting it, and name every path
+  explicitly.
+- **Hand to the human:** anything that installs, commits, pushes, changes files outside your
+  folder or publishes. That includes `bun install` and `bun add` inside the submodule: they
+  change the whole site's lockfile, not only your folder.
 - **Verify** with `bunx next build` from the submodule root, once dependencies are installed.
   **Never run `bun run build`**: it also pushes every page to the live search index.
 - **No new dependency** in this repository without an ADR and the owner's approval.

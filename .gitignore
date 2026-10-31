@@ -30,3 +30,4 @@ next-env.d.ts
 .impeccable/config.local.json
 .impeccable/hook.cache.json
 .hallmark/
+.archify/

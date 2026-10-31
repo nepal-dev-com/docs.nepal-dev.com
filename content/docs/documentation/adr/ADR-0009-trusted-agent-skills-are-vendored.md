@@ -60,9 +60,9 @@ in `content/docs/`, where every file is published (ADR-0002).
    better served by a skill that is not vendored proposes trusted candidates, with a
    recommendation. Nothing is cloned, downloaded or added until the owner approves
    (`SOURCES.md` § Adding a skill).
-9. **Owner-approved installed skills are the exception to vendoring.** The owner approved four
-   UI/UX skill sets that they install themselves: impeccable, ui-ux-pro-max, the taste skills
-   and hallmark. They are listed in `SOURCES.md` and routed, with overrides, in `INDEX.md`.
+9. **Owner-approved installed skills are the exception to vendoring.** The owner approved skill
+   sets that they install themselves: impeccable, ui-ux-pro-max, the taste skills, hallmark and
+   Archify. They are listed in `SOURCES.md` and routed, with overrides, in `INDEX.md`.
    They are not pinned, so they are re-reviewed after an update.
 10. **Remote instructions are pinned.** A skill that fetches its rules at run time uses a pinned
    local snapshot instead.

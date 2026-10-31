@@ -6,7 +6,7 @@ Every feature and functional change starts here
 ([ADR-0001](./ADR-0001-adr-driven-development-workflow.md)). Template:
 [`../_templates/adr.md`](../_templates/adr.md).
 
-**Next free number: 0011**
+**Next free number: 0012**
 
 ## Conventions
 
@@ -36,3 +36,4 @@ Every feature and functional change starts here
 | [0008](./ADR-0008-a-ui-change-ships-an-app-flow.md) | A UI change ships an app flow, drawn in Mermaid | Proposed | 2026-10-31 |
 | [0009](./ADR-0009-trusted-agent-skills-are-vendored.md) | Trusted agent skills are vendored in `.claude/agent-skills/`, routed by an index | Proposed | 2026-10-31 |
 | [0010](./ADR-0010-projects-document-themselves-through-a-submodule.md) | Projects document themselves here through a git submodule, one root folder each | Proposed | 2026-10-31 |
+| [0011](./ADR-0011-archify-diagrams-are-published-as-standalone-pages.md) | Archify diagrams are published as standalone pages, linked from the page that keeps the Mermaid version | Proposed | 2026-10-31 |

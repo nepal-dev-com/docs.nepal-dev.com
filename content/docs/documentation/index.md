@@ -54,8 +54,11 @@ tasks to skills and `SOURCES.md` records provenance
 
 - **Frontmatter `title`**, no `#` heading; then the header: `Status`, `Last updated`, `Related ADRs`.
 - **Snapshot, not changelog**: no revision tables, no "previously", no strikethrough.
-- **Diagrams are Mermaid** in fenced blocks: flowcharts, sequences, state machines, ERDs and
-  screen wireframes (`block-beta`). No binary or externally hosted images.
+- **Diagrams and flows are made with Archify**, and every page also keeps a **Mermaid version**
+  in a fenced block: flowcharts, sequences, state machines, ERDs and screen wireframes
+  (`block-beta`). Until an ADR decides how Archify's HTML appears on the site, the site shows
+  the Mermaid version, and Archify files stay outside `content/docs/` and `public/`
+  (`AGENTS.md` §8). No binary or externally hosted images.
 - **Sample values are invented**, never a real person's name, a client's name, a real token or
   a private project's details.
 - **Links between documents are relative and start with `./` or `../`** (`./adr/index.md`), so the site resolves them to page URLs and they still work on GitHub.

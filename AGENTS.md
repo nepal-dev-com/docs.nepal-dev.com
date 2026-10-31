@@ -102,7 +102,8 @@ layout, controls or states — ships `content/docs/documentation/app-flow/<featu
 together. It shows:
 
 - **entry points**: where a person reaches the feature from, and who does not see it;
-- **the flow**: the screens and the transitions between them, as a Mermaid flowchart;
+- **the flow**: the screens and the transitions between them, made with Archify, plus its
+  Mermaid flowchart version (§8);
 - **one wireframe per screen**, as a Mermaid `block-beta` diagram with invented sample values,
   at phone width first;
 - **each screen's states**: empty, loading, not found, refused, error, degraded, success.
@@ -116,20 +117,26 @@ changes nothing visible. Unsure whether a person would notice? Write it. Templat
 - **Never commit.** No `git commit`, no `git push`, no rebase, no history rewriting, no
   branch switching. Leave every change in the working tree — the owner reviews the whole set
   and commits by hand. Reading git state (`status`, `diff`, `log`) is fine.
-- **Hand the owner any command that changes more than files.** Agents edit and create files
-  in this repository for the agreed task, and run read-only commands plus the local
-  verification (`bun run lint`, `bun run types:check`, `bunx next build`). Every other command
-  goes to the owner to run, with what it does: installs and uninstalls, deletes and moves,
-  any git write, anything outside the repository (`~/`, global config), network writes,
-  publishing, and skill scripts that write, download or launch a browser.
+- **Hand the owner any command that changes more than this repository's files.** Agents may
+  create, edit, update, move and delete files inside this repository for the agreed task, and
+  run read-only commands plus the local verification (`bun run lint`, `bun run types:check`,
+  `bunx next build`). Before deleting or overwriting, look at the target, and name every path
+  explicitly: never a path built from an empty or unchecked variable.
+- **Installs and uninstalls for this project run after the owner's yes.** First say what is
+  installed or removed (package and version, or skill and source), why, where it goes
+  (`dependencies`, `devDependencies`, `.claude/skills/`) and the exact command. Run it only once
+  the owner approves that list. `bun install` restoring the existing lockfile asks too.
+- **Everything else goes to the owner to run**, with what it does: any git write, anything
+  outside the repository (`~/`, global config, global installs, user-scope plugins), network
+  writes, publishing, and skill scripts that download or launch a browser.
 - **Stay inside this repository.** Never read, search or list anything outside it (another
   project, the home directory, dotfiles, global config) unless the owner asks for that place.
   When a task seems to need something outside, ask first. Using an approved skill counts as
   asked: invoking it, reading the reference files it points to, and running its approved
   scripts from its own folder (§12.2).
-- **Dependencies are proposed, never added.** For a new package or dependency, ask the owner
-  with options (what it is, why, alternatives, size and licence). The owner reviews and
-  approves, then runs the install command you give them. A dependency also needs an ADR (§2).
+- **Dependencies are proposed, never added unasked.** For a new package or dependency, ask the
+  owner with options (what it is, why, alternatives, size and licence). A dependency also needs
+  an ADR (§2). Once the ADR and the owner's yes are in, the agent runs the install.
 - **Don't stop for per-change review.** Once an ADR is approved, carry out *all* the work it
   covers, end to end. The owner reviews the finished set, not each step.
 - **Keep docs in the same change.** An implementation is incomplete until `AGENTS.md`,
@@ -220,7 +227,7 @@ What is installed **today** (verified from `package.json`, `node_modules` and th
 | Start built app | `bun run start` |
 | Type check | `bun run types:check` — `next typegen && tsc --noEmit` |
 | Lint | `bun run lint` |
-| Add a dependency | `bun add <pkg>` — **an approved ADR and the owner's yes first; the owner runs it** (§3) |
+| Add a dependency | `bun add <pkg>` — **an approved ADR and the owner's yes first; then the agent runs it** (§3) |
 
 `bun run build` reads `.env.local` and writes to the live search index with
 `ALGOLIA_WRITE_KEY`; never run it to verify a change. Run `bun run lint`,
@@ -341,10 +348,31 @@ moves.
 Judgement applies — a small change may need none of them. **If it is unclear whether one is
 required, write it.** Start from [`content/docs/documentation/_templates/`](content/docs/documentation/_templates/index.md).
 
-**Diagrams are Mermaid** in fenced blocks — flows, sequences, states, ERDs, and screen
-wireframes (`block-beta`). They render on GitHub and diff as text. No binary or externally
-hosted images. The site shows them as highlighted code until a Mermaid renderer is adopted
-(an ADR: it is a new dependency).
+**Diagrams and flows are made with Archify**, always: architecture, workflow, sequence, data
+flow, lifecycle, ERD, class, tree and timeline diagrams. This is the owner's standing choice.
+Use the project copy in `.claude/skills/archify`. Archify produces a standalone, interactive
+HTML file.
+
+- **Every page also keeps a Mermaid version** in a fenced block: flows, sequences, states, ERDs
+  and screen wireframes (`block-beta`). The page then stays readable as Markdown (§6.5),
+  renders on GitHub and diffs as text.
+- **How to run it** (the owner's settings): author the candidate JSON as the skill describes,
+  then deliver and check it **without the browser gate**:
+
+  ```sh
+  node .claude/skills/archify/bin/archify.mjs deliver <type> <candidate.json> <output.html> --quality showcase --json
+  node .claude/skills/archify/bin/archify.mjs check <output.html> --require-provenance
+  ```
+
+  Don't run `finalize`, `browser-check` or `visual-check`: they launch Chrome. Run them only
+  when the owner asks, for a broken diagram. The update check inside `deliver` may run. When it
+  reports a new version, tell the owner and never upgrade without their yes. Working folders go
+  in `.archify/` (gitignored).
+- **How Archify's HTML is stored and shown on the site is decided by its own ADR**, because it
+  is a UI change: ADR-0011, proposed. Until it is approved, the site shows the Mermaid version
+  as highlighted code, and Archify files stay out of `content/docs/` and `public/`: save them
+  outside the published folders and give the owner the path.
+- No binary or externally hosted images.
 
 ### Always check these
 
@@ -534,9 +562,10 @@ Claude Code does not auto-load them.
   (§4) and **always name the better-trusted alternatives**. The trust policy is in
   [`.claude/agent-skills/SOURCES.md`](.claude/agent-skills/SOURCES.md): trusted means trusted by many, from
   the owner of the package or library it covers, or from another source of high trust.
-- **Approved installed UI/UX skills.** The owner has also approved four skill sets they
-  installed, without vendoring them: **impeccable**, **ui-ux-pro-max**, the **taste skills**
-  and **hallmark** (the project copy in `.claude/skills/hallmark`). Use them whenever UI or UX work calls for them, through the Skill tool, with the
+- **Approved installed skills.** The owner has also approved skill sets they installed,
+  without vendoring them: **impeccable**, **ui-ux-pro-max**, the **taste skills**, **hallmark**
+  (the project copy in `.claude/skills/hallmark`) and **Archify** (the project copy in
+  `.claude/skills/archify`, always used for diagrams and flows, §8). Use them whenever UI or UX work calls for them, through the Skill tool, with the
   routing and overrides in `INDEX.md` § Approved installed skills. impeccable is the primary
   for UI work. Their local, read-only analysis scripts may run; anything that writes, calls the
   network or launches a browser asks first. Not every skill in those sets is routed. Which one

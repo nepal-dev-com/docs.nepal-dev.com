@@ -161,9 +161,9 @@ the skills a task needs; [`SOURCES.md`](.claude/agent-skills/SOURCES.md) records
 ### Documentation
 
 [`content/docs/documentation/index.md`](content/docs/documentation/index.md) is the map: what each directory holds, which documents a
-change requires, and the conventions for each. Diagrams — including screen wireframes — are
-Mermaid, so they render on GitHub and diff as text; on the site they show as code until a
-Mermaid renderer is adopted.
+change requires, and the conventions for each. Diagrams and flows are made with
+[Archify](https://github.com/tt-a1i/archify), and every page also keeps a Mermaid version, so
+it stays readable as Markdown, renders on GitHub and diffs as text.
 
 ### Security and privacy
 
@@ -190,3 +190,4 @@ threat model, data classification, secrets inventory and audit checklist live in
 | [0008](content/docs/documentation/adr/ADR-0008-a-ui-change-ships-an-app-flow.md) | A UI change ships an app flow, drawn in Mermaid | Proposed |
 | [0009](content/docs/documentation/adr/ADR-0009-trusted-agent-skills-are-vendored.md) | Trusted agent skills are vendored in `.claude/agent-skills/`, routed by an index | Proposed |
 | [0010](content/docs/documentation/adr/ADR-0010-projects-document-themselves-through-a-submodule.md) | Projects document themselves here through a git submodule, one root folder each | Proposed |
+| [0011](content/docs/documentation/adr/ADR-0011-archify-diagrams-are-published-as-standalone-pages.md) | Archify diagrams are published as standalone pages, linked from the page that keeps the Mermaid version | Proposed |
