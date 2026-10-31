@@ -1,7 +1,7 @@
 import { metaSchema } from 'fumadocs-core/source/schema';
 
 export const ecosystems = ['npm', 'composer', 'pypi', 'go', 'cargo', 'other'] as const;
-export const channels = ['latest', 'next', 'legacy'] as const;
+export const channels = ['latest', 'dev', 'legacy'] as const;
 
 export type Ecosystem = (typeof ecosystems)[number];
 export type Channel = (typeof channels)[number];
@@ -19,6 +19,7 @@ type BaseMeta = ReturnType<typeof metaSchema.parse>;
 
 export type CatalogMeta = BaseMeta & {
   catalog?: CatalogField;
+  name?: string;
   version?: string;
   channel?: Channel;
 };
@@ -106,6 +107,9 @@ function validate(value: unknown): Result {
   if (input.version !== undefined && (typeof input.version !== 'string' || input.version.trim() === '')) {
     issues.push({ message: '`version` must be the exact version the line documents, such as "3.2.0"', path: ['version'] });
   }
+  if (input.name !== undefined && (typeof input.name !== 'string' || input.name.trim() === '')) {
+    issues.push({ message: '`name` must be the line\'s name as readers see it, such as "v1.0"', path: ['name'] });
+  }
   if (input.channel !== undefined && !channels.includes(input.channel as Channel)) {
     issues.push({ message: `\`channel\` must be one of: ${channels.join(', ')}`, path: ['channel'] });
   }
@@ -118,6 +122,7 @@ function validate(value: unknown): Result {
     value: {
       ...base.data,
       catalog,
+      name: input.name as string | undefined,
       version: input.version as string | undefined,
       channel: input.channel as Channel | undefined,
     },

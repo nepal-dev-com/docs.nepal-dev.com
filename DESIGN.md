@@ -201,7 +201,7 @@ components:
 
 # Design System: Puncoz Docs
 
-**Scope.** Everything here applies to the home page only: the tokens live on the `.home` scope (light values on `.home`, dark on `.dark .home`) in `src/app/global.css`, the component styles in `src/app/(home)/home.css`, the fonts in `src/app/(home)/layout.tsx`. Documentation pages under `/docs` still use Fumadocs' default neutral theme with Inter and are not described by this file. The reasons behind every choice below are in ADR-0014 (`content/docs/documentation/adr/ADR-0014-home-page-is-a-search-first-release-map.mdx`); this file only records how the built page looks.
+**Scope.** The whole site: the home page and every documentation page. The tokens live on `:root` (light) and `.dark` (dark) in `src/app/global.css`, which also maps Fumadocs' own `--color-fd-*` colours onto them; the fonts are loaded once in `src/app/layout.tsx`; the shared header, docs typography and package hero are styled in `src/app/site.css`; the home page's sections in `src/app/(home)/home.css`. Docs pages use the Fumadocs notebook layout under that header. The reasons are in ADR-0014 (`content/docs/maintain/adr/ADR-0014-home-page-is-a-search-first-release-map.mdx`) and ADR-0015 (`content/docs/maintain/adr/ADR-0015-every-entry-lives-at-the-root-in-one-shape-and-one-look.mdx`); this file only records how the built site looks.
 
 ## Overview
 
@@ -306,7 +306,7 @@ Flat by default, with soft drop shadows only on surfaces that float above the ma
 
 Gently rounded rectangles in a short ladder: 6px for tags, keys and focus outlines; 8px for chips, small buttons and suggestions; 10px for the tooltip and card icons; 12px for the segmented track and the no-script link; 14px for the search field, results list, windows and link cards. Nested surfaces step their radius down from their container: a 9px knob and 9px result rows inside 12px and 14px parents, the 7px version box in the preview sidebar, and the 5px remove button inside a chip. The 2px square marks the tracks preview's list points. Circles are reserved for meaning: ecosystem dots (8px, 10px in the catalogue), map bodies and moons, the brand mark, and the window chrome's three dots.
 
-Borders are 1px hairlines throughout. Line style carries meaning: a **dashed** stroke marks an unreleased (`next`) line, on tags, rail segments, rail nodes and orbit moons alike; a **hollow** shape marks a project (an outlined dot in the catalogue, an outlined body in the map; its ring is solid like the others, because a broken stroke means unreleased). The brand mark is a tilted ellipse in Frost Ink with a teal dot at its centre, the map in miniature.
+Borders are 1px hairlines throughout. Line style carries meaning: a **dashed** stroke marks the unreleased `dev` line, on tags, rail segments, rail nodes and orbit moons alike; a **hollow** shape marks a project (an outlined dot in the catalogue, an outlined body in the map; its ring is solid like the others, because a broken stroke means unreleased). The brand mark is a tilted ellipse in Frost Ink with a teal dot at its centre, the map in miniature.
 
 ### Named Rules
 **The Hollow and Dashed Rule.** Hollow means project; dashed means not released yet. Never use either for decoration.
@@ -333,7 +333,7 @@ Borders are 1px hairlines throughout. Line style carries meaning: a **dashed** s
 - With nothing documented, a faint set of rings keeps the hero's shape.
 
 ### Tags
-- Data-small, Steel Muted, 1px Line border, 6px corners. Variants: dashed border for an unreleased `next` line; teal text and a 40% teal border for the accent variant.
+- Data-small, Steel Muted, 1px Line border, 6px corners. Variants: dashed border for the unreleased `dev` line; teal text and a 40% teal border for the accent variant.
 
 ### Buttons
 - **Ghost:** 14px Onest, Steel Muted, hairline border, 8px corners, 6px by 10px, with an optional 16px stroked icon (1.75 stroke). Hover: Frost Ink text and Line 2 border.
@@ -356,15 +356,24 @@ Borders are 1px hairlines throughout. Line style carries meaning: a **dashed** s
 ### Link cards
 - Flat rows on Graphite Ground 2 with a hairline border and 14px corners, 20px padding: a 38px Graphite Panel icon tile with a teal 18px stroked icon, a 16px semibold title and a muted body-small line. Hover strengthens the border.
 
+### Package hero
+- Opens every package or project overview, above the title. A Graphite Panel band with a hairline border and 14px corners, 22px by 24px padding, and a 10% wash of the entry's ecosystem or project colour fading out by the middle.
+- Inside, stacked 14px apart: the kind ("npm package", "Project") in 13px muted text after a 10px ecosystem dot, hollow for a project; the name in Data at 1.6 to 2.2rem; the description in muted text, 60ch at most; version tags (the latest line as name · version · latest on a Line 2 border, the `dev` line dashed); a rail of documented lines, oldest first, with `dev` last and dashed and the latest node filled teal; and link buttons: Use in teal, then Maintain, Registry ↗ and Repository ↗ as hairline buttons with 8px corners.
+
+### Docs pages
+- The Fumadocs notebook layout below the shared header, coloured by the site tokens in both themes. Headings h1 to h3 use the Display face at -0.02em; body, sidebar and table of contents keep the Text face, code the Data face. The sidebar sits on Graphite Panel, as a column on desktop and a drawer at phone width, so its active link (teal on a 10% teal wash) stays above 4.5:1 in both themes.
+- The sidebar opens with the Use | Maintain switch; a versioned Use track adds the version menu, each line described as version · channel. A page in an older line shows a version banner linking to the same page in the latest line; a page in `dev` shows a warning banner that it is work in progress.
+
 ### Navigation
-- **Header:** sticky, 60px tall, translucent with backdrop blur; wordmark and brand mark left, 14px muted nav links (Frost Ink on hover), a spacer, then a ghost GitHub button. The nav hides under 860px.
+- **Header:** one header on every page. Sticky, 60px tall, translucent with backdrop blur; wordmark and brand mark left, 14px muted nav links (Frost Ink on hover), a spacer, a 240px search button on Graphite Panel with a hairline border, 8px corners and a ⌘K key, a ghost GitHub button and the light/dark switch. On the home page the search button points at the hero's field; on docs pages it opens the search dialog, and the header carries a hairline below it. Under 860px the nav, labels and key hide, search and GitHub become 36px icon buttons, and docs pages add a 36px menu button that opens the sidebar.
+- **Theme switch:** Fumadocs' light/dark switch, in the header on every page. Dark is the default; the choice is kept by next-themes and every token, including the map's canvas colours, follows it.
 - **Footer:** 14px muted text and links under a hairline, wrapping.
 
 ### Motion
 - **The orbit** is the one authored moment: the inner ring turns once in about 100s, outer rings slower; it slows to 15% under the pointer and pauses when off-screen or in a hidden tab. Search highlights ease in and out over about 300ms.
 - Supporting motion is short and single: section parts rise 18px and un-blur over 0.8s once, the rails draw once, the terminal types once, chips pop, the track preview cross-fades. All of it uses one ease, an exponential ease-out (`cubic-bezier(0.16, 1, 0.3, 1)`), and animates transform, opacity, blur, stroke offset or canvas only.
 - Under reduced motion the orbit is drawn once and redraws only on change, the placeholder and terminal do not type, the cursor and chips do not animate, and nothing enters, draws or slides.
-- Without scripts every section is visible, the map is absent, and the search field is replaced by a "Browse the documentation" link on a Graphite Panel with 12px corners.
+- Without scripts every section is visible, the map is absent, and the search field is replaced by a "Browse everything" link to the catalogue on a Graphite Panel with 12px corners.
 
 ### Named Rules
 **The One Orbit Rule.** The map is the only continuous motion on the page. New motion is a single, short response to arrival or input, never a second loop.

@@ -659,8 +659,8 @@
       "name": "Tag",
       "kind": "chip",
       "refersTo": "tag",
-      "description": "Version and kind labels; dashed for an unreleased next line.",
-      "html": "<span class=\"ds-tag\">v2.4.1</span> <span class=\"ds-tag ds-next\">next 3.0.0-beta.2</span> <span class=\"ds-tag ds-accent\">latest</span>",
+      "description": "Version and kind labels; dashed for the unreleased dev line.",
+      "html": "<span class=\"ds-tag\">v2.4.1</span> <span class=\"ds-tag ds-next\">dev 3.0.0-dev.2</span> <span class=\"ds-tag ds-accent\">latest</span>",
       "css": ".ds-tag{font:12px var(--home-font-data);color:var(--home-muted);border:1px solid var(--home-line);border-radius:6px;padding:2px 6px;white-space:nowrap}.ds-next{border-style:dashed}.ds-accent{color:var(--home-accent);border-color:color-mix(in srgb,var(--home-accent) 40%,transparent)}"
     },
     {
@@ -684,7 +684,7 @@
       "kind": "custom",
       "refersTo": "catalogue-item",
       "description": "Ruled list row: ecosystem dot, mono package name, description, version tags.",
-      "html": "<div class=\"ds-item\"><span class=\"ds-dot\"></span><div><h3><a href=\"#\">fetch-retry</a></h3><p>Retries failed fetch requests with backoff.</p></div><div class=\"ds-versions\"><span class=\"ds-tag\">v2.4.1</span><span class=\"ds-tag ds-next\">next 3.0.0</span></div></div>",
+      "html": "<div class=\"ds-item\"><span class=\"ds-dot\"></span><div><h3><a href=\"#\">fetch-retry</a></h3><p>Retries failed fetch requests with backoff.</p></div><div class=\"ds-versions\"><span class=\"ds-tag\">v2.4.1</span><span class=\"ds-tag ds-next\">dev 3.0.0-dev</span></div></div>",
       "css": ".ds-item{display:grid;grid-template-columns:auto 1fr auto;align-items:start;gap:14px;padding:18px 4px;border-top:1px solid var(--home-line);border-bottom:1px solid var(--home-line);transition:background .25s}.ds-item:hover{background:linear-gradient(90deg,var(--home-bg-2),transparent)}.ds-dot{width:10px;height:10px;margin-top:8px;border-radius:50%;background:var(--home-npm)}.ds-item h3{margin:0;font:500 16px var(--home-font-data);letter-spacing:-.01em;color:var(--home-ink)}.ds-item a{color:inherit;text-decoration:none}.ds-item a:hover{color:var(--home-accent)}.ds-item a:focus-visible{outline:2px solid var(--home-accent);outline-offset:2px}.ds-item p{margin:2px 0 0;font:14px var(--home-font-text);color:var(--home-muted)}.ds-versions{display:flex;flex-direction:column;align-items:end;gap:6px}.ds-tag{font:12px var(--home-font-data);color:var(--home-muted);border:1px solid var(--home-line);border-radius:6px;padding:2px 6px}.ds-next{border-style:dashed}"
     },
     {

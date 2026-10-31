@@ -12,7 +12,7 @@ interface Result {
   title: string;
   url: string;
   entry?: CatalogEntry;
-  tag: { text: string; kind: 'line' | 'next' | 'maintain' | 'plain' };
+  tag: { text: string; kind: 'line' | 'dev' | 'maintain' | 'plain' };
 }
 
 type Status = 'idle' | 'loading' | 'ready' | 'error';
@@ -23,14 +23,14 @@ function tagFor(url: string, entries: CatalogEntry[], docsRoute: string): Result
   const { slug, track, line } = parseScope(url, docsRoute);
   const entry = entries.find((item) => item.slug === slug);
   if (!entry) {
-    return { text: slug === 'documentation' ? 'Documentation' : 'Site', kind: 'plain' };
+    return { text: 'Site', kind: 'plain' };
   }
   if (track === 'maintain') {
     return { text: 'maintain', kind: 'maintain' };
   }
-  const found = entry.lines.find((item) => item.name === line);
-  if (found?.channel === 'next') {
-    return { text: `next ${found.version}`, kind: 'next' };
+  const found = entry.lines.find((item) => item.segment === line);
+  if (found?.channel === 'dev') {
+    return { text: `dev ${found.version}`, kind: 'dev' };
   }
   if (found) {
     return { text: `${found.name} · ${found.version}`, kind: 'line' };
@@ -40,7 +40,7 @@ function tagFor(url: string, entries: CatalogEntry[], docsRoute: string): Result
 
 /**
  * The Algolia filter for the chips: an OR over the scope tags they allow, or null when they
- * allow nothing (for example `maintain` with `next`).
+ * allow nothing (for example `maintain` with `dev`).
  */
 export function chipFilter(chips: Chip[], entries: CatalogEntry[]): string | undefined | null {
   if (chips.length === 0) {
@@ -48,16 +48,16 @@ export function chipFilter(chips: Chip[], entries: CatalogEntry[]): string | und
   }
   const kinds: Chip[] = chips.filter((chip) => isEcosystemChip(chip) || chip === 'project');
   const wantsMaintain = chips.includes('maintain');
-  const wantsNext = chips.includes('next');
-  if (wantsMaintain && wantsNext) {
+  const wantsDev = chips.includes('dev');
+  if (wantsMaintain && wantsDev) {
     return null;
   }
 
   const tags = entries
     .filter((entry) => kinds.length === 0 || kinds.includes(ringOf(entry) as Chip))
     .flatMap((entry) => {
-      if (wantsNext) {
-        return entry.next ? [scopeTag(entry.slug, 'use', entry.next.name)] : [];
+      if (wantsDev) {
+        return entry.dev ? [scopeTag(entry.slug, 'use', entry.dev.segment)] : [];
       }
       if (wantsMaintain) {
         return [scopeTag(entry.slug, 'maintain')];
@@ -66,7 +66,7 @@ export function chipFilter(chips: Chip[], entries: CatalogEntry[]): string | und
         scopeTag(entry.slug),
         scopeTag(entry.slug, 'use'),
         scopeTag(entry.slug, 'maintain'),
-        ...entry.lines.map((line) => scopeTag(entry.slug, 'use', line.name)),
+        ...entry.lines.map((line) => scopeTag(entry.slug, 'use', line.segment)),
       ];
     });
 
@@ -112,7 +112,7 @@ export function HeroSearch({ docsRoute, suggestions }: { docsRoute: string; sugg
         .filter((entry) => entry.useUrl)
         .slice(0, maxResults)
         .map((entry) => ({
-          title: entry.latest || entry.next ? 'Start here' : 'Overview',
+          title: entry.latest || entry.dev ? 'Start here' : 'Overview',
           url: entry.useUrl as string,
           entry,
           tag: tagFor(entry.useUrl as string, entries, docsRoute),
@@ -281,7 +281,7 @@ export function HeroSearch({ docsRoute, suggestions }: { docsRoute: string; sugg
               <span className="result-title">{highlight(result.title, words)}</span>
               {result.entry && <span className="result-package"> · {highlight(result.entry.title, words)}</span>}
             </span>
-            <span className={`tag ${result.tag.kind === 'next' ? 'next' : ''} ${result.tag.kind === 'maintain' ? 'accent' : ''}`}>
+            <span className={`tag ${result.tag.kind === 'dev' ? 'dev' : ''} ${result.tag.kind === 'maintain' ? 'accent' : ''}`}>
               {result.tag.text}
             </span>
           </div>
@@ -296,7 +296,7 @@ export function HeroSearch({ docsRoute, suggestions }: { docsRoute: string; sugg
         <Search className="bar-icon" aria-hidden />
         {chips.map((chip) => (
           <span key={chip} className="chip">
-            {chip !== 'maintain' && chip !== 'next' && <span className={`dot dot-${chip}`} aria-hidden />}
+            {chip !== 'maintain' && chip !== 'dev' && <span className={`dot dot-${chip}`} aria-hidden />}
             {chipLabel(chip)}
             <button
               type="button"
@@ -319,7 +319,7 @@ export function HeroSearch({ docsRoute, suggestions }: { docsRoute: string; sugg
           spellCheck={false}
           value={text}
           placeholder={placeholder}
-          aria-label="Search all documentation. Type npm, composer, pypi, go, projects, maintain or next and a space to filter."
+          aria-label="Search all documentation. Type npm, composer, pypi, go, projects, maintain or dev and a space to filter."
           aria-expanded={open}
           aria-controls={listId}
           aria-activedescendant={open && shown.length > 0 ? `${listId}-${selected}` : undefined}

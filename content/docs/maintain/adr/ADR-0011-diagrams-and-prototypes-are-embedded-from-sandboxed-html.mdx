@@ -1,0 +1,200 @@
+---
+title: "ADR-0011 — Archify diagrams and HTML prototypes are embedded in pages from sandboxed HTML files"
+---
+
+- **Status:** Proposed
+- **Date:** 2026-10-31
+- **Deciders:** Puncoz Nepal
+- **Approved by:** —
+- **Approved on:** —
+- **Supersedes:** —
+- **Superseded by:** —
+- **Design documents:** [`../app-flow/html-embeds.mdx`](../app-flow/html-embeds.mdx),
+  [`../architecture/system.mdx`](../architecture/system.mdx),
+  [`../api/content-routes.mdx`](../api/content-routes.mdx),
+  [`../security/threat-model.mdx`](../security/threat-model.mdx), `AGENTS.md` §8,
+  `PROJECT_AGENTS.md` §3, §4
+
+## Context
+
+Two kinds of standalone HTML are made for this site's pages:
+
+- **Diagrams and flows**, always with Archify (`AGENTS.md` §8).
+- **Prototypes** of an app flow's screens, by the owner's choice: the vendored `html-wireframe`
+  (structure, hierarchy, navigation, click-through) and `html-prototype` (states, input,
+  feedback, recovery) skills from plannotator/effective-html (ADR-0009), in a prototype theme
+  of this site's own.
+
+Every page keeps a Mermaid version of each diagram and wireframe, so it stays readable as
+Markdown. Until this ADR is decided, the HTML stays out of `content/` and `public/`.
+
+Facts this decision rests on, checked against the installed packages and tools:
+
+- **Archify 3.2.0 output.** `deliver` writes `<stem>.html` and a receipt,
+  `<stem>.delivery.json`, holding absolute local paths (`/Users/…/candidate.json`). The HTML
+  holds none. It loads no external script, stylesheet or image, and calls no network API
+  (`fetch`, `XMLHttpRequest`, `WebSocket`, `sendBeacon`). It keeps only the reader's theme and
+  motion choice in `localStorage`, inside `try`/`catch`, written for sandboxed frames. The
+  seven-node workflow made for this ADR is 819 KB. On narrow screens Archify gives
+  "containment only" (`references/viewer-runtime.md`).
+- **effective-html output.** Both skills require one self-contained `.html` file with CSS and
+  JavaScript inline and no external service. Their example outputs are 30 KB and 52 KB, with
+  one inline `<script>` each and no external resources. The skills are Markdown only; nothing
+  runs.
+- **Pages are MDX** (ADR-0012), so a page can use a component registered in
+  `src/components/mdx.tsx`. In the Markdown surfaces a component stays as its JSX tag with its
+  props (checked in the built `llms.mdx` output for `<Cards>`).
+- **Serving.** Files in `public/` are served from `/`. `headers()` in `next.config.mjs` applies
+  to them ("Headers are checked before the filesystem which includes pages and `/public`
+  files"). Pages live at the root, `/<slug>/…`, and `src/proxy.ts` acts only on paths whose
+  first segment is a catalogued slug (ADR-0015).
+
+## Decision
+
+1. **Where the files live.**
+
+   | Kind | Source (committed, not published) | Published file |
+   |---|---|---|
+   | Archify diagram | `diagrams/<project-slug>/<slug>.json`, the Archify candidate | `public/diagrams/<project-slug>/<slug>.html` |
+   | Prototype or wireframe | the HTML itself is the source | `public/prototypes/<project-slug>/<slug>.html` |
+
+   This site's own files use its slug, `docs`. On approval, `diagrams` and `prototypes` join
+   the reserved slugs of ADR-0015 decision 2, so no entry's pages share a first segment with
+   these files and the Markdown rewrites in `src/proxy.ts` never apply.
+2. **Archify is delivered and checked outside the published folders**, with `deliver` and
+   `check --require-provenance` into `.archify/` (gitignored), as `AGENTS.md` §8 sets out. Only
+   the HTML is copied, byte for byte. Receipts, pending journals and lock files never are: they
+   carry local paths.
+3. **Prototypes use this site's prototype theme.** One template, `prototypes/_template.html`
+   (not published), carries the theme inline: greyscale, system fonts, 1 px borders, no
+   shadows or gradients, visible focus, labelled placeholders for media, and a fixed
+   "Prototype, not the product" label. Every prototype starts from it, so all of them look the
+   same and plainly unfinished. In html-prototype's order of authority, the theme is "the
+   project's established design language". Wireframes and prototypes are drawn at phone width
+   first.
+4. **Pages embed them with one MDX component**, `<HtmlEmbed>`, registered in
+   `src/components/mdx.tsx`:
+
+   ```mdx
+   <HtmlEmbed kind="prototype" src="/prototypes/example-cli/sign-in.html" title="Sign-in prototype" />
+   <HtmlEmbed kind="diagram" src="/diagrams/example-cli/request-flow.html" title="Request flow" />
+   ```
+
+   - An `<iframe>` with `sandbox="allow-scripts allow-downloads"`, without
+     `allow-same-origin`, `loading="lazy"` and the required `title`.
+   - `kind="prototype"`: a phone-width frame, centred.
+   - `kind="diagram"`: the content width, at a fixed height.
+   - Below the frame: an **Open full screen** link to the file, and the title as a caption.
+   - `src` must start with `/diagrams/` or `/prototypes/` and end in `.html`; anything else
+     fails the build.
+   - The Mermaid version stays in the page, directly above the embed.
+5. **Direct visits are sandboxed too.** `next.config.mjs` serves `/diagrams/:path*` and
+   `/prototypes/:path*` with `Content-Security-Policy: sandbox allow-scripts allow-downloads`,
+   so opening a file through **Open full screen** or a shared URL gives the same isolation as
+   the frame.
+6. **Consuming repositories may write their own**: `diagrams/<project-slug>/`,
+   `public/diagrams/<project-slug>/` and `public/prototypes/<project-slug>/`, alongside
+   `content/<project-slug>/`. This widens ADR-0010, decision 2.
+7. **Not indexed.** The HTML files are not part of `static.json`, the search index or
+   `llms.txt`. Search finds the page through its text and Mermaid version.
+
+## Options considered
+
+| Concern | Option | Pros | Cons | Verdict |
+|---|---|---|---|---|
+| Prototype tool | A — effective-html `html-wireframe` + `html-prototype`, with our theme | A tested method for states and flows; one consistent look; HTML fits the same pipeline as Archify | One more vendored source to keep pinned | Chosen (owner) |
+| Prototype tool | B — our theme and template only | Nothing new to trust | Less method; state coverage rests on the app-flow template | Rejected |
+| Prototype tool | C — effective-html with its own look | Least work | Each prototype may look different | Rejected |
+| Prototype tool | D — Excalidraw (yctimlin/mcp_excalidraw) | Sketch look; static SVG inline | Not clickable; global install; a local canvas server that loads fonts from esm.sh | Rejected |
+| Prototype tool | E — PlantUML Salt | Plain-text wireframes | Java toolchain or a third-party render server; static | Rejected |
+| Prototype tool | F — Mermaid `block-beta` only | Nothing to add | Crude boxes; no states or clicking | Rejected; Mermaid stays as the Markdown version |
+| Embed | A — `<HtmlEmbed>` MDX component | Works on every page (ADR-0012); one place for sandboxing and fallbacks | A component to maintain | Chosen (owner) |
+| Embed | B — a remark plugin turning a link into an iframe | Pages need no component | Custom build code | Rejected |
+| Archify display | A — embedded like prototypes | One way to show every HTML artifact | 819 KB per diagram on the page (loaded lazily); cramped at phone width, where Archify gives containment only; zoom and scroll inside a frame | Chosen (owner) |
+| Archify display | B — a link to the diagram as its own page | Full screen for exploring; nothing heavy on the page | Readers leave the page | Rejected; **Open full screen** gives the same view |
+| Source | A — Archify candidate JSON in `diagrams/` | Text diffs; regenerated after an upgrade | A second folder per project | Chosen |
+| Source | B — next to the page in `content/` | One folder | That folder is what Fumadocs loads and publishes | Rejected |
+| Isolation | A — iframe `sandbox` and a CSP `sandbox` header | Generated or hand-written script cannot touch the site's origin, now or after sign-in exists | Theme choice inside a diagram is not remembered; clipboard copy may be refused (checked on implementation) | Chosen |
+| Isolation | B — none | Every viewer feature works | Third-party script with the site's origin | Rejected |
+| Isolation | C — a separate origin | Strongest | Needs a hosting decision first | Deferred |
+
+## Consequences
+
+**Positive**
+
+- Readers see the diagram and the prototype in the page, and can open either full screen.
+- Markdown readers and tools keep the Mermaid versions and the component tag with its URL.
+- Every prototype shares one look, so none is mistaken for finished UI.
+
+**Negative / accepted trade-offs**
+
+- Two versions of each diagram or wireframe, Mermaid and HTML, can drift. Both change in the
+  same change and are reviewed together.
+- A page with an Archify diagram loads about 0.8 MB once the frame scrolls into view.
+- At phone width an embedded diagram is small; the reader uses **Open full screen**.
+- An Archify upgrade changes the generated HTML: diagrams are delivered again, and the checks
+  below run again.
+- The embed component is new site code with its own tests.
+
+## Content invariants
+
+- **1 (Private stays private).** A diagram or prototype of a private project is private
+  content: none goes into `diagrams/`, `public/diagrams/` or `public/prototypes/`. `public/` is
+  published.
+- **4 (Examples run).** Labels and sample content are invented.
+- **5 (Readable as Markdown).** Kept: the Mermaid version stays in the page, and the
+  component's tag, with its `src`, appears in the Markdown output.
+
+## Security considerations
+
+- **What is published.** Every HTML file under `public/diagrams/` and `public/prototypes/` is
+  public. It is written from public information only (invariant 1).
+- **Local paths.** Only Archify's HTML is copied, never its receipts (decision 2). A check
+  fails the build if any `*.delivery*.json` file is under `public/`.
+- **Script in the page.** Diagrams run Archify's generated script; prototypes run the script an
+  agent wrote. Both run in an opaque origin, by the iframe sandbox and the CSP header
+  (decisions 4 and 5), so neither can read the site's cookies or storage or act as the site.
+- **`src` is fixed to two folders** (decision 4), so a page cannot embed another site or an
+  arbitrary path.
+- **Nothing leaves the system.** Checked for Archify 3.2.0 and the effective-html examples: no
+  external resources and no network calls. The same scan runs on each new prototype before
+  review and on every Archify upgrade.
+- **Residual risk.** A future Archify release or a careless prototype could add a network call;
+  the sandbox does not block outgoing requests. Accepted, because each is scanned and reviewed.
+
+## Implementation notes
+
+- [x] App flow: [`../app-flow/html-embeds.mdx`](../app-flow/html-embeds.mdx), its flow made
+      with Archify.
+- [ ] `prototypes/_template.html`, the prototype theme (decision 3).
+- [ ] `src/components/html-embed.tsx`, registered in `src/components/mdx.tsx` (decision 4).
+- [ ] `next.config.mjs`: the `headers()` entry for `/diagrams/:path*` and `/prototypes/:path*`,
+      with a comment linking this ADR.
+- [ ] The app flow's diagram moved to `diagrams/documentation/html-embeds.json` and
+      `public/diagrams/documentation/html-embeds.html`, and embedded in the app flow page.
+- [ ] When the owner first opens it in a browser: the frame loads under the sandbox, PNG and
+      SVG downloads work, and whether clipboard copy works is recorded in the app flow.
+- [ ] Tests, with the runner chosen under ADR-0007: `<HtmlEmbed>` renders the sandboxed frame
+      and the full-screen link; it rejects a `src` outside the two folders, or not ending in
+      `.html`; every `<HtmlEmbed>` `src` has its file in `public/`; every published diagram
+      has its JSON source; no `*.delivery*.json` file is under `public/`. Until that runner
+      exists, these are checked by hand before review and reported as such.
+- [ ] `bun run lint`, `bun run types:check` and `bunx next build` pass.
+
+## Docs to update on implementation
+
+- [x] [`../app-flow/html-embeds.mdx`](../app-flow/html-embeds.mdx)
+- [ ] [`../architecture/system.mdx`](../architecture/system.mdx): diagram and prototype sources,
+      the embed component
+- [ ] [`../api/content-routes.mdx`](../api/content-routes.mdx): `/diagrams/…` and
+      `/prototypes/…`, public, static, sandboxed
+- [ ] [`../security/threat-model.mdx`](../security/threat-model.mdx): the attack-surface table;
+      [`../security/checklist.mdx`](../security/checklist.mdx): Archify and prototype rows
+      under tool-specific checks
+- [ ] `AGENTS.md` §8 (where the files go, the component, the copy step) and §10 (`diagrams/`,
+      `prototypes/`, `public/`)
+- [ ] `PROJECT_AGENTS.md` §3 and §4: consumers' folders and the component
+- [ ] `.claude/agent-skills/INDEX.md`: the Archify and effective-html overrides, which today
+      keep the HTML out of `public/` until this ADR
+- [ ] `README.md`: project structure
+- [ ] [`./index.mdx`](./index.mdx): status on approval

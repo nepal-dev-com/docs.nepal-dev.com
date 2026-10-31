@@ -1,12 +1,9 @@
 import type * as PageTree from 'fumadocs-core/page-tree';
 import { getMeta, source } from './source';
-import { compareLines, pageVersion, uncataloguedFolders, type PageVersion, type TrackName } from './catalog-plugin';
-import { ecosystems, type Channel, type Ecosystem } from './catalog-schema';
+import { compareLines, lineInfo, pageVersion, type LineInfo, type PageVersion, type TrackName } from './catalog-plugin';
+import { ecosystems, type Ecosystem } from './catalog-schema';
 
-export interface CatalogLine {
-  name: string;
-  version: string;
-  channel: Channel;
+export interface CatalogLine extends LineInfo {
   url: string;
 }
 
@@ -25,7 +22,7 @@ export interface CatalogEntry {
   demoUrl?: string;
   lines: CatalogLine[];
   latest?: CatalogLine;
-  next?: CatalogLine;
+  dev?: CatalogLine;
 }
 
 type Page = ReturnType<typeof source.getPages>[number];
@@ -60,7 +57,7 @@ function childFolder(node: PageTree.Folder, name: string): PageTree.Folder | und
 
 function readEntry(folder: PageTree.Folder): CatalogEntry | undefined {
   const slug = folder.$ref?.folder;
-  if (!slug || slug.includes('/') || uncataloguedFolders.has(slug)) {
+  if (!slug || slug.includes('/')) {
     return undefined;
   }
   const meta = getMeta(`${slug}/meta.json`);
@@ -78,20 +75,20 @@ function readEntry(folder: PageTree.Folder): CatalogEntry | undefined {
       if (child.type !== 'folder') {
         return [];
       }
-      const name = folderName(child);
-      const lineMeta = name ? getMeta(`${slug}/use/${name}/meta.json`) : undefined;
+      const folder = folderName(child);
+      const info = folder ? lineInfo(folder, getMeta(`${slug}/use/${folder}/meta.json`)) : undefined;
       const lineUrl = firstUrl(child);
-      if (!name || !lineMeta?.version || !lineMeta.channel || !lineUrl) {
+      if (!info || !lineUrl) {
         return [];
       }
-      return [{ name, version: lineMeta.version, channel: lineMeta.channel, url: lineUrl }];
+      return [{ ...info, url: lineUrl }];
     })
-    .sort(compareLines);
+    .sort((a, b) => compareLines(a, b, getMeta(`${slug}/use/meta.json`)?.pages));
 
   const latest = lines.find((line) => line.channel === 'latest');
-  const next = lines.find((line) => line.channel === 'next');
-  const current = latest ?? next;
-  const demoUrl = current ? source.getPage([slug, 'use', current.name, 'demo'])?.url : undefined;
+  const dev = lines.find((line) => line.channel === 'dev');
+  const current = latest ?? dev;
+  const demoUrl = current ? source.getPage([slug, 'use', current.segment, 'demo'])?.url : undefined;
 
   return {
     slug,
@@ -108,7 +105,7 @@ function readEntry(folder: PageTree.Folder): CatalogEntry | undefined {
     demoUrl,
     lines,
     latest,
-    next,
+    dev,
   };
 }
 
@@ -149,7 +146,7 @@ export function getPageContext(page: Page): PageContext | undefined {
     return undefined;
   }
   const track = page.slugs[1] === 'use' || page.slugs[1] === 'maintain' ? page.slugs[1] : undefined;
-  return { entry, track, version: pageVersion(page.slugs, getMeta) };
+  return { entry, track, version: pageVersion(page.path, getMeta) };
 }
 
 /**
@@ -157,7 +154,7 @@ export function getPageContext(page: Page): PageContext | undefined {
  */
 export function pageInLine(page: Page, line: CatalogLine): string {
   const slugs = [...page.slugs];
-  slugs[2] = line.name;
+  slugs[2] = line.segment;
   return source.getPage(slugs)?.url ?? line.url;
 }
 
@@ -203,8 +200,8 @@ export function getTracksPreview():
       (node): node is PageTree.Folder => node.type === 'folder' && node.$ref?.folder === entry.slug,
     );
     const use = root && childFolder(root, 'use');
-    const current = entry.latest ?? entry.next;
-    const useFolder = use && current ? childFolder(use, current.name) : use;
+    const current = entry.latest ?? entry.dev;
+    const useFolder = use && current ? childFolder(use, current.folder) : use;
     const label = current ? `${current.name} · ${current.version}` : 'Use';
     const usePreview = previewOf(useFolder, label);
     const maintainPreview = previewOf(root && childFolder(root, 'maintain'), 'default branch');
@@ -217,9 +214,9 @@ export function getTracksPreview():
 
 /**
  * A page to show as the per-page Markdown example: a package's first Use page when there is one,
- * otherwise the Documentation project's overview.
+ * otherwise this site's own overview.
  */
 export function getMarkdownExample(): string | undefined {
   const entry = getCatalog().find((item) => item.useUrl);
-  return entry?.useUrl ?? source.getPage(['documentation'])?.url ?? source.getPages()[0]?.url;
+  return entry?.useUrl ?? source.getPage(['docs'])?.url ?? source.getPages()[0]?.url;
 }

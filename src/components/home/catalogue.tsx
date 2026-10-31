@@ -20,12 +20,12 @@ function Versions({ entry }: { entry: CatalogEntry }) {
     <div className="versions">
       {entry.latest ? (
         <span className="tag">v{entry.latest.version}</span>
-      ) : entry.next ? (
+      ) : entry.dev ? (
         <span className="tag">unreleased</span>
       ) : (
         <span className="tag">{entry.kind}</span>
       )}
-      {entry.next && <span className="tag next">next {entry.next.version}</span>}
+      {entry.dev && <span className="tag dev">dev {entry.dev.version}</span>}
     </div>
   );
 }

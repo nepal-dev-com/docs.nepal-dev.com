@@ -1,0 +1,154 @@
+---
+title: "App flow — embedded diagrams and prototypes"
+---
+
+- **Status:** Draft
+- **Last updated:** 2026-10-31
+- **Related ADRs:** [ADR-0011](../adr/ADR-0011-diagrams-and-prototypes-are-embedded-from-sandboxed-html.mdx),
+  [ADR-0012](../adr/ADR-0012-every-page-is-mdx.mdx)
+
+> Snapshot of the system as it stands today. Edit in place; never record what changed.
+
+What a person sees and how they move through it. Sample values are invented (ADR-0008).
+Phone width first; note where desktop differs.
+
+A page with a diagram or a prototype shows its Mermaid version, then the HTML in a sandboxed
+frame (`<HtmlEmbed>`), with **Open full screen** and a caption underneath. Diagrams are
+Archify's HTML from `/diagrams/<project-slug>/<slug>.html`; prototypes and wireframes are
+`/prototypes/<project-slug>/<slug>.html`, in this site's prototype theme.
+
+The flow below is made with Archify. Its source is
+`.archify/workflow-html-embeds-20261031/candidate.json`, and it moves to
+`diagrams/documentation/html-embeds.json` once ADR-0011 is approved.
+
+## Entry points
+
+- A docs page that embeds a diagram or a prototype.
+- **Open full screen** under a frame, or a shared URL to the file itself.
+- The page's Markdown version (`/<page>.md`, `llms-full.txt`), where the `<HtmlEmbed>`
+  tag shows the file's URL.
+- Search leads to the docs page, never to the file: the files are not indexed.
+- Everyone sees every embed. Private projects have none here (ADR-0011, invariant 1), so there
+  is nothing to refuse.
+
+## Flow
+
+```mermaid
+flowchart LR
+  R[Reader] -->|search, link or URL| P["Docs page<br/>Mermaid + embed"]
+  P -->|scrolls to| F["Embedded frame<br/>click, zoom, explore"]
+  F -->|Open full screen| V["Full screen<br/>/prototypes/example-cli/sign-in.html"]
+  V -->|browser back| P
+  V -->|export, diagrams only| E["Image file<br/>PNG · SVG · WebM"]
+  T[Markdown reader] -->|fetches| M["Page as Markdown<br/>/docs/example-cli/sign-in.md"]
+  M -->|src URL| V
+  F -.->|file not published| N[Site 404 in the frame]
+```
+
+## Screens
+
+### 1. `Docs page with a prototype` — `/<project-slug>/...`
+
+Phone width. The Mermaid block scrolls sideways inside its frame. The prototype frame is phone
+width, so on a phone it fills the content column.
+
+```mermaid
+block-beta
+  columns 4
+  menu["☰"] title["Site name"]:2 search["⌕"]
+  h1["Sign in"]:4
+  code["mermaid · block-beta · Email / Password / Sign in"]:4
+  block:frame:4
+    columns 4
+    label["Prototype, not the product"]:4
+    email["Email: ada@example.com"]:4
+    pass["Password: ••••••••"]:4
+    btn["Sign in"]:4
+  end
+  full["Open full screen ↗"]:2 caption["Sign-in prototype"]:2
+```
+
+Desktop: the frame stays phone width, centred in the content column, with the sidebar on the
+left and the table of contents on the right.
+
+**States**
+
+- Empty: a page without an embed has neither the frame nor the link.
+- Loading: the frame is lazy; until it scrolls into view and loads, its box shows the caption
+  and the full-screen link.
+- Not found: a `src` with no file shows the site's 404 inside the frame. A `src` outside
+  `/diagrams/` or `/prototypes/` never reaches a reader: the build fails.
+- Refused: not applicable; no private content exists here.
+- Error: if the browser blocks scripts in the frame, the prototype shows whatever it renders
+  without them; not yet checked in a browser.
+- Degraded: if search is unavailable, the search dialog shows its error notice; the page and
+  the frame still work.
+- Success: the page, the Mermaid block and the working prototype.
+
+### 2. `Docs page with a diagram` — `/<project-slug>/...`
+
+Same page shape; the frame takes the full content width at a fixed height.
+
+```mermaid
+block-beta
+  columns 4
+  h1["Internals"]:4
+  code["mermaid · flowchart LR · Parser --> Router --> Handler"]:4
+  block:frame:4
+    columns 4
+    c1["Guide"] c2["Find"] c3["Theme"] c4["Export"]
+    canvas["Diagram: Parser → Router → Handler"]:4
+  end
+  full["Open full screen ↗"]:2 caption["Request flow"]:2
+```
+
+At phone width the diagram is contained and small; **Open full screen** is the way to explore
+it. Desktop: wide enough to read and explore in place.
+
+**States**
+
+- Loading: Archify's file is about 0.8 MB; the frame loads it once it scrolls into view.
+- Degraded: inside the sandbox the diagram's theme choice is not remembered between visits.
+  Whether copying an image to the clipboard works is checked on implementation.
+- Success: the diagram, explorable in place, with export to PNG, SVG or WebM.
+- Empty, not found, refused, error: as for screen 1.
+
+### 3. `Full screen` — `/diagrams/…/<slug>.html` or `/prototypes/…/<slug>.html`
+
+The file on its own, served with a CSP `sandbox` header. It has no site header or sidebar; the
+reader returns with the browser's back.
+
+```mermaid
+block-beta
+  columns 4
+  label["Prototype, not the product"]:4
+  email["Email: ada@example.com"]:4
+  pass["Password: ••••••••"]:4
+  btn["Sign in"]:4
+  err["Error state: Wrong password, try again"]:4
+```
+
+**States**
+
+- Not found: an unpublished file shows the site's 404.
+- Success: the prototype or diagram, at the full width of the screen.
+- Empty, loading, refused, error, degraded: as in the frame.
+
+### 4. `Page as Markdown` — `/<project-slug>/<page>.md`
+
+What a tool or `llms-full.txt` receives: the Mermaid fence as text, then the component's tag.
+
+```mermaid
+block-beta
+  columns 4
+  h["# Sign in (/docs/example-cli/sign-in)"]:4
+  fence["mermaid fence: block-beta …"]:4
+  tag["HtmlEmbed kind=prototype src=/prototypes/example-cli/sign-in.html"]:4
+```
+
+**States**
+
+- Not found: an unknown page returns the Markdown route's not-found response.
+- Success: the Mermaid source and the tag. A tool outside the site must prefix the site's
+  address to follow `src`.
+- Empty, loading, refused, error, degraded: as for the page's Markdown route today.

@@ -8,7 +8,7 @@ interface VersionNoticeProps {
 }
 
 /**
- * States the version a page documents (invariant 3), with a banner on unreleased and older lines.
+ * States the version a page documents (invariant 3), with a banner on the `dev` line and older lines.
  */
 export function VersionNotice({ version, latest }: VersionNoticeProps) {
   const toLatest = latest && (
@@ -17,11 +17,11 @@ export function VersionNotice({ version, latest }: VersionNoticeProps) {
     </Link>
   );
 
-  if (version.channel === 'next') {
+  if (version.channel === 'dev') {
     return (
-      <Callout type="warn" title="Unreleased">
-        This page documents {version.title} <code>{version.version}</code>, which isn&apos;t released yet.
-        {toLatest && <> {toLatest}.</>}
+      <Callout type="warn" title="In development">
+        This page documents {version.title} <code>{version.version}</code>, work in progress on the default
+        branch. {toLatest && <>{toLatest}.</>}
       </Callout>
     );
   }

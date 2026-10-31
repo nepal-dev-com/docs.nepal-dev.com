@@ -8,11 +8,11 @@ export const revalidate = false;
 function describe(page: ReturnType<typeof source.getPages>[number]) {
   const context = getPageContext(page);
   if (!context) {
-    return { tag: page.slugs[0] === 'documentation' ? 'documentation' : 'site', extra: undefined };
+    return { tag: 'site', extra: undefined };
   }
   const { entry, track, version } = context;
   return {
-    tag: scopeTag(entry.slug, track, version?.line),
+    tag: scopeTag(entry.slug, track, version?.segment),
     // ADR-0013 decision 8; public metadata about public pages only.
     extra: {
       package: entry.slug,

@@ -1,9 +1,9 @@
 'use client';
-import { createContext, use, useCallback, useMemo, useState, type ReactNode } from 'react';
+import { createContext, use, useCallback, useEffect, useMemo, useState, type ReactNode } from 'react';
 import type { CatalogEntry } from '@/lib/catalog';
 
 export const ecosystemChips = ['npm', 'composer', 'pypi', 'go', 'cargo', 'other'] as const;
-export type Chip = (typeof ecosystemChips)[number] | 'project' | 'maintain' | 'next';
+export type Chip = (typeof ecosystemChips)[number] | 'project' | 'maintain' | 'dev';
 
 // Words that turn into filter chips when followed by a space (ADR-0014 decision 3).
 export const chipWords: Record<string, Chip> = {
@@ -18,8 +18,9 @@ export const chipWords: Record<string, Chip> = {
   project: 'project',
   projects: 'project',
   maintain: 'maintain',
-  next: 'next',
-  unreleased: 'next',
+  dev: 'dev',
+  next: 'dev',
+  unreleased: 'dev',
 };
 
 export const chipLabel = (chip: Chip) => (chip === 'project' ? 'projects' : chip);
@@ -40,7 +41,7 @@ export function matchesEntry(entry: CatalogEntry, chips: Chip[], text: string): 
       return false;
     }
   }
-  if (chips.includes('next') && !entry.next) {
+  if (chips.includes('dev') && !entry.dev) {
     return false;
   }
   if (chips.includes('maintain') && !entry.maintainUrl) {
@@ -85,6 +86,13 @@ export function HomeSearchProvider({ entries, children }: { entries: CatalogEntr
     setChips([]);
     setText('');
   }, []);
+
+  // Docs pages link here with `?filter=projects` (the header's Projects link).
+  useEffect(() => {
+    if (new URLSearchParams(location.search).get('filter') === 'projects') {
+      addChip('project');
+    }
+  }, [addChip]);
 
   const value = useMemo<SearchState>(
     () => ({

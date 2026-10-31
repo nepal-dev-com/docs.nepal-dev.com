@@ -1,0 +1,386 @@
+/* One header on every page (ADR-0015 decision 8). */
+
+.site-header {
+  position: sticky;
+  top: 0;
+  z-index: 40;
+  background: color-mix(in srgb, var(--home-bg) 80%, transparent);
+  backdrop-filter: saturate(1.4) blur(12px);
+  border-bottom: 1px solid transparent;
+  color: var(--home-ink);
+  font: 400 14px/1.4 var(--home-font-text);
+  transition: border-color 0.3s;
+}
+
+.site-header.scrolled,
+.site-header[data-docs] {
+  border-bottom-color: var(--home-line);
+}
+
+.site-header[data-docs] {
+  grid-area: header;
+  top: var(--fd-docs-row-1, 0px);
+}
+
+.site-header a {
+  color: inherit;
+  text-decoration: none;
+}
+
+.site-header :focus-visible {
+  outline: 2px solid var(--home-accent);
+  outline-offset: 2px;
+  border-radius: 6px;
+}
+
+.site-header-row {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  height: 60px;
+  max-width: 1180px;
+  margin: 0 auto;
+  padding: 0 24px;
+}
+
+.site-header[data-docs] .site-header-row {
+  max-width: none;
+}
+
+.site-brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font: 600 17px var(--home-font-display);
+  letter-spacing: -0.01em;
+  white-space: nowrap;
+}
+
+.site-mark {
+  position: relative;
+  width: 22px;
+  height: 22px;
+  flex: none;
+}
+
+.site-mark::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border: 1.5px solid var(--home-ink);
+  border-radius: 50%;
+  transform: scaleY(0.45) rotate(-18deg);
+}
+
+.site-mark::after {
+  content: '';
+  position: absolute;
+  left: 7px;
+  top: 7px;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--home-accent);
+}
+
+.site-nav {
+  display: flex;
+  gap: 22px;
+  color: var(--home-muted);
+}
+
+.site-nav a:hover {
+  color: var(--home-ink);
+}
+
+.site-spacer {
+  flex: 1;
+}
+
+.site-search {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  width: 240px;
+  height: 36px;
+  padding: 0 8px 0 12px;
+  border: 1px solid var(--home-line);
+  border-radius: 8px;
+  background: var(--home-panel);
+  color: var(--home-faint);
+  font: inherit;
+  cursor: pointer;
+  transition: border-color 0.2s, color 0.2s;
+}
+
+.site-search:hover {
+  border-color: var(--home-line-2);
+  color: var(--home-muted);
+}
+
+.site-search kbd {
+  margin-left: auto;
+  font: 12px var(--home-font-data);
+  color: var(--home-muted);
+  border: 1px solid var(--home-line);
+  border-radius: 6px;
+  padding: 1px 6px;
+}
+
+.site-ghost {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--home-muted);
+  padding: 6px 10px;
+  border: 1px solid var(--home-line);
+  border-radius: 8px;
+  transition: color 0.2s, border-color 0.2s;
+}
+
+.site-ghost:hover {
+  color: var(--home-ink);
+  border-color: var(--home-line-2);
+}
+
+.site-header svg {
+  width: 16px;
+  height: 16px;
+  flex: none;
+}
+
+.site-ghost svg {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.75;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.site-menu {
+  display: none;
+  width: 36px;
+  height: 36px;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--home-line);
+  border-radius: 8px;
+  color: var(--home-muted);
+  background: none;
+  cursor: pointer;
+}
+
+@media (max-width: 860px) {
+  .site-header-row {
+    gap: 10px;
+    padding: 0 16px;
+  }
+
+  .site-nav,
+  .site-ghost-label,
+  .site-search-label,
+  .site-search kbd {
+    display: none;
+  }
+
+  .site-search {
+    width: 36px;
+    padding: 0;
+    justify-content: center;
+  }
+
+  .site-ghost {
+    padding: 9px;
+  }
+
+  .site-menu {
+    display: inline-flex;
+  }
+}
+
+/* Docs pages: the home page's type, quietly (ADR-0015 decision 7). */
+
+/* The active link's teal on a 10% teal wash falls below 4.5:1 on the page colour; the panel keeps it above. */
+#nd-sidebar-mobile {
+  background: var(--home-panel);
+}
+
+#nd-page h1,
+#nd-page h2,
+#nd-page h3 {
+  font-family: var(--home-font-display);
+  letter-spacing: -0.02em;
+}
+
+#nd-page h1 {
+  font-weight: 600;
+  line-height: 1.1;
+}
+
+/* Package hero on each overview (ADR-0015 decision 7). */
+
+.pkg-hero {
+  --eco: var(--home-faint);
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding: 22px 24px 20px;
+  border: 1px solid var(--home-line);
+  border-radius: 14px;
+  background:
+    linear-gradient(90deg, color-mix(in srgb, var(--eco) 10%, transparent), transparent 55%),
+    var(--home-panel);
+}
+
+.pkg-hero[data-eco='npm'] { --eco: var(--home-npm); }
+.pkg-hero[data-eco='composer'] { --eco: var(--home-composer); }
+.pkg-hero[data-eco='pypi'] { --eco: var(--home-pypi); }
+.pkg-hero[data-eco='go'] { --eco: var(--home-go); }
+.pkg-hero[data-eco='cargo'] { --eco: var(--home-cargo); }
+.pkg-hero[data-eco='other'] { --eco: var(--home-other); }
+.pkg-hero[data-eco='project'] { --eco: var(--home-project); }
+
+.pkg-kind {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font: 13px var(--home-font-text);
+  color: var(--home-muted);
+}
+
+.pkg-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--eco);
+}
+
+.pkg-hero[data-eco='project'] .pkg-dot {
+  background: transparent;
+  box-shadow: inset 0 0 0 1.5px var(--eco);
+}
+
+.pkg-name {
+  margin: 0;
+  font: 500 clamp(1.6rem, 1.2rem + 1.4vw, 2.2rem) / 1.1 var(--home-font-data);
+  letter-spacing: -0.03em;
+  color: var(--home-ink);
+}
+
+.pkg-desc {
+  margin: 0;
+  max-width: 60ch;
+  color: var(--home-muted);
+}
+
+.pkg-versions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.pkg-tag {
+  font: 12px var(--home-font-data);
+  color: var(--home-muted);
+  border: 1px solid var(--home-line);
+  border-radius: 6px;
+  padding: 2px 6px;
+  white-space: nowrap;
+}
+
+.pkg-tag[data-dev] {
+  border-style: dashed;
+}
+
+.pkg-tag[data-latest] {
+  color: var(--home-ink);
+  border-color: var(--home-line-2);
+}
+
+.pkg-rail {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  font: 12px var(--home-font-data);
+  color: var(--home-faint);
+  overflow-x: auto;
+}
+
+.pkg-rail li {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  white-space: nowrap;
+}
+
+.pkg-rail li + li::before {
+  content: '';
+  width: 28px;
+  height: 0;
+  margin: 0 8px;
+  border-top: 1px solid var(--home-line-2);
+}
+
+.pkg-rail li[data-dev]::before {
+  border-top-style: dashed;
+}
+
+.pkg-node {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  border: 1.5px solid var(--home-line-2);
+}
+
+.pkg-rail li[data-latest] .pkg-node {
+  background: var(--home-accent);
+  border-color: var(--home-accent);
+}
+
+.pkg-rail li[data-latest] {
+  color: var(--home-ink);
+}
+
+.pkg-rail li[data-dev] .pkg-node {
+  border-style: dashed;
+}
+
+.pkg-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 2px;
+}
+
+.pkg-links a {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  border: 1px solid var(--home-line);
+  border-radius: 8px;
+  font-size: 14px;
+  color: var(--home-ink);
+  text-decoration: none;
+  transition: border-color 0.2s, background-color 0.2s;
+}
+
+.pkg-links a:hover {
+  border-color: var(--home-line-2);
+  background: var(--home-panel-2);
+}
+
+.pkg-links a[data-primary] {
+  background: var(--home-accent);
+  border-color: var(--home-accent);
+  color: var(--home-accent-ink);
+}
+
+.pkg-links a[data-primary]:hover {
+  background: color-mix(in srgb, var(--home-accent) 88%, var(--home-ink));
+}
+
+.pkg-links svg {
+  width: 15px;
+  height: 15px;
+}

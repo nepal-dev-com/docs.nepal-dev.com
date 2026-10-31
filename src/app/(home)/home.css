@@ -85,113 +85,13 @@
   white-space: nowrap;
 }
 
-.home .tag.next {
+.home .tag.dev {
   border-style: dashed;
 }
 
 .home .tag.accent {
   color: var(--home-accent);
   border-color: color-mix(in srgb, var(--home-accent) 40%, transparent);
-}
-
-/* Header */
-
-.home-header {
-  position: sticky;
-  top: 0;
-  z-index: 20;
-  background: color-mix(in srgb, var(--home-bg) 80%, transparent);
-  backdrop-filter: saturate(1.4) blur(12px);
-  border-bottom: 1px solid transparent;
-  transition: border-color 0.3s;
-}
-
-.home-header.scrolled {
-  border-bottom-color: var(--home-line);
-}
-
-.home-header .wrap {
-  display: flex;
-  align-items: center;
-  gap: 28px;
-  height: 60px;
-}
-
-.home .brand {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  font: 600 17px var(--home-font-display);
-  letter-spacing: -0.01em;
-}
-
-.home .mark {
-  position: relative;
-  width: 22px;
-  height: 22px;
-  flex: none;
-}
-
-.home .mark::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  border: 1.5px solid var(--home-ink);
-  border-radius: 50%;
-  transform: scaleY(0.45) rotate(-18deg);
-}
-
-.home .mark::after {
-  content: '';
-  position: absolute;
-  left: 7px;
-  top: 7px;
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  background: var(--home-accent);
-}
-
-.home-header nav {
-  display: flex;
-  gap: 22px;
-  font-size: 14px;
-  color: var(--home-muted);
-}
-
-.home-header nav a:hover {
-  color: var(--home-ink);
-}
-
-.home-header .spacer {
-  flex: 1;
-}
-
-.home .ghost {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  font-size: 14px;
-  color: var(--home-muted);
-  padding: 6px 10px;
-  border: 1px solid var(--home-line);
-  border-radius: 8px;
-  transition: color 0.2s, border-color 0.2s;
-}
-
-.home .ghost:hover {
-  color: var(--home-ink);
-  border-color: var(--home-line-2);
-}
-
-.home .ghost svg {
-  width: 16px;
-  height: 16px;
-  fill: none;
-  stroke: currentColor;
-  stroke-width: 1.75;
-  stroke-linecap: round;
-  stroke-linejoin: round;
 }
 
 /* Hero: the release map with the search field in front */
@@ -914,7 +814,7 @@
   stroke-dashoffset: 0;
 }
 
-.home .rail-next {
+.home .rail-dev {
   stroke: var(--home-muted);
   stroke-width: 2;
   stroke-dasharray: 4 5;
@@ -931,7 +831,7 @@
   stroke: var(--home-accent);
 }
 
-.home .rail .node.next {
+.home .rail .node.dev {
   stroke: var(--home-muted);
   stroke-dasharray: 3 3;
 }
@@ -1141,7 +1041,6 @@
 }
 
 @media (max-width: 860px) {
-  .home-header nav,
   .home .keys,
   .home .legend {
     display: none;

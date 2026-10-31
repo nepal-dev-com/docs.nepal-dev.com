@@ -1,0 +1,194 @@
+---
+title: "App flow — package and project navigation"
+---
+
+- **Status:** Current
+- **Last updated:** 2026-11-01
+- **Related ADRs:** [ADR-0013](../adr/ADR-0013-packages-and-projects-share-one-catalogue-shape.mdx),
+  [ADR-0015](../adr/ADR-0015-every-entry-lives-at-the-root-in-one-shape-and-one-look.mdx),
+  [ADR-0010](../adr/ADR-0010-projects-document-themselves-through-a-submodule.mdx)
+
+> Snapshot of the system as it stands today. Edit in place; never record what changed.
+
+What a person sees and how they move through it. Sample values are invented (ADR-0008).
+Phone width first; desktop differences are noted under each screen.
+
+Every package and project has the same shape (ADR-0013, ADR-0015). Its overview is at
+`/<slug>`, under the package hero, and it has two tracks: **Use**, for people using it, and
+**Maintain**, for people who look after it. A package's Use track has one line per documented
+release, at the URL segment of the name its `meta.json` gives (`v0.1`, `2024-lts`), plus `dev`
+for the work in progress. The sidebar shows the current track and line only. At its top sit
+the version menu (on Use pages of a versioned package) and, under it, the package name with the
+Use | Maintain switch. The site header, its search and the theme switch are described in
+[site pages](./site-pages.mdx).
+
+The flow is made with Archify. Its source is `.archify/package-navigation-20261031/candidate.json`.
+
+## Entry points
+
+- A row in the home page catalogue, or a search result.
+- A README or registry badge linking to `/<slug>` or to a stable alias such as
+  `/lodestar/use/latest/install`, which redirects to the line marked `latest` (or `dev` before
+  the first release). `/lodestar/use` opens the first page of that line.
+- A direct URL to a line: `/lodestar/use/v0.1/install`, `/lodestar/use/dev/install`. A line
+  that does not exist (removed, or never there) redirects to the same path in `latest`.
+- The Markdown version of any page: `/lodestar/use/v0.1/install.md`.
+- Everyone sees every public package and project. Private projects have no pages here until the
+  private-documentation ADR is approved; when it is, a signed-out visitor at a private URL gets
+  the same 404 as for a page that does not exist, so the URL does not confirm the project exists.
+
+## Flow
+
+```mermaid
+flowchart LR
+  E[Catalogue row or search] --> O["Overview<br/>/lodestar"]
+  A["Alias<br/>/lodestar/use/latest/…"] -->|redirect| U
+  R["Removed line<br/>/lodestar/use/v0.0/…"] -->|redirect| U
+  O -->|hero or track switch: Use| U["Use · latest line<br/>/lodestar/use/v0.1/install"]
+  O -->|hero or track switch: Maintain| M["Maintain<br/>/lodestar/maintain/releasing"]
+  U -->|version menu: dev| N["Use · dev line<br/>banner: In development"]
+  U -->|version menu: older line| G["Use · older line<br/>banner: Older version"]
+  N -->|banner link| U
+  G -->|banner link| U
+  U -->|track switch| M
+  M -->|track switch| U
+  U -.->|page not in the chosen line| F["That line's first page"]
+```
+
+## Screens
+
+### 1. `Overview` — `/<slug>`
+
+The package hero, then the package's own `index.mdx`, as its repository writes it. The sidebar
+shows the package name, the track switch, and both tracks as folders. The hero is drawn in
+[site pages](./site-pages.mdx).
+
+```mermaid
+block-beta
+  columns 4
+  title["◎ Puncoz Docs"]:2 search["⌕"] menu["☰"]
+  block:drawer:4
+    columns 4
+    name["lodestar"]:4
+    track["Use | Maintain"]:4
+    t1["Use ▸"]:4
+    t2["Maintain ▸"]:4
+  end
+  hero["package hero: lodestar · v0.1 · 0.1.4 · latest · Use · Maintain"]:4
+  h1["lodestar"]:4
+  body["the package's overview page"]:4
+```
+
+Desktop: the same, with the sidebar always visible.
+
+**States**
+
+- Empty: a package with one track shows no switch, only its name.
+- Loading: none; prerendered.
+- Not found: an unknown slug shows the site's 404.
+- Refused: not applicable until private documentation exists (see Entry points).
+- Error: a malformed catalogue field fails the build, so it never reaches readers.
+- Degraded: search unavailable shows the dialog's error notice; everything else works.
+- Success: the overview, with both tracks one click away.
+
+### 2. `Use page` — `/<slug>/use/<line>/<page>`
+
+Phone width: the sidebar is a drawer; the version menu and track switch sit at its top.
+
+```mermaid
+block-beta
+  columns 4
+  title["◎ Puncoz Docs"]:2 search["⌕"] menu["☰"]
+  block:drawer:4
+    columns 4
+    ver["v0.1 · 0.1.4 · Latest ▾"]:4
+    name["lodestar"]:4
+    track["Use | Maintain"]:4
+    l1["Install"]:4
+    l2["Commands"]:4
+  end
+  h1["Install"]:4
+  stated["Documents lodestar 0.1.4"]:4
+  body["page content"]:4
+```
+
+Desktop: the sidebar is always visible with the menu and switch at its top. Under the page
+description, a line states the version the page documents (invariant 3).
+
+**States**
+
+- Empty: a line with only its index page shows that page and a one-link sidebar.
+- Loading: none; prerendered.
+- Not found: a missing page gets the site's 404.
+- Refused: not applicable today.
+- Error: the site's error page; no raw error text.
+- Degraded: search unavailable shows the dialog's notice.
+- Success: the page, with the current line selected and Use highlighted.
+
+### 3. `Version menu` — opened from the sidebar
+
+```mermaid
+block-beta
+  columns 4
+  cur["v0.1 · 0.1.4 · Latest ▾"]:4
+  block:opts:4
+    columns 4
+    o1["v0.1 · 0.1.4 · Latest ✓"]:4
+    o2["dev · 0.2.0-dev.3 · In development"]:4
+  end
+```
+
+Lines are listed latest first, then `dev`, then older lines in the order of `use/meta.json`
+`pages`, or newest version first. Each option shows the line's name and names its channel in
+words, not by colour alone.
+
+**States**
+
+- Empty: a package with one line shows a menu with that one line.
+- Success: choosing a line opens the same page in that line when it exists, otherwise that
+  line's first page.
+
+### 4. `In development page` — `/<slug>/use/dev/<page>`
+
+```mermaid
+block-beta
+  columns 4
+  h1["Install"]:4
+  banner["In development — This page documents lodestar 0.2.0-dev.3, work in progress on the default branch. Read this page for 0.1.4, the latest release."]:4
+  body["page content"]:4
+```
+
+Older lines show the same shape: "Older version — This page documents ledgerly 3.6.2. Read this
+page for 4.0.1, the latest release."
+
+**States**
+
+- Success: the banner sits under the title and links to the same page in the latest line, or
+  that line's first page. An unreleased package with no latest line shows the banner without
+  the link.
+- Other states: as the Use page.
+
+### 5. `Maintain page` — `/<slug>/maintain/<page>`
+
+```mermaid
+block-beta
+  columns 4
+  title["◎ Puncoz Docs"]:2 search["⌕"] menu["☰"]
+  name["lodestar"]:4
+  track["Use | Maintain"]:4
+  h1["Releasing"]:4
+  body["How a release is cut, from the default branch"]:4
+```
+
+The Maintain track is not versioned: it describes the repository's default branch, so it has
+no version menu and no version line.
+
+**States**
+
+- Empty: a package without a Maintain track has no switch; its Maintain URLs get the 404.
+- Other states: as the Use page.
+
+### 6. `Demo page` — `/<slug>/use/<line>/demo`
+
+Not published until ADR-0011 is approved. When a line has a `demo.mdx` page, the home page
+catalogue links to it; the sandboxed embed that runs the package's demo is ADR-0011's.

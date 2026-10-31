@@ -31,7 +31,7 @@ export default async function HomePage() {
       ? []
       : [
           ...(['npm', 'composer', 'pypi', 'go'] as const).filter((word) => ecosystemsPresent.has(word)).slice(0, 2),
-          ...(entries.some((entry) => entry.next) ? ['next'] : []),
+          ...(entries.some((entry) => entry.dev) ? ['dev'] : []),
           ...(entries.some((entry) => entry.maintainUrl) ? ['maintain'] : []),
           entries[0].slug,
         ];

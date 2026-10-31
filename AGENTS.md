@@ -32,34 +32,39 @@ builds and publishes:
 - **Projects**, both **public** and **private**.
 
 It is a [Fumadocs](https://fumadocs.dev) site on Next.js. Every page a reader sees is a file in
-`content/docs/`. This site's own decisions and design documents are one project among them:
-**Documentation**, a Fumadocs root folder at `content/docs/documentation/`, published at
-`/docs/documentation` with its own sidebar tab (§8).
+`content/`, and every package or project is a folder there, `content/<slug>/`, published at
+`/<slug>` ([ADR-0015](content/docs/maintain/adr/ADR-0015-every-entry-lives-at-the-root-in-one-shape-and-one-look.mdx)).
+This site is one project among them: **Puncoz Docs**, slug `docs`, at `content/docs/`. Its own
+decisions and design documents are its Maintain track, `content/docs/maintain/`, published at
+`/docs/maintain` (§8).
 
 - **Consumed as a git submodule.** The owner's project and package repositories include this
-  repository as a submodule and write their own pages into it, each in its own root folder
-  `content/docs/<project-slug>/`. Their guide is [`PROJECT_AGENTS.md`](PROJECT_AGENTS.md)
-  ([ADR-0010](content/docs/documentation/adr/ADR-0010-projects-document-themselves-through-a-submodule.mdx)).
+  repository as a submodule and write their own pages into it, each in its own folder
+  `content/<project-slug>/`. Their guide is [`PROJECT_AGENTS.md`](PROJECT_AGENTS.md)
+  ([ADR-0010](content/docs/maintain/adr/ADR-0010-projects-document-themselves-through-a-submodule.mdx)).
   If you are working here from a consuming repository, read that first.
-- The overview and getting started are in [`README.md`](README.md). The map of the
-  Documentation project is
-  [`content/docs/documentation/index.mdx`](content/docs/documentation/index.mdx).
+- The overview and getting started are in [`README.md`](README.md). The map of this site's
+  maintainer documentation is
+  [`content/docs/maintain/index.mdx`](content/docs/maintain/index.mdx).
 
 **Current state:** the site is named **Puncoz Docs** (`appName` in `src/lib/shared.ts`, a
 working name) and links to GitHub `puncoz-official/docs`. **No package or project is documented
-yet**, so the home page shows its empty states.
+yet** besides the site itself, so the home page shows its empty states.
 
-- **The catalogue shape is built** (ADR-0013). Each package or project gets a root folder
-  `content/docs/<project-slug>/` (ADR-0010). The folder has a `catalog` entry in its
-  `meta.json`, a `use/` track (version lines `v<major>/` and `next/`, each with `version` and
-  `channel`) and a `maintain/` track.
+- **One shape for every entry** (ADR-0013, ADR-0015). `content/<slug>/` has a `catalog` entry in
+  its `meta.json`, a `use/` track and a `maintain/` track. A versioned `use/` holds version
+  lines: `dev/` for unreleased work in progress, and released lines whose URL segment is the
+  `name` set in their `meta.json` (any string, such as `v1.0` or `2024 LTS`). Maintain is not
+  versioned.
 - **The build checks the shape.** Line redirects, version banners, scoped sidebars, search
   fields and `llms.txt` labels all come from it.
+- **One look across the site** (ADR-0015). Every page shares the site header (brand, nav,
+  search, GitHub, light/dark switch) and the home page's tokens and fonts. Docs pages use the
+  Fumadocs notebook layout; a package or project overview opens with a package hero.
 - **The home page is a search-first release map** (ADR-0014): an orbit map, a hero search with
   filter chips, the catalogue, a tracks preview, version rails and "Read it anywhere".
-- **Still here:** two scaffold placeholder pages under `/docs` (`content/docs/index.mdx`,
-  `content/docs/test.mdx`), Algolia search, `llms.txt` / `llms-full.txt`, per-page Markdown and
-  Open Graph images.
+- **Also here:** Algolia search, `llms.txt` / `llms-full.txt`, per-page Markdown and Open Graph
+  images.
 - **Not published:** demos and private projects. Demos wait for ADR-0011; private projects wait
   for their own ADR.
 
@@ -67,17 +72,17 @@ yet**, so the home page shows its empty states.
 
 **Every feature and functional change starts with an ADR, and no implementation begins
 before the repository owner approves it.** The full decision is
-[ADR-0001](content/docs/documentation/adr/ADR-0001-adr-driven-development-workflow.mdx).
+[ADR-0001](content/docs/maintain/adr/ADR-0001-adr-driven-development-workflow.mdx).
 
 ### Workflow
 
-1. **Propose.** Copy [`content/docs/documentation/_templates/adr.mdx`](content/docs/documentation/_templates/adr.mdx) to
-   `content/docs/documentation/adr/ADR-NNNN-kebab-title.mdx` using the *next free number* from
-   [`content/docs/documentation/adr/index.mdx`](content/docs/documentation/adr/index.mdx). Set **`Status: Proposed`** and add the index
+1. **Propose.** Copy [`content/docs/maintain/_templates/adr.mdx`](content/docs/maintain/_templates/adr.mdx) to
+   `content/docs/maintain/adr/ADR-NNNN-kebab-title.mdx` using the *next free number* from
+   [`content/docs/maintain/adr/index.mdx`](content/docs/maintain/adr/index.mdx). Set **`Status: Proposed`** and add the index
    row straight away, so ADRs in flight cannot collide on a number.
    **If the change reaches the UI, write its app flow in the same change**
-   ([ADR-0008](content/docs/documentation/adr/ADR-0008-a-ui-change-ships-an-app-flow.mdx)):
-   `content/docs/documentation/app-flow/<feature-slug>.mdx`. See *App flow* below.
+   ([ADR-0008](content/docs/maintain/adr/ADR-0008-a-ui-change-ships-an-app-flow.mdx)):
+   `content/docs/maintain/app-flow/<feature-slug>.mdx`. See *App flow* below.
 2. **Stop.** Do not write application code. Tell the owner the ADR, and its app flow if it has
    one, are ready for review.
 3. **Revise** in place while the owner has feedback — status stays `Proposed`.
@@ -106,9 +111,9 @@ Unclear which side the change falls on? It needs an ADR.
 
 ### App flow — required with every ADR that changes the UI
 
-[ADR-0008](content/docs/documentation/adr/ADR-0008-a-ui-change-ships-an-app-flow.mdx). An ADR that adds or changes
+[ADR-0008](content/docs/maintain/adr/ADR-0008-a-ui-change-ships-an-app-flow.mdx). An ADR that adds or changes
 anything a person sees — a page type, route, nav item, sidebar, search, dialog, or a page's
-layout, controls or states — ships `content/docs/documentation/app-flow/<feature-slug>.mdx`, and the two are reviewed
+layout, controls or states — ships `content/docs/maintain/app-flow/<feature-slug>.mdx`, and the two are reviewed
 together. It shows:
 
 - **entry points**: where a person reaches the feature from, and who does not see it;
@@ -121,7 +126,7 @@ together. It shows:
 
 Not needed for a bug fix, for content within the approved conventions, or for an ADR that
 changes nothing visible. Unsure whether a person would notice? Write it. Template:
-[`content/docs/documentation/_templates/app-flow.mdx`](content/docs/documentation/_templates/app-flow.mdx).
+[`content/docs/maintain/_templates/app-flow.mdx`](content/docs/maintain/_templates/app-flow.mdx).
 
 ## 3. Execution rules
 
@@ -154,7 +159,7 @@ changes nothing visible. Unsure whether a person would notice? Write it. Templat
   `README.md`, the design documents and the ADR index reflect it (§8).
 - **Keep tests in the same change.** A change is not complete without tests for its happy path
   and its obvious failure paths — small changes included
-  ([ADR-0007](content/docs/documentation/adr/ADR-0007-tests-are-part-of-every-change.mdx)). A bug fix starts with a
+  ([ADR-0007](content/docs/maintain/adr/ADR-0007-tests-are-part-of-every-change.mdx)). A bug fix starts with a
   test that fails for the bug's reason.
 - **Leave the managed Next.js block alone.** `next dev` rewrites the content between
   `<!-- BEGIN:nextjs-agent-rules -->` and `<!-- END:nextjs-agent-rules -->`. Never edit
@@ -168,7 +173,7 @@ changes nothing visible. Unsure whether a person would notice? Write it. Templat
 
 ## 4. Never guess — ask
 
-[ADR-0004](content/docs/documentation/adr/ADR-0004-ask-never-guess.mdx). Picking something plausible and moving on
+[ADR-0004](content/docs/maintain/adr/ADR-0004-ask-never-guess.mdx). Picking something plausible and moving on
 is the failure mode this rule exists to stop: the assumption looks finished, gives no signal
 it was made, and is found late. In documentation a plausible wrong guess — an install command,
 a function signature, a default value, a supported version — is published as fact and copied
@@ -212,9 +217,12 @@ What is installed **today** (verified from `package.json`, `node_modules` and th
 |---|---|
 | Framework | Next.js **16.4.2**, App Router, `src/app/` |
 | Docs framework | Fumadocs: `fumadocs-core` 16.17.9, `fumadocs-mdx` 15.4.10, `fumadocs-ui` 16.17.9 (installed as `@fumadocs/base-ui`) |
-| Content source | `defineDocs` from `fumadocs-mdx/macro` in `src/lib/source.ts`, reading `content/docs/`; no `source.config.ts`; generated files in `.source/` (gitignored) |
-| Catalogue | `src/lib/catalog-schema.ts` (meta schema with `catalog`, `version`, `channel`), `src/lib/catalog-plugin.ts` (build checks, typed roots), `src/lib/catalog.ts` (entries for pages and the home page), `src/lib/catalog-routes.ts` (line redirects in the proxy) — ADR-0013 |
-| Home page | `src/app/(home)/` and `src/components/home/`; styles in `src/app/(home)/home.css` and `.home` tokens in `global.css`; fonts Bricolage Grotesque, Onest and JetBrains Mono through `next/font/google`; visual system in `DESIGN.md` — ADR-0014 |
+| Content source | `defineDocs` from `fumadocs-mdx/macro` in `src/lib/source.ts`, reading `content/`; no `source.config.ts`; generated files in `.source/` (gitignored) |
+| Catalogue | `src/lib/catalog-schema.ts` (meta schema with `catalog`, `name`, `version`, `channel`), `src/lib/catalog-plugin.ts` (build checks, line names and URL segments, typed roots), `src/lib/catalog.ts` (entries for pages and the home page), `src/lib/catalog-routes.ts` (line redirects in the proxy) — ADR-0013, ADR-0015 |
+| Routes | `/` is `src/app/(home)/`; every page is `src/app/(site)/[...slug]/` at `/<slug>/…` (`docsRoute` is `''` in `src/lib/shared.ts`); `src/proxy.ts` acts only on catalogued paths — ADR-0015 |
+| Look | Tokens on `:root` and `.dark` in `src/app/global.css`, mapped onto Fumadocs' `--color-fd-*`; site header, docs typography and package hero in `src/app/site.css`; fonts Bricolage Grotesque, Onest and JetBrains Mono through `next/font/google` in `src/app/layout.tsx`; light/dark through next-themes (dark by default); visual system in `DESIGN.md` — ADR-0015 |
+| Home page | `src/app/(home)/` and `src/components/home/`; styles in `src/app/(home)/home.css` — ADR-0014 |
+| Docs pages | Fumadocs notebook layout in `src/app/(site)/layout.tsx`, header `src/components/site-header.tsx` (shared with the home page), `src/components/docs/` (docs header, package hero, track switch, version notice) — ADR-0015 |
 | UI runtime | React 19.3 |
 | Language | TypeScript 7, `strict`; `@/*` → `./src/*` |
 | Styling | Tailwind CSS 4 through `@tailwindcss/postcss`; global styles in `src/app/global.css` |
@@ -226,7 +234,7 @@ What is installed **today** (verified from `package.json`, `node_modules` and th
 - **Read the installed docs first.** `node_modules/next/dist/docs/` holds the docs for the exact
   installed Next.js version. For Fumadocs, read the installed packages' source and type
   definitions. Use them, not recall.
-- **Content is MDX in `content/docs/`.** Frontmatter is validated by `pageSchema` and
+- **Content is MDX in `content/<slug>/`.** Frontmatter is validated by `pageSchema` and
   `meta.json` files by `metaSchema` (`src/lib/source.ts`).
 
 ### Commands
@@ -256,7 +264,7 @@ needs an ADR that says so.
    surface: the site, the search index, `llms.txt` / `llms-full.txt`, `static.json`, per-page
    Markdown, Open Graph images, or a public repository. Until an ADR decides how private
    documentation is kept and served, **no private project content goes into
-   `content/docs/`** — today every page there is published on all of those surfaces.
+   `content/`** — today every page there is published on all of those surfaces.
 2. **Documentation is checked against the code.** Install commands, signatures, options,
    defaults and supported versions are read from the documented package's source and
    manifest, never written from memory (§4).
@@ -269,7 +277,7 @@ needs an ADR that says so.
 
 ## 7. Code style — comments
 
-[ADR-0003](content/docs/documentation/adr/ADR-0003-code-comment-policy.mdx). **Comments explain *why*. The code
+[ADR-0003](content/docs/maintain/adr/ADR-0003-code-comment-policy.mdx). **Comments explain *why*. The code
 explains *what*. If the code is self-explanatory, write no comment at all.**
 
 A comment is warranted only when the reasoning, trade-off, edge case or constraint cannot be
@@ -302,20 +310,20 @@ pages.push(page)
 
 ## 8. Documentation duties
 
-[ADR-0002](content/docs/documentation/adr/ADR-0002-living-design-documentation.mdx). The map of what lives where is
-[`content/docs/documentation/index.mdx`](content/docs/documentation/index.mdx); each directory's `index.mdx` holds its own conventions.
+[ADR-0002](content/docs/maintain/adr/ADR-0002-living-design-documentation.mdx). The map of what lives where is
+[`content/docs/maintain/index.mdx`](content/docs/maintain/index.mdx); each directory's `index.mdx` holds its own conventions.
 
 ### Three kinds of document
 
-Everything lives under `content/docs/`, and **everything there is published** (§6.1, §9).
+Everything lives under `content/`, and **everything there is published** (§6.1, §9).
 
 | Kind | Where | Rule |
 |---|---|---|
-| **Package and project documentation** | `content/docs/` outside `documentation/` | The product: what readers come for. Written and updated freely within the approved content conventions and the invariants (§6). |
-| **Decisions** | `content/docs/documentation/adr/` | Immutable once approved. Superseded, never edited. |
-| **Living design documents** | everything else under `content/docs/documentation/` | Describe this site **as it stands right now**, and are edited in place. |
+| **Package and project documentation** | `content/<slug>/`, except `content/docs/maintain/` | The product: what readers come for. Written and updated freely within the approved content conventions and the invariants (§6). |
+| **Decisions** | `content/docs/maintain/adr/` | Immutable once approved. Superseded, never edited. |
+| **Living design documents** | everything else under `content/docs/maintain/` | Describe this site **as it stands right now**, and are edited in place. |
 
-The **Documentation** project is about this site only. A package's or project's own decisions
+This site's Maintain track is about this site only. A package's or project's own decisions
 and design notes go in that package's or project's pages, not here.
 
 **The one exception: design-tool context at the root.** By the owner's decision,
@@ -323,19 +331,19 @@ and design notes go in that package's or project's pages, not here.
 its [`DESIGN.md`](DESIGN.md) (the home page's visual system) and `.impeccable/design.json`, and
 so would hallmark's `.hallmark/` cache and build log. They are not published. They hold
 product truth and the visual system only: decisions still go in ADRs, and design documents in
-`content/docs/documentation/`. Keep `PRODUCT.md` a snapshot, like any living document.
+`content/docs/maintain/`. Keep `PRODUCT.md` a snapshot, like any living document.
 
 ### Format of a page
 
-- **Every page under `content/docs/` is `.mdx`** (ADR-0012), so a page can use an MDX component
+- **Every page under `content/` is `.mdx`** (ADR-0012), so a page can use an MDX component
   when it needs one. Write it as Markdown otherwise. MDX reads `<` and `{` in prose as JSX: put
   a `<slug>`-style placeholder in backticks or escape it (`\<slug>`), write void tags closed
   (`<br />`), and use `{/* … */}` instead of an HTML comment. Code blocks and frontmatter need
   no escaping.
 - **Frontmatter `title`** (required by `pageSchema`) instead of an `#` heading; Fumadocs
   renders the title. `description` is optional.
-- A folder's overview is its `index.mdx`. Order and the root-folder setting are in
-  `content/docs/documentation/meta.json`.
+- A folder's overview is its `index.mdx`. Order is in each folder's `meta.json`
+  (`content/docs/maintain/meta.json` here).
 - Links between pages are relative file paths that **start with `./` or `../`**
   (`./adr/index.mdx`, `../adr/ADR-0001-….mdx`). Only those are resolved to page URLs; a bare
   `adr/index.mdx` is left as a broken link.
@@ -353,19 +361,19 @@ moves.
 
 | Document | Directory | Required when |
 |---|---|---|
-| **App flow** | `content/docs/documentation/app-flow/` | **Any ADR that adds or changes something a person sees (§2, ADR-0008)** |
-| PRD + user stories | `content/docs/documentation/prd/` | Any reader-facing feature |
-| Architecture / HLD | `content/docs/documentation/architecture/` | A new module, content source, build step, background job or external integration |
-| ERD | `content/docs/documentation/erd/` | Any persisted data — `erd/system.mdx` is created by the first ADR that adds some |
-| DFD | `content/docs/documentation/dfd/` | Data crosses a trust boundary or reaches an external system (search, hosting, analytics, CI), or private content moves between processes |
-| State diagram | `content/docs/documentation/state/` | An entity has more than two states, or guarded / timed transitions (a page's draft → published, a package version's lifecycle) |
-| Sequence diagram | `content/docs/documentation/sequence/` | A flow spans several actors or systems, is async, or has failure/retry behaviour (build and index sync, docs generation from a package) |
-| API spec | `content/docs/documentation/api/` | Any route handler or endpoint another client or system calls (`llms.txt`, `static.json`, per-page Markdown) |
-| RBAC matrix | `content/docs/documentation/rbac/` | Visibility or permitted actions depend on who the reader is — private project documentation |
-| Security analysis | `content/docs/documentation/security/` | The change introduces an attack surface worth its own analysis. `secrets.mdx` and `threat-model.mdx` are updated whenever they stop being accurate. |
+| **App flow** | `content/docs/maintain/app-flow/` | **Any ADR that adds or changes something a person sees (§2, ADR-0008)** |
+| PRD + user stories | `content/docs/maintain/prd/` | Any reader-facing feature |
+| Architecture / HLD | `content/docs/maintain/architecture/` | A new module, content source, build step, background job or external integration |
+| ERD | `content/docs/maintain/erd/` | Any persisted data — `erd/system.mdx` is created by the first ADR that adds some |
+| DFD | `content/docs/maintain/dfd/` | Data crosses a trust boundary or reaches an external system (search, hosting, analytics, CI), or private content moves between processes |
+| State diagram | `content/docs/maintain/state/` | An entity has more than two states, or guarded / timed transitions (a page's draft → published, a package version's lifecycle) |
+| Sequence diagram | `content/docs/maintain/sequence/` | A flow spans several actors or systems, is async, or has failure/retry behaviour (build and index sync, docs generation from a package) |
+| API spec | `content/docs/maintain/api/` | Any route handler or endpoint another client or system calls (`llms.txt`, `static.json`, per-page Markdown) |
+| RBAC matrix | `content/docs/maintain/rbac/` | Visibility or permitted actions depend on who the reader is — private project documentation |
+| Security analysis | `content/docs/maintain/security/` | The change introduces an attack surface worth its own analysis. `secrets.mdx` and `threat-model.mdx` are updated whenever they stop being accurate. |
 
 Judgement applies — a small change may need none of them. **If it is unclear whether one is
-required, write it.** Start from [`content/docs/documentation/_templates/`](content/docs/documentation/_templates/index.mdx).
+required, write it.** Start from [`content/docs/maintain/_templates/`](content/docs/maintain/_templates/index.mdx).
 
 **Diagrams and flows are made with Archify**, always: architecture, workflow, sequence, data
 flow, lifecycle, ERD, class, tree and timeline diagrams. This is the owner's standing choice.
@@ -394,7 +402,7 @@ HTML file.
 - **How this HTML is stored and shown on the site is decided by its own ADR**, because it is a
   UI change: ADR-0011, proposed (embedded with an `<HtmlEmbed>` component in a sandboxed
   frame). Until it is approved, the site shows the Mermaid version as highlighted code, and
-  Archify and prototype files stay out of `content/docs/` and `public/`: save them outside the
+  Archify and prototype files stay out of `content/` and `public/`: save them outside the
   published folders and give the owner the path.
 - No binary or externally hosted images.
 
@@ -406,18 +414,18 @@ HTML file.
 | `AGENTS.md` (this file) | The way work is done changes — conventions, commands, structure, rules, stack |
 | `README.md` | What the project is, how to run it, or how it is laid out changes |
 | `PROJECT_AGENTS.md` | Anything changes how consuming repositories work here: folder layout, page format, invariants, git flow, commands, or a rule in this file they must follow. **Keep it in step with `AGENTS.md` in the same change.** |
-| `content/docs/documentation/adr/index.mdx` | An ADR is written or changes status — keep the index and the next free number accurate |
+| `content/docs/maintain/adr/index.mdx` | An ADR is written or changes status — keep the index and the next free number accurate |
 
 ## 9. Security and privacy
 
-[ADR-0005](content/docs/documentation/adr/ADR-0005-security-as-a-standing-practice.mdx). This site will hold
+[ADR-0005](content/docs/maintain/adr/ADR-0005-security-as-a-standing-practice.mdx). This site will hold
 documentation for **private projects** next to public packages. A flaw here is not a broken
 page. It is a private project's architecture, internal API or client name published on the
 open web, indexed by a search engine and copied into an LLM's training data — where it cannot
 be taken back.
 
 Security is a property of **every change**, not a pre-deploy event. Full documents live in
-[`content/docs/documentation/security/`](content/docs/documentation/security/index.mdx).
+[`content/docs/maintain/security/`](content/docs/maintain/security/index.mdx).
 
 ### Never guess at a security decision
 
@@ -429,20 +437,20 @@ provider, what a published example may contain — **the owner decides, and it i
 
 | If the change… | Check |
 |---|---|
-| Introduces or reads a secret / env var | Not a literal in source · **`NEXT_PUBLIC_` publishes to the world** · added to `content/docs/documentation/security/secrets.mdx` **and** `.env.example` |
-| Adds a page to `content/docs/` | Belongs to a public package or project (§6.1) · no secret, token, internal hostname, client name or personal data in text, examples or screenshots |
-| Adds a route handler or endpoint | Says what it exposes, to whom · documented in `content/docs/documentation/api/` · private content excluded or authorization enforced server-side |
+| Introduces or reads a secret / env var | Not a literal in source · **`NEXT_PUBLIC_` publishes to the world** · added to `content/docs/maintain/security/secrets.mdx` **and** `.env.example` |
+| Adds a page to `content/` | Belongs to a public package or project (§6.1) · no secret, token, internal hostname, client name or personal data in text, examples or screenshots |
+| Adds a route handler or endpoint | Says what it exposes, to whom · documented in `content/docs/maintain/api/` · private content excluded or authorization enforced server-side |
 | Sends anything to a third party (search, analytics, hosting) | Exactly what is sent, minimised · recorded as a DFD boundary crossing · never private content without an approved ADR |
 | Accepts input (search queries, URLs, MDX components that take props) | Validated · output encoded · no user-controlled HTML |
 | Adds logging or error handling | **No secrets, tokens or personal data** in logs or client responses |
 
 ### Full audits at gates
 
-The audits in [`content/docs/documentation/security/checklist.mdx`](content/docs/documentation/security/checklist.mdx) run **before the first
+The audits in [`content/docs/maintain/security/checklist.mdx`](content/docs/maintain/security/checklist.mdx) run **before the first
 internet-reachable deployment** and **before each release** of the site. Findings are reported
 as: what it is · where it is · how it would be exploited · the fix. Fix data exposure and
 unauthorized access first, abuse and logic flaws second. **Findings go to the owner, not into
-the Documentation project**, until they are fixed: those pages are published (ADR-0002).
+the maintainer documentation**, until they are fixed: those pages are published (ADR-0002).
 
 ### Principles that hold regardless of stack
 
@@ -459,7 +467,7 @@ the Documentation project**, until they are fixed: those pages are published (AD
 ### Tool-specific rules
 
 Algolia is adopted; its checks are in
-[`content/docs/documentation/security/checklist.mdx`](content/docs/documentation/security/checklist.mdx#tool-specific-checks). **The ADR that
+[`content/docs/maintain/security/checklist.mdx`](content/docs/maintain/security/checklist.mdx#tool-specific-checks). **The ADR that
 adopts a host, analytics, CI or an authentication provider adds its own checks** there.
 
 ## 10. Repository map
@@ -473,32 +481,34 @@ adopts a host, analytics, CI or an authentication provider adds its own checks**
 ├── PRODUCT.md           # product truth for UI work (impeccable reads it); not published (§8)
 ├── DESIGN.md            # the home page's visual system, with .impeccable/design.json; not published (§8)
 ├── PROJECT_AGENTS.md    # guide for repositories that include this one as a git submodule (§1)
-├── content/docs/        # PUBLISHED — every page readers see
-│   ├── index.mdx, test.mdx  # scaffold placeholders
-│   ├── <project-slug>/  # one catalogue entry per package or project: meta.json `catalog`, use/, maintain/ (ADR-0013)
-│   └── documentation/   # the "Documentation" project (root folder): this site's own docs
-│       ├── meta.json    # title, root: true, page order
-│       ├── index.mdx    # documentation map — what lives where
-│       ├── _templates/  # a starting point for each document type
-│       ├── adr/         # binding decisions — immutable once approved
-│       ├── app-flow/    # Mermaid flows + screen wireframes, one per feature — with every UI-changing ADR
-│       ├── prd/         # product requirements + user stories
-│       ├── architecture/  # high-level design
-│       ├── dfd/         # data flow diagrams
-│       ├── erd/         # persisted data, once there is any
-│       ├── state/       # state machines / lifecycles
-│       ├── sequence/    # sequence diagrams
-│       ├── api/         # route handler and endpoint contracts
-│       ├── rbac/        # access matrices (public vs private documentation)
-│       └── security/    # threat model, data classification, secrets, audit checklist
+├── content/             # PUBLISHED — every page readers see; one folder per entry, at /<slug> (ADR-0015)
+│   ├── <project-slug>/  # a package or project: meta.json `catalog`, index.mdx, use/ (dev/ + named lines), maintain/
+│   └── docs/            # this site as a project, at /docs: meta.json `catalog`, index.mdx
+│       └── maintain/    # its Maintain track: this site's own decisions and design documents
+│           ├── meta.json    # title, page order
+│           ├── index.mdx    # documentation map — what lives where
+│           ├── _templates/  # a starting point for each document type
+│           ├── adr/         # binding decisions — immutable once approved
+│           ├── app-flow/    # Mermaid flows + screen wireframes, one per feature — with every UI-changing ADR
+│           ├── prd/         # product requirements + user stories
+│           ├── architecture/  # high-level design
+│           ├── dfd/         # data flow diagrams
+│           ├── erd/         # persisted data, once there is any
+│           ├── state/       # state machines / lifecycles
+│           ├── sequence/    # sequence diagrams
+│           ├── api/         # route handler and endpoint contracts
+│           ├── rbac/        # access matrices (public vs private documentation)
+│           └── security/    # threat model, data classification, secrets, audit checklist
 ├── src/
-│   ├── proxy.ts         # line redirects (use/latest, removed lines), then /docs/<page>.md and Markdown negotiation
-│   ├── app/             # App Router: (home)/ (home page, home.css), docs/[[...slug]]/, llms.txt,
-│   │                    #   llms-full.txt, llms.mdx/docs/, og/docs/, static.json
-│   ├── components/      # mdx.tsx, search.tsx (search dialog), docs/ (track switch, version notice),
-│   │                    #   home/ (orbit map, hero search, catalogue, previews, terminal)
+│   ├── proxy.ts         # catalogued paths only: line redirects (use/latest, unknown lines), then /<page>.md and Markdown negotiation
+│   ├── app/             # App Router: layout.tsx (fonts, theme), global.css (tokens), site.css (header, hero),
+│   │                    #   (home)/ (home page, home.css), (site)/[...slug]/ (every page, notebook layout),
+│   │                    #   llms.txt, llms-full.txt, llms.mdx/[...slug]/, og/[...slug]/, static.json
+│   ├── components/      # site-header.tsx, mdx.tsx, search.tsx (search dialog),
+│   │                    #   docs/ (docs header, package hero, track switch, version notice),
+│   │                    #   home/ (home header, orbit map, hero search, catalogue, previews, terminal)
 │   └── lib/             # source.ts (content loader), catalog*.ts (catalogue schema, checks, entries, redirects),
-│                        #   search-scope.ts, algolia.ts, shared.ts (site name, routes, GitHub), layout.shared.tsx
+│                        #   search-scope.ts, algolia.ts, shared.ts (site name, routes, GitHub)
 ├── scripts/
 │   └── sync-content.ts  # after next build: pushes static.json records to Algolia
 ├── next.config.mjs      # Fumadocs MDX plugin
@@ -507,34 +517,34 @@ adopts a host, analytics, CI or an authentication provider adds its own checks**
 └── tsconfig.json        # strict; @/* → ./src/*
 ```
 
-The system as built is described in [`content/docs/documentation/architecture/system.mdx`](content/docs/documentation/architecture/system.mdx).
+The system as built is described in [`content/docs/maintain/architecture/system.mdx`](content/docs/maintain/architecture/system.mdx).
 
 ## 11. Quick checklist
 
-- [ ] Read `AGENTS.md`, [`content/docs/documentation/index.mdx`](content/docs/documentation/index.mdx) and the relevant ADRs.
+- [ ] Read `AGENTS.md`, [`content/docs/maintain/index.mdx`](content/docs/maintain/index.mdx) and the relevant ADRs.
 - [ ] Which skills fit this task? Look them up in `.claude/agent-skills/INDEX.md`, load only those,
       and name them — process skills first (§12).
 - [ ] Does this need an ADR? If yes — write it, `Status: Proposed`, index it, and stop.
-- [ ] Does it change the UI? Then write `content/docs/documentation/app-flow/<feature>.mdx` with it.
+- [ ] Does it change the UI? Then write `content/docs/maintain/app-flow/<feature>.mdx` with it.
 - [ ] Any undetermined product, content or privacy decision? Ask with options and a
       recommendation (§4).
 - [ ] Which design documents does §8 require? Write them with the ADR.
 - [ ] ADR approved by the owner? Only then write code.
 - [ ] Read the relevant `node_modules/next/dist/docs/` guide or Fumadocs source before writing
       code against them.
-- [ ] Content invariants respected (§6)? Nothing private in `content/docs/`.
+- [ ] Content invariants respected (§6)? Nothing private in `content/`.
 - [ ] Complete the whole approved scope in one pass.
 - [ ] Comments only where they explain *why* (§7).
 - [ ] Security: run the per-change rows that apply (§9). Any doubt → ask, never assume.
 - [ ] Living design documents updated in place to match the code.
-- [ ] `AGENTS.md`, `README.md`, `content/docs/documentation/adr/index.mdx` updated as needed.
+- [ ] `AGENTS.md`, `README.md`, `content/docs/maintain/adr/index.mdx` updated as needed.
 - [ ] Tests written or updated — happy path **and** the obvious failures (ADR-0007).
 - [ ] `bun run lint`, `bun run types:check` and `bunx next build` pass.
 - [ ] Leave everything uncommitted for the owner's review.
 
 ## 12. Skills
 
-[ADR-0006](content/docs/documentation/adr/ADR-0006-agent-skills-are-advisory.mdx). Contributors here — human and AI —
+[ADR-0006](content/docs/maintain/adr/ADR-0006-agent-skills-are-advisory.mdx). Contributors here — human and AI —
 have a library of installed **skills**: packaged workflows for brainstorming, debugging,
 technical writing, API design, UI work and more. **Use them.** Left alone, they go unused, and
 the same task gets a rigorous treatment one day and an ad-hoc one the next.
@@ -544,7 +554,7 @@ They are recommendations about *method*. This file is *authority*.
 ### 12.1 Order of precedence
 
 ```
-1. AGENTS.md and content/docs/documentation/   binding   — ADRs, design documents, this working agreement
+1. AGENTS.md and content/docs/maintain/   binding   — ADRs, design documents, this working agreement
 2. Skills                advisory  — invoke freely; follow unless (1) says otherwise
 3. Default behaviour     last      — only where neither of the above covers the situation
 ```
@@ -556,7 +566,7 @@ They are recommendations about *method*. This file is *authority*.
 | Writing application code before an approved ADR | §2 · ADR-0001 |
 | `git commit`, `git push`, rebase, or switching branches | §3 |
 | Adding a dependency, or changing build / lint / test tooling | §2 · §5 |
-| A documentation layout other than `content/docs/documentation/` and `content/docs/documentation/_templates/`, including a skill's own spec or plan folder | §8 · ADR-0002 |
+| A documentation layout other than `content/docs/maintain/` and `content/docs/maintain/_templates/`, including a skill's own spec or plan folder | §8 · ADR-0002 |
 | Using a skill that is not in `.claude/agent-skills/`, or running a skill's scripts or CLI commands | §12.2 · ADR-0009 |
 | Explanatory *what*-comments, banners, or `=====` section headers | §7 · ADR-0003 |
 | Deciding a security, privacy or public-vs-private question on the owner's behalf | §4 · §9 · ADR-0004 · ADR-0005 |
@@ -570,12 +580,12 @@ violation is invisible in the diff, because the diff looks like good work.
 
 ### 12.2 Which skill, when — trusted skills only
 
-[ADR-0009](content/docs/documentation/adr/ADR-0009-trusted-agent-skills-are-vendored.mdx). The trusted skills for
+[ADR-0009](content/docs/maintain/adr/ADR-0009-trusted-agent-skills-are-vendored.mdx). The trusted skills for
 this repository are **vendored** in [`.claude/agent-skills/`](.claude/agent-skills/INDEX.md) at pinned
 commits: process skills (brainstorming, debugging, TDD, verification, code review), ADRs and
 source-driven work, writing, front end, prototypes, Next.js bundles, Algolia, security and
 supply chain.
-They sit outside `content/docs/`, so they are not published, and outside `.claude/skills/`, so
+They sit outside `content/`, so they are not published, and outside `.claude/skills/`, so
 Claude Code does not auto-load them.
 
 - **Start at [`.claude/agent-skills/INDEX.md`](.claude/agent-skills/INDEX.md).** Find the row for the

@@ -1,0 +1,19 @@
+{
+  "title": "Maintain",
+  "description": "Decisions, design documents and security documents for this site",
+  "pages": [
+    "index",
+    "adr",
+    "architecture",
+    "app-flow",
+    "prd",
+    "api",
+    "dfd",
+    "sequence",
+    "state",
+    "erd",
+    "rbac",
+    "security",
+    "_templates"
+  ]
+}

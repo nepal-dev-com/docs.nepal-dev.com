@@ -49,12 +49,12 @@ installed version) without leaving for the source code.
 - Search is Algolia, opened from the docs layout.
 - Every page is published on several surfaces at once: the site, the search index,
   `llms.txt` / `llms-full.txt`, per-page Markdown and Open Graph images.
-- The site's own decisions and design documents are published as the "Documentation" project
-  at `/docs/documentation`.
+- The site's own decisions and design documents are published as the Maintain track of the
+  `docs` project, at `/docs/maintain`.
 
 ## Capabilities and Constraints
 
-- Built on Fumadocs (Next.js App Router). Pages are Markdown/MDX files in `content/docs/`.
+- Built on Fumadocs (Next.js App Router). Pages are MDX files in `content/<slug>/`, one folder per package or project, published at `/<slug>`.
 - **Private stays private.** Private project documentation must never reach a public surface.
   How it is stored, served and searched is undecided; until an ADR decides it, no private
   project content is added.
@@ -79,8 +79,8 @@ installed version) without leaving for the source code.
 
 ## Evidence on Hand
 
-- No package or project is documented yet. The home page and the two pages under `/docs` are
-  scaffold placeholders.
+- No package or project is documented yet besides this site itself (`/docs`), so the home page
+  shows its empty states.
 - No testimonials, usage figures, download counts or case studies are on hand. Don't
   fabricate any; a package's registry figures may be cited only once read from the registry.
 

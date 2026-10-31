@@ -43,8 +43,8 @@ export function Hero({
         <HeroSearch docsRoute={docsRoute} suggestions={suggestions} />
         <noscript>
           <style>{'.hero-search{display:none}'}</style>
-          <a className="noscript-link" href={docsRoute}>
-            Browse the documentation
+          <a className="noscript-link" href="#browse">
+            Browse everything
           </a>
         </noscript>
         <div className="legend" aria-hidden>

@@ -1,0 +1,266 @@
+---
+title: "App flow — site pages: root URLs, header, package hero, theme"
+---
+
+- **Status:** Current
+- **Last updated:** 2026-11-01
+- **Related ADRs:** [ADR-0015](../adr/ADR-0015-every-entry-lives-at-the-root-in-one-shape-and-one-look.mdx),
+  [ADR-0013](../adr/ADR-0013-packages-and-projects-share-one-catalogue-shape.mdx),
+  [ADR-0014](../adr/ADR-0014-home-page-is-a-search-first-release-map.mdx)
+
+> Snapshot of the system as it stands today. Edit in place; never record what changed.
+
+What a person sees and how they move through it, as built for ADR-0015. Sample values are
+invented (ADR-0008): `lodestar`, `ledgerly` and `orbit-board` are not real packages or projects.
+Phone width first; desktop differences are noted under each screen.
+
+Every package and project lives at `/<slug>`. Inside it, **Use** holds the user docs, one line
+per release, each named by the package, plus `dev` for work in progress, and **Maintain**
+holds the maintainer docs. This
+site is the project `docs`: its overview is `/docs` and its ADRs and design documents are its
+Maintain track, `/docs/maintain/…`. Every page, the home page included, shares one header with
+search and a light/dark switch, and docs pages use the home page's colours and type without its
+motion.
+
+The flow is made with Archify. Its source is `.archify/site-pages-20261031/candidate.json`.
+Until ADR-0011 is approved, the HTML stays in that folder and is not published.
+
+## Entry points
+
+- The home page: a catalogue row, a map body or a search result opens `/<slug>` or one of its
+  pages.
+- The header on every page: the wordmark (home), Packages and Projects (the home catalogue,
+  filtered), the search button and `⌘K` (the search dialog; on the home page they focus the
+  hero's field instead), `llms.txt`, GitHub.
+- A README or registry badge: `/<slug>` or the stable `/<slug>/use/latest/<page>`.
+- A direct URL: `/<slug>/use/v1.4/install`, `/<slug>/use/dev/install`, `/<slug>/maintain/releasing`,
+  or the Markdown version with `.md`.
+- Everyone sees every public package and project. Private projects have no pages until the
+  private-documentation ADR; a private URL then gets the same 404 as a missing page.
+
+## Flow
+
+```mermaid
+flowchart TB
+  V[Visitor] --> H["Home /"]
+  V -->|badge or link| O
+  H -->|row, body or result| O["Package overview<br/>/lodestar · hero"]
+  H -->|header: search or ⌘K| HS["Hero search"]
+  HS -->|result| O
+  P -->|header: search or ⌘K| S["Search dialog"]
+  S -->|result| P
+  O -->|hero: Use| U["Use page · latest line<br/>/lodestar/use/v1.4/install"]
+  O -->|hero: Maintain| M["Maintain page<br/>/lodestar/maintain/releasing"]
+  A["/lodestar/use/latest/… or /lodestar/use"] -->|redirect| U
+  U -->|version menu: dev| N["Use page · dev<br/>banner: In development"]
+  U -->|version menu: older line| G["Use page · legacy line<br/>banner: Older version"]
+  N -->|banner link| U
+  G -->|banner link| U
+  U <-->|track switch| M
+  P["Any page"] -->|header: theme switch| P
+  H -->|catalogue row: Puncoz Docs| D["Site overview /docs"]
+  D -->|Maintain| DM["/docs/maintain/adr/…"]
+```
+
+## Screens
+
+### 0. `Header` — on every page
+
+```mermaid
+block-beta
+  columns 6
+  mark["◎ Puncoz Docs"]:3 search["⌕"] theme["◐"] menu["☰"]
+```
+
+Phone width: the wordmark, then icon buttons for search and GitHub, the theme switch and, on
+docs pages, a menu button that opens the sidebar. The nav links are hidden; on the home page
+its own sections carry them.
+
+Desktop: wordmark · Packages · Projects · `llms.txt` · a search button showing `⌘K` · GitHub ·
+the theme switch. Sticky. On docs pages it carries a hairline border; on the home page it gains
+one once the page scrolls.
+
+**States**
+
+- Empty: with no project, Projects is not shown.
+- Loading: none; prerendered. The theme switch shows the current theme from first paint.
+- Not found, Refused: not applicable.
+- Error: none at runtime.
+- Degraded: search unavailable shows the dialog's notice; without scripts the search trigger and
+  the theme switch don't respond, and the page keeps the default dark theme.
+- Success: the switch flips light and dark on the spot and the choice holds on the next page and
+  the next visit.
+
+### 1. `Package overview` — `/<slug>`
+
+```mermaid
+block-beta
+  columns 4
+  hdr["◎ Puncoz Docs   ⌕ ◐ ☰"]:4
+  block:hero:4
+    columns 4
+    dot["● npm package"] name["lodestar"]:3
+    desc["Keyboard-first command palette for React."]:4
+    ver["v1.4 · 1.4.2 · latest"]:2 dev["dev · 2.0.0-dev.4"]:2
+    rail["●2024 LTS ── ◉v1.4 latest ┄┄ ○dev"]:4
+    use["Use"] maint["Maintain"] reg["Registry ↗"] repo["Repository ↗"]
+  end
+  body["the package's own overview page"]:4
+```
+
+The hero's dot and a faint wash take the ecosystem colour; a project's dot is outlined. Desktop:
+the hero spans the content column above the overview, with the links in one row and the rail
+under the versions; the sidebar shows the package's tracks and the contents panel the
+overview's headings.
+
+**States**
+
+- Empty: an unreleased package shows only the dashed `dev · <version>` tag and no rail (a rail
+  needs two lines); a project without lines shows no versions or rail; a missing track, registry
+  or repository has no link.
+- Loading: none; prerendered.
+- Not found: an unknown slug shows the site's 404.
+- Refused: not applicable until private documentation exists.
+- Error: a malformed catalogue field fails the build.
+- Degraded: as the header.
+- Success: the reader sees what the package is, its current and unreleased versions, and both
+  tracks one click away.
+
+### 2. `Use page` — `/<slug>/use/<line>/<page>`
+
+```mermaid
+block-beta
+  columns 4
+  hdr["◎ Puncoz Docs   ⌕ ◐ ☰"]:4
+  block:drawer:4
+    columns 4
+    ver["v1.4 · 1.4.2 · Latest ▾"]:4
+    name["lodestar"]:4
+    track["Use | Maintain"]:4
+    l1["Install"]:4
+    l2["Commands"]:4
+  end
+  h1["Install"]:4
+  stated["Documents lodestar 1.4.2"]:4
+  body["page content · code in JetBrains Mono"]:4
+```
+
+The drawer is the sidebar, opened from the header's menu button. Desktop: sidebar on the left
+with the version menu and track switch at its top, the page in the middle, the contents panel on
+the right. Headings in Bricolage Grotesque, text in Onest, code on the panel colour.
+
+**States**
+
+- Empty: a line with only its index page shows that page and a one-link sidebar.
+- Loading: none; prerendered.
+- Not found: a missing page gets the site's 404; a removed line redirects to the same page in
+  `latest`.
+- Refused: not applicable today.
+- Error: the site's error page; no raw error text.
+- Degraded: as the header.
+- Success: the page, with its line selected and Use highlighted.
+
+### 3. `Version menu` — opened from the sidebar
+
+```mermaid
+block-beta
+  columns 4
+  cur["v1.4 · 1.4.2 · Latest ▾"]:4
+  block:opts:4
+    columns 4
+    o1["v1.4 · 1.4.2 · Latest ✓"]:4
+    o2["dev · 2.0.0-dev.4 · In development"]:4
+    o3["2024 LTS · 0.9.3 · Older version"]:4
+  end
+```
+
+Latest first, then `dev`, then older lines in the order `use/meta.json` gives, or newest
+version first. Each option shows the line's name as the package set it, its version, and its
+channel in words.
+
+**States**
+
+- Empty: an unreleased package lists only `dev`.
+- Success: choosing a line opens the same page in that line when it exists, otherwise that
+  line's first page.
+
+### 4. `In development or older page` — `/<slug>/use/dev/<page>`, `/<slug>/use/2024-lts/<page>`
+
+```mermaid
+block-beta
+  columns 4
+  h1["Install"]:4
+  banner["In development — This page documents lodestar 2.0.0-dev.4, work in progress on the default branch. Read this page for 1.4.2, the latest release."]:4
+  body["page content"]:4
+```
+
+An older line reads "Older version — This page documents lodestar 0.9.3. Read this page for
+1.4.2, the latest release."
+
+**States**
+
+- Success: the banner links to the same page in `latest`, or that line's first page. An
+  unreleased package's `dev` banner has no link.
+- Other states: as the Use page.
+
+### 5. `Maintain page` — `/<slug>/maintain/<page>`
+
+```mermaid
+block-beta
+  columns 4
+  hdr["◎ Puncoz Docs   ⌕ ◐ ☰"]:4
+  name["lodestar"]:4
+  track["Use | Maintain"]:4
+  h1["Releasing"]:4
+  body["How a release is cut from the default branch"]:4
+```
+
+Not versioned: no version menu and no version line.
+
+**States**
+
+- Empty: a package without a Maintain track has no switch; its Maintain URLs get the 404.
+- Other states: as the Use page.
+
+### 6. `Site overview` — `/docs`
+
+```mermaid
+block-beta
+  columns 4
+  hdr["◎ Puncoz Docs   ⌕ ◐ ☰"]:4
+  block:hero:4
+    columns 4
+    dot["○ Project"] name["Puncoz Docs"]:3
+    desc["This documentation site: how it is organised, built and decided."]:4
+    maint["Maintain"]:2 repo["Repository ↗"]:2
+  end
+  body["what the site is · where decisions and design documents live"]:4
+```
+
+The site's own entry has the project hero with a Maintain link and its repository. Its Maintain
+track holds
+the ADRs, architecture, app flows, PRDs, API, data flow, sequence, state, ERD, RBAC, security
+and templates, in today's order.
+
+**States**
+
+- Empty: not applicable; the site always has its Maintain track.
+- Other states: as the package overview.
+
+### 7. `Theme switch` — in the header
+
+```mermaid
+block-beta
+  columns 2
+  light["☼"] dark["☾ (current)"]
+```
+
+One round button holding a sun and a moon; the current theme's icon is highlighted, and a click
+switches to the other. Dark is the default. The whole page, the home page's map, rails and
+terminal included, redraws in the chosen theme.
+
+**States**
+
+- Loading: the stored choice applies before first paint, so the page doesn't flash.
+- Degraded: without scripts or storage, the page stays dark and the switch does nothing.
+- Success: the choice holds across pages and visits in that browser.

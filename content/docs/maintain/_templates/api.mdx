@@ -1,0 +1,44 @@
+---
+title: "API — <route or resource>"
+---
+
+- **Status:** Draft
+- **Last updated:** YYYY-MM-DD
+- **Related ADRs:** ADR-NNNN
+
+> Snapshot of the system as it stands today. Edit in place; never record what changed.
+
+## Endpoints
+
+| Method | Path | Purpose | Auth |
+|---|---|---|---|
+
+---
+
+### `METHOD /path`
+
+**Purpose.** One line.
+
+**Authorisation.** Who may call it, and which content it may return — cross-reference
+`content/docs/maintain/rbac/<slug>.mdx`. If it is public, say what keeps private content out of it.
+
+**Request**
+
+```json
+{}
+```
+
+| Field | Type | Required | Notes |
+|---|---|---|---|
+
+**Responses**
+
+| Status | Meaning | Body |
+|---|---|---|
+| 200 | | |
+| 400 | Validation failed | `{ "error": { "code": "...", "message": "..." } }` |
+| 401 | Not authenticated | |
+| 403 | Authenticated but not permitted | |
+| 404 | Not found, or hidden by permission | |
+
+**Notes.** Caching and revalidation, content type, pagination, rate limits, side effects.

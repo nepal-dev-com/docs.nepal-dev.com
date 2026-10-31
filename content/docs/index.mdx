@@ -1,13 +1,27 @@
 ---
-title: Hello World
-description: Your first document
+title: Puncoz Docs
+description: The documentation site for everything Puncoz Nepal builds, and how it is organised.
 ---
 
-Welcome to the docs! You can start writing documents in `/content/docs`.
+Puncoz Docs holds the documentation for every package and project Puncoz Nepal publishes. It
+documents itself the same way, as the project `docs`.
 
-## What is Next?
+## How every package and project is organised
 
-<Cards>
-  <Card title="Learn more about Next.js" href="https://nextjs.org/docs" />
-  <Card title="Learn more about Fumadocs" href="https://fumadocs.dev" />
-</Cards>
+Each one lives at its own address, `/<slug>`, and has the same shape:
+
+| Address | What it holds |
+|---|---|
+| `/<slug>` | The overview: what it is, its versions and where to go next |
+| `/<slug>/use/…` | **Use**: docs for people using it, one set per release |
+| `/<slug>/use/dev/…` | Work in progress on the default branch, not released yet |
+| `/<slug>/use/latest/…` | Always the latest release |
+| `/<slug>/maintain/…` | **Maintain**: docs for the people who look after it |
+
+Every page states the version it documents. Add `.md` to any page's address for its Markdown,
+or read [`/llms.txt`](/llms.txt) for an index of every page.
+
+## This site
+
+Puncoz Docs has no Use track yet. Its **Maintain** track holds the decisions and design documents
+behind it: start at the [maintainer documentation map](./maintain/index.mdx).

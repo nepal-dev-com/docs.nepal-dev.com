@@ -2,9 +2,10 @@ import { createGetUrl } from 'fumadocs-core/source';
 
 // A working name until the final one is chosen (ADR-0014 open question).
 export const appName = 'Puncoz Docs';
-export const docsRoute = '/docs';
-export const docsImageRoute = '/og/docs';
-export const docsContentRoute = '/llms.mdx/docs';
+// Packages and projects live at the root, `/<slug>` (ADR-0015 decision 1).
+export const docsRoute = '';
+export const docsImageRoute = '/og';
+export const docsContentRoute = '/llms.mdx';
 
 // The owner's choice, ADR-0014.
 export const gitConfig = {

@@ -1,0 +1,105 @@
+---
+title: "API — Machine-readable content routes"
+---
+
+- **Status:** Current
+- **Last updated:** 2026-11-01
+- **Related ADRs:** [ADR-0013](../adr/ADR-0013-packages-and-projects-share-one-catalogue-shape.mdx),
+  [ADR-0015](../adr/ADR-0015-every-entry-lives-at-the-root-in-one-shape-and-one-look.mdx)
+
+> Snapshot of the system as it stands today. Edit in place; never record what changed.
+
+All of these are generated at build time (`revalidate = false`), need no authentication, and
+return **every page in `content/`**. None filters anything out. Pages live at the root,
+`/<slug>/…` (ADR-0015); `src/proxy.ts` acts only on paths whose first segment is a catalogued
+slug.
+
+## Endpoints
+
+| Method | Path | Purpose | Auth |
+|---|---|---|---|
+| GET | `/<package>/use/latest/<path>` | 307 to the same path in the line marked `latest`, or in `dev` when nothing is released (also with `.md`) | None |
+| GET | `/<package>/use/<segment>/<path>` for a line that does not exist | 307 to the same path in `latest` (or `dev`); 404 there if the page doesn't exist | None |
+| GET | `/<page>.md` | One page as Markdown (rewritten by `src/proxy.ts`) | None |
+| GET | `/<page>` with `Accept` preferring Markdown | One page as Markdown (rewritten by `src/proxy.ts`) | None |
+| GET | `/llms.mdx/<slug>/content.md` | One page as Markdown | None |
+| GET | `/llms.txt` | Index of every page | None |
+| GET | `/llms-full.txt` | Every page's Markdown, concatenated | None |
+| GET | `/og/<slug>/image.png` | Open Graph image for a page | None |
+| GET | `/static.json` | Every page as an Algolia search record | None |
+
+---
+
+### `GET /llms.mdx/<slug>/content.md`
+
+**Purpose.** The processed Markdown of one page, headed `# <title> (<url>)`. A page in a
+package's version line follows the heading with `> Documents <package> <version> (<line name>, <latest | in development | older version>).`,
+such as `> Documents lodestar 0.1.4 (v0.1, latest).`
+
+**Authorisation.** Public. Nothing keeps private content out — see `AGENTS.md` §6.1.
+
+**Responses**
+
+| Status | Meaning | Body |
+|---|---|---|
+| 200 | Page found | Markdown, `Content-Type: text/markdown` |
+| 404 | No such page | Next.js not-found page |
+
+**Notes.** `/<page>.md`, and `/<page>` when the request prefers Markdown, are
+rewritten here by `src/proxy.ts`; the second adds `Vary: Accept`.
+
+---
+
+### `GET /llms.txt` and `GET /llms-full.txt`
+
+**Purpose.** `llms.txt` lists every page; `llms-full.txt` returns all of their Markdown in one
+response. Both come from `docsLlms` in `src/lib/source.ts`. In `llms.txt`, each version line
+is named with its line name, version and channel, such as `v4.0 — 4.0.1, latest` or
+`dev — 5.0.0-dev, in development`.
+
+**Authorisation.** Public.
+
+**Responses**
+
+| Status | Meaning | Body |
+|---|---|---|
+| 200 | Always | Plain text |
+
+---
+
+### `GET /og/<slug>/image.png`
+
+**Purpose.** A generated Open Graph image showing the page's title, description and the site
+name (`appName`).
+
+**Authorisation.** Public.
+
+**Responses**
+
+| Status | Meaning | Body |
+|---|---|---|
+| 200 | Page found | PNG |
+| 404 | No such page | Next.js not-found page |
+
+---
+
+### `GET /static.json`
+
+**Purpose.** Every page as an Algolia `DocumentRecord`, from `toDocuments(source)`. The
+build reads this route's output and pushes it to the index (`scripts/sync-content.ts`).
+
+**Fields added here (ADR-0013 decision 8).** `tag` is the page's scope, the index's one facet:
+`<package>`, `<package>:maintain`, `<package>:use` or `<package>:use:<segment>` for catalogue
+pages (`ledgerly:use:3.x-lts`, `docs:maintain`), and `site` for anything outside an entry. The home page's
+search filters on it. Catalogue pages also carry `extra_data` with `package`, `kind`,
+`ecosystem`, `track`, `line` (the line's name) and `channel`; these reach the index, but the current index
+settings neither retrieve nor rank on them. Ranking `latest` and Maintain pages first needs an
+index settings change, which is publishing and waits for the owner.
+
+**Authorisation.** Public — it is served by the deployed site as well as read by the build.
+
+**Responses**
+
+| Status | Meaning | Body |
+|---|---|---|
+| 200 | Always | JSON array of records |

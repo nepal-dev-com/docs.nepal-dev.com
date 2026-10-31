@@ -11,8 +11,8 @@ html > body[data-scroll-locked] {
   --removed-body-scroll-bar-size: 0px !important;
 }
 
-/* Home page tokens, home page only (ADR-0014 decision 6). Light first, then dark. */
-.home {
+/* Site tokens on every page (ADR-0015 decision 7). Light first, then dark. */
+:root {
   color-scheme: light;
   --home-bg: #f6f7f9;
   --home-bg-2: #eef0f4;
@@ -41,7 +41,7 @@ html > body[data-scroll-locked] {
   --home-ease: cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-.dark .home {
+.dark {
   color-scheme: dark;
   --home-bg: #0a0c10;
   --home-bg-2: #0f1218;
@@ -64,4 +64,39 @@ html > body[data-scroll-locked] {
   --home-project: #e9ecf2;
   --home-shadow: rgb(0 0 0 / 0.6);
   --home-shadow-near: rgb(0 0 0 / 0.12);
+}
+
+/* Fumadocs' colours follow the site tokens, so docs pages share the home page's palette. */
+:root,
+.dark,
+.dark #nd-sidebar {
+  --color-fd-background: var(--home-bg);
+  --color-fd-foreground: var(--home-ink);
+  --color-fd-muted: var(--home-panel-2);
+  --color-fd-muted-foreground: var(--home-muted);
+  --color-fd-popover: var(--home-panel);
+  --color-fd-popover-foreground: var(--home-ink);
+  --color-fd-card: var(--home-panel);
+  --color-fd-card-foreground: var(--home-ink);
+  --color-fd-border: var(--home-line);
+  --color-fd-primary: var(--home-accent);
+  --color-fd-primary-foreground: var(--home-accent-ink);
+  --color-fd-secondary: var(--home-panel-2);
+  --color-fd-secondary-foreground: var(--home-ink);
+  --color-fd-accent: var(--home-accent-soft);
+  --color-fd-accent-foreground: var(--home-ink);
+  --color-fd-ring: var(--home-accent);
+}
+
+body {
+  font-family: var(--home-font-text);
+  -webkit-font-smoothing: antialiased;
+}
+
+code,
+kbd,
+pre,
+samp {
+  font-family: var(--home-font-data);
+  font-variant-numeric: tabular-nums;
 }

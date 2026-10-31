@@ -6,10 +6,10 @@ own documentation into it. This guide is for the people and AI agents working in
 repositories.
 
 > **Status.** The convention below is set out in
-> [ADR-0010](content/docs/documentation/adr/ADR-0010-projects-document-themselves-through-a-submodule.mdx),
+> [ADR-0010](content/docs/maintain/adr/ADR-0010-projects-document-themselves-through-a-submodule.mdx),
 > **Proposed**. Until the owner approves it, treat it as the intended rule and raise any
 > disagreement as a question. The shape of your folder (§3) is
-> [ADR-0013](content/docs/documentation/adr/ADR-0013-packages-and-projects-share-one-catalogue-shape.mdx),
+> [ADR-0013](content/docs/maintain/adr/ADR-0013-packages-and-projects-share-one-catalogue-shape.mdx),
 > **Approved**.
 
 Everything outside your project's folder is governed by [`AGENTS.md`](AGENTS.md), this
@@ -25,14 +25,14 @@ Replace `<submodule-path>` with where the submodule is mounted (for example `doc
 
 `<submodule-path>/` is the puncoz-packages-docs repository, where this project's documentation
 is published. Before changing anything in it, read `<submodule-path>/PROJECT_AGENTS.md` and follow
-it. In short: edit only `<submodule-path>/content/docs/<project-slug>/`; never commit, push or
+it. In short: edit only `<submodule-path>/content/<project-slug>/`; never commit, push or
 switch branches inside the submodule; never put private content there; ask the owner when
 anything is unclear.
 ```
 
 ## 2. Public only, for now
 
-Every file under `content/docs/` is **published**: on the website, in the search index, in
+Every file under `content/` is **published**: on the website, in the search index, in
 `llms.txt` / `llms-full.txt`, as per-page Markdown and as Open Graph images. Published is
 permanent.
 
@@ -44,23 +44,28 @@ permanent.
 
 ## 3. Where your pages go
 
-Each project or package has one folder: **`content/docs/<project-slug>/`**. Its shape is fixed
-by [ADR-0013](content/docs/documentation/adr/ADR-0013-packages-and-projects-share-one-catalogue-shape.mdx):
+Each project or package has one folder: **`content/<project-slug>/`**, published at
+**`/<project-slug>`**. Its shape is fixed by
+[ADR-0013](content/docs/maintain/adr/ADR-0013-packages-and-projects-share-one-catalogue-shape.mdx) and
+[ADR-0015](content/docs/maintain/adr/ADR-0015-every-entry-lives-at-the-root-in-one-shape-and-one-look.mdx):
 an overview, a **Use** track for people using it and a **Maintain** track for people who look
-after it. A package's Use track has one folder per documented major version, called a **line**.
+after it. A package's Use track has one folder per documented version, called a **line**.
 
 ```
-content/docs/<project-slug>/
+content/<project-slug>/
 ├── meta.json          # title, description and the `catalog` entry (below)
-├── index.mdx          # the overview, at /docs/<project-slug>
+├── index.mdx          # the overview, at /<project-slug>
 ├── use/
-│   ├── meta.json      # {"title": "Use"}
-│   ├── v3/            # one line per documented major version: v<major>
-│   │   ├── meta.json  # {"title": "v3", "version": "3.2.0", "channel": "latest"}
+│   ├── meta.json      # {"title": "Use"}; optional "pages" orders the older lines
+│   ├── dev/           # unreleased work in progress on the default branch, at /<project-slug>/use/dev
+│   │   ├── meta.json  # {"title": "dev", "version": "4.0.0-dev", "channel": "dev"}
 │   │   ├── index.mdx
 │   │   └── ...
-│   ├── v2/            # an older line: "channel": "legacy"
-│   └── next/          # an unreleased major: "channel": "next", "version": "4.0.0-beta.1"
+│   ├── v3/            # a released line; the folder name is yours
+│   │   ├── meta.json  # {"name": "v3.2", "version": "3.2.0", "channel": "latest"} → /<project-slug>/use/v3.2
+│   │   └── ...
+│   └── lts-2/         # an older line
+│       └── meta.json  # {"name": "2.x LTS", "version": "2.9.1", "channel": "legacy"} → /<project-slug>/use/2.x-lts
 └── maintain/          # not versioned: describes the default branch
     ├── meta.json      # {"title": "Maintain"}
     └── ...            # architecture, local setup, tests, releasing, contributing
@@ -89,24 +94,36 @@ built from:
   `pypi`, `go`, `cargo` or `other`. `visibility` must be `public`. `repository` and `registry`
   are optional `https` URLs. `featured` (default `false`) is the owner's call: ask.
 - **A line's `version` is the exact version it documents**, read from your manifest (§4), and
-  its `channel` is `latest`, `next` or `legacy`. A released package has exactly one `latest` line
-  and at most one `next`. A package with only `next` is unreleased. When `next` is released,
-  rename `next/` to its `v<major>/`, make it `latest`, and make the previous `latest` `legacy`.
-  Old URLs redirect to the same path in `latest`.
+  its `channel` is `latest`, `dev` or `legacy`.
+- **`use/dev/` is the work in progress**: always that folder, always `channel: "dev"`, always at
+  `/<project-slug>/use/dev`. A package with only `dev` is unreleased.
+- **A released line is named in its `meta.json`.** `name` is any string the package uses, such as
+  `v1.0`, `4.x` or `2024 LTS`; without it the folder name is used. The URL segment is the name
+  in lowercase, spaces as `-`, other characters outside `a-z 0-9 . _ -` dropped. A released
+  package has exactly one `latest` line. Older lines are `legacy`; the version menu lists them in
+  `use/meta.json` `pages` order, otherwise newest version first.
+- **Releasing:** copy `dev/` to a new folder, give it a `name`, its `version` and
+  `channel: "latest"`, mark the previous `latest` `legacy`, and keep working in `dev/`. A link to
+  a line that no longer exists redirects to the same path in `latest`.
 - **A project is unversioned by default**: its `use/` holds pages directly. A project that ships
   releases may use lines like a package.
 - **Either track may be missing**; the Use | Maintain switch then hides it.
-- **Link to `/docs/<project-slug>/use/latest/…`** from your README and registry page. It
+- **Link to `/<project-slug>/use/latest/…`** from your README and registry page. It
   redirects to the line marked `latest`, so the link never goes stale.
 - **No `demo.mdx` yet.** Demos wait for
-  [ADR-0011](content/docs/documentation/adr/ADR-0011-diagrams-and-prototypes-are-embedded-from-sandboxed-html.mdx).
-- **The build checks the shape** and fails, naming the file, on: a root folder without a
-  `catalog`, an invalid or non-`public` `catalog`, a line without `version` or `channel`, two
-  `latest` or two `next` lines, and `legacy` lines without a `latest`. Fix the folder rather
-  than working around the check.
+  [ADR-0011](content/docs/maintain/adr/ADR-0011-diagrams-and-prototypes-are-embedded-from-sandboxed-html.mdx).
+- **The build checks the shape** and fails, naming the file, on: a page directly in
+  `content/`, a folder without a `catalog`, an invalid or non-`public` `catalog`, a slug that is
+  not lowercase letters, digits and hyphens or is reserved (`api`, `auth`, `callback`, `sign-in`,
+  `sign-out`, `og`, `search`, `static`, `assets`, `public`, `_next`), a line without `version` or
+  `channel`, `channel: "dev"` anywhere but `use/dev/` (or `use/dev/` with another channel), a
+  name whose segment is empty, `dev`, `latest` or ends in `.md`, two lines with the same
+  segment, pages directly in a versioned `use/`, two `latest` lines, and `legacy` lines without
+  a `latest`. Fix the folder rather than working around the check.
 - **The slug is agreed with the owner** when the folder is first created. Don't invent one.
+  `docs` is taken: it is this site.
 - **Edit only your folder.** A change anywhere else, such as another project's pages, `src/`,
-  configuration, dependencies, `AGENTS.md` or the Documentation project, is a change to the
+  configuration, dependencies, `AGENTS.md` or this site's own pages in `content/docs/`, is a change to the
   site itself. It goes through this repository's ADR process (`AGENTS.md` §2): propose it, don't
   make it.
 - Writing and updating pages inside your folder needs no ADR, as long as it follows this guide.
@@ -149,7 +166,7 @@ Format:
 - **Prototypes and HTML wireframes** of your screens: the vendored `html-wireframe` and
   `html-prototype` skills (`.claude/agent-skills/INDEX.md`), in this site's prototype theme,
   phone width first, with a Mermaid `block-beta` version kept in the page.
-- Until ADR-0011 is approved, keep Archify and prototype HTML out of `content/docs/` and
+- Until ADR-0011 is approved, keep Archify and prototype HTML out of `content/` and
   `public/`, and give the owner its path. Once approved, pages embed it with `<HtmlEmbed>`.
 - No binary or externally hosted images.
 
@@ -168,7 +185,7 @@ Format:
 - **When done**, list the files you changed and give the human these commands to run:
 
   ```sh
-  git -C <submodule-path> add content/docs/<project-slug>
+  git -C <submodule-path> add content/<project-slug>
   git -C <submodule-path> commit -m "docs(<project-slug>): <what changed>"
   git -C <submodule-path> push
   git add <submodule-path>

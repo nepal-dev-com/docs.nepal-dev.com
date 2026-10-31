@@ -145,7 +145,7 @@ export function OrbitMap({ onPick }: { onPick: (entry: CatalogEntry) => void }) 
         const moons = body.entry.lines;
 
         moons.forEach((line, index) => {
-          const unreleased = line.channel === 'next';
+          const unreleased = line.channel === 'dev';
           const orbit = (13 + index * 6) * scale;
           const angle = time * (1.1 - index * 0.18) + index * 2.1 + body.angle;
           context!.beginPath();
@@ -273,8 +273,8 @@ export function OrbitMap({ onPick }: { onPick: (entry: CatalogEntry) => void }) 
   const tagFor = (entry: CatalogEntry) =>
     entry.lines.length > 0
       ? entry.lines.map((line) => (
-          <span key={line.name} className={line.channel === 'next' ? 'tag next' : 'tag'}>
-            {line.channel === 'next' ? `next ${line.version}` : `${line.name} · ${line.version}`}
+          <span key={line.segment} className={line.channel === 'dev' ? 'tag dev' : 'tag'}>
+            {line.channel === 'dev' ? `dev ${line.version}` : `${line.name} · ${line.version}`}
           </span>
         ))
       : [<span key="kind" className="tag">{entry.kind}</span>];

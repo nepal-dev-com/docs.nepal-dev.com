@@ -1,0 +1,142 @@
+---
+title: "Architecture — puncoz-packages-docs"
+---
+
+- **Status:** Current
+- **Last updated:** 2026-11-01
+- **Related ADRs:** [ADR-0013](../adr/ADR-0013-packages-and-projects-share-one-catalogue-shape.mdx),
+  [ADR-0014](../adr/ADR-0014-home-page-is-a-search-first-release-map.mdx),
+  [ADR-0015](../adr/ADR-0015-every-entry-lives-at-the-root-in-one-shape-and-one-look.mdx)
+
+> Snapshot of the system as it stands today. Edit in place; never record what changed.
+
+## Context
+
+A Next.js 16 App Router site built on Fumadocs. It renders the MDX pages in `content/`
+as a documentation site, and serves every page again as Markdown, as an Open Graph image, and
+as a search record. Search runs on Algolia. There is no database, no sign-in and no
+server-side state: every route is generated at build time (`revalidate = false`).
+
+Every top-level folder in `content/` is a **catalogue entry**, published at `/<slug>`: a
+package or project whose root `meta.json` carries a `catalog` field (ADR-0013, ADR-0015). Inside
+it, `use/` and `maintain/` are the two tracks. A versioned `use/` holds one folder per version
+line, each with `version` and `channel` in its `meta.json`: `use/dev/` for unreleased work in
+progress, and released lines whose URL segment comes from their `name` (`v1.0`, `2024 LTS` →
+`2024-lts`). Maintain is not versioned. The only entry today is this site itself, project
+`docs`, whose Maintain track (`content/docs/maintain/`) holds its decisions and design
+documents; no package is documented yet, so the home page shows its empty states.
+
+## Routes
+
+| URL | File | What it is |
+|---|---|---|
+| `/` | `src/app/(home)/page.tsx` | Home page: release map, hero search, catalogue and the sections of ADR-0014 |
+| `/<slug>/…` | `src/app/(site)/[...slug]/page.tsx` | A documentation page in the notebook layout; an overview opens with the package hero, a line page adds the version notice or banner |
+| `/<slug>/use` and a line root without its own page | `src/app/(site)/[...slug]/page.tsx` | 307 redirect to the first page (the latest line, else `dev`) |
+| `/<slug>/use/latest/…` | `src/proxy.ts` | 307 redirect to the line marked `latest`, or `dev` when nothing is released |
+| `/<slug>/use/<segment>/…` for a line that does not exist | `src/proxy.ts` | 307 redirect to the same path in `latest` (or `dev`) |
+| `/<slug>….md` | `src/proxy.ts` → `/llms.mdx/<slug>…/content.md` | The page as Markdown |
+| `/<slug>…` with `Accept` preferring Markdown | `src/proxy.ts` → `/llms.mdx/<slug>…/content.md` | The page as Markdown, `Vary: Accept` |
+| `/llms.mdx/…/content.md` | `src/app/llms.mdx/[...slug]/route.ts` | Processed Markdown of one page, `text/markdown` |
+| `/llms.txt` | `src/app/llms.txt/route.ts` | Index of every page, version lines labelled |
+| `/llms-full.txt` | `src/app/llms-full.txt/route.ts` | Every page's full Markdown in one file |
+| `/og/…/image.png` | `src/app/og/[...slug]/route.tsx` | Open Graph image: title, description, site name |
+| `/static.json` | `src/app/static.json/route.ts` | Every page as an Algolia search record |
+
+Pages share the root with the site's own routes. The proxy acts only on paths whose first
+segment is a catalogued slug (`isEntryPath`), and the build refuses a slug that would collide
+with a route (`api`, `og`, `static`, …). Contracts for the machine-readable routes are in
+[`../api/`](../api/index.mdx).
+
+## Components
+
+| Component | Responsibility | Depends on |
+|---|---|---|
+| `content/` | The published pages and `meta.json` files, one folder per catalogue entry | — |
+| `src/lib/catalog-schema.ts` | `catalogMetaSchema`: Fumadocs' `metaSchema` plus `catalog`, `name`, `version` and `channel` (`latest`, `dev`, `legacy`), as a Standard Schema; rejects any `visibility` but `public` | `fumadocs-core` |
+| `src/lib/catalog-plugin.ts` | Loader plugin: the build checks of ADR-0015 decision 5, typed roots (`root: true` on an entry, `'track'` on `use/` and `maintain/`, `'line'` on a version line), line names and descriptions (`version · channel`) and line order (latest, `dev`, then older lines in `use/meta.json` `pages` order or newest first); `lineInfo()`, `lineSegment()`, `pageVersion()` | `fumadocs-core` |
+| `src/lib/source.ts` | Loads `content/` with `defineDocs` at base URL `/`, swapping each line folder's URL segment for its name (`slugs`); exposes `source`, `getMeta` and `docsLlms` (version line in each page's Markdown and in `llms.txt`) | `fumadocs-mdx`, the two above |
+| `src/lib/catalog.ts` | Reads the page tree into typed catalogue entries (lines, tracks, demo), the page context for banners, and the home page's previews | `source.ts` |
+| `src/lib/catalog-routes.ts` | Meta files only (no compiled pages), for the proxy: the catalogued slugs, each package's line segments, `latest` and `dev`; `isEntryPath()`, `resolveLineRedirect()` | `fumadocs-mdx` |
+| `src/lib/search-scope.ts` | The scope tag of a page (`<slug>`, `<slug>:maintain`, `<slug>:use:<segment>`) | — |
+| `src/lib/algolia.ts` | The search-only Algolia client, shared by the dialog and the hero search | `algoliasearch/lite` |
+| `src/lib/shared.ts` | Site name (`Puncoz Docs`), route prefixes (pages at the root, `/og`, `/llms.mdx`), GitHub repository (`puncoz-official/docs`), URL builders | — |
+| `src/app/layout.tsx`, `global.css`, `site.css` | Root layout: the three fonts, the RootProvider (dark by default, light/dark through next-themes) and the search dialog; the tokens on `:root` / `.dark` mapped onto Fumadocs' colours; the site header, docs typography and package hero | `fumadocs-ui` |
+| `src/components/site-header.tsx` | The one header: brand, nav, search button, GitHub, light/dark switch, optional menu button | `fumadocs-ui` (`ThemeSwitch`) |
+| `src/app/(site)/layout.tsx` | Fumadocs notebook `DocsLayout` with the site header as its `nav.component`, the version-line switcher only, and the track switch as sidebar banner | `catalog.ts` |
+| `src/components/docs/` | `DocsHeader` (site header opening the search dialog and the sidebar), `PackageHero`, `TrackSwitch` (package name, Use / Maintain) and `VersionNotice` (the version stated, In development and Older version banners) | `fumadocs-ui` |
+| `src/app/(home)/` | Home layout (`.home` wrapper, `home.css`) and page | `catalog.ts`, `source.ts` |
+| `src/components/home/` | Shared search state, orbit map (canvas), hero search, catalogue, tracks preview, version rails, terminal, home header, reveal | `algolia.ts`, `lucide-react` |
+| `src/components/search.tsx` | The site-wide search dialog | `algolia.ts` |
+| `src/proxy.ts` | On catalogued paths only: line redirects, then the Markdown rewrites | `catalog-routes.ts`, `fumadocs-core/negotiation` |
+| `scripts/sync-content.ts` | After `next build`, reads the built `static.json` and replaces the Algolia index `document` with it | `algoliasearch`, `ALGOLIA_WRITE_KEY` |
+
+## How navigation is scoped
+
+Fumadocs shows the sidebar of the deepest root folder on the current path, and groups root
+folders of the same type into one switcher whose options keep the reader on the same page
+(`fumadocs-ui/contexts/tree`). The catalogue plugin marks folders so that:
+
+- on a package's Use page the sidebar holds only that line's pages, with a version menu
+  (`v4.0` / `4.0.1 · Latest`, `dev` / `5.0.0-dev · In development`, older lines) that keeps the
+  reader on the same page when it exists, matched by file path, not URL;
+- on a Maintain page the sidebar holds only the Maintain pages;
+- `TrackSwitch` switches between the two tracks;
+- the site-wide switcher of root folders is not shown: the layout passes only `line` roots as
+  tabs. Entries are reached from the home page and the header.
+
+## Diagram
+
+```mermaid
+flowchart TB
+  subgraph Repo["Repository"]
+    CONTENT["content/<br/>MDX + meta.json catalogue"]
+  end
+  subgraph Build["bun run build"]
+    NEXT["next build<br/>schema + catalogue checks → static pages and routes"]
+    SYNC["scripts/sync-content.ts"]
+  end
+  subgraph Site["Deployed site"]
+    PROXY["proxy: line redirects, Markdown rewrites"]
+    HOME["/ home page"]
+    PAGES["/slug pages"]
+    MD["Markdown · llms.txt · llms-full.txt"]
+    OG["OG images"]
+    REC["static.json"]
+  end
+  ALG[("Algolia index<br/>document")]
+  Reader["Reader / browser"]
+  Bot["LLM tools and crawlers"]
+
+  CONTENT --> NEXT --> HOME & PAGES & MD & OG & REC
+  NEXT --> SYNC -->|write key| ALG
+  Reader --> PROXY --> HOME & PAGES
+  Reader -->|search-only key, from the dialog and the hero| ALG
+  Bot --> PROXY --> MD
+```
+
+## Key decisions in force
+
+- [ADR-0013](../adr/ADR-0013-packages-and-projects-share-one-catalogue-shape.mdx): the catalogue
+  shape, tracks, version lines, URLs, scoped navigation, search fields and build checks.
+- [ADR-0014](../adr/ADR-0014-home-page-is-a-search-first-release-map.mdx): the home page.
+- [ADR-0015](../adr/ADR-0015-every-entry-lives-at-the-root-in-one-shape-and-one-look.mdx): root
+  addresses, `dev` and named lines, the site as project `docs`, one look and one header,
+  light/dark.
+
+## Constraints
+
+- **Mermaid is not rendered.** Diagrams in these pages show as highlighted code.
+- **Every page is public on every surface.** Nothing filters a page out of the site, the
+  Markdown routes, `llms.txt` / `llms-full.txt`, `static.json`, the OG images or the search
+  index. The catalogue schema rejects a private entry, so the build fails instead of publishing
+  one (`AGENTS.md` §6.1).
+- **Demos are not published** until ADR-0011 is approved: a `use/<line>/demo.mdx` page would be
+  linked from the catalogue, but there is no sandboxed embed and the home page has no demo
+  section.
+- **`defineCollections({ type: 'meta' })` is broken in fumadocs-mdx 15.4.10** (its generated
+  call passes `meta` where the runtime reads `entries`), so `catalog-routes.ts` uses a
+  `defineDocs` whose page pattern matches nothing.
+- **`bun run build` publishes.** Its second step overwrites the live search index.
+- **Hosting is not decided.** `.gitignore` lists `.vercel`, from the scaffold; no host is
+  configured in the repository.

@@ -1,0 +1,305 @@
+---
+title: "ADR-0015 — Every package and project lives at the root, in one shape and one look"
+---
+
+- **Status:** Approved
+- **Date:** 2026-10-31
+- **Deciders:** Puncoz Nepal
+- **Approved by:** Puncoz Nepal
+- **Approved on:** 2026-10-31
+- **Supersedes:** [ADR-0013](./ADR-0013-packages-and-projects-share-one-catalogue-shape.mdx)
+  decisions 1 (in part: the Documentation project's exemption), 3 (line names, the `next` line
+  and channel), 5 (URLs), 6 (in part: the Documentation project's default layout) and 9 (in part:
+  the line checks);
+  [ADR-0014](./ADR-0014-home-page-is-a-search-first-release-map.mdx) decisions 3 (in part: the
+  `next` chip becomes `dev`), 6 (in part: tokens scoped to the home page) and 9 (header)
+- **Superseded by:** —
+- **Design documents:** [`../app-flow/site-pages.mdx`](../app-flow/site-pages.mdx),
+  [`../prd/site-pages.mdx`](../prd/site-pages.mdx); on implementation
+  `architecture/system.mdx`, `api/content-routes.mdx`, `state/package-version-lifecycle.mdx`,
+  `app-flow/package-navigation.mdx`, `DESIGN.md`
+
+## Context
+
+ADR-0013 and ADR-0014 are built. Three things about the result are now wrong for the owner:
+
+- **`/docs` means two things.** Packages and projects sit under `/docs/<slug>`, and so does this
+  site's own documentation (`/docs/documentation`). Next to them sit two scaffold pages
+  ("Hello World" at `/docs`, "Components" at `/docs/test`). The owner wants a package at
+  `/<slug>`, and this site's documentation treated as what it is: maintainer documentation
+  for the site itself.
+- **Docs pages don't look like the site.** The home page has its own visual system (`DESIGN.md`:
+  graphite and teal, Bricolage Grotesque, Onest, JetBrains Mono), scoped to `.home`. Docs pages
+  still wear Fumadocs' neutral theme and Inter. There is no light/dark switch on the home page;
+  docs pages have Fumadocs' own.
+- **Versions need a permanent home for unreleased work, and names the package chooses.**
+  ADR-0013 has a `next/` line created for an unreleased major and renamed on release, and fixes
+  line names to `v<major>`. The owner wants one permanent `dev` line for work in progress, and
+  released lines named by whatever string the package supplies (`v1.0`, `2024-lts`, …),
+  configured in a file.
+
+Facts this decision rests on, read from the installed code:
+
+- Fumadocs' `loader()` takes a `baseUrl` (`src/lib/source.ts` passes `docsRoute = '/docs'`).
+  `DocsLayout` (fumadocs-ui 16.17.9) accepts `slots` (header, sidebar, container), so the header
+  can be replaced while the sidebar, contents panel, version menu and page footer stay.
+  `fumadocs-ui/layouts/shared/slots/theme-switch` exports `ThemeSwitch` with `mode:
+  'light-dark' | 'light-dark-system'`. The loader takes a slug function per page (`SlugFn`,
+  and `slugsFromData` in fumadocs-core 16.17.9), so a line's URL segment can come from its
+  `meta.json` rather than its folder name.
+- Next.js route groups let `app/(home)/page.tsx` own `/` while a required catch-all
+  `app/(site)/[...slug]/page.tsx` owns every other content path (`dynamic-routes.md`,
+  `route-groups.md`). A required catch-all does not match `/`. The installed docs do not state
+  that a static top-level route (`llms.txt`, `static.json`, `og/`, `llms.mdx/`) wins over a
+  root catch-all; the implementation proves it with a build before relying on it, and the
+  reserved-slug check below keeps a content folder from ever claiming those names.
+- Nothing has been deployed (owner, 2026-10-31), so no `/docs/…` URL needs a redirect.
+- No package or project is documented yet: moving folders and URLs now costs only this site's
+  own pages and the references to them.
+
+## Decision
+
+### Routes and folders
+
+1. **Every package and project lives at the root:** `/<slug>`. There is no `/docs` prefix. The
+   folder path is the URL path:
+
+   | Folder | URL |
+   |---|---|
+   | `content/<slug>/index.mdx` | `/<slug>` — overview, with the package hero (decision 7) |
+   | `content/<slug>/use/<folder>/<page>.mdx` | `/<slug>/use/<line>/<page>` — user docs, versioned; `<line>` comes from the line's `name` (decision 4) |
+   | `content/<slug>/use/<page>.mdx` | `/<slug>/use/<page>` — user docs of an unversioned project |
+   | `content/<slug>/maintain/<page>.mdx` | `/<slug>/maintain/<page>` — maintainer docs, not versioned |
+   | — | `/<slug>/use` → the `latest` line's first page, or `dev`'s when nothing is released |
+   | — | `/<slug>/use/latest/<page>` → 307 to the same page in the `latest` line |
+   | — | `/<slug>/….md` — the page as Markdown |
+   | — | `/og/<slug>/…/image.png`, `/llms.mdx/<slug>/…/content.md` — internal, as today |
+
+   The folder path is the URL path everywhere except a line's segment, which is its configured
+   name. The collection root moves from `content/docs/` to `content/`. `docsRoute` becomes `''`
+   (root), and the docs page moves from `app/docs/[[...slug]]/` to `app/(site)/[...slug]/`,
+   with its layout in `app/(site)/layout.tsx`.
+
+2. **Slugs are checked.** A root folder's name matches `^[a-z0-9][a-z0-9-]*$` and is none of
+   the reserved names: `api`, `auth`, `callback`, `sign-in`, `sign-out`, `og`, `search`,
+   `static`, `assets`, `public`, `_next`. The build fails otherwise. Names with a dot (`llms.txt`,
+   `static.json`, `llms.mdx`) can't match the pattern. A new top-level route adds its name to the
+   list in the same change.
+
+3. **The shape of every entry** (ADR-0013 decisions 2, 4 and 7 stand; lines change):
+
+   ```
+   content/<slug>/
+   ├── meta.json            # title, description, catalog (ADR-0013 decision 1)
+   ├── index.mdx            # overview → /<slug>
+   ├── use/                 # user docs
+   │   ├── meta.json
+   │   ├── meta.json        # optional "pages": the order of older lines in the version menu
+   │   ├── dev/             # work in progress on the default branch: always present
+   │   │   ├── meta.json    # {"channel": "dev", "version": "2.0.0-dev.4"}
+   │   │   └── …
+   │   ├── v1.0/            # one folder per released line; any folder name
+   │   │   ├── meta.json    # {"name": "v1.0", "version": "1.0.3", "channel": "latest"}
+   │   │   └── …
+   │   └── lts-2024/        # an older line
+   │       ├── meta.json    # {"name": "2024 LTS", "version": "0.9.3", "channel": "legacy"}
+   │       └── …
+   └── maintain/            # maintainer docs: the default branch, never versioned
+       ├── meta.json
+       └── …                # architecture, local setup, tests, releasing, contributing, decisions
+   ```
+
+4. **Version lines: one `dev`, and released lines named by the package.**
+   - **`dev`** documents the default branch: work in progress, not yet released. Every versioned
+     package has it, in `use/dev/`, at `/<slug>/use/dev/…`. Its `channel` is `dev`, its banner
+     says "In development", and its `version` is the manifest's version on the default branch.
+     Its name is always `dev`.
+   - **A released line's name is any string the package supplies**, set as `name` in the line's
+     `meta.json`: `v1.0`, `1.x`, `2024 LTS`. The name is what readers see in the version menu,
+     the banners, search results and `llms.txt`. The line's URL segment is the name made
+     URL-safe: lowercased, spaces to hyphens, anything else outside letters, digits, `.`, `_`
+     and `-` removed (`2024 LTS` → `2024-lts`, `v1.0` → `v1.0`). The folder name is free and
+     never appears in a URL. Without `name`, the folder name is used.
+   - **`version`** is the exact release the line documents, read from the package's manifest,
+     and **`channel`** is `latest` or `legacy`. Exactly one released line is `latest`.
+   - **Order in the version menu:** `latest`, then `dev`, then older lines in the order of
+     `use/meta.json`'s `pages`, or by `version` (natural order, newest first) when it isn't set.
+   - **Releasing** copies `use/dev/` into a new line folder with its `name`, `version` and
+     `channel: "latest"`, and turns the previous `latest` to `legacy` (or updates the current
+     line in place, when the package keeps one line per range). `dev` keeps going. A legacy line
+     may be deleted when it is no longer supported; its URLs then redirect to `latest`
+     (ADR-0013's rule stands).
+   - **Unreleased package:** only `dev`. **Unversioned project:** no lines; its `use/` holds pages
+     directly. A project that ships releases may use lines like a package.
+
+5. **The build checks the shape** (ADR-0013 decision 9, extended): a missing or invalid
+   `catalog`; a `private` entry; a bad or reserved slug; a line without `version` or
+   `channel`; a `dev` channel anywhere but `use/dev/`, or `use/dev/` with another channel; a
+   released line whose URL segment is empty, is `dev` or `latest`, ends in `.md`, or matches
+   another line's; two `latest` lines; `legacy` lines without a `latest`.
+
+### This site's own documentation
+
+6. **The site is the catalogued project `docs`.** Its folder is `content/docs/` (overview at
+   `/docs`, "Puncoz Docs: what this site is and how it is organised"), with
+   `catalog: { kind: "project", visibility: "public" }`. Today's Documentation tree becomes its
+   **Maintain track**: `content/docs/maintain/{adr,architecture,app-flow,prd,api,dfd,sequence,
+   state,erd,rbac,security,_templates}` at `/docs/maintain/…`. It has no Use track yet; one
+   holding the consumer guide (`PROJECT_AGENTS.md` as pages) is left for a later change. It is
+   listed in the catalogue and on the map like any project, and the `documentation` exemption in
+   the catalogue plugin is removed. The scaffold pages `content/docs/index.mdx` (Hello World) and
+   `content/docs/test.mdx` are deleted.
+
+### One look across the site
+
+7. **Docs pages use the home page's visual system, quietly** (`DESIGN.md`):
+   - The tokens move from the `.home` scope to the whole site, and Fumadocs' `--color-fd-*`
+     variables are mapped onto them, so the sidebar, contents panel, callouts and code blocks
+     take the graphite and teal palette in both themes.
+   - Headings in Bricolage Grotesque, body text in Onest, code, package names and versions in
+     JetBrains Mono, loaded once in the root layout.
+   - No orbit and no entrance motion on docs pages: reading pages stay still.
+   - **Package hero** on each overview (`/<slug>`): a band above the page's own content, built
+     from the catalogue. It holds the ecosystem dot and colour (outlined for a project), the name
+     in monospace, the description, the `latest` version and `dev` on a dashed tag, a small
+     version rail of the lines, and links: Use, Maintain, registry, repository. A project
+     without lines shows Use and Maintain only.
+
+8. **One header on every page**, replacing ADR-0014 decision 9's home-only header and
+   Fumadocs' own: the wordmark, a search trigger (`⌘K`, opening the site search dialog),
+   Packages, Projects (only when a project exists) and `llms.txt`, then GitHub and the
+   **theme switch**. On docs pages it fills `DocsLayout`'s header slot; the sidebar, version
+   menu and Use | Maintain switch stay below it.
+
+9. **Light and dark on every page.** The header carries Fumadocs' `ThemeSwitch` in
+   `light-dark` mode. Dark stays the default (`RootProvider theme={{ defaultTheme: 'dark' }}`);
+   the reader's choice is kept by Fumadocs' theme provider in their own browser and applies to
+   the home page and docs pages alike. The orbit map, rails and terminal read the tokens, so
+   they follow the switch.
+
+## Options considered
+
+| Concern | Option | Pros | Cons | Verdict |
+|---|---|---|---|---|
+| URLs | A — `/<slug>` at the root | Short, memorable URLs; the owner's choice | Slugs share the root with site routes; needs the reserved list | Chosen (owner) |
+| URLs | B — keep `/docs/<slug>` | No route change | `/docs` keeps meaning two things | Rejected |
+| Folders | A — `content/<slug>/`, folder path = URL | One rule to explain; the site's folder is `content/docs/` | Moves the collection root; consumers' guide changes | Chosen (owner) |
+| Folders | B — keep `content/docs/<slug>/` | No move | The site's folder becomes `content/docs/docs/`; paths no longer match URLs | Rejected |
+| Site docs | A — Maintain track of the listed project `docs` | No special case; the site follows its own rules | Its pages move; ~170 references to update | Chosen (owner) |
+| Site docs | B — Maintain track, unlisted | Not presented as a project | Needs an `unlisted` flag | Rejected |
+| Site docs | C — not published, repository only | Smallest site | Supersedes ADR-0002; no rendered diagrams | Rejected |
+| Unreleased work | A — permanent `dev` line | Always a place for work in progress; releasing is a copy | One more folder per package | Chosen (owner, named `dev`) |
+| Unreleased work | B — `next/` renamed on release (ADR-0013) | Fewer folders between majors | Unreleased minor work has nowhere to go | Superseded |
+| Released line names | A — `name` in the line's `meta.json`, any string; URL segment derived from it | The package chooses its own scheme (`v1.0`, `2024 LTS`); one place to set it; folder names don't matter | Order can't come from the names, so it comes from `pages` or `version`; renaming changes URLs | Chosen (owner) |
+| Released line names | B — the folder name is the name | Nothing to configure | Folder names must be URL-safe and can't carry a display name like `2024 LTS` | Rejected |
+| Released line names | C — a fixed scheme (`v<major>`, `v0.<minor>`) | Predictable, checkable | Doesn't fit packages with other schemes | Rejected (owner) |
+| Maintainer docs | A — not versioned | Maintainers work on the default branch | Old lines' setup notes aren't kept | Chosen (owner) |
+| Docs look | A — same system, quiet, plus a package hero | One site; overviews say what a package is at a glance | Fumadocs variables to map and check in both themes | Chosen (owner) |
+| Docs look | B — tokens and fonts only | Smallest change | Header and docs pages don't match the home page | Rejected |
+| Theme | A — `ThemeSwitch` in the shared header, dark default | Installed component; one place | Light theme of the docs pages needs its own contrast check | Chosen |
+| Theme | B — light / dark / system | Follows the OS | A third state the owner didn't ask for | Rejected |
+
+## Consequences
+
+**Positive**
+
+- One rule for every URL and folder: `/<slug>` is `content/<slug>/`, and the shape inside is the
+  same for packages, projects and the site itself.
+- Work in progress always has a line (`dev`), releasing never renames a folder, and each
+  package names its lines its own way.
+- Docs pages and the home page read as one site, in either theme.
+
+**Negative / accepted trade-offs**
+
+- Every reference to `content/docs/documentation/` and `/docs/documentation` (AGENTS.md,
+  PROJECT_AGENTS.md, README, the skills index, templates, every ADR's links) changes in one pass.
+- The root URL space is shared: every future top-level route must be added to the reserved list.
+- Changing a line's `name` changes its URLs; old links then 404 unless the line is removed
+  (which redirects to `latest`). The consumer guide says to treat names as permanent.
+
+## Content invariants
+
+- **§6.1 Private stays private:** unchanged; the schema still refuses a non-`public` entry.
+- **§6.3 Every package page states its version:** kept; `dev` pages say "In development" with
+  the default branch's version.
+- **§6.5 Every page is readable as Markdown:** kept at the new paths (`/<slug>/….md`),
+  `llms.txt` and `llms-full.txt`.
+
+## Security considerations
+
+- **No new data, endpoint or secret.** The pages, Markdown, OG images and search records are the
+  same public content at new URLs.
+- **Search index:** record URLs change. The index is rewritten on the owner's next
+  `bun run build`; until then, live results would point at old URLs. Nothing is deployed, so
+  no reader sees that gap.
+- **Reserved slugs** keep a content folder from shadowing a future security-relevant route
+  (`/api`, `/auth`, `/sign-in`, `/callback` for the WorkOS ADR).
+- **Theme choice** is stored by the theme provider in the reader's browser (`localStorage`): a
+  preference, not personal data, never sent anywhere.
+
+## Implementation notes
+
+- [x] A test build proving a root required catch-all coexists with `/`, `/llms.txt`,
+      `/llms-full.txt`, `/static.json`, `/og/…` and `/llms.mdx/…`.
+- [x] Move `content/docs/documentation/` → `content/docs/maintain/`; write
+      `content/docs/meta.json` (catalogue entry) and `content/docs/index.mdx` (overview); delete
+      the two scaffold pages. Collection root `content/`.
+- [x] `src/lib/shared.ts`: root routes; `src/lib/source.ts`, `catalog-routes.ts`, `src/proxy.ts`:
+      new paths, line URL segments from `name` (a loader slug function), the `dev` line,
+      `/<slug>/use` landing. The proxy acts only on catalogued paths (`isEntryPath`).
+- [x] `catalog-plugin.ts` and `catalog-schema.ts`: `name` field, `dev` channel in place of
+      `next`, slug and line checks, version-menu order, the `documentation` exemption removed.
+      `llms.txt` labels a line by its name.
+- [x] The home page: the `next` chip becomes `dev` (aliases `next`, `unreleased`); rows and rails
+      show `dev`.
+- [x] `app/(site)/[...slug]/` and `app/(site)/layout.tsx` (Fumadocs notebook layout, whose
+      `nav.component` takes the site header: the docs layout's own header is mobile-only); OG,
+      Markdown and `llms` routes on the new paths. `src/lib/layout.shared.tsx` removed, unused.
+- [x] Site-wide tokens and fonts; Fumadocs variable mapping; a shared `SiteHeader` with the search
+      trigger and `ThemeSwitch`, used by the home page and the docs layout's header slot.
+- [x] The package hero on overviews.
+- [x] Contrast check of docs pages in both themes, computed from the tokens: every text pair is
+      4.5:1 or more except the active sidebar link on the page colour in light (4.29:1), so the
+      phone drawer now sits on the panel colour (4.61:1), like the desktop sidebar. impeccable's
+      detector on the source: its one finding, a 3px side stripe on the hero, was removed. On the
+      built HTML it could not load the stylesheets, so its one finding there (flat type sizes) is
+      not a real result. Checking in a browser, the theme switch included, waits for the owner's
+      yes.
+- [x] Rewrite every reference to the old paths.
+- [x] Tests — manual checks until ADR-0007 picks a runner, recorded 2026-10-31 and 2026-11-01
+      with sample entries copied into `content/` and removed afterwards:
+      - a scratch `bun test` passed 9 tests (47 assertions): every build-check failure, including
+        a reserved slug, a bad slug, a root page, a misplaced `dev`, a bad or duplicate segment
+        and pages under a versioned `use/`; `lineSegment`, `lineInfo` and `pageVersion`; menu
+        order with and without `pages`; the chip filter and catalogue filter with `dev`.
+      - on `next start`, all as expected:
+        - `/lodestar/use` and `/lodestar/use/latest/commands` gave 307 to `v0.1`, `.md` kept;
+        - `/ledgerly/use/v3` gave 307 to `4.x`;
+        - `/ledgerly/use/3.x-lts` (a line named `3.x LTS`) gave 200;
+        - `/docs`, `/docs/maintain/adr` and their `.md` gave 200 (`text/markdown` for `.md`);
+        - `/nothing` and `/docs/documentation` gave 404;
+        - `/llms.txt`, `/static.json`, `/og/<slug>/image.png` and `/llms.mdx/<slug>/content.md`
+          responded;
+        - the rendered HTML had the hero tags, the version menu descriptions and both banners,
+          and the theme toggle on home and docs pages.
+- [x] `bun run types:check` and `bunx next build` pass (171 pages without samples).
+      `bun run lint` still fails: "typescript-eslint does not support TS 7.0". Reported, not
+      fixed here.
+
+## Docs to update on implementation
+
+- [x] [`../app-flow/site-pages.mdx`](../app-flow/site-pages.mdx) — to match the build
+- [x] [`../prd/site-pages.mdx`](../prd/site-pages.mdx)
+- [x] `../app-flow/package-navigation.mdx`, `../app-flow/home-page.mdx` — new URLs, header, theme
+- [x] `../state/package-version-lifecycle.mdx` — the `dev` line, named lines, release by copy
+- [x] `../architecture/system.mdx`, `../api/content-routes.mdx`, `../dfd/system.mdx` — routes
+- [x] `DESIGN.md` — tokens site-wide, docs pages, package hero, header, theme switch
+- [x] ADR-0002 and ADR-0010 (both Proposed) — revised in place for the new location and paths;
+      `../app-flow/project-root-folders.mdx` removed, since no sidebar switcher of projects remains
+- [x] `AGENTS.md`, `PROJECT_AGENTS.md`, `README.md`, `.claude/agent-skills/INDEX.md` — paths, shape
+- [x] [`./index.mdx`](./index.mdx) — index row, next free number
+- [x] [`./index.mdx`](./index.mdx) — status on approval
+
+## Open questions
+
+None. Line names and the `dev` line are the owner's (2026-10-31).

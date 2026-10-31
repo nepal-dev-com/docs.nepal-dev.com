@@ -1,64 +1,76 @@
 import { defineDocs } from 'fumadocs-mdx/macro';
 import { catalogMetaSchema } from './catalog-schema';
-import { uncataloguedFolders } from './catalog-plugin';
+import { devLine, lineInfo } from './catalog-plugin';
 
 // Meta files only, so the proxy never bundles compiled pages. Not `defineCollections({ type:
 // 'meta' })`: in fumadocs-mdx 15.4.10 its generated call passes `meta` where the runtime reads
 // `entries`, so it always fails; a docs collection whose page pattern matches nothing works.
 const metaOnly = defineDocs({
-  dir: 'content/docs',
+  dir: 'content',
   docs: { files: ['.no-pages/*.mdx'] },
   meta: { schema: catalogMetaSchema },
 });
 
 export interface LineRoutes {
   latest?: string;
-  lines: Set<string>;
+  dev: boolean;
+  segments: Set<string>;
 }
 
-function buildRoutes(): Map<string, LineRoutes> {
-  const routes = new Map<string, LineRoutes>();
+function buildRoutes() {
+  const catalogued = new Set<string>();
+  const lines = new Map<string, LineRoutes>();
   for (const entry of metaOnly.meta) {
     const parts = entry.info.path.split('/');
-    if (parts.length !== 4 || parts[1] !== 'use' || uncataloguedFolders.has(parts[0])) {
+    if (parts.length === 2 && entry.catalog) {
+      catalogued.add(parts[0]);
+    }
+    if (parts.length !== 4 || parts[1] !== 'use') {
       continue;
     }
-    if (!entry.version || !entry.channel) {
+    const info = lineInfo(parts[2], entry);
+    if (!info) {
       continue;
     }
-    const routesForSlug = routes.get(parts[0]) ?? { lines: new Set<string>() };
-    routesForSlug.lines.add(parts[2]);
-    if (entry.channel === 'latest') {
-      routesForSlug.latest = parts[2];
+    const routes = lines.get(parts[0]) ?? { dev: false, segments: new Set<string>() };
+    routes.segments.add(info.segment);
+    if (info.channel === 'latest') {
+      routes.latest = info.segment;
     }
-    routes.set(parts[0], routesForSlug);
+    if (info.channel === 'dev') {
+      routes.dev = true;
+    }
+    lines.set(parts[0], routes);
   }
-  return routes;
+  return { catalogued, lines };
 }
 
-export const lineRoutes = buildRoutes();
+const routes = buildRoutes();
 
-const linePattern = /^(?:v\d+|next|latest)$/;
+/**
+ * Whether a path belongs to a package or project, so the proxy leaves the site's own routes alone.
+ */
+export function isEntryPath(pathname: string): boolean {
+  return routes.catalogued.has((pathname.split('/')[1] ?? '').replace(/\.md$/, ''));
+}
 
 /**
  * Where a request for a package's Use line should go instead, or undefined to leave it alone:
- * `use/latest/…` goes to the line marked latest, and a line that no longer exists (renamed on
- * release, or removed) goes to the same path in latest (ADR-0013 decision 5).
+ * `use/latest/…` goes to the line marked latest (or `dev` before the first release), and a line
+ * that no longer exists goes to the same path in that line (ADR-0013 decision 5, ADR-0015).
  */
-export function resolveLineRedirect(pathname: string, docsRoute: string): string | undefined {
+export function resolveLineRedirect(pathname: string): string | undefined {
   const markdown = pathname.endsWith('.md');
   const path = markdown ? pathname.slice(0, -3) : pathname;
-  if (!path.startsWith(`${docsRoute}/`)) {
+  const [, slug, track, line, ...rest] = path.split('/');
+  if (track !== 'use' || !line) {
     return undefined;
   }
-  const [slug, track, line, ...rest] = path.slice(docsRoute.length + 1).split('/');
-  if (track !== 'use' || !line || !linePattern.test(line)) {
+  const forSlug = routes.lines.get(slug);
+  const target = forSlug?.latest ?? (forSlug?.dev ? devLine : undefined);
+  if (!forSlug || !target || (line !== 'latest' && forSlug.segments.has(line))) {
     return undefined;
   }
-  const routes = lineRoutes.get(slug);
-  if (!routes?.latest || (line !== 'latest' && routes.lines.has(line))) {
-    return undefined;
-  }
-  const target = [docsRoute, slug, 'use', routes.latest, ...rest].join('/');
-  return markdown ? `${target}.md` : target;
+  const url = ['', slug, 'use', target, ...rest].join('/');
+  return markdown ? `${url}.md` : url;
 }
