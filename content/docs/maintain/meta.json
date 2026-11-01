@@ -3,7 +3,9 @@
   "description": "Decisions, design documents and security documents for this site",
   "pages": [
     "index",
+    "---Decisions---",
     "adr",
+    "---Design---",
     "architecture",
     "app-flow",
     "prd",
@@ -12,8 +14,10 @@
     "sequence",
     "state",
     "erd",
+    "---Security---",
     "rbac",
     "security",
+    "---Templates---",
     "_templates"
   ]
 }

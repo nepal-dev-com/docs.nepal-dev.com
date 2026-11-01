@@ -1,0 +1,34 @@
+{
+  "schema_version": 2,
+  "diagram_type": "workflow",
+  "meta": {
+    "title": "App flow: the sidebar's scale ladder",
+    "subtitle": "Only the open orbit is a card; opening another lifts it and drops the card back to a row",
+    "quality_profile": "showcase",
+    "output": "sidebar-scale-ladder.html"
+  },
+  "lanes": [
+    { "id": "reader", "label": "Reader" },
+    { "id": "sidebar", "label": "Sidebar" },
+    { "id": "pages", "label": "Pages" }
+  ],
+  "mainPath": ["reader_node", "current", "other", "newpage"],
+  "nodes": [
+    { "id": "reader_node", "lane": "reader", "col": 0, "type": "external", "label": "Reader opens a page" },
+    { "id": "current", "lane": "sidebar", "col": 1, "type": "frontend", "label": "Its orbit lifted", "sublabel": "other orbits as rows" },
+    { "id": "other", "lane": "sidebar", "col": 2, "type": "frontend", "label": "That orbit lifted", "sublabel": "the card drops to a row" },
+    { "id": "none", "lane": "sidebar", "col": 3, "type": "frontend", "label": "No card", "sublabel": "every orbit a row" },
+    { "id": "newpage", "lane": "pages", "col": 3, "type": "backend", "label": "New page", "sublabel": "its orbit lifted" },
+    { "id": "index", "lane": "pages", "col": 2, "type": "backend", "label": "Folder's index page", "sublabel": "from an orbit link" }
+  ],
+  "edges": [
+    { "id": "open", "from": "reader_node", "to": "current", "label": "opens a page", "variant": "emphasis" },
+    { "id": "lift", "from": "current", "to": "other", "label": "opens a closed orbit", "variant": "emphasis" },
+    { "id": "close", "from": "other", "to": "none", "label": "closes it", "variant": "default", "role": "branch" },
+    { "id": "reopen", "from": "none", "to": "other", "label": "opens an orbit", "variant": "dashed", "role": "return" },
+    { "id": "sat", "from": "other", "to": "newpage", "label": "a satellite in it", "variant": "emphasis" },
+    { "id": "link", "from": "current", "to": "index", "label": "an orbit link", "variant": "default", "role": "branch" },
+    { "id": "back1", "from": "newpage", "to": "current", "label": "path lifts", "variant": "dashed", "role": "return" },
+    { "id": "back2", "from": "index", "to": "current", "label": "path lifts", "variant": "dashed", "role": "return" }
+  ]
+}

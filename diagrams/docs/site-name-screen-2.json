@@ -1,0 +1,136 @@
+{
+  "schema_version": 1,
+  "diagram_type": "architecture",
+  "meta": {
+    "title": "Screen 2 — This site's overview",
+    "subtitle": "Wireframe at phone width, drawn from its Mermaid version · site name",
+    "output": "site-name-screen-2.html",
+    "animation": "trace",
+    "quality_profile": "showcase",
+    "legend": {
+      "entries": {
+        "backend": {
+          "label": "Control or link"
+        },
+        "external": {
+          "label": "Content"
+        },
+        "frontend": {
+          "label": "Site chrome"
+        }
+      }
+    }
+  },
+  "components": [
+    {
+      "id": "mark",
+      "type": "frontend",
+      "label": "◎ Puncoz Verse",
+      "pos": [
+        40,
+        60
+      ],
+      "size": [
+        212,
+        58
+      ]
+    },
+    {
+      "id": "search",
+      "type": "frontend",
+      "label": "⌕",
+      "pos": [
+        264,
+        60
+      ],
+      "size": [
+        100,
+        58
+      ]
+    },
+    {
+      "id": "menu",
+      "type": "frontend",
+      "label": "☰",
+      "pos": [
+        376,
+        60
+      ],
+      "size": [
+        100,
+        58
+      ]
+    },
+    {
+      "id": "chip",
+      "type": "backend",
+      "label": "◍ Puncoz Verse Docs",
+      "pos": [
+        40,
+        130
+      ],
+      "size": [
+        436,
+        70
+      ],
+      "sublabel": "Project"
+    },
+    {
+      "id": "hero",
+      "type": "frontend",
+      "label": "planet header",
+      "pos": [
+        40,
+        212
+      ],
+      "size": [
+        436,
+        70
+      ],
+      "sublabel": "Puncoz Verse Docs · Maintain · Repository ↗"
+    },
+    {
+      "id": "h1",
+      "type": "external",
+      "label": "Puncoz Verse Docs",
+      "pos": [
+        40,
+        294
+      ],
+      "size": [
+        436,
+        58
+      ]
+    },
+    {
+      "id": "body",
+      "type": "external",
+      "label": "Puncoz Verse holds the documentation for every",
+      "pos": [
+        40,
+        364
+      ],
+      "size": [
+        436,
+        70
+      ],
+      "sublabel": "package and project…"
+    }
+  ],
+  "boundaries": [
+    {
+      "kind": "region",
+      "label": "Phone screen · /docs",
+      "wraps": [
+        "mark",
+        "search",
+        "menu",
+        "chip",
+        "hero",
+        "h1",
+        "body"
+      ],
+      "pad": 22
+    }
+  ]
+}

@@ -680,14 +680,20 @@
 }
 
 .station[data-level='1'] {
-  margin-block: 3px;
-  background: var(--home-panel);
-  border: 1px solid var(--home-line);
+  margin-block: 1px;
+  border: 1px solid transparent;
   border-radius: 12px;
-  transition: border-color 0.25s;
+  transition: background-color 0.25s, border-color 0.25s, margin 0.25s;
 }
 
-.station[data-level='1'][data-current] {
+/* Only the open orbit is a card (ADR-0027 decision 2). */
+.station[data-level='1'][data-open] {
+  margin-block: 6px;
+  background: var(--home-panel);
+  border-color: var(--home-line);
+}
+
+.station[data-level='1'][data-open][data-current] {
   border-color: color-mix(in srgb, var(--eco) 45%, var(--home-line));
 }
 
@@ -699,18 +705,23 @@
   position: relative;
   display: flex;
   align-items: center;
-  gap: 9px;
+  gap: 10px;
   width: 100%;
-  padding: 8px 9px;
-  font: 500 13.5px/1.35 var(--home-font-text);
+  min-height: 34px;
+  padding: 7px 9px;
+  font: 500 14px/1.35 var(--home-font-text);
   text-align: start;
   color: var(--home-ink);
   border-radius: 10px;
-  transition: background-color 0.15s;
+  transition: background-color 0.15s, color 0.15s;
 }
 
 .station-head:hover {
   background: var(--home-bg-2);
+}
+
+.station[data-open] > .station-head:hover {
+  background: transparent;
 }
 
 .station-head:focus-visible,
@@ -732,9 +743,12 @@
 }
 
 .station[data-level='2'] > .station-head,
-.station[data-level='3'] > .station-head {
+.station[data-level='3'] > .station-head,
+.orbit-link[data-level='2'],
+.orbit-link[data-level='3'] {
+  min-height: 32px;
   padding-inline-start: 30px;
-  font-size: 13px;
+  font-size: 13.5px;
   border-radius: 8px;
 }
 
@@ -742,39 +756,48 @@
   color: var(--home-muted);
 }
 
-.station-glyph {
+.orbit-link[data-active='true'] {
+  background: color-mix(in srgb, var(--eco) 10%, transparent);
+}
+
+.orbit-ring {
   flex: none;
-  width: 18px;
-  height: 18px;
+  width: 12px;
+  height: 12px;
   overflow: visible;
 }
 
-.station[data-level='2'] > .station-head .station-glyph {
-  width: 15px;
-  height: 15px;
+:is(.station[data-level='2'] > .station-head, .orbit-link[data-level='2']) .orbit-ring {
+  width: 10px;
+  height: 10px;
 }
 
-.station-glyph-orbit {
+.orbit-ring-path {
   fill: none;
-  stroke: var(--home-line-2);
-  stroke-width: 1.2;
-}
-
-.station-glyph-core {
-  fill: var(--home-faint);
-  opacity: 0.55;
-}
-
-.station-glyph-planet {
-  fill: var(--home-panel);
   stroke: var(--home-faint);
-  stroke-width: 1.2;
-  transition: fill 0.25s, stroke 0.25s;
+  stroke-width: 1.5;
+  transition: stroke 0.25s;
 }
 
-.station[data-current] > .station-head .station-glyph-planet {
-  fill: var(--eco);
+.orbit-ring-planet {
+  fill: var(--home-ink);
+  opacity: 0;
+  transform: scale(0.4);
+  transform-origin: 0 0;
+  transition: opacity 0.2s, transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.station[data-current] > .station-head .orbit-ring-path {
   stroke: var(--eco);
+}
+
+.station[data-open] > .station-head .orbit-ring-planet {
+  opacity: 1;
+  transform: none;
+}
+
+.station[data-current][data-open] > .station-head .orbit-ring-planet {
+  fill: var(--eco);
 }
 
 .station-name {
@@ -784,21 +807,18 @@
 
 .station-count {
   flex: none;
-  min-width: 22px;
-  padding: 1px 6px;
+  min-width: 18px;
   font: 500 11.5px/1.5 var(--home-font-data);
   font-variant-numeric: tabular-nums;
-  text-align: center;
+  text-align: end;
   color: var(--home-faint);
-  background: var(--home-bg-2);
-  border-radius: 9px;
 }
 
 .station-moons {
   display: flex;
   flex-direction: column;
   gap: 1px;
-  padding: 0 4px 5px;
+  padding: 0 4px 6px;
 }
 
 .station[data-level='2'] .station-moons {
@@ -820,6 +840,14 @@
   color: var(--home-muted);
   border-radius: 8px;
   transition: color 0.15s, background-color 0.15s;
+}
+
+/* Top-level pages are landmarks, the largest rows below the planet (ADR-0027 decision 4). */
+.orbit-item[data-body='landmark'] {
+  min-height: 36px;
+  padding-inline-start: 30px;
+  font: 500 14.5px/1.35 var(--home-font-text);
+  color: var(--home-ink);
 }
 
 .orbit-item:hover {
@@ -851,25 +879,39 @@
 
 .orbit-dot {
   position: absolute;
-  top: calc(50% - 3.5px);
-  left: calc(var(--dot-x) - 3.5px);
-  width: 7px;
-  height: 7px;
+  top: calc(50% - 3px);
+  left: calc(var(--dot-x) - 3px);
+  width: 6px;
+  height: 6px;
   border-radius: 50%;
   background: var(--home-panel);
   box-shadow: inset 0 0 0 1.4px var(--home-line-2);
   transition: background-color 0.15s, box-shadow 0.15s;
 }
 
+.orbit-item[data-body='landmark'] .orbit-dot {
+  top: calc(50% - 4px);
+  left: calc(var(--dot-x) - 4px);
+  width: 8px;
+  height: 8px;
+  background: var(--home-faint);
+  box-shadow: none;
+}
+
 .orbit-item:hover .orbit-dot {
   background: var(--home-line-2);
 }
 
-.orbit-item[data-active='true'] .orbit-dot {
-  top: calc(50% - 5px);
-  left: calc(var(--dot-x) - 5px);
-  width: 10px;
-  height: 10px;
+.orbit-item[data-body='landmark']:hover .orbit-dot {
+  background: var(--home-muted);
+}
+
+.orbit-item[data-active='true'] .orbit-dot,
+.orbit-item[data-body='landmark'][data-active='true'] .orbit-dot {
+  top: calc(50% - 4.5px);
+  left: calc(var(--dot-x) - 4.5px);
+  width: 9px;
+  height: 9px;
   background: var(--home-accent);
   box-shadow: 0 0 0 3px color-mix(in srgb, var(--home-accent) 22%, transparent);
 }
@@ -878,12 +920,15 @@
   min-width: 0;
 }
 
+/* A separator is a belt (ADR-0027 decision 5). */
 .orbit-separator {
   display: flex;
   align-items: center;
   gap: 8px;
-  margin: 14px 4px 6px;
-  font: 500 12px var(--home-font-text);
+  margin: 18px 9px 4px;
+  font: 600 11px/1.4 var(--home-font-text);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
   color: var(--home-faint);
 }
 
@@ -1303,7 +1348,9 @@
 
 @media (prefers-reduced-motion: reduce) {
   .station[data-level='1'],
-  .station-glyph-planet,
+  .station-head,
+  .orbit-ring-path,
+  .orbit-ring-planet,
   .orbit-item,
   .orbit-dot,
   .planet-side-tip,

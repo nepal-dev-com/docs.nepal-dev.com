@@ -25,7 +25,7 @@
     {
       "id": "hdr",
       "type": "frontend",
-      "label": "◎ Puncoz Docs   ⌕ orrery ☰",
+      "label": "◎ Puncoz Verse   ⌕ orrery ☰",
       "pos": [
         40,
         60
@@ -52,7 +52,7 @@
     {
       "id": "name",
       "type": "external",
-      "label": "Puncoz Docs",
+      "label": "Puncoz Verse Docs",
       "pos": [
         54,
         242

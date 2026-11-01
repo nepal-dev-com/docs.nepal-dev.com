@@ -194,7 +194,7 @@
       "id": "to-site",
       "from": "home_node",
       "to": "site_node",
-      "label": "catalogue: Puncoz Docs"
+      "label": "catalogue: Puncoz Verse Docs"
     },
     {
       "id": "site-maint",

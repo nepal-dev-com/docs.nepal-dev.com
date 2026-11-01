@@ -71,12 +71,12 @@
         408,
         70
       ],
-      "sublabel": "2 ▾ (open)"
+      "sublabel": "2 ▾ (open, the one card)"
     },
     {
       "id": "p1",
       "type": "external",
-      "label": "◉ Install (current, tinted)",
+      "label": "◉ Install (probe, tinted)",
       "pos": [
         54,
         324
@@ -89,7 +89,7 @@
     {
       "id": "p2",
       "type": "external",
-      "label": "○ Commands",
+      "label": "∘ Commands",
       "pos": [
         54,
         394
@@ -104,28 +104,28 @@
       "type": "external",
       "label": "○ Reference",
       "pos": [
-        54,
-        508
+        40,
+        478
       ],
       "size": [
-        408,
+        436,
         70
       ],
-      "sublabel": "3 ▸ (closed)"
+      "sublabel": "3 ▸ (closed, a row)"
     },
     {
       "id": "h3",
       "type": "external",
       "label": "○ Guides",
       "pos": [
-        54,
-        634
+        40,
+        560
       ],
       "size": [
-        408,
+        436,
         70
       ],
-      "sublabel": "4 ▸ (closed)"
+      "sublabel": "4 ▸ (closed, a row)"
     }
   ],
   "boundaries": [
@@ -146,27 +146,11 @@
     },
     {
       "kind": "region",
-      "label": "station 1",
+      "label": "card",
       "wraps": [
         "h1",
         "p1",
         "p2"
-      ],
-      "pad": 10
-    },
-    {
-      "kind": "region",
-      "label": "station 2",
-      "wraps": [
-        "h2"
-      ],
-      "pad": 10
-    },
-    {
-      "kind": "region",
-      "label": "station 3",
-      "wraps": [
-        "h3"
       ],
       "pad": 10
     }

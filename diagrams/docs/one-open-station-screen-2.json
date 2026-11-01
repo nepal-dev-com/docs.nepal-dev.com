@@ -64,50 +64,50 @@
       "type": "external",
       "label": "◎ Get started",
       "pos": [
-        54,
-        242
+        40,
+        212
       ],
       "size": [
-        408,
+        436,
         70
       ],
-      "sublabel": "2 ▸ (closed, holds the current page)"
+      "sublabel": "2 ▸ (a row, holds the current page)"
     },
     {
       "id": "h2",
       "type": "external",
       "label": "○ Reference",
       "pos": [
-        54,
-        368
+        40,
+        294
       ],
       "size": [
-        408,
+        436,
         70
       ],
-      "sublabel": "3 ▸ (closed)"
+      "sublabel": "3 ▸ (a row)"
     },
     {
       "id": "h3",
       "type": "backend",
-      "label": "○ Guides",
+      "label": "◎ Guides",
       "pos": [
         54,
-        494
+        406
       ],
       "size": [
         408,
         70
       ],
-      "sublabel": "4 ▾ (open)"
+      "sublabel": "4 ▾ (open, the one card)"
     },
     {
       "id": "g1",
       "type": "external",
-      "label": "○ Theming",
+      "label": "∘ Theming",
       "pos": [
         54,
-        576
+        488
       ],
       "size": [
         408,
@@ -117,10 +117,10 @@
     {
       "id": "g2",
       "type": "external",
-      "label": "○ Keyboard shortcuts",
+      "label": "∘ Keyboard shortcuts",
       "pos": [
         54,
-        646
+        558
       ],
       "size": [
         408,
@@ -130,10 +130,10 @@
     {
       "id": "g3",
       "type": "external",
-      "label": "○ Recipes",
+      "label": "◦ Recipes",
       "pos": [
         54,
-        716
+        628
       ],
       "size": [
         408,
@@ -161,23 +161,7 @@
     },
     {
       "kind": "region",
-      "label": "station 1",
-      "wraps": [
-        "h1"
-      ],
-      "pad": 10
-    },
-    {
-      "kind": "region",
-      "label": "station 2",
-      "wraps": [
-        "h2"
-      ],
-      "pad": 10
-    },
-    {
-      "kind": "region",
-      "label": "station 3",
+      "label": "card",
       "wraps": [
         "h3",
         "g1",

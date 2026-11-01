@@ -1,0 +1,218 @@
+{
+  "schema_version": 1,
+  "diagram_type": "architecture",
+  "meta": {
+    "title": "Screen 3 — Use page with a nested orbit",
+    "subtitle": "Wireframe at phone width, drawn from its Mermaid version · sidebar scale ladder",
+    "output": "sidebar-scale-ladder-screen-3.html",
+    "animation": "trace",
+    "quality_profile": "showcase",
+    "legend": {
+      "entries": {
+        "backend": {
+          "label": "Control or link"
+        },
+        "external": {
+          "label": "Content"
+        }
+      }
+    }
+  },
+  "components": [
+    {
+      "id": "chip",
+      "type": "backend",
+      "label": "● lodestar",
+      "pos": [
+        40,
+        60
+      ],
+      "size": [
+        324,
+        70
+      ],
+      "sublabel": "npm package"
+    },
+    {
+      "id": "sw",
+      "type": "external",
+      "label": "☀ | ☾",
+      "pos": [
+        376,
+        60
+      ],
+      "size": [
+        100,
+        58
+      ]
+    },
+    {
+      "id": "moon",
+      "type": "backend",
+      "label": "full moon",
+      "pos": [
+        40,
+        142
+      ],
+      "size": [
+        436,
+        70
+      ],
+      "sublabel": "v0.1 · 0.1.4 · Latest ▾"
+    },
+    {
+      "id": "ov",
+      "type": "external",
+      "label": "• Overview (landmark)",
+      "pos": [
+        40,
+        224
+      ],
+      "size": [
+        436,
+        58
+      ]
+    },
+    {
+      "id": "in",
+      "type": "external",
+      "label": "• Install (landmark)",
+      "pos": [
+        40,
+        294
+      ],
+      "size": [
+        436,
+        58
+      ]
+    },
+    {
+      "id": "o1",
+      "type": "backend",
+      "label": "○ Reference",
+      "pos": [
+        40,
+        364
+      ],
+      "size": [
+        436,
+        70
+      ],
+      "sublabel": "3"
+    },
+    {
+      "id": "h1",
+      "type": "backend",
+      "label": "◎ Guides",
+      "pos": [
+        54,
+        476
+      ],
+      "size": [
+        408,
+        70
+      ],
+      "sublabel": "4 ▾ (the one card)"
+    },
+    {
+      "id": "s1",
+      "type": "external",
+      "label": "∘ Theming",
+      "pos": [
+        54,
+        558
+      ],
+      "size": [
+        408,
+        58
+      ]
+    },
+    {
+      "id": "n1",
+      "type": "backend",
+      "label": "◦ Recipes",
+      "pos": [
+        54,
+        628
+      ],
+      "size": [
+        408,
+        70
+      ],
+      "sublabel": "2 ▾ (nested orbit, no inner card)"
+    },
+    {
+      "id": "s2",
+      "type": "external",
+      "label": "◉ Forms (probe, tinted)",
+      "pos": [
+        54,
+        710
+      ],
+      "size": [
+        408,
+        58
+      ]
+    },
+    {
+      "id": "s3",
+      "type": "backend",
+      "label": "∘ Tables",
+      "pos": [
+        54,
+        780
+      ],
+      "size": [
+        408,
+        58
+      ]
+    },
+    {
+      "id": "o2",
+      "type": "backend",
+      "label": "○ Migrating",
+      "pos": [
+        40,
+        864
+      ],
+      "size": [
+        436,
+        70
+      ],
+      "sublabel": "2"
+    }
+  ],
+  "boundaries": [
+    {
+      "kind": "region",
+      "label": "Phone screen · the sidebar on /lodestar/use/v0.1/guides/recipes/forms",
+      "wraps": [
+        "chip",
+        "sw",
+        "moon",
+        "ov",
+        "in",
+        "o1",
+        "h1",
+        "s1",
+        "n1",
+        "s2",
+        "s3",
+        "o2"
+      ],
+      "pad": 22
+    },
+    {
+      "kind": "region",
+      "label": "card",
+      "wraps": [
+        "h1",
+        "s1",
+        "n1",
+        "s2",
+        "s3"
+      ],
+      "pad": 10
+    }
+  ]
+}

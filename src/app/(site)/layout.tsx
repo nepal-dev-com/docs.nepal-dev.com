@@ -12,6 +12,7 @@ import { OrbitItem, OrbitSeparator, OrbitStation, StationGroup } from '@/compone
 import { AdrStatusProvider } from '@/components/docs/adr-constellation';
 import { adrStatus, isAdrFolder, type AdrStatus } from '@/lib/adr-status';
 import { folderUrls, lineLink } from '@/lib/overview-sidebar';
+import { docsLayoutChrome } from '@/lib/docs-layout';
 
 // Statuses for the sidebar's ADR constellations, read from each ADR's status line (ADR-0019).
 function adrStatuses(): Record<string, AdrStatus> {
@@ -45,6 +46,7 @@ export default function Layout({ children }: LayoutProps<'/'>) {
       {/* The sidebar's top-level stations are one group (ADR-0023). */}
       <StationGroup>
         <DocsLayout
+          {...docsLayoutChrome}
           tree={source.getPageTree()}
           nav={{
             mode: 'top',

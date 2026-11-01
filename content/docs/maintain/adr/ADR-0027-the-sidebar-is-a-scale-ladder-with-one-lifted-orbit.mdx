@@ -1,0 +1,176 @@
+---
+title: "ADR-0027 — The sidebar is a scale ladder with one lifted orbit"
+---
+
+- **Status:** Approved
+- **Date:** 2026-11-01
+- **Deciders:** [@puncoz](https://github.com/puncoz)
+- **Approved by:** [@puncoz](https://github.com/puncoz)
+- **Approved on:** 2026-11-01
+- **Supersedes:** [ADR-0018](./ADR-0018-docs-pages-get-orbit-stations-a-trajectory-and-the-full-horizon.mdx)
+  decision 2, in part: every folder drawn as a card, and how top-level pages and separators
+  look. The station's header parts, the pages' arc, nested folders and ADR-0023's one open
+  station at a time stand.
+- **Superseded by:** —
+- **Design documents:** [`../app-flow/sidebar-scale-ladder.mdx`](../app-flow/sidebar-scale-ladder.mdx),
+  [`../app-flow/docs-sidebars.mdx`](../app-flow/docs-sidebars.mdx),
+  [`../prd/docs-sidebars.mdx`](../prd/docs-sidebars.mdx)
+
+## Context
+
+The owner reported on 2026-11-01 that the docs sidebar does not feel good: "so many card like
+view, while overview and maintainer documentation is small". The hierarchy should be rethought
+now that the content is known.
+
+What the sidebar shows today (ADR-0018 decision 2, ADR-0023, ADR-0025;
+`src/components/docs/orbit-station.tsx`, `src/app/site.css`):
+
+- **Every folder is a card**, open or closed: a bordered panel with a glyph, the name, a count
+  pill and a chevron. This site's Maintain track has 12 folders holding 0 to 25 pages, so its
+  sidebar is a column of 12 equal cards, and a folder with one page weighs as much as the ADRs.
+- **Top-level pages are the smallest rows.** *Overview* and *Maintainer documentation*, the
+  two entry points, are 13.5px muted rows on a short arc above the cards.
+- **Nothing groups the folders.** Fumadocs separators (`---Label---` in a `meta.json`) render
+  as a dotted rule, but no track uses them.
+- The content is now known: a package's Use line holds a few pages and a few folders (getting
+  started, guides, reference); a project of several repositories adds a folder per repository
+  (ADR-0024); this site's Maintain holds 2 pages and 12 folders, the ADRs among them.
+
+The owner chose on 2026-11-01:
+
+- **One lifted card**: only the open folder is a card; closed folders are plain rows; top-level
+  pages are full-size rows;
+- **group labels** for long tracks, starting with this site's Maintain;
+- the **scale ladder**: each sidebar level is a smaller body than the one above it, following
+  the universe hierarchy the owner wants for the whole site;
+- the rename to *Puncoz Verse* and the whole-site universe theme in a separate ADR (ADR-0028),
+  after this one.
+
+## Decision
+
+1. **Each level of the sidebar is a smaller body than the one above it.** From the top:
+
+   | Level | Body | Mark and type |
+   |---|---|---|
+   | The entry | **Planet** | The planet row: chip and the sun and moon (ADR-0018 decision 1), unchanged |
+   | A version line | **Moon** | The moon picker (ADR-0013), unchanged |
+   | A top-level page | **Landmark satellite** | An 8px satellite dot, the name in 14.5px Text 500, Frost Ink |
+   | A group | **Belt** | A small label (11px Text 600, uppercase, 0.08em tracking, Steel Faint) on a dotted hairline running to the edge |
+   | A folder | **Orbit** | A 12px ring, the name in 14px Text 500, the page count in 11.5px Data, Steel Faint, at the right |
+   | A page in a folder | **Satellite** | A 6px hollow dot on the orbit's arc, the name in 13.5px Text |
+   | The current page | **Probe** | A 9px teal dot with its glow, the row tinted with 10% of the ecosystem colour, Frost Ink 500 |
+
+   Moons stay version lines only (DESIGN.md, *The Mark Means Rule*); a page is a satellite.
+
+2. **Only the open orbit is a card.** A closed folder is a plain row: no border and no fill,
+   its ring, name and count, and a chevron in Steel Faint. The open folder lifts into the one
+   card in the sidebar: Graphite Panel, a hairline border, 12px corners; its ring fills with a
+   planet (as the station glyph does today), and its satellites follow on their arc. When it
+   holds the current page its border takes 45% of the ecosystem colour, as today. Opening a
+   folder lifts it and drops the open one back to a row (ADR-0023, unchanged).
+
+3. **Nested folders stay inside the card.** A folder inside the open orbit is a smaller orbit
+   row (a 10px ring, 13.5px name). Opening it shows its satellites indented inside the same
+   card; there is never a card inside a card. ADR-0023 holds at each level.
+
+4. **Top-level pages are landmarks.** Pages directly in a track or line (the *Overview* item of
+   ADR-0025, a track's own index listed in its `pages`, any other top-level page) sit above the
+   first belt or orbit as full-size rows. The current one is the probe.
+
+5. **Belts group orbits.** A Fumadocs separator in a `meta.json` is drawn as a belt (decision 1),
+   with 18px above it. A track without separators shows no belts. This site's Maintain track
+   gets four, in `content/docs/maintain/meta.json`:
+
+   | Belt | Folders |
+   |---|---|
+   | Decisions | ADRs |
+   | Design | Architecture, App flows, Product requirements, API, Data flow diagrams, Sequence diagrams, State machines, ERD |
+   | Security | Access control, Security |
+   | Templates | Templates |
+
+   `PROJECT_AGENTS.md` tells consuming repositories they may group their own tracks the same
+   way.
+
+6. **A folder holding only its index is a plain orbit link.** It shows its ring and name, no
+   count and no chevron, and opens its index page (today it shows a count of 0).
+
+7. **The ADR constellation** (ADR-0019) is unchanged, inside the ADRs' card when it is open.
+
+8. **Unchanged:** the planet row, the moon picker, the trajectory, the version notices, the
+   pages' arc, one open orbit at each level (ADR-0023), the overview's sidebar (ADR-0025),
+   keyboard behaviour (Fumadocs' collapsible trigger and `aria-expanded`), and the phone drawer,
+   which shows the same sidebar. With reduced motion an orbit lifts and drops without animation.
+
+## Options considered
+
+| Concern | Option | Pros | Cons | Verdict |
+|---|---|---|---|---|
+| Shape | A — one lifted card | Smallest change; the card says "you are in this orbit" | Closed folders lose their glyph-in-a-box look | Chosen (owner) |
+| Shape | B — orbit rail: no cards, one continuous orbit line with every page and folder on it | Echoes the trajectory on the right | The biggest change; a long rail is hard to scan | Rejected (owner) |
+| Shape | C — drill-in levels: one level at a time, ← back | Calm at every size | Hides the sibling folders; replaces ADR-0023 | Rejected (owner) |
+| Marks | A — scale ladder: a body per level, sized to its rank | Follows the universe hierarchy; rank shows in size | One more mark (the ring) per closed row | Chosen (owner) |
+| Marks | B — bodies only up top, plain type below | Quietest | Loses the theme below the planet row | Rejected (owner) |
+| Groups | A — belts from `meta.json` separators | Uses Fumadocs' own separators; a content choice per track | Each track's maintainers place them | Chosen (owner) |
+| Groups | B — one list | Nothing to maintain | Twelve folders in one run | Rejected (owner) |
+
+## Consequences
+
+**Positive**
+
+- One card in the sidebar at a time, so the reader sees where they are at a glance.
+- The two entry points, *Overview* and the track's own index, read as the most important rows.
+- Long tracks scan by group.
+
+**Negative / accepted trade-offs**
+
+- A closed folder is quieter than today; its count and ring carry its weight.
+- Belts need a separator per group in each track's `meta.json`; a track without them shows one
+  list.
+- The sidebar's look changes on every docs page at once.
+
+## Content invariants
+
+None touched: the change is to how the sidebar looks, and to the order labels of this site's
+own Maintain track. Pages, URLs, per-page Markdown and `llms.txt` stay as they are (a
+separator adds a bold label line to `llms.txt`, which keeps it readable).
+
+## Security considerations
+
+None — this change touches no data, no endpoint and no secret. It changes the sidebar's
+presentation and one `meta.json`.
+
+## Implementation notes
+
+- [x] `src/components/docs/orbit-station.tsx`: a closed folder is a row and the open one the card
+      (decisions 2, 3), through Fumadocs' `data-open` on the folder; landmarks (decision 4); belts
+      (decision 5); a folder holding only its index as an orbit link (decision 6). The tree and
+      ADR-0023's group logic are unchanged. The open orbit's planet sits at the ring's centre: on
+      the ring it read as a broken ring at 12px.
+- [x] `src/app/site.css`: the ladder's marks and type (decision 1), the card only on the open
+      orbit, the belt; reduced motion.
+- [x] `content/docs/maintain/meta.json`: the four belts (decision 5).
+- [x] Tests (ADR-0007, ADR-0021): `countPages()`, `pageBody()` and `folderBody()` in
+      `src/lib/sidebar-ladder.ts` as pure functions, and the belts in this site's Maintain
+      `meta.json` (`src/lib/sidebar-ladder.test.ts`). The rendered client component is checked in
+      Chrome until a DOM is chosen.
+- [x] Checked in Chrome on localhost at desktop width, dark and light: `/docs/maintain/prd/diagrams`
+      (landmarks, belts, rows, the one card), an ADR page (the constellation inside the ADRs card;
+      ERD and Access control as orbit links), and a temporary invented package (`content/lodestar/`,
+      deleted afterwards) with a nested folder inside the card; opening Reference lifted it and
+      dropped Guides back to a row, its ring still in the ecosystem colour. The phone drawer was not
+      seen: the automated window does not resize.
+- [x] `impeccable detect` over the changed files: one advisory, `font-size: 11px` in the existing
+      profile chip (ADR-0020), not in this change. `bun run test`, `bun run types:check` and
+      `bunx next build` pass; `bun run lint` is reported while it stays blocked.
+
+## Docs to update on implementation
+
+- [x] [`../app-flow/sidebar-scale-ladder.mdx`](../app-flow/sidebar-scale-ladder.mdx): Current;
+      [`../app-flow/docs-sidebars.mdx`](../app-flow/docs-sidebars.mdx) screen 1 and
+      [`../app-flow/one-open-station.mdx`](../app-flow/one-open-station.mdx), their Mermaid and
+      Archify views; [`../prd/docs-sidebars.mdx`](../prd/docs-sidebars.mdx).
+- [x] [`ADR-0018`](./ADR-0018-docs-pages-get-orbit-stations-a-trajectory-and-the-full-horizon.mdx):
+      *Superseded by:* this ADR for decision 2, in part.
+- [x] `DESIGN.md` and `.impeccable/design.json`: the ladder, the lifted card, belts.
+- [x] `AGENTS.md` §1 (the sidebar), `PROJECT_AGENTS.md` (belts), `README.md`.
+- [x] [`./index.mdx`](./index.mdx): status.

@@ -6,7 +6,8 @@ title: "App flow — docs sidebars: orbit stations, the trajectory and the horiz
 - **Last updated:** 2026-11-01
 - **Related ADRs:** [ADR-0019](../adr/ADR-0019-adr-folders-show-as-a-constellation-in-the-sidebar.mdx),
   [ADR-0018](../adr/ADR-0018-docs-pages-get-orbit-stations-a-trajectory-and-the-full-horizon.mdx),
-  [ADR-0017](../adr/ADR-0017-the-whole-site-is-one-solar-system.mdx)
+  [ADR-0017](../adr/ADR-0017-the-whole-site-is-one-solar-system.mdx),
+  [ADR-0027](../adr/ADR-0027-the-sidebar-is-a-scale-ladder-with-one-lifted-orbit.mdx)
 
 > Snapshot of the system as it stands today. Edit in place; never record what changed.
 
@@ -37,10 +38,10 @@ flow, one `docs-sidebars-screen-<n>.json` per screen.
 ```mermaid
 flowchart LR
   R[Reader] -->|opens a page| PR["Planet row<br/>chip · sun | moon · moon picker"]
-  PR -->|current station opens| ST["Orbit station<br/>pages as moons"]
-  ST -->|chevron| CL["Closed station<br/>name · page count"]
+  PR -->|current orbit lifts| ST["Open orbit, the one card<br/>pages as satellites"]
+  ST -->|chevron| CL["Closed orbit, a row<br/>ring · name · page count"]
   CL -->|chevron| ST
-  ST -->|a moon| P["Docs page"]
+  ST -->|a satellite| P["Docs page"]
   P -->|scroll| T["Trajectory<br/>probe · 4 min left"]
   T -->|a heading| P
   P -->|phone width| B["Phone bar<br/>ring · heading · min left"]
@@ -63,32 +64,28 @@ block-beta
   columns 4
   chip["● lodestar"]:3 sw["☀ | ☾"]:1
   moon["full moon · v0.1 · 0.1.4 · Latest ▾"]:4
-  top["◌ Overview (on a short arc)"]:4
-  block:s1:4
+  top["• Overview (landmark)"]:4
+  block:card:4
     columns 4
-    h1["◎ Get started · 2 ▾"]:4
-    p1["  ◉ Install (current, tinted)"]:4
-    p2[" ○ Commands"]:4
+    h1["◎ Get started · 2 ▾ (the one card)"]:4
+    p1["  ◉ Install (probe, tinted)"]:4
+    p2[" ∘ Commands"]:4
   end
-  block:s2:4
-    columns 4
-    h2["○ Reference · 3 ▸ (closed)"]:4
-  end
-  block:s3:4
-    columns 4
-    h3["○ Guides · 4 ▸ (closed)"]:4
-  end
+  h2["○ Reference · 3 ▸ (a row)"]:4
+  h3["○ Guides · 4 ▸ (a row)"]:4
 ```
 
 </Diagram>
 
 The planet row: the chip links to `/lodestar`; the sun and moon buttons open the same page on
-Use or Maintain ("Use, the day side" and "Maintain, the night side" as names and tooltips). The
-station holding the current page is open, its border in the ecosystem colour, its orbit drawing
-showing a filled planet; its pages' moon dots sit on one outward-bowing arc, and the current page
-is the accent planet with a halo. Other stations are closed and show their name and page count.
-One station is open at a time at each level: opening one closes the open one beside it, and a
-page change opens that page's stations and closes the rest ([One open station](./one-open-station.mdx)).
+Use or Maintain ("Use, the day side" and "Maintain, the night side" as names and tooltips).
+Below it the sidebar is a scale ladder ([The sidebar's scale ladder](./sidebar-scale-ladder.mdx),
+ADR-0027): top-level pages are landmarks, separators are belts, folders are orbits. A closed
+orbit is a row with its ring, name and page count; the open one is the sidebar's one card, its
+border in the ecosystem colour when it holds the current page, its ring with a planet inside.
+Its pages are satellites on one outward-bowing arc, and the current page is the teal probe. One
+orbit is open at a time at each level: opening one closes the open one beside it, and a page
+change opens that page's orbits and closes the rest ([One open station](./one-open-station.mdx)).
 
 Desktop: the same, in the sidebar column; the sidebar's collapse button works as today. Phone:
 the same inside Fumadocs' drawer.
@@ -100,9 +97,9 @@ block-beta
   columns 4
   block:nest:4
     columns 4
-    h["◎ Guides · 6 ▾"]:4
-    a1[" ○ Theming"]:4
-    sub["   ◎ Recipes · 3 ▾ (nested station, no card)"]:4
+    h["◎ Guides · 6 ▾ (the one card)"]:4
+    a1[" ∘ Theming"]:4
+    sub["   ◦ Recipes · 3 ▾ (nested orbit, no inner card)"]:4
     a2["     ○ Async commands"]:4
     a3[" ◉ Keyboard shortcuts (current)"]:4
   end
@@ -110,19 +107,21 @@ block-beta
 
 </Diagram>
 
-A nested folder is a smaller station inside its parent, with no card border. A folder named
+A nested folder is a smaller orbit inside its parent's card, never a card of its own. A folder
+holding only its index page is an orbit link, with no count. A folder named
 `adr` is a constellation instead, one moon per ADR ([The ADR constellation](./adr-constellation.mdx)).
 
 **States**
 
-- Empty: a track with no folders shows only its top-level pages on their arc, no stations.
-- Loading: none; the sidebar is prerendered with the page. Before scripts load, stations show
-  in their starting state (current open, others closed) and the chevrons do nothing until
+- Empty: a track with no folders shows only its landmarks; a track without separators shows no
+  belts.
+- Loading: none; the sidebar is prerendered with the page. Before scripts load, orbits show
+  in their starting state (the current one lifted, others as rows) and the chevrons do nothing until
   hydration.
 - Not found: an unknown page gets the out-of-orbit 404, which has no sidebar.
 - Refused: not applicable; every page is public.
 - Error: not applicable at runtime; a broken `meta.json` fails the build (ADR-0013).
-- Degraded: with reduced motion, stations open and close without animation. On touch screens no
+- Degraded: with reduced motion, orbits lift and drop without animation. On touch screens no
   tooltips; the buttons' names are read out.
 - One track: no sun and moon buttons. Maintain: no moon picker.
 - Success: a moon opens its page; the sun or moon opens the same page on the other side when it
@@ -214,7 +213,7 @@ block-beta
   columns 4
   close["Everything here orbits one maker: Puncoz Nepal."]:4
   scene["star rising behind a curved planet horizon, accent atmosphere rim, faint stars"]:4
-  planets["● lodestar  ● ledgerly  ○ orbit-board  ○ Puncoz Docs"]:4
+  planets["● lodestar  ● ledgerly  ○ orbit-board  ○ Puncoz Verse Docs"]:4
   links["Search ⌘K · llms.txt · llms-full.txt · GitHub · Back to top"]:4
   credit["Packages and projects by Puncoz Nepal"]:4
 ```

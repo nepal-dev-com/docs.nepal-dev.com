@@ -33,7 +33,7 @@ builds and publishes:
 It is a [Fumadocs](https://fumadocs.dev) site on Next.js. Every page a reader sees is a file in
 `content/`, and every package or project is a folder there, `content/<slug>/`, published at
 `/<slug>` ([ADR-0015](content/docs/maintain/adr/ADR-0015-every-entry-lives-at-the-root-in-one-shape-and-one-look.mdx)).
-This site is one project among them: **Puncoz Docs**, slug `docs`, at `content/docs/`. Its own
+This site is one project among them: **Puncoz Verse Docs**, slug `docs`, at `content/docs/`. Its own
 decisions and design documents are its Maintain track, `content/docs/maintain/`, published at
 `/docs/maintain` (§8).
 
@@ -46,8 +46,9 @@ decisions and design documents are its Maintain track, `content/docs/maintain/`,
   maintainer documentation is
   [`content/docs/maintain/index.mdx`](content/docs/maintain/index.mdx).
 
-**Current state:** the site is named **Puncoz Docs** (`appName` in `src/lib/shared.ts`, a
-working name) and links to GitHub `puncoz-official/docs`. **No package or project is documented
+**Current state:** the site is named **Puncoz Verse** (`appName` in `src/lib/shared.ts`,
+ADR-0028), its own documentation is **Puncoz Verse Docs**, and it links to GitHub
+`puncoz-official/docs`. **No package or project is documented
 yet** besides the site itself, so the home page shows its empty states.
 
 - **One shape for every entry** (ADR-0013, ADR-0015). `content/<slug>/` has a `catalog` entry in
@@ -66,10 +67,11 @@ yet** besides the site itself, so the home page shows its empty states.
   Every page shares the site header (brand, nav, GitHub, the orrery theme switch; a search
   button on docs pages), the tokens and fonts, and the full Horizon footer. Docs pages use the
   Fumadocs notebook layout: a planet header on each overview; in the sidebar the planet row
-  (chip, a sun for Use and a moon for Maintain), the moon picker and orbit stations, the same on
-  an overview as on its default track's pages, with *Overview* first in every track (ADR-0025) (each folder
-  a card, its pages moons on an arc, one open at a time at each level, ADR-0023; a folder named `adr` a
-  constellation of moons phased by status, ADR-0019); "On this page" as a trajectory
+  (chip, a sun for Use and a moon for Maintain), the moon picker, then a scale ladder (ADR-0027): top-level
+  pages as landmarks (*Overview* first in every track, ADR-0025), separators as belts, folders as
+  orbit rows with only the open one a card, its pages satellites on an arc (one open at a time at
+  each level, ADR-0023; a folder named `adr` a constellation of moons phased by status,
+  ADR-0019); the overview shows its default track's sidebar (ADR-0025); "On this page" as a trajectory
   with a probe riding at the reading position and the minutes left; moon notices on `dev` and
   older lines. Unknown paths get the out-of-orbit 404 (`src/app/not-found.tsx`).
 - **The home page is the system** (ADR-0014, ADR-0016, ADR-0017): the turning system beside
@@ -566,7 +568,8 @@ adopts a host, analytics, CI or an authentication provider adds its own checks**
 │   │                    #   beyond-the-belt + private-projects.ts, two sides, moon rows, terminal,
 │   │                    #   assistant actions)
 │   └── lib/             # source.ts (content loader), catalog*.ts (catalogue schema, checks, entries, redirects),
-│                        #   rings.ts (ecosystem rings and kind names), overview-sidebar.ts (ADR-0025), trajectory.ts, reading-time.ts, adr-status.ts,
+│                        #   rings.ts (ecosystem rings and kind names), overview-sidebar.ts (ADR-0025), sidebar-ladder.ts (ADR-0027),
+│                        #   docs-layout.ts (DocsLayout options: Fumadocs' theme switch off), trajectory.ts, reading-time.ts, adr-status.ts,
 │                        #   search-scope.ts, algolia.ts, diagrams.ts + diagrams-plugin.ts (file checks), remark-diagrams.ts
 │                        #   (shape check, Markdown filter), diagram-shell.ts, diagram-files.ts (ADR-0022),
 │                        #   github-profile.ts (ADR-0020); tests beside the code, *.test.ts(x) (ADR-0021)

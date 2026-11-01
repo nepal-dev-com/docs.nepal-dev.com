@@ -16,6 +16,7 @@ import { arcRow, arcSlot } from '@/lib/trajectory';
 import { isAdrFolder } from '@/lib/adr-status';
 import { AdrConstellation } from '@/components/docs/adr-constellation';
 import { groupAfter, stationFollows, stationOnPageChange, type GroupEvent } from '@/lib/station-group';
+import { countPages, folderBody, pageBody } from '@/lib/sidebar-ladder';
 
 // The children of the station a node sits in; undefined at the top level.
 const StationNodes = createContext<PageTree.Node[] | undefined>(undefined);
@@ -86,28 +87,16 @@ function samePage(url: string, pathname: string) {
   return trim(url) === trim(pathname);
 }
 
-function countPages(folder: PageTree.Folder): number {
-  return folder.children.reduce((sum, node) => {
-    if (node.type === 'page') {
-      return sum + 1;
-    }
-    if (node.type === 'folder') {
-      return sum + (node.index ? 1 : 0) + countPages(node);
-    }
-    return sum;
-  }, 0);
-}
-
 /**
- * The node's piece of its arc. Inside a station every node but a separator bears the arc; at the
- * top level only pages do, because stations sit between them as cards.
+ * The node's piece of its arc. Inside an orbit every node but a separator bears the arc; the top
+ * level has none, since its pages are landmarks (ADR-0027 decision 4).
  */
 function useArc(node: PageTree.Node) {
   const station = use(StationNodes);
   const { root } = useTreeContext();
   const slot = station
     ? arcSlot(station, node, (item) => item.type !== 'separator')
-    : arcSlot(root.children, node, (item) => item.type === 'page');
+    : arcSlot(root.children, node, () => false);
   return arcRow(slot.index, slot.count);
 }
 
@@ -122,23 +111,27 @@ function ArcPiece({ d }: { d: string }) {
   );
 }
 
-function StationGlyph() {
+// A folder's ring; the planet inside it shows only while the orbit is open (ADR-0027 decision 2).
+function OrbitRing() {
   return (
-    <svg viewBox="-10 -10 20 20" className="station-glyph" aria-hidden>
-      <ellipse rx="8.5" ry="3.6" transform="rotate(-18)" className="station-glyph-orbit" />
-      <circle r="2.6" className="station-glyph-core" />
-      <circle cx="7.4" cy="-2.4" r="2" className="station-glyph-planet" />
+    <svg viewBox="-8 -8 16 16" className="orbit-ring" aria-hidden>
+      <circle r="5.2" className="orbit-ring-path" />
+      <circle r="2.3" className="orbit-ring-planet" />
     </svg>
   );
 }
 
-/** A page as a moon on its station's arc; the current page is the planet (ADR-0018 decision 2). */
+/**
+ * A page on the scale ladder: a landmark at the top level, a satellite on its orbit's arc
+ * inside one; the current page is the probe (ADR-0027 decision 1).
+ */
 export function OrbitItem({ item }: { item: PageTree.Item }) {
   const pathname = usePathname();
   const depth = useFolderDepth();
+  const body = pageBody(use(StationNodes) !== undefined);
   const arc = useArc(item);
   const active = samePage(item.url, pathname);
-  const onArc = depth <= 2;
+  const onArc = body === 'satellite' && depth <= 2;
 
   return (
     <SidebarItem
@@ -148,8 +141,9 @@ export function OrbitItem({ item }: { item: PageTree.Item }) {
       icon={item.icon}
       aria-current={active ? 'page' : undefined}
       className="orbit-item"
+      data-body={body}
       data-on-arc={onArc ? '' : undefined}
-      style={{ '--dot-x': `${onArc ? arc.x : 6}px` } as CSSProperties}
+      style={{ '--dot-x': `${onArc ? arc.x : body === 'landmark' ? 13 : 6}px` } as CSSProperties}
     >
       {onArc && <ArcPiece d={arc.d} />}
       <span className="orbit-dot" aria-hidden />
@@ -158,11 +152,39 @@ export function OrbitItem({ item }: { item: PageTree.Item }) {
   );
 }
 
+/** A folder that holds only its index page: its ring and name, linking to that page (ADR-0027 decision 6). */
+function OrbitLink({ item, index }: { item: PageTree.Folder; index: PageTree.Item }) {
+  const pathname = usePathname();
+  const level = useFolderDepth() + 1;
+  const active = samePage(index.url, pathname);
+  return (
+    <SidebarItem
+      href={index.url}
+      external={index.external}
+      active={active}
+      aria-current={active ? 'page' : undefined}
+      className="station-head orbit-link"
+      data-level={Math.min(level, 3)}
+    >
+      {level <= 2 && <OrbitRing />}
+      <span className="station-name">{item.name}</span>
+    </SidebarItem>
+  );
+}
+
 /**
- * A folder as an orbit station: a card at the first level, a smaller station without a card at
- * the second, a plain group below that.
+ * A folder as an orbit: a row with its ring, name and count while closed, the sidebar's one card
+ * while open; a nested orbit opens inside its parent's card, never as a card of its own
+ * (ADR-0027 decisions 2 and 3).
  */
 export function OrbitStation({ item, children }: { item: PageTree.Folder; children: ReactNode }) {
+  if (item.index && folderBody(item) === 'orbit-link') {
+    return <OrbitLink item={item} index={item.index} />;
+  }
+  return <Orbit item={item}>{children}</Orbit>;
+}
+
+function Orbit({ item, children }: { item: PageTree.Folder; children: ReactNode }) {
   const pathname = usePathname();
   const path = useTreePath();
   const level = useFolderDepth() + 1;
@@ -176,7 +198,7 @@ export function OrbitStation({ item, children }: { item: PageTree.Folder; childr
 
   const label = (
     <>
-      {level <= 2 && <StationGlyph />}
+      {level <= 2 && <OrbitRing />}
       <span className="station-name">{item.name}</span>
       <span className="station-count" aria-label={`${count} ${count === 1 ? 'page' : 'pages'}`}>
         {count}
@@ -227,6 +249,7 @@ export function OrbitStation({ item, children }: { item: PageTree.Folder; childr
   );
 }
 
+/** A separator as a belt: a group's label on a dotted line (ADR-0027 decision 5). */
 export function OrbitSeparator({ item }: { item: PageTree.Separator }) {
   return (
     <p className="orbit-separator">

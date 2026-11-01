@@ -66,13 +66,14 @@ installed version) without leaving for the source code.
   to everyone as if real, by the owner's decision (ADR-0017, 2026-11-01). They are names in
   code, not private content. Who sees the private group is decided with sign-in, which will use
   WorkOS, in a later ADR.
-- Undecided: the site's final name, and the GitHub link in the header (today the scaffold's).
+- Undecided: the GitHub link in the header (today the scaffold's).
 
 ## Brand Commitments
 
 - Owner and author: Puncoz Nepal.
-- Working name: **Puncoz Docs**. The final name will include neither the owner's name nor
-  "docs"; it is not chosen yet. No logo, voice guide or identity assets exist yet.
+- Name: **Puncoz Verse**, as in universe (owner's decision, 2026-11-01; ADR-0028). The site's own
+  documentation, the project `docs`, is **Puncoz Verse Docs**. No logo, voice guide or identity
+  assets exist yet.
 - Craft bar: the documentation of **Stripe, Linear and Resend** (owner's choice, 2026-10-31).
 - Look: cool, modern and technical, with motion and graphics; search is the first thing a reader
   uses (owner's steer, 2026-10-31). Not wanted: a warm, earthy palette, or a hero that makes the

@@ -1,6 +1,6 @@
 import { llms, loader } from 'fumadocs-core/source';
 import { lucideIconsPlugin } from 'fumadocs-core/source/lucide-icons';
-import { docsRoute } from './shared';
+import { appName, docsRoute } from './shared';
 import { defineDocs } from 'fumadocs-mdx/macro';
 import { pageSchema } from 'fumadocs-core/source/schema';
 import { catalogMetaSchema, type CatalogMeta } from './catalog-schema';
@@ -60,6 +60,10 @@ const llmsSource: typeof source = { ...source, getPageTree: () => withoutOvervie
 
 export const docsLlms = llms(llmsSource, {
   renderName(node, ctx) {
+    // The tree's root is unnamed, so Fumadocs would head the index "Docs" (ADR-0028).
+    if (node.type === 'root') {
+      return appName;
+    }
     const meta = node.type === 'folder' ? source.getNodeMeta(node, ctx.lang) : undefined;
     const data = meta?.data as CatalogMeta | undefined;
     if (node.type === 'page') {

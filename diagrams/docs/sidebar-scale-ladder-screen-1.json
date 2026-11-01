@@ -1,0 +1,303 @@
+{
+  "schema_version": 1,
+  "diagram_type": "architecture",
+  "meta": {
+    "title": "Screen 1 — Maintain page",
+    "subtitle": "Wireframe at phone width, drawn from its Mermaid version · sidebar scale ladder",
+    "output": "sidebar-scale-ladder-screen-1.html",
+    "animation": "trace",
+    "quality_profile": "showcase",
+    "legend": {
+      "entries": {
+        "backend": {
+          "label": "Control or link"
+        },
+        "external": {
+          "label": "Content"
+        }
+      }
+    }
+  },
+  "components": [
+    {
+      "id": "chip",
+      "type": "backend",
+      "label": "◍ Puncoz Verse Docs",
+      "pos": [
+        40,
+        60
+      ],
+      "size": [
+        436,
+        70
+      ],
+      "sublabel": "Project"
+    },
+    {
+      "id": "ov",
+      "type": "external",
+      "label": "• Overview (landmark)",
+      "pos": [
+        40,
+        142
+      ],
+      "size": [
+        436,
+        58
+      ]
+    },
+    {
+      "id": "md",
+      "type": "backend",
+      "label": "• Maintainer documentation (landmark)",
+      "pos": [
+        40,
+        212
+      ],
+      "size": [
+        436,
+        58
+      ]
+    },
+    {
+      "id": "b1",
+      "type": "external",
+      "label": "DECISIONS ┈┈┈┈ belt",
+      "pos": [
+        40,
+        282
+      ],
+      "size": [
+        436,
+        58
+      ]
+    },
+    {
+      "id": "o1",
+      "type": "backend",
+      "label": "○ ADRs",
+      "pos": [
+        40,
+        352
+      ],
+      "size": [
+        436,
+        70
+      ],
+      "sublabel": "25"
+    },
+    {
+      "id": "b2",
+      "type": "external",
+      "label": "DESIGN ┈┈┈┈ belt",
+      "pos": [
+        40,
+        434
+      ],
+      "size": [
+        436,
+        58
+      ]
+    },
+    {
+      "id": "o2",
+      "type": "backend",
+      "label": "○ Architecture",
+      "pos": [
+        40,
+        504
+      ],
+      "size": [
+        436,
+        70
+      ],
+      "sublabel": "1"
+    },
+    {
+      "id": "o3",
+      "type": "backend",
+      "label": "○ App flows",
+      "pos": [
+        40,
+        586
+      ],
+      "size": [
+        436,
+        70
+      ],
+      "sublabel": "11"
+    },
+    {
+      "id": "h1",
+      "type": "backend",
+      "label": "◎ Product requirements",
+      "pos": [
+        54,
+        698
+      ],
+      "size": [
+        408,
+        70
+      ],
+      "sublabel": "6 ▾ (the one card)"
+    },
+    {
+      "id": "s1",
+      "type": "external",
+      "label": "∘ The ADR constellation",
+      "pos": [
+        54,
+        780
+      ],
+      "size": [
+        408,
+        58
+      ]
+    },
+    {
+      "id": "s2",
+      "type": "external",
+      "label": "◉ Diagrams (probe, tinted)",
+      "pos": [
+        54,
+        850
+      ],
+      "size": [
+        408,
+        58
+      ]
+    },
+    {
+      "id": "s3",
+      "type": "external",
+      "label": "∘ Docs sidebars",
+      "pos": [
+        54,
+        920
+      ],
+      "size": [
+        408,
+        58
+      ]
+    },
+    {
+      "id": "o4",
+      "type": "backend",
+      "label": "○ API",
+      "pos": [
+        40,
+        1004
+      ],
+      "size": [
+        436,
+        70
+      ],
+      "sublabel": "1"
+    },
+    {
+      "id": "o5",
+      "type": "backend",
+      "label": "○ Data flow diagrams",
+      "pos": [
+        40,
+        1086
+      ],
+      "size": [
+        436,
+        70
+      ],
+      "sublabel": "1"
+    },
+    {
+      "id": "b3",
+      "type": "external",
+      "label": "SECURITY ┈┈┈┈ belt",
+      "pos": [
+        40,
+        1168
+      ],
+      "size": [
+        436,
+        58
+      ]
+    },
+    {
+      "id": "o6",
+      "type": "backend",
+      "label": "○ Access control (orbit link)",
+      "pos": [
+        40,
+        1238
+      ],
+      "size": [
+        436,
+        58
+      ]
+    },
+    {
+      "id": "b4",
+      "type": "external",
+      "label": "TEMPLATES ┈┈┈┈ belt",
+      "pos": [
+        40,
+        1308
+      ],
+      "size": [
+        436,
+        58
+      ]
+    },
+    {
+      "id": "o7",
+      "type": "backend",
+      "label": "○ Templates",
+      "pos": [
+        40,
+        1378
+      ],
+      "size": [
+        436,
+        70
+      ],
+      "sublabel": "11"
+    }
+  ],
+  "boundaries": [
+    {
+      "kind": "region",
+      "label": "Phone screen · the sidebar on /docs/maintain/prd/diagrams",
+      "wraps": [
+        "chip",
+        "ov",
+        "md",
+        "b1",
+        "o1",
+        "b2",
+        "o2",
+        "o3",
+        "h1",
+        "s1",
+        "s2",
+        "s3",
+        "o4",
+        "o5",
+        "b3",
+        "o6",
+        "b4",
+        "o7"
+      ],
+      "pad": 22
+    },
+    {
+      "kind": "region",
+      "label": "card",
+      "wraps": [
+        "h1",
+        "s1",
+        "s2",
+        "s3"
+      ],
+      "pad": 10
+    }
+  ]
+}

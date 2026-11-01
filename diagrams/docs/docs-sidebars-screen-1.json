@@ -62,7 +62,7 @@
     {
       "id": "top",
       "type": "external",
-      "label": "◌ Overview (on a short arc)",
+      "label": "• Overview (landmark)",
       "pos": [
         40,
         212
@@ -84,12 +84,12 @@
         408,
         70
       ],
-      "sublabel": "2 ▾"
+      "sublabel": "2 ▾ (the one card)"
     },
     {
       "id": "p1",
       "type": "external",
-      "label": "◉ Install (current, tinted)",
+      "label": "◉ Install (probe, tinted)",
       "pos": [
         54,
         394
@@ -102,7 +102,7 @@
     {
       "id": "p2",
       "type": "external",
-      "label": "○ Commands",
+      "label": "∘ Commands",
       "pos": [
         54,
         464
@@ -117,28 +117,28 @@
       "type": "external",
       "label": "○ Reference",
       "pos": [
-        54,
-        578
+        40,
+        548
       ],
       "size": [
-        408,
+        436,
         70
       ],
-      "sublabel": "3 ▸ (closed)"
+      "sublabel": "3 ▸ (a row)"
     },
     {
       "id": "h3",
       "type": "external",
       "label": "○ Guides",
       "pos": [
-        54,
-        704
+        40,
+        630
       ],
       "size": [
-        408,
+        436,
         70
       ],
-      "sublabel": "4 ▸ (closed)"
+      "sublabel": "4 ▸ (a row)"
     }
   ],
   "boundaries": [
@@ -160,27 +160,11 @@
     },
     {
       "kind": "region",
-      "label": "station 1",
+      "label": "card",
       "wraps": [
         "h1",
         "p1",
         "p2"
-      ],
-      "pad": 10
-    },
-    {
-      "kind": "region",
-      "label": "station 2",
-      "wraps": [
-        "h2"
-      ],
-      "pad": 10
-    },
-    {
-      "kind": "region",
-      "label": "station 3",
-      "wraps": [
-        "h3"
       ],
       "pad": 10
     }

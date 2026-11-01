@@ -1,5 +1,5 @@
 ---
-name: Puncoz Docs
+name: Puncoz Verse
 description: Site visual system. Graphite and teal, a turning map of every release, one search everywhere.
 colors:
   graphite-ground: "#0a0c10"
@@ -183,7 +183,7 @@ components:
     textColor: "{colors.frost-ink}"
     typography: "{typography.body-sm}"
     rounded: "{rounded.lg}"
-    padding: "0 4px 5px"
+    padding: "0 4px 6px"
   constellation:
     textColor: "{colors.steel-muted}"
     typography: "{typography.body-sm}"
@@ -212,7 +212,7 @@ components:
     width: "180px"
 ---
 
-# Design System: Puncoz Docs
+# Design System: Puncoz Verse
 
 **Scope.** The whole site: the home page, every documentation page and the 404. The tokens live on `:root` (light) and `.dark` (dark) in `src/app/global.css`, which also maps Fumadocs' own `--color-fd-*` colours onto them; the fonts are loaded once in `src/app/layout.tsx`; the shared header, theme switch, planet header, notices, the sidebar's planet row and orbit stations, the trajectory and the Horizon footer are styled in `src/app/site.css`; the home page's sections and the 404 in `src/app/(home)/home.css`. The planet and moon marks are drawn by `src/components/planet.tsx`. Docs pages use the Fumadocs notebook layout under that header. The reasons are in ADR-0014 to ADR-0019 (`content/docs/maintain/adr/`); this file only records how the built site looks.
 
@@ -309,7 +309,7 @@ Flat by default, with soft drop shadows only on surfaces that float over the sys
 - **Window** (`0 30px 80px -30px shadow`): the terminal window.
 - **Tooltip** (`0 18px 40px -16px shadow`): the system's tooltip.
 - **Raised side** (`0 1px 4px shadow-near`): the selected side in the sidebar's sun and moon switch.
-- **Glow** (`0 0 0 3px` teal at 22%): the current page's planet on its station's arc; the trajectory's probe carries the same glow drawn in SVG.
+- **Glow** (`0 0 0 3px` teal at 22%): the probe, the current page's dot in the sidebar; the trajectory's probe carries the same glow drawn in SVG.
 - **Side tip** (`0 4px 12px shadow`): the sun and moon buttons' tooltip.
 
 ### Named Rules
@@ -317,7 +317,7 @@ Flat by default, with soft drop shadows only on surfaces that float over the sys
 
 ## Shapes
 
-Gently rounded rectangles in a short ladder: 6px for keys, terminal tabs and focus outlines; 7px for the selected side inside the 10px sidebar track and for its tooltip; 8px for small buttons, links and sidebar rows; 10px for the tooltip, the planet chip, notices and a station's header; 12px for the no-script link and orbit stations; 14px for the search button, cards, private cards, the planet header, Two sides, windows and the assistant panel. Circles are reserved for meaning: planets, moons, the star, a page's moon dot, the trajectory's dots and probe, the brand mark and the window chrome's three dots.
+Gently rounded rectangles in a short ladder: 6px for keys, terminal tabs and focus outlines; 7px for the selected side inside the 10px sidebar track and for its tooltip; 8px for small buttons, links and sidebar rows; 10px for the tooltip, the planet chip, notices and an orbit's row; 12px for the no-script link and the sidebar's one open orbit; 14px for the search button, cards, private cards, the planet header, Two sides, windows and the assistant panel. Circles are reserved for meaning: planets, moons, the star, a page's satellite dot, an orbit's ring, the trajectory's dots and probe, the brand mark and the window chrome's three dots.
 
 Borders are 1px hairlines. Line style carries meaning: **dashed** marks the unreleased `dev` line (its orbit and its new moon), on cards and orbits private projects, and the unread stretch of the trajectory; a **ring** marks a project; a **crescent** marks an older release.
 
@@ -368,7 +368,7 @@ The brand mark is a ringed planet in Frost Ink with a teal body and a small star
 ### Docs pages
 - The Fumadocs notebook layout below the shared header, coloured by the site tokens. Headings h1 to h3 use the Display face at -0.02em; body, sidebar and contents keep the Text face, code the Data face. The sidebar sits on Graphite Panel.
 - The sidebar opens with the **planet row**: the **planet chip** (planet mark, name in data, kind) linking to the overview, then two 32px icon buttons in a 10px Graphite Ground 2 track, a drawn **sun** for Use and a **moon** for Maintain (the selected one raised on Graphite Panel, its sun star-coloured; a small tooltip names each). On Use, the **moon picker** follows: Fumadocs' version menu with each line's phase mark as its icon.
-- **Orbit stations.** Each folder is a Graphite Panel card with a hairline border and 12px corners; the station holding the current page is open and its border takes 45% of the ecosystem colour, the others are closed; at each level only one station is open at a time, so opening one closes the open one beside it (ADR-0023). Its header: an 18px orbit glyph (a tilted ring, a faint core and a planet that fills with the ecosystem colour in the current station), the name in 13.5px Text 500, a page count in an 11.5px Data pill, the chevron. Its pages are 13.5px Text rows, 30px in from the left, each with a 7px hollow moon dot on one hairline arc that bows outward. The current page is a 10px teal planet with its glow, its row tinted with 10% of the ecosystem colour, in Frost Ink 500. A nested folder is a smaller station without a card; a dotted rule carries a separator's label.
+- **The scale ladder** (ADR-0027). Below the planet row each level is a smaller body than the one above it. **Landmarks**, a track's top-level pages (the *Overview* item first), are 36px rows in 14.5px Text 500, Frost Ink, each with an 8px Steel Faint dot. **Belts** are separators: an 11px Text 600 uppercase label at 0.08em tracking in Steel Faint, on a dotted Line 2 rule to the edge, 18px above. **Orbits** are folders: a closed orbit is a plain 34px row with no fill or border, a 12px ring (1.5px Steel Faint stroke, the ecosystem colour when it holds the current page), the name in 14px Text 500, the page count in 11.5px Data, Steel Faint, at the right, and a Steel Faint chevron. **The one card**: only the open orbit is a Graphite Panel card with a hairline border and 12px corners, its border at 45% of the ecosystem colour when it holds the current page, a planet appearing inside its ring; at each level only one orbit is open at a time (ADR-0023), so opening one lifts it and drops the card back to a row. **Satellites** are the pages inside: 13.5px Text rows, 30px in from the left, each with a 6px hollow dot on one hairline arc that bows outward. **The probe**, the current page, is a 9px teal dot with its glow, its row tinted with 10% of the ecosystem colour, in Frost Ink 500. A nested folder is a smaller orbit (10px ring, 13.5px) inside its parent's card, never a card of its own; a folder holding only its index page is an orbit link with no count or chevron. Moons stay version lines only.
 - **The ADR constellation.** A folder named `adr` shows, inside its open station, a grid of 24px cells, one per ADR, each holding a 12px moon phased by status: full teal approved, dashed new moon proposed, crescent superseded, a faint ring rejected or unknown. The current ADR is a 12px teal planet ringed in the panel colour and then the ecosystem colour. Under it: a two-line readout (the number in 12.5px Data, Frost Ink; the title in 12.5px Text, muted), previous and next in 12.5px Data with 13px arrows, "All N decisions" in teal, and an 11px legend with 10px moons.
 - **Profile chip.** A link written `[@user](https://github.com/user)` shows inline as a 24px Graphite Panel pill with a hairline border and 12px corners: a 20px round avatar, loaded live from GitHub, over the username's initial in 11px muted Text on Graphite Ground 2 (what shows while it loads or when it is blocked), then `@user` in Text 500, Frost Ink. Hover takes the border to Line 2 and underlines the name; focus is the teal ring. Used for the deciders and approvers in ADR headers (ADR-0020).
 - **"On this page" is a trajectory.** A header row ("On this page" in 13px Text 500, the minutes left in 12px Data, tabular). Below, the headings in 13px Text, indented by depth (6, 18 and 26px dot offsets), with one curved path through a 6px dot each: the stretch read solid teal (1.6px), the stretch ahead a dashed Line 2 hairline with hollow dots. A 12px probe, a teal planet with a glow and a shaded night side, rides the path at the reading position. "Back to top ↑" in 12.5px under the list once the reader passes the first heading. On phones the bar under the header shows a 20px progress ring with the probe on it, the current heading and the minutes left.

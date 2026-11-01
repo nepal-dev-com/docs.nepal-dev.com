@@ -77,7 +77,7 @@ with a route (`api`, `og`, `static`, …). Contracts for the machine-readable ro
 | `src/lib/adr-status.ts` | An ADR's status from its status line, its number and short title, whether a folder is named `adr` (ADR-0019) | — |
 | `src/lib/trajectory.ts`, `reading-time.ts` | Pure geometry for the trajectory and the station arcs, the probe's position and the time left; a page's reading time from its `structuredData` at 220 words a minute (ADR-0018) | — |
 | `src/lib/algolia.ts` | The search-only Algolia client used by the search dialog | `algoliasearch/lite` |
-| `src/lib/shared.ts` | Site name (`Puncoz Docs`), route prefixes (pages at the root, `/og`, `/llms.mdx`), GitHub repository (`puncoz-official/docs`), URL builders | — |
+| `src/lib/shared.ts` | Site name (`Puncoz Verse`, ADR-0028), route prefixes (pages at the root, `/og`, `/llms.mdx`), GitHub repository (`puncoz-official/docs`), URL builders | — |
 | `src/app/layout.tsx`, `global.css`, `site.css` | Root layout: the three fonts, the RootProvider (dark by default, light/dark through next-themes) and the search dialog; the tokens on `:root` / `.dark` mapped onto Fumadocs' colours; the site header, theme switch, docs typography, planet header, notices, planet row, stations, trajectory and footer | `fumadocs-ui` |
 | `src/components/site-header.tsx`, `theme-switch.tsx` | The one header: brand, nav, optional search button (left out on the home page), GitHub, the orrery theme switch (`useTheme`), optional menu button | `fumadocs-ui/provider/base` |
 | `src/components/planet.tsx` | The shared marks, plain SVG with no client state: `PlanetMark`, `MoonPhase`, `PlanetSystem` (ADR-0017) | `rings.ts` |

@@ -34,12 +34,12 @@
         408,
         70
       ],
-      "sublabel": "6 ▾"
+      "sublabel": "6 ▾ (the one card)"
     },
     {
       "id": "a1",
       "type": "external",
-      "label": "○ Theming",
+      "label": "∘ Theming",
       "pos": [
         54,
         172
@@ -52,7 +52,7 @@
     {
       "id": "sub",
       "type": "backend",
-      "label": "◎ Recipes",
+      "label": "◦ Recipes",
       "pos": [
         54,
         242
@@ -61,7 +61,7 @@
         408,
         70
       ],
-      "sublabel": "3 ▾ (nested station, no card)"
+      "sublabel": "3 ▾ (nested orbit, no inner card)"
     },
     {
       "id": "a2",

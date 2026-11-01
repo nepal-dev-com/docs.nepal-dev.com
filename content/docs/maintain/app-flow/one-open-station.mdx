@@ -5,7 +5,8 @@ title: "App flow — one open station"
 - **Status:** Current
 - **Last updated:** 2026-11-01
 - **Related ADRs:** [ADR-0023](../adr/ADR-0023-sidebar-stations-open-one-at-a-time.mdx),
-  [ADR-0018](../adr/ADR-0018-docs-pages-get-orbit-stations-a-trajectory-and-the-full-horizon.mdx)
+  [ADR-0018](../adr/ADR-0018-docs-pages-get-orbit-stations-a-trajectory-and-the-full-horizon.mdx),
+  [ADR-0027](../adr/ADR-0027-the-sidebar-is-a-scale-ladder-with-one-lifted-orbit.mdx)
 
 > Snapshot of the system as it stands today. Edit in place; never record what changed.
 
@@ -53,25 +54,20 @@ block-beta
   columns 4
   chip["● lodestar"]:3 sw["☀ | ☾"]:1
   moon["full moon · v0.1 · 0.1.4 · Latest ▾"]:4
-  block:s1:4
+  block:card:4
     columns 4
-    h1["◎ Get started · 2 ▾ (open)"]:4
-    p1["  ◉ Install (current, tinted)"]:4
-    p2[" ○ Commands"]:4
+    h1["◎ Get started · 2 ▾ (open, the one card)"]:4
+    p1["  ◉ Install (probe, tinted)"]:4
+    p2[" ∘ Commands"]:4
   end
-  block:s2:4
-    columns 4
-    h2["○ Reference · 3 ▸ (closed)"]:4
-  end
-  block:s3:4
-    columns 4
-    h3["○ Guides · 4 ▸ (closed)"]:4
-  end
+  h2["○ Reference · 3 ▸ (closed, a row)"]:4
+  h3["○ Guides · 4 ▸ (closed, a row)"]:4
 ```
 
 </Diagram>
 
-The station holding the current page is open; the others are closed, as today.
+The orbit holding the current page is open, as the sidebar's one card; the others are closed
+rows (ADR-0027).
 
 **States**
 
@@ -93,27 +89,21 @@ block-beta
   columns 4
   chip["● lodestar"]:3 sw["☀ | ☾"]:1
   moon["full moon · v0.1 · 0.1.4 · Latest ▾"]:4
-  block:s1:4
+  h1["◎ Get started · 2 ▸ (a row, holds the current page)"]:4
+  h2["○ Reference · 3 ▸ (a row)"]:4
+  block:card:4
     columns 4
-    h1["◎ Get started · 2 ▸ (closed, holds the current page)"]:4
-  end
-  block:s2:4
-    columns 4
-    h2["○ Reference · 3 ▸ (closed)"]:4
-  end
-  block:s3:4
-    columns 4
-    h3["○ Guides · 4 ▾ (open)"]:4
-    g1[" ○ Theming"]:4
-    g2[" ○ Keyboard shortcuts"]:4
-    g3[" ○ Recipes · 3 ▸ (nested, closed)"]:4
+    h3["◎ Guides · 4 ▾ (open, the one card)"]:4
+    g1[" ∘ Theming"]:4
+    g2[" ∘ Keyboard shortcuts"]:4
+    g3[" ◦ Recipes · 3 ▸ (nested, closed)"]:4
   end
 ```
 
 </Diagram>
 
-Get started closes as Guides opens; its border keeps the ecosystem colour, because it still
-holds the current page. Opening the nested Recipes station closes any other nested station
+Get started drops back to a row as Guides lifts into the card; its ring keeps the ecosystem
+colour, because it still holds the current page. Opening the nested Recipes station closes any other nested station
 inside Guides, and leaves Guides open. Closing Guides leaves every station closed. Following a
 moon or any link to another page opens that page's stations and closes the rest (screen 1 for
 the new page).

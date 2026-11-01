@@ -87,6 +87,11 @@ and the overview itself shows the sidebar of your Use track, or of Maintain when
 ([ADR-0025](content/docs/maintain/adr/ADR-0025-the-overview-has-the-same-sidebar-as-its-tracks.mdx)).
 Don't add a page of your own to lead back to it.
 
+**Group a long track with separators.** A `"---Label---"` entry in a `meta.json` `pages` list
+draws a belt, a small label over the folders after it
+([ADR-0027](content/docs/maintain/adr/ADR-0027-the-sidebar-is-a-scale-ladder-with-one-lifted-orbit.mdx)).
+Use it when a track has more than five or so folders; put top-level pages before the first one.
+
 **Keep ADRs in a folder named `adr`.** The sidebar shows such a folder as a constellation, one
 moon per ADR phased by its status
 ([ADR-0019](content/docs/maintain/adr/ADR-0019-adr-folders-show-as-a-constellation-in-the-sidebar.mdx)).

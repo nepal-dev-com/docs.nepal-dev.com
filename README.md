@@ -3,7 +3,7 @@
 > One place for the documentation of everything Puncoz Nepal builds: open-source packages and
 > libraries across ecosystems, and public and private projects.
 
-**Status:** **Puncoz Docs** (a working name). The catalogue shape, root addresses, one site-wide
+**Status:** the site is **Puncoz Verse**; its own documentation is **Puncoz Verse Docs** (ADR-0028). The catalogue shape, root addresses, one site-wide
 look with a light/dark switch and the home page's release map are built; no package or project
 is documented yet besides this site itself, so the home page shows its empty states.
 · **Owner:** [Puncoz Nepal](https://puncoz.com)
@@ -41,7 +41,7 @@ and night sides. The home page
 is that system beside the site's search, then a planet card for every package and project, and
 private projects beyond an asteroid belt. On docs pages
 ([ADR-0018](content/docs/maintain/adr/ADR-0018-docs-pages-get-orbit-stations-a-trajectory-and-the-full-horizon.mdx))
-each sidebar section is an orbit station with its pages as moons, one open at a time (ADR-0023); an overview has the
+the sidebar is a scale ladder (ADR-0027): top-level pages, grouped sections, and only the open section as a card, one open at a time (ADR-0023); an overview has the
 same sidebar as its Use pages (or Maintain pages), with *Overview* first in every track (ADR-0025); and "On this page" is a curved
 trajectory with a probe at your reading position and the minutes left.
 
@@ -251,3 +251,5 @@ threat model, data classification, secrets inventory and audit checklist live in
 | [0024](content/docs/maintain/adr/ADR-0024-a-project-can-span-several-repositories.mdx) | A project can span several repositories | Approved |
 | [0025](content/docs/maintain/adr/ADR-0025-the-overview-has-the-same-sidebar-as-its-tracks.mdx) | The overview has the same sidebar as its tracks | Approved |
 | [0026](content/docs/maintain/adr/ADR-0026-the-moon-picker-on-an-overview-opens-a-lines-first-page.mdx) | The moon picker on an overview opens a line's first page | Approved |
+| [0027](content/docs/maintain/adr/ADR-0027-the-sidebar-is-a-scale-ladder-with-one-lifted-orbit.mdx) | The sidebar is a scale ladder with one lifted orbit | Approved |
+| [0028](content/docs/maintain/adr/ADR-0028-the-site-is-named-puncoz-verse.mdx) | The site is named Puncoz Verse | Approved |
