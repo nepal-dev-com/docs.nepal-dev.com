@@ -14,10 +14,8 @@ an orbit station ([Docs sidebars](./docs-sidebars.mdx), screen 1). Sample values
 (ADR-0008): `lodestar` is not a real package; this site's own ADRs are real and public. Phone
 width first; the characters in the wireframes stand for drawn SVG moons.
 
-The flow is made with Archify. Its source is
-`.archify/adr-constellation-20261101/candidate.json` and its output
-`.archify/adr-constellation-20261101/adr-constellation.html`. Until ADR-0011 is approved, both
-stay in that folder and are not published.
+The flow is made with Archify. Its source is `diagrams/docs/adr-constellation.json`; the published
+file, `/diagrams/docs/adr-constellation.html`, is embedded under the Mermaid version below (ADR-0011).
 
 ## Entry points
 
@@ -38,6 +36,8 @@ flowchart LR
   G -->|All 18 decisions →| I["Register<br/>the folder's index page"]
   I -->|a row| A
 ```
+
+<HtmlEmbed src="/diagrams/docs/adr-constellation.html" title="The ADR constellation" />
 
 ## Screens
 

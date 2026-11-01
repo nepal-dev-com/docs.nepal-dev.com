@@ -1,0 +1,33 @@
+{
+  "schema_version": 2,
+  "diagram_type": "workflow",
+  "meta": {
+    "title": "App flow: the ADR constellation",
+    "subtitle": "An ADR folder's pages as a grid of moons in the sidebar, a readout of the one pointed at, previous and next, and the register",
+    "visual_preset": "editorial",
+    "quality_profile": "showcase",
+    "output": "adr-constellation.html"
+  },
+  "lanes": [
+    { "id": "reader", "label": "Reader" },
+    { "id": "station", "label": "Decisions station" },
+    { "id": "pages", "label": "Pages" }
+  ],
+  "mainPath": ["reader_node", "grid", "readout", "adr"],
+  "nodes": [
+    { "id": "reader_node", "lane": "reader", "col": 0, "type": "external", "label": "Reader" },
+    { "id": "grid", "lane": "station", "col": 1, "type": "frontend", "label": "Constellation", "sublabel": "a moon per ADR" },
+    { "id": "readout", "lane": "station", "col": 2, "type": "frontend", "label": "Readout", "sublabel": "number · title" },
+    { "id": "steps", "lane": "station", "col": 3, "type": "frontend", "label": "Previous · next", "sublabel": "neighbours" },
+    { "id": "adr", "lane": "pages", "col": 3, "type": "frontend", "label": "An ADR", "sublabel": "its moon lit" },
+    { "id": "register", "lane": "pages", "col": 2, "type": "frontend", "label": "The register", "sublabel": "folder index" }
+  ],
+  "edges": [
+    { "id": "open", "from": "reader_node", "to": "grid", "label": "opens a page", "variant": "emphasis" },
+    { "id": "point", "from": "grid", "to": "readout", "label": "points at a moon", "variant": "emphasis" },
+    { "id": "pick", "from": "readout", "to": "adr", "label": "clicks the moon", "variant": "emphasis" },
+    { "id": "step", "from": "steps", "to": "adr", "label": "← / →" },
+    { "id": "all", "from": "grid", "to": "register", "label": "All 18 →" },
+    { "id": "back", "from": "register", "to": "adr", "label": "a row" }
+  ]
+}

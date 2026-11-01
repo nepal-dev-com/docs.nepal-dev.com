@@ -59,6 +59,7 @@ goes into `content/`**: everything there is published to the site, the search in
 | Search | [Algolia](https://www.algolia.com), synced after each production build |
 | For LLMs | `llms.txt`, `llms-full.txt`, and every page as Markdown (`/<page>.md`) |
 | Linting | ESLint 9 + `eslint-config-next` |
+| Testing | `bun test`, tests beside the code |
 | Package manager | [Bun](https://bun.sh) |
 
 ---
@@ -94,7 +95,8 @@ Open [http://localhost:3000](http://localhost:3000). The docs are at `/docs`.
 | `bunx next build` | Production build only — use this to check a change |
 | `bun run build` | Production build, **then push every page to the live Algolia index** |
 | `bun run start` | Serve the production build |
-| `bun run types:check` | Generate route types and type-check |
+| `bun run test` | Unit tests with Bun's built-in runner, without loading `.env` files |
+| `bun run types:check` | Generate route types and type-check the site and the tests |
 | `bun run lint` | Lint with ESLint — **does not run today**: `typescript-eslint` does not support TypeScript 7 |
 
 ---
@@ -130,12 +132,15 @@ Open [http://localhost:3000](http://localhost:3000). The docs are at `/docs`.
 │   ├── app/             # home, every page at /<slug>/…, llms.txt, OG images, search records, tokens
 │   ├── components/      # site header, MDX components, search dialog, docs/ (hero, track switch, version banners), home/
 │   └── lib/             # content loader, catalogue schema and checks, search client, site settings
+├── diagrams/            # Archify sources (candidate JSON) of the published diagrams; not published
+├── public/diagrams/     # the published Archify diagrams, embedded with <HtmlEmbed>, served sandboxed
 ├── scripts/
 │   └── sync-content.ts  # pushes search records to Algolia after a build
 ├── .env.example         # every variable the site reads, names only
-├── next.config.mjs      # Fumadocs MDX plugin, Cache Components
+├── next.config.mjs      # Fumadocs MDX plugin, Cache Components, the sandbox header for /diagrams/
 ├── eslint.config.mjs
-└── tsconfig.json
+├── tsconfig.json
+└── tsconfig.test.json   # the tests' type check, with Bun's types
 ```
 
 This site documents itself too: the `docs` project's **Maintain** track
@@ -192,7 +197,8 @@ the skills a task needs; [`SOURCES.md`](.claude/agent-skills/SOURCES.md) records
 change requires, and the conventions for each. Diagrams and flows are made with
 [Archify](https://github.com/tt-a1i/archify), and app-flow screens are Mermaid wireframes.
 Every page also keeps a Mermaid version,
-so it stays readable as Markdown, renders on GitHub and diffs as text. Pages are `.mdx`
+so it stays readable as Markdown, renders on GitHub and diffs as text; the Archify HTML is
+embedded under it from `public/diagrams/` in a sandboxed frame (ADR-0011). Pages are `.mdx`
 (ADR-0012), so they can embed components where needed.
 
 ### Security and privacy
@@ -210,19 +216,24 @@ threat model, data classification, secrets inventory and audit checklist live in
 
 | ADR | Title | Status |
 |---|---|---|
-| [0001](content/docs/maintain/adr/ADR-0001-adr-driven-development-workflow.mdx) | Every change starts with an approved ADR | Proposed |
-| [0002](content/docs/maintain/adr/ADR-0002-living-design-documentation.mdx) | Design documents are living snapshots, published as this site's Maintain track | Proposed |
-| [0003](content/docs/maintain/adr/ADR-0003-code-comment-policy.mdx) | Comments explain why; every branch takes a block | Proposed |
-| [0004](content/docs/maintain/adr/ADR-0004-ask-never-guess.mdx) | Resolve ambiguity by asking, never by guessing | Proposed |
-| [0005](content/docs/maintain/adr/ADR-0005-security-as-a-standing-practice.mdx) | Security and privacy are a standing practice | Proposed |
-| [0006](content/docs/maintain/adr/ADR-0006-agent-skills-are-advisory.mdx) | Agent skills are advisory; this repository's documentation is binding | Proposed |
-| [0007](content/docs/maintain/adr/ADR-0007-tests-are-part-of-every-change.mdx) | Tests are part of every change | Proposed |
-| [0008](content/docs/maintain/adr/ADR-0008-a-ui-change-ships-an-app-flow.mdx) | A UI change ships an app flow, drawn in Mermaid | Proposed |
-| [0009](content/docs/maintain/adr/ADR-0009-trusted-agent-skills-are-vendored.mdx) | Trusted agent skills are vendored in `.claude/agent-skills/`, routed by an index | Proposed |
-| [0010](content/docs/maintain/adr/ADR-0010-projects-document-themselves-through-a-submodule.mdx) | Projects document themselves here through a git submodule, one folder each | Proposed |
-| [0011](content/docs/maintain/adr/ADR-0011-archify-diagrams-are-embedded-from-sandboxed-html.mdx) | Archify diagrams are embedded in pages from sandboxed HTML files | Proposed |
+| [0001](content/docs/maintain/adr/ADR-0001-adr-driven-development-workflow.mdx) | Every change starts with an approved ADR | Approved |
+| [0002](content/docs/maintain/adr/ADR-0002-living-design-documentation.mdx) | Design documents are living snapshots, published as this site's Maintain track | Approved |
+| [0003](content/docs/maintain/adr/ADR-0003-code-comment-policy.mdx) | Comments explain why; every branch takes a block | Approved |
+| [0004](content/docs/maintain/adr/ADR-0004-ask-never-guess.mdx) | Resolve ambiguity by asking, never by guessing | Approved |
+| [0005](content/docs/maintain/adr/ADR-0005-security-as-a-standing-practice.mdx) | Security and privacy are a standing practice | Approved |
+| [0006](content/docs/maintain/adr/ADR-0006-agent-skills-are-advisory.mdx) | Agent skills are advisory; this repository's documentation is binding | Approved |
+| [0007](content/docs/maintain/adr/ADR-0007-tests-are-part-of-every-change.mdx) | Tests are part of every change | Approved |
+| [0008](content/docs/maintain/adr/ADR-0008-a-ui-change-ships-an-app-flow.mdx) | A UI change ships an app flow, drawn in Mermaid | Approved |
+| [0009](content/docs/maintain/adr/ADR-0009-trusted-agent-skills-are-vendored.mdx) | Trusted agent skills are vendored in `.claude/agent-skills/`, routed by an index | Approved |
+| [0010](content/docs/maintain/adr/ADR-0010-projects-document-themselves-through-a-submodule.mdx) | Projects document themselves here through a git submodule, one folder each | Approved |
+| [0011](content/docs/maintain/adr/ADR-0011-archify-diagrams-are-embedded-from-sandboxed-html.mdx) | Archify diagrams are embedded in pages from sandboxed HTML files | Approved |
 | [0012](content/docs/maintain/adr/ADR-0012-every-page-is-mdx.mdx) | Every page in `content/docs` is MDX | Approved |
 | [0013](content/docs/maintain/adr/ADR-0013-packages-and-projects-share-one-catalogue-shape.mdx) | Packages and projects share one catalogue shape: two tracks, version lines and demos | Approved |
 | [0014](content/docs/maintain/adr/ADR-0014-home-page-is-a-search-first-release-map.mdx) | The home page is a search-first map of every release | Approved |
 | [0015](content/docs/maintain/adr/ADR-0015-every-entry-lives-at-the-root-in-one-shape-and-one-look.mdx) | Every package and project lives at the root, in one shape and one look | Approved |
-| [0016](content/docs/maintain/adr/ADR-0016-home-search-is-the-fumadocs-dialog-and-private-projects-render-server-side.mdx) | Home search is the Fumadocs dialog, and private projects render server-side | Proposed |
+| [0016](content/docs/maintain/adr/ADR-0016-home-search-is-the-fumadocs-dialog-and-private-projects-render-server-side.mdx) | Home search is the Fumadocs dialog, and private projects render server-side | Approved |
+| [0017](content/docs/maintain/adr/ADR-0017-the-whole-site-is-one-solar-system.mdx) | The whole site is one solar system | Approved |
+| [0018](content/docs/maintain/adr/ADR-0018-docs-pages-get-orbit-stations-a-trajectory-and-the-full-horizon.mdx) | Docs pages get orbit stations, a trajectory and the full horizon | Approved |
+| [0019](content/docs/maintain/adr/ADR-0019-adr-folders-show-as-a-constellation-in-the-sidebar.mdx) | ADR folders show as a constellation in the sidebar | Approved |
+| [0020](content/docs/maintain/adr/ADR-0020-people-in-adrs-are-github-usernames-shown-as-profile-chips.mdx) | People in ADRs are GitHub usernames, shown as profile chips | Approved |
+| [0021](content/docs/maintain/adr/ADR-0021-tests-run-with-bun-test.mdx) | Tests run with Bun's built-in test runner | Approved |

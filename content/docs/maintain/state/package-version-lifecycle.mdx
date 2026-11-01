@@ -21,8 +21,8 @@ A **line** is one documented version of a package's Use track: a folder under `u
 The consuming repository moves a line from one state to the next by editing those files, and a
 human commits the change (ADR-0010).
 
-The diagram is made with Archify. Its source is
-`.archify/package-version-lifecycle-20261101/candidate.json`.
+The diagram is made with Archify. Its source is `diagrams/docs/package-version-lifecycle.json`; the published
+file, `/diagrams/docs/package-version-lifecycle.html`, is embedded under the Mermaid version below (ADR-0011).
 
 ## Diagram
 
@@ -36,6 +36,8 @@ stateDiagram-v2
   Dev --> Removed: development stops
   Removed --> [*]
 ```
+
+<HtmlEmbed src="/diagrams/docs/package-version-lifecycle.html" title="Package version lifecycle" />
 
 A release does not move `dev` itself: the copy becomes the new Latest line and `use/dev/` keeps
 documenting the next version.

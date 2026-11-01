@@ -2,13 +2,15 @@
 title: "ADR-0002 — Design documents are living snapshots, published as this site's Maintain track"
 ---
 
-- **Status:** Proposed
+- **Status:** Approved
 - **Date:** 2026-10-31
-- **Deciders:** Puncoz Nepal
-- **Approved by:** —
-- **Approved on:** —
+- **Deciders:** [@puncoz](https://github.com/puncoz)
+- **Approved by:** [@puncoz](https://github.com/puncoz)
+- **Approved on:** 2026-11-01
 - **Supersedes:** —
-- **Superseded by:** —
+- **Superseded by:** [ADR-0012](./ADR-0012-every-page-is-mdx.mdx) (decision 4: every page is
+  MDX); [ADR-0011](./ADR-0011-archify-diagrams-are-embedded-from-sandboxed-html.mdx) (decision 5,
+  in part: Archify diagrams are embedded from sandboxed HTML, with the Mermaid version kept)
 - **Design documents:** `content/docs/maintain/index.mdx`, `content/docs/maintain/meta.json`,
   every directory `index.mdx`, `content/docs/maintain/_templates/`
 
@@ -99,6 +101,10 @@ and secrets inventory are kept accurate rather than historical.
       table.
 - Tests: none — verified by `bunx next build` compiling every page.
 
+> Approved as written on 2026-11-01, by the owner's choice. Decision 4 was already superseded by
+> ADR-0012 and decision 5 in part by ADR-0011; diagrams are made with Archify, with their
+> Mermaid version kept, by the owner's standing choice in `AGENTS.md` §8.
+
 ## Docs to update on implementation
 
-- [ ] `content/docs/maintain/adr/index.mdx` — status on approval.
+- [x] `content/docs/maintain/adr/index.mdx` — status on approval.

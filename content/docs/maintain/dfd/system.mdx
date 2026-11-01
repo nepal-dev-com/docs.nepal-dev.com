@@ -4,7 +4,7 @@ title: "DFD — System (Level 0)"
 
 - **Status:** Current
 - **Last updated:** 2026-11-01
-- **Related ADRs:** ADR-0005, ADR-0013, ADR-0014, ADR-0016
+- **Related ADRs:** ADR-0005, ADR-0010, ADR-0020, ADR-0013, ADR-0014, ADR-0016
 
 > Snapshot of the system as it stands today. Edit in place; never record what changed.
 > Conventions: `content/docs/maintain/dfd/index.mdx`. Levels balance — a child's flows match its parent's.
@@ -18,9 +18,11 @@ The whole site: authoring, build, publishing and reading. No parent diagram.
 ```mermaid
 flowchart LR
   Owner["Owner<br/>(author)"]
+  Consumer["Consuming repositories<br/>(submodule)"]
   Reader["Reader"]
   Bot["LLM tools / crawlers"]
   ALG["Algolia"]
+  GH["GitHub<br/>(avatars)"]
 
   subgraph Trust["Trust boundary — repository and build"]
     D1[("D1 · content/")]
@@ -34,6 +36,7 @@ flowchart LR
   end
 
   Owner -->|"MDX pages"| D1
+  Consumer -->|"MDX pages in content/&lt;slug&gt;/,<br/>reviewed and committed by the owner"| D1
   D1 -->|"pages"| P1
   P1 -->|"static pages, Markdown,<br/>llms.txt, OG images, static.json"| P3
   P1 -->|"static.json records"| P2
@@ -43,16 +46,20 @@ flowchart LR
   P3 -->|"Markdown, llms.txt, llms-full.txt"| Bot
   Reader -->|"search query + search-only key<br/>(the search dialog, on every page)"| ALG
   ALG -->|"matching records"| Reader
+  Reader -->|"avatar request, no referrer<br/>(profile chips)"| GH
+  GH -->|"avatar image"| Reader
 ```
 
 ## External entities
 
 | Entity | Role |
 |---|---|
-| Owner | Writes the content; runs the build |
+| Owner | Writes the content; reviews and commits every change; runs the build |
+| Consuming repositories | The owner's project and package repositories, which include this one as a git submodule and write their own folder, `content/<slug>/` (ADR-0010) |
 | Reader | Reads pages; searches from the browser, in the search dialog or the home page's hero field |
 | LLM tools / crawlers | Read the Markdown routes and `llms.txt` / `llms-full.txt` |
 | Algolia | Hosts the search index `document` |
+| GitHub | Serves the avatar in each profile chip, `github.com/<user>.png`, redirecting to `avatars.githubusercontent.com` (ADR-0020) |
 
 ## Processes
 
@@ -73,9 +80,11 @@ flowchart LR
 
 | Flow | Direction | Authorisation | Private content? |
 |---|---|---|---|
+| Pages from a consuming repository → `content/` | Submodule → repository | The owner's review and commit; agents there never commit (`PROJECT_AGENTS.md` §5) | Could carry a private project's text if written into its folder; the owner's review is the control, and `PROJECT_AGENTS.md` §2 forbids it |
 | Records → Algolia | Build → Algolia | `ALGOLIA_WRITE_KEY` | Would carry any page in `content/`. Each record also carries its scope `tag` and, for catalogue pages, `package`, `kind`, `ecosystem`, `track`, `line`, `channel` (ADR-0013) — public metadata about public pages |
 | Search query → Algolia | Browser → Algolia | Search-only key, public by design | Can read every record in the index. The query is the reader's text only; the dialog adds no filter |
 | Pages and machine-readable routes → readers and tools | Site → public | None | Would carry any page in `content/` |
+| Avatar → reader | Browser → GitHub | None | No. The request carries the reader's IP address and user agent and, with `referrerpolicy="no-referrer"`, no page address. The username in it is already on the page (Public) |
 | "View on GitHub" link | Site → GitHub | GitHub's own access rules | Points at the page's source in the repository named in `gitConfig` |
 
 Every crossing carries everything in `content/`. That is why no private project content

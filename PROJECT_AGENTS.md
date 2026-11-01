@@ -7,8 +7,7 @@ repositories.
 
 > **Status.** The convention below is set out in
 > [ADR-0010](content/docs/maintain/adr/ADR-0010-projects-document-themselves-through-a-submodule.mdx),
-> **Proposed**. Until the owner approves it, treat it as the intended rule and raise any
-> disagreement as a question. The shape of your folder (§3) is
+> **Approved**. The shape of your folder (§3) is
 > [ADR-0013](content/docs/maintain/adr/ADR-0013-packages-and-projects-share-one-catalogue-shape.mdx),
 > **Approved**.
 
@@ -78,6 +77,12 @@ moon per ADR phased by its status
 Title each `ADR-NNNN — …` and keep the template's `- **Status:** Approved` line (Approved,
 Proposed, Superseded or Rejected) near the top; the folder's `index.mdx` is the full list.
 
+**People in an ADR are GitHub usernames**, written as a profile link:
+`- **Deciders:** [@puncoz](https://github.com/puncoz)` and the same for `Approved by`. The
+owner's username is `puncoz`. When you add or approve an ADR and a decider's or approver's
+GitHub username is not already known (in your project's existing ADRs or from the owner), ask
+for it; never write a display name in its place and never guess a username.
+
 The root `meta.json` carries the catalogue entry that the home page, search and `llms.txt` are
 built from:
 
@@ -117,19 +122,23 @@ built from:
 - **Either track may be missing**; the Use | Maintain switch then hides it.
 - **Link to `/<project-slug>/use/latest/…`** from your README and registry page. It
   redirects to the line marked `latest`, so the link never goes stale.
-- **No `demo.mdx` yet.** Demos wait for
-  [ADR-0011](content/docs/maintain/adr/ADR-0011-archify-diagrams-are-embedded-from-sandboxed-html.mdx).
+- **No `demo.mdx` yet.** Demos wait for their own ADR.
+- **Diagrams sit beside your folder**
+  ([ADR-0011](content/docs/maintain/adr/ADR-0011-archify-diagrams-are-embedded-from-sandboxed-html.mdx)):
+  the Archify candidate at `diagrams/<project-slug>/<slug>.json` and the published HTML at
+  `public/diagrams/<project-slug>/<slug>.html`. These two folders are yours too.
 - **The build checks the shape** and fails, naming the file, on: a page directly in
   `content/`, a folder without a `catalog`, an invalid or non-`public` `catalog`, a slug that is
   not lowercase letters, digits and hyphens or is reserved (`api`, `auth`, `callback`, `sign-in`,
-  `sign-out`, `og`, `search`, `static`, `assets`, `public`, `_next`), a line without `version` or
+  `sign-out`, `og`, `search`, `static`, `assets`, `public`, `diagrams`, `_next`), a line without `version` or
   `channel`, `channel: "dev"` anywhere but `use/dev/` (or `use/dev/` with another channel), a
   name whose segment is empty, `dev`, `latest` or ends in `.md`, two lines with the same
   segment, pages directly in a versioned `use/`, two `latest` lines, and `legacy` lines without
   a `latest`. Fix the folder rather than working around the check.
 - **The slug is agreed with the owner** when the folder is first created. Don't invent one.
   `docs` is taken: it is this site.
-- **Edit only your folder.** A change anywhere else, such as another project's pages, `src/`,
+- **Edit only your folders**: `content/<project-slug>/`, `diagrams/<project-slug>/` and
+  `public/diagrams/<project-slug>/`. A change anywhere else, such as another project's pages, `src/`,
   configuration, dependencies, `AGENTS.md` or this site's own pages in `content/docs/`, is a change to the
   site itself. It goes through this repository's ADR process (`AGENTS.md` §2): propose it, don't
   make it.
@@ -145,8 +154,8 @@ These are this site's content invariants (`AGENTS.md` §6):
    the site prints it under the description and in the page's Markdown.
 3. **Examples run** against that version, with invented values.
 4. **Readable as Markdown.** Plain Markdown and the MDX components registered in
-   `src/components/mdx.tsx` (Fumadocs' defaults) only. Another component is a site change
-   (§3).
+   `src/components/mdx.tsx` only: Fumadocs' defaults and `<HtmlEmbed>`. Another component is a
+   site change (§3).
 
 Format:
 
@@ -159,9 +168,8 @@ Format:
   (`./getting-started.mdx`). Only those resolve to page URLs.
 - **Diagrams and flows: always Archify**, the skill installed in this repository at
   `.claude/skills/archify`. It produces a standalone HTML file. **Also put a Mermaid version of
-  each diagram** in a fenced code block in the page, so the page stays readable as Markdown;
-  that version is what the site shows until an ADR here decides how Archify diagrams appear on
-  pages (ADR-0011, proposed). Run it without the browser gate, from the submodule root:
+  each diagram** in a fenced code block in the page, so the page stays readable as Markdown.
+  Run it without the browser gate, from the submodule root, with working files in `.archify/`:
 
   ```sh
   node .claude/skills/archify/bin/archify.mjs deliver <type> <candidate.json> <output.html> --quality showcase --json
@@ -172,9 +180,21 @@ Format:
   asks. Never upgrade Archify; tell the owner when it reports an update.
 - **Screens are Mermaid `block-beta` wireframes**, phone width first. No HTML prototypes or
   HTML wireframes.
-- Until ADR-0011 is approved, keep Archify HTML out of `content/` and `public/`, and give the
-  owner its path. Once approved, pages embed it with `<HtmlEmbed>`.
-- No binary or externally hosted images.
+- **Publish a diagram** (ADR-0011): copy the candidate to `diagrams/<project-slug>/<slug>.json`
+  and the checked HTML, byte for byte, to `public/diagrams/<project-slug>/<slug>.html`. Never
+  copy a `*.delivery*.json` receipt: it holds local paths. Embed it directly under its Mermaid
+  version:
+
+  ```mdx
+  <HtmlEmbed src="/diagrams/<project-slug>/request-flow.html" title="Request flow" />
+  ```
+
+  The build fails on a `src` outside `/diagrams/<project-slug>/<slug>.html`, a missing file, a
+  published diagram without its JSON source, or a receipt under `public/`. A diagram of
+  anything private never goes there: `public/` is published.
+- No binary or externally hosted images. The one exception is automatic: a GitHub profile link,
+  `[@user](https://github.com/user)`, shows as a chip with the avatar loaded from GitHub
+  (ADR-0020).
 
 ## 5. Git: edit only
 
@@ -210,14 +230,15 @@ Format:
 - **Hand to the human:** anything that installs, commits, pushes, changes files outside your
   folder or publishes. That includes `bun install` and `bun add` inside the submodule: they
   change the whole site's lockfile, not only your folder.
-- **Verify** with `bunx next build` from the submodule root, once dependencies are installed.
+- **Verify** with `bunx next build` from the submodule root, once dependencies are installed;
+  `bun run test` runs the site's unit tests.
   **Never run `bun run build`**: it also pushes every page to the live search index.
 - **No new dependency** in this repository without an ADR and the owner's approval.
 
 ## 7. Never guess: ask
 
 When something is undetermined, such as a slug, whether something is public, structure, naming,
-or which version to document, ask the owner. Don't pick a plausible answer. Every question
+which version to document, or a person's GitHub username for an ADR, ask the owner. Don't pick a plausible answer. Every question
 gives two to four concrete options, each with a description of what it means, and a
 recommendation listed first. The owner may also answer with an idea of their own.
 

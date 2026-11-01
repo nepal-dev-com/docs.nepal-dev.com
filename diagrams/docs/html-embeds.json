@@ -1,0 +1,183 @@
+{
+  "schema_version": 2,
+  "diagram_type": "workflow",
+  "meta": {
+    "title": "App flow — embedded diagrams",
+    "subtitle": "How a reader meets an Archify diagram on a docs page (ADR-0011)",
+    "visual_preset": "editorial",
+    "quality_profile": "showcase",
+    "output": "html-embeds.html"
+  },
+  "lanes": [
+    {
+      "id": "reader",
+      "label": "Reader"
+    },
+    {
+      "id": "page",
+      "label": "Docs page"
+    },
+    {
+      "id": "file",
+      "label": "Sandboxed file"
+    },
+    {
+      "id": "fail",
+      "label": "Build check",
+      "variant": "exception"
+    }
+  ],
+  "mainPath": [
+    "person",
+    "docs",
+    "frame",
+    "full",
+    "export"
+  ],
+  "nodes": [
+    {
+      "id": "person",
+      "lane": "reader",
+      "col": 0,
+      "type": "external",
+      "label": "Reader",
+      "sublabel": "search, link or URL"
+    },
+    {
+      "id": "tool",
+      "lane": "reader",
+      "col": 3,
+      "type": "external",
+      "label": "Markdown reader",
+      "sublabel": "tool or LLM"
+    },
+    {
+      "id": "docs",
+      "lane": "page",
+      "col": 1,
+      "type": "frontend",
+      "label": "Docs page",
+      "sublabel": "Mermaid + embed"
+    },
+    {
+      "id": "frame",
+      "lane": "page",
+      "col": 2,
+      "type": "frontend",
+      "label": "Embedded frame",
+      "sublabel": "click, zoom, explore"
+    },
+    {
+      "id": "markdown",
+      "lane": "page",
+      "col": 4,
+      "type": "frontend",
+      "label": "Page as Markdown",
+      "sublabel": "Mermaid + HtmlEmbed tag"
+    },
+    {
+      "id": "full",
+      "lane": "file",
+      "col": 3,
+      "type": "frontend",
+      "label": "Full screen",
+      "sublabel": "the file on its own"
+    },
+    {
+      "id": "export",
+      "lane": "file",
+      "col": 5,
+      "type": "frontend",
+      "label": "Image file",
+      "sublabel": "PNG · SVG · WebM"
+    },
+    {
+      "id": "missing",
+      "lane": "fail",
+      "col": 2,
+      "type": "security",
+      "label": "Build fails",
+      "sublabel": "nothing published"
+    }
+  ],
+  "edges": [
+    {
+      "id": "open-page",
+      "from": "person",
+      "to": "docs",
+      "label": "opens",
+      "variant": "emphasis"
+    },
+    {
+      "id": "scroll",
+      "from": "docs",
+      "to": "frame",
+      "label": "scrolls to",
+      "variant": "emphasis"
+    },
+    {
+      "id": "open-full",
+      "from": "frame",
+      "to": "full",
+      "label": "Open full screen",
+      "variant": "emphasis"
+    },
+    {
+      "id": "export-image",
+      "from": "full",
+      "to": "export",
+      "label": "export",
+      "variant": "default"
+    },
+    {
+      "id": "back",
+      "from": "full",
+      "to": "docs",
+      "label": "browser back",
+      "variant": "dashed",
+      "role": "return"
+    },
+    {
+      "id": "read-markdown",
+      "from": "tool",
+      "to": "markdown",
+      "label": "fetches",
+      "variant": "default",
+      "role": "branch"
+    },
+    {
+      "id": "follow-src",
+      "from": "markdown",
+      "to": "full",
+      "label": "src URL",
+      "variant": "dashed",
+      "role": "branch"
+    },
+    {
+      "id": "stale",
+      "from": "frame",
+      "to": "missing",
+      "label": "src without a file",
+      "variant": "security",
+      "role": "error"
+    }
+  ],
+  "cards": [
+    {
+      "dot": "cyan",
+      "title": "On the docs page",
+      "items": [
+        "The Mermaid version, then the embedded frame",
+        "Open full screen and a caption under the frame"
+      ]
+    },
+    {
+      "dot": "amber",
+      "title": "Sandboxed",
+      "items": [
+        "iframe sandbox and a CSP sandbox header",
+        "No access to the site's cookies or storage"
+      ]
+    }
+  ]
+}

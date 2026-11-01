@@ -2,11 +2,11 @@
 title: "ADR-0009 — Trusted agent skills are vendored in .claude/agent-skills/, routed by an index"
 ---
 
-- **Status:** Proposed
+- **Status:** Approved
 - **Date:** 2026-10-31
-- **Deciders:** Puncoz Nepal
-- **Approved by:** —
-- **Approved on:** —
+- **Deciders:** [@puncoz](https://github.com/puncoz)
+- **Approved by:** [@puncoz](https://github.com/puncoz)
+- **Approved on:** 2026-11-01
 - **Supersedes:** —
 - **Superseded by:** —
 - **Design documents:** `.claude/agent-skills/INDEX.md`, `.claude/agent-skills/SOURCES.md`,
@@ -118,8 +118,8 @@ to the files they cover. `.claude/` is not under `content/`, so none of it is pu
       `INDEX.md`: obra/superpowers, addyosmani/agent-skills, vercel-labs/agent-skills (with the
       writing and web-interface guideline snapshots), vercel/next.js, anthropics/skills,
       mattpocock/skills, trailofbits/skills, algolia/skills.
-- [ ] The owner reviews the selection. vercel-labs/agent-skills states MIT in its README but has
-      no `LICENSE` file.
+- [x] The owner reviewed the selection and accepted vercel-labs/agent-skills, which states MIT
+      in its README but has no `LICENSE` file (2026-11-01).
 - [x] ESLint ignores `.claude/**` (`eslint.config.mjs`), by the owner's decision: installed skills
       (hallmark, design-taste-frontend v2) ship `.mjs` scripts and `.tsx` fixtures there.
 - Tests: not applicable (documentation). Verified that no `.js`, `.cjs`, `.mjs`, `.ts`, `.tsx`
@@ -131,4 +131,4 @@ to the files they cover. `.claude/` is not under `content/`, so none of it is pu
 - [x] `README.md` — project structure, skills, decisions table
 - [x] [`../index.mdx`](../index.mdx) — directory map
 - [x] [`./index.mdx`](./index.mdx) — title
-- [ ] [`./index.mdx`](./index.mdx) — status on approval
+- [x] [`./index.mdx`](./index.mdx) — status on approval

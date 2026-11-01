@@ -1,0 +1,39 @@
+{
+  "schema_version": 2,
+  "diagram_type": "workflow",
+  "meta": {
+    "title": "App flow: the solar system",
+    "subtitle": "The star, planet cards, the belt of private projects, the horizon footer, and docs pages that keep the planet in view",
+    "visual_preset": "editorial",
+    "quality_profile": "showcase",
+    "output": "solar-system.html"
+  },
+  "lanes": [
+    { "id": "visitor", "label": "Visitor" },
+    { "id": "home", "label": "Home /" },
+    { "id": "planet", "label": "A planet /lodestar" },
+    { "id": "edge", "label": "Edges" }
+  ],
+  "mainPath": ["visitor_node", "system", "cards", "overview", "page"],
+  "nodes": [
+    { "id": "visitor_node", "lane": "visitor", "col": 0, "type": "external", "label": "Visitor" },
+    { "id": "system", "lane": "home", "col": 1, "type": "frontend", "label": "The system", "sublabel": "star · orbits · search" },
+    { "id": "cards", "lane": "home", "col": 2, "type": "frontend", "label": "Planet cards", "sublabel": "moons · fact sheet" },
+    { "id": "belt", "lane": "home", "col": 3, "type": "frontend", "label": "Beyond the belt", "sublabel": "private projects" },
+    { "id": "horizon", "lane": "home", "col": 4, "type": "frontend", "label": "Horizon footer", "sublabel": "planets · llms · top" },
+    { "id": "overview", "lane": "planet", "col": 3, "type": "frontend", "label": "Planet header", "sublabel": "overview · moons" },
+    { "id": "page", "lane": "planet", "col": 4, "type": "frontend", "label": "Docs page", "sublabel": "day/night · moon picker" },
+    { "id": "dialog", "lane": "edge", "col": 2, "type": "frontend", "label": "Search dialog", "sublabel": "Fumadocs · ⌘K" },
+    { "id": "lost", "lane": "edge", "col": 4, "type": "frontend", "label": "Out of orbit", "sublabel": "404" }
+  ],
+  "edges": [
+    { "id": "open", "from": "visitor_node", "to": "system", "label": "opens /", "variant": "emphasis" },
+    { "id": "scroll", "from": "system", "to": "cards", "label": "scroll", "variant": "emphasis" },
+    { "id": "card", "from": "cards", "to": "overview", "label": "card", "variant": "emphasis" },
+    { "id": "use", "from": "overview", "to": "page", "label": "Use →", "variant": "emphasis" },
+    { "id": "search", "from": "system", "to": "dialog", "label": "⌘K" },
+    { "id": "beyond", "from": "cards", "to": "belt", "label": "scroll on" },
+    { "id": "close", "from": "belt", "to": "horizon", "label": "scroll on" },
+    { "id": "dead", "from": "page", "to": "lost", "label": "unknown URL" }
+  ]
+}

@@ -18,9 +18,8 @@ This file governs how work is done in this repository, by humans and by AI agent
 Read this file **before** touching anything. If a change alters how work is done here,
 updating this file is part of that change.
 
-> **Status.** The working agreement is set out in ADR-0001 to ADR-0010, all **Proposed**. Until
-> the owner approves them, treat them as the intended rules: follow them, and raise any
-> disagreement as a question.
+> **Status.** The working agreement is set out in ADR-0001 to ADR-0010, all **Approved** by the
+> owner on 2026-11-01. The content invariants (§6) are still for the owner to confirm.
 
 ## 1. What this project is
 
@@ -80,8 +79,10 @@ yet** besides the site itself, so the home page shows its empty states.
   `use cache` and `<Suspense>`, not route segment configs such as `revalidate`.
 - **Also here:** Algolia search, `llms.txt` / `llms-full.txt`, per-page Markdown and Open Graph
   images.
-- **Not published:** demos and private projects. Demos wait for ADR-0011; private projects wait
-  for their own ADR.
+- **Archify diagrams** are published from `public/diagrams/` and embedded with `<HtmlEmbed>` in a
+  sandboxed frame (ADR-0011).
+- **Not published:** demos and private projects. Each waits for its own ADR: ADR-0011 covers
+  diagrams only, so a demo's embed is not decided yet.
 
 ## 2. The ADR gate — non-negotiable
 
@@ -101,7 +102,11 @@ before the repository owner approves it.** The full decision is
 2. **Stop.** Do not write application code. Tell the owner the ADR, and its app flow if it has
    one, are ready for review.
 3. **Revise** in place while the owner has feedback — status stays `Proposed`.
-4. **On explicit approval only:** set `Status: Approved`, fill `Approved by: Puncoz Nepal`
+   **People in an ADR are GitHub usernames**, written as a profile link:
+   `[@puncoz](https://github.com/puncoz)` in `Deciders` and `Approved by`. The owner's is
+   `puncoz`. If anyone else decides or approves and their username is not known, ask for it.
+   The site shows such a link as a chip with the person's avatar (ADR-0020).
+4. **On explicit approval only:** set `Status: Approved`, fill `Approved by: [@puncoz](https://github.com/puncoz)` (the approver's GitHub username)
    and `Approved on: <date>`, update the index row, *then* implement.
 5. **Never** edit an approved ADR's Decision section. Supersede it with a new ADR and
    cross-link both files.
@@ -150,7 +155,7 @@ changes nothing visible. Unsure whether a person would notice? Write it. Templat
   and commits by hand. Reading git state (`status`, `diff`, `log`) is fine.
 - **Hand the owner any command that changes more than this repository's files.** Agents may
   create, edit, update, move and delete files inside this repository for the agreed task, and
-  run read-only commands plus the local verification (`bun run lint`, `bun run types:check`,
+  run read-only commands plus the local verification (`bun run test`, `bun run lint`, `bun run types:check`,
   `bunx next build`). Before deleting or overwriting, look at the target, and name every path
   explicitly: never a path built from an empty or unchecked variable.
 - **Installs and uninstalls for this project run after the owner's yes.** First say what is
@@ -241,9 +246,10 @@ What is installed **today** (verified from `package.json`, `node_modules` and th
 | UI runtime | React 19.3 |
 | Language | TypeScript 7, `strict`; `@/*` → `./src/*` |
 | Styling | Tailwind CSS 4 through `@tailwindcss/postcss`; global styles in `src/app/global.css` |
+| Diagrams | Archify sources in `diagrams/<project-slug>/`, HTML in `public/diagrams/<project-slug>/`; `<HtmlEmbed>` in `src/components/html-embed.tsx` (registered in `src/components/mdx.tsx`); build checks in `src/lib/diagrams.ts`, run by the loader plugin `src/lib/diagrams-plugin.ts`; the CSP `sandbox` header for `/diagrams/:path*` in `next.config.mjs` — ADR-0011 |
 | Search | Algolia: `src/app/static.json/route.ts` emits the records (scope `tag` plus catalogue fields), `scripts/sync-content.ts` pushes them after `next build`; `src/lib/algolia.ts` is the search-only client used by `src/components/search.tsx`, the one search dialog (the home page's hero button opens it) |
 | Linting | ESLint 9 + `eslint-config-next` (core-web-vitals); ignores `.claude/**` (agent skills, ADR-0009). **`bun run lint` does not run today:** `typescript-eslint` does not support TypeScript 7; fixing it needs its own ADR |
-| Testing | None installed — chosen by its own ADR (ADR-0007) |
+| Testing | `bun test` (Bun's built-in runner), tests beside the code as `*.test.ts(x)`; `@types/bun` 1.4.4 through `tsconfig.test.json`, which `tsconfig.json` leaves out so the site's own check never sees Bun's types; server components rendered with `react-dom/server`; client components not unit-tested until a DOM is chosen — ADR-0007, ADR-0021 |
 | Package manager | Bun (`bun.lock`; 1.4.4 on the owner's machine). `scripts/sync-content.ts` runs on Node (v24) |
 
 - **Read the installed docs first.** `node_modules/next/dist/docs/` holds the docs for the exact
@@ -261,14 +267,15 @@ What is installed **today** (verified from `package.json`, `node_modules` and th
 | Build only (local verification) | `bunx next build` |
 | Build **and publish the search index** | `bun run build` — `next build`, then pushes every page to Algolia |
 | Start built app | `bun run start` |
-| Type check | `bun run types:check` — `next typegen && tsc --noEmit` |
+| Test | `bun run test` — `bun test --no-env-file`, so `.env.local` stays out of tests |
+| Type check | `bun run types:check` — `next typegen`, then `tsc --noEmit` for the site and for `tsconfig.test.json` |
 | Lint | `bun run lint` |
 | Add a dependency | `bun add <pkg>` — **an approved ADR and the owner's yes first; then the agent runs it** (§3) |
 
 `bun run build` reads `.env.local` and writes to the live search index with
 `ALGOLIA_WRITE_KEY`; never run it to verify a change. Run `bun run lint`,
 `bun run types:check` and `bunx next build` before declaring work complete, and report the lint
-failure above while it stands.
+failure above while it stands. Run `bun run test` with them.
 
 ## 6. Content invariants
 
@@ -314,8 +321,9 @@ pages.push(page)
   banners, no `=====` section headers.
 - **Confusing code is not a comment problem.** Rewrite it.
 - **Every branch takes a block.** `if`, `else`, `for`, `while` and `do` bodies are braced even
-  for a single statement. ADR-0003 enforces this with ESLint `curly: ["error", "all"]` once it
-  is approved.
+  for a single statement. ADR-0003's ESLint rule, `curly: ["error", "all"]`,
+  is added by the ADR that makes `bun run lint` run again (the owner's choice); until then it is
+  followed by hand.
 - **Configuration files are different.** In `next.config.mjs`, `eslint.config.mjs`,
   `tsconfig.json`, `.env.example`, CI and deployment manifests, a comment **may describe what a
   key does**, not only why. Still short, still linking the ADR that governs the value.
@@ -412,12 +420,23 @@ HTML file.
   in `.archify/` (gitignored).
 - **No HTML prototypes or HTML wireframes.** By the owner's decision, an app flow's screens
   are its Mermaid `block-beta` wireframes; no prototype skill is used.
-- **How this HTML is stored and shown on the site is decided by its own ADR**, because it is a
-  UI change: ADR-0011, proposed (embedded with an `<HtmlEmbed>` component in a sandboxed
-  frame). Until it is approved, the site shows the Mermaid version as highlighted code, and
-  Archify files stay out of `content/` and `public/`: save them outside the published folders
-  and give the owner the path.
-- No binary or externally hosted images.
+- **Publishing a diagram** ([ADR-0011](content/docs/maintain/adr/ADR-0011-archify-diagrams-are-embedded-from-sandboxed-html.mdx)):
+  copy the candidate to `diagrams/<project-slug>/<slug>.json` (the source, not published) and
+  the checked HTML, byte for byte, to `public/diagrams/<project-slug>/<slug>.html`. Never copy
+  a receipt (`*.delivery*.json`), journal or lock file: they hold local paths. In the page, put
+  the embed directly under the Mermaid version:
+
+  ```mdx
+  <HtmlEmbed src="/diagrams/docs/site-pages.html" title="Site pages" />
+  ```
+
+  The build fails on a `src` that is not `/diagrams/<project-slug>/<slug>.html`, a missing file,
+  a published diagram without its source, or a receipt under `public/`. `/diagrams/…` is served
+  with a CSP `sandbox` header (`next.config.mjs`), and the frame has no `allow-same-origin`.
+  Before publishing after an Archify upgrade, scan the HTML for external resources and network
+  calls (ADR-0011, security considerations).
+- No binary or externally hosted images, with one exception: the avatar in a GitHub profile
+  chip, loaded live from GitHub (ADR-0020).
 
 ### Always check these
 
@@ -519,7 +538,7 @@ adopts a host, analytics, CI or an authentication provider adds its own checks**
 │   │                    #   (home)/ (home page, home.css), (site)/[...slug]/ (every page, notebook layout),
 │   │                    #   llms.txt, llms-full.txt, llms.mdx/[...slug]/, og/[...slug]/, static.json
 │   ├── components/      # site-header.tsx, theme-switch.tsx, planet.tsx (planet and moon marks),
-│   │                    #   horizon-footer.tsx, footer-actions.tsx, mdx.tsx, search.tsx (search dialog),
+│   │                    #   horizon-footer.tsx, footer-actions.tsx, mdx.tsx, html-embed.tsx, profile-link.tsx, search.tsx (search dialog),
 │   │                    #   docs/ (docs header, planet header, track switch, orbit stations,
 │   │                    #   ADR constellation, trajectory TOC, version notice),
 │   │                    #   home/ (home header, hero, orbit map, search button, planet cards,
@@ -527,15 +546,21 @@ adopts a host, analytics, CI or an authentication provider adds its own checks**
 │   │                    #   assistant actions)
 │   └── lib/             # source.ts (content loader), catalog*.ts (catalogue schema, checks, entries, redirects),
 │                        #   rings.ts (ecosystem rings and kind names), trajectory.ts, reading-time.ts, adr-status.ts,
-│                        #   search-scope.ts, algolia.ts,
+│                        #   search-scope.ts, algolia.ts, diagrams.ts + diagrams-plugin.ts (ADR-0011 checks),
+│                        #   github-profile.ts (ADR-0020); tests beside the code, *.test.ts(x) (ADR-0021)
 │                        #   shared.ts (site name, routes, GitHub)
+├── diagrams/            # Archify candidate JSON, the source of each published diagram; not published (ADR-0011)
+│   └── <project-slug>/<slug>.json
+├── public/
+│   └── diagrams/        # PUBLISHED — Archify HTML, embedded with <HtmlEmbed>, served sandboxed (ADR-0011)
 ├── scripts/
 │   └── sync-content.ts  # after next build: pushes static.json records to Algolia
 ├── .env.example         # every variable the site reads, names only (§9)
-├── next.config.mjs      # Fumadocs MDX plugin, Cache Components
+├── next.config.mjs      # Fumadocs MDX plugin, Cache Components, the sandbox header for /diagrams/
 ├── postcss.config.mjs   # Tailwind CSS 4
 ├── eslint.config.mjs    # eslint-config-next (core-web-vitals)
-└── tsconfig.json        # strict; @/* → ./src/*
+├── tsconfig.json        # strict; @/* → ./src/*; leaves out *.test.ts(x)
+└── tsconfig.test.json   # the tests' check, with Bun's types (ADR-0021)
 ```
 
 The system as built is described in [`content/docs/maintain/architecture/system.mdx`](content/docs/maintain/architecture/system.mdx).
@@ -560,7 +585,7 @@ The system as built is described in [`content/docs/maintain/architecture/system.
 - [ ] Living design documents updated in place to match the code.
 - [ ] `AGENTS.md`, `README.md`, `content/docs/maintain/adr/index.mdx` updated as needed.
 - [ ] Tests written or updated — happy path **and** the obvious failures (ADR-0007).
-- [ ] `bun run lint`, `bun run types:check` and `bunx next build` pass.
+- [ ] `bun run test`, `bun run lint`, `bun run types:check` and `bunx next build` pass.
 - [ ] Leave everything uncommitted for the owner's review.
 
 ## 12. Skills

@@ -4,6 +4,7 @@ import { docsRoute } from './shared';
 import { defineDocs } from 'fumadocs-mdx/macro';
 import { pageSchema } from 'fumadocs-core/source/schema';
 import { catalogMetaSchema, type CatalogMeta } from './catalog-schema';
+import { diagramsPlugin } from './diagrams-plugin';
 import { catalogPlugin, channelLabel, describeVersion, lineInfo, pageVersion } from './catalog-plugin';
 
 const docs = defineDocs({
@@ -27,7 +28,7 @@ export function getMeta(path: string): CatalogMeta | undefined {
 export const source = loader({
   baseUrl: docsRoute,
   source: docs.toFumadocsSource(),
-  plugins: [lucideIconsPlugin(), catalogPlugin()],
+  plugins: [lucideIconsPlugin(), catalogPlugin(), diagramsPlugin()],
   // A line's URL segment is its configured name, not its folder name (ADR-0015 decision 4).
   slugs(file, next) {
     const [slug, track, folder, ...rest] = file.path.split('/');

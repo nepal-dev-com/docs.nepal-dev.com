@@ -2,7 +2,7 @@
 title: "App flow — embedded diagrams"
 ---
 
-- **Status:** Draft
+- **Status:** Current
 - **Last updated:** 2026-11-01
 - **Related ADRs:** [ADR-0011](../adr/ADR-0011-archify-diagrams-are-embedded-from-sandboxed-html.mdx),
   [ADR-0012](../adr/ADR-0012-every-page-is-mdx.mdx)
@@ -16,9 +16,8 @@ A page with a diagram shows its Mermaid version, then Archify's HTML from
 `/diagrams/<project-slug>/<slug>.html` in a sandboxed frame (`<HtmlEmbed>`), with **Open full
 screen** and a caption underneath.
 
-The flow below is made with Archify. Its source is
-`.archify/workflow-html-embeds-20261031/candidate.json`, and it moves to
-`diagrams/docs/html-embeds.json` once ADR-0011 is approved.
+The flow is made with Archify. Its source is `diagrams/docs/html-embeds.json`; the published
+file, `/diagrams/docs/html-embeds.html`, is embedded under the Mermaid version below (ADR-0011).
 
 ## Entry points
 
@@ -41,8 +40,10 @@ flowchart LR
   V -->|export| E["Image file<br/>PNG · SVG · WebM"]
   T[Markdown reader] -->|fetches| M["Page as Markdown<br/>/example-cli/use/v1.0/internals.md"]
   M -->|src URL| V
-  F -.->|file not published| N[Site 404 in the frame]
+  F -.->|src without a file| N[Build fails, nothing published]
 ```
+
+<HtmlEmbed src="/diagrams/docs/html-embeds.html" title="Embedded diagrams" />
 
 ## Screens
 
@@ -74,8 +75,8 @@ table of contents on the right.
 - Empty: a page without an embed has neither the frame nor the link.
 - Loading: the frame is lazy; Archify's file is about 0.8 MB, and until it scrolls into view and
   loads, its box shows the caption and the full-screen link.
-- Not found: a `src` with no file shows the site's 404 inside the frame. A `src` outside
-  `/diagrams/` never reaches a reader: the build fails.
+- Not found: never reaches a reader. A `src` without its file in `public/`, or outside
+  `/diagrams/<project-slug>/<slug>.html`, fails the build.
 - Refused: not applicable; no private content exists here.
 - Error: if the browser blocks scripts in the frame, the diagram shows whatever it renders
   without them; not yet checked in a browser.

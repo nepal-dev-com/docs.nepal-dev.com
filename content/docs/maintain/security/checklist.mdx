@@ -3,8 +3,8 @@ title: "Security audit checklist"
 ---
 
 - **Status:** Current
-- **Last updated:** 2026-10-31
-- **Related ADRs:** ADR-0005
+- **Last updated:** 2026-11-01
+- **Related ADRs:** ADR-0005, ADR-0011
 
 > Snapshot of the system as it stands today. Edit in place; never record what changed.
 
@@ -61,3 +61,17 @@ and unauthorized access first, abuse and logic flaws second.
 - [ ] `ALGOLIA_WRITE_KEY` is scoped to the `document` index only, and held only in local
       `.env.local` and the host's secret store.
 - [ ] The index contains exactly the Public pages of the last build, and nothing else.
+
+### Archify diagrams (ADR-0011)
+
+- [ ] Every file under `public/diagrams/` is `<project-slug>/<slug>.html` with its source in
+      `diagrams/`, and no `*.delivery*.json` is anywhere under `public/` (the build checks
+      both).
+- [ ] No published diagram holds a local path (`/Users/`, `/home/`, `/private/`), a secret, an
+      internal hostname, or anything about a private project.
+- [ ] The HTML loads no external script, stylesheet, font or image and calls no network API
+      (`fetch`, `XMLHttpRequest`, `WebSocket`, `sendBeacon`). Run again after every Archify
+      upgrade.
+- [ ] The deployed site serves `/diagrams/…` with
+      `Content-Security-Policy: sandbox allow-scripts allow-downloads`, and every embed frame
+      has `sandbox="allow-scripts allow-downloads"` without `allow-same-origin`.

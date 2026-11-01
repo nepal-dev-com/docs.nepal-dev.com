@@ -1,0 +1,10 @@
+{
+  // Test files only: Bun's types, kept out of the site's own check, which runs on Node (ADR-0021).
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "types": ["bun"],
+    "incremental": false
+  },
+  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],
+  "exclude": ["node_modules"]
+}

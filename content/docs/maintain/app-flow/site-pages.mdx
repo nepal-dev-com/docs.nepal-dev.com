@@ -29,8 +29,8 @@ Maintain track, `/docs/maintain/…`. Every page, the home page included, shares
 the orrery theme switch; docs pages add a search button, and use the home page's colours and
 type without its motion.
 
-The flow is made with Archify. Its source is `.archify/site-pages-20261031/candidate.json`.
-Until ADR-0011 is approved, the HTML stays in that folder and is not published.
+The flow is made with Archify. Its source is `diagrams/docs/site-pages.json`; the published
+file, `/diagrams/docs/site-pages.html`, is embedded under the Mermaid version below (ADR-0011).
 
 ## Entry points
 
@@ -67,6 +67,8 @@ flowchart TB
   H -->|card: Puncoz Docs| D["Site overview /docs"]
   D -->|Maintain| DM["/docs/maintain/adr/…"]
 ```
+
+<HtmlEmbed src="/diagrams/docs/site-pages.html" title="Site pages" />
 
 ## Screens
 

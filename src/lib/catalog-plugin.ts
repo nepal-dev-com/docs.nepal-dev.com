@@ -19,6 +19,7 @@ export const reservedSlugs = new Set([
   'static',
   'assets',
   'public',
+  'diagrams',
   '_next',
 ]);
 const slugPattern = /^[a-z0-9][a-z0-9-]*$/;

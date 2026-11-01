@@ -2,11 +2,11 @@
 title: "ADR-0007 — Tests are part of every change"
 ---
 
-- **Status:** Proposed
+- **Status:** Approved
 - **Date:** 2026-10-31
-- **Deciders:** Puncoz Nepal
-- **Approved by:** —
-- **Approved on:** —
+- **Deciders:** [@puncoz](https://github.com/puncoz)
+- **Approved by:** [@puncoz](https://github.com/puncoz)
+- **Approved on:** 2026-11-01
 - **Supersedes:** —
 - **Superseded by:** —
 - **Design documents:** `AGENTS.md` §3, §5, §11
@@ -70,11 +70,13 @@ Visibility code is tested for refusals, not only for success.
 
 ## Implementation notes
 
-- [ ] A test-runner ADR before the first code change that needs tests.
+- [ ] A test-runner ADR before the first code change that needs tests: [ADR-0021](./ADR-0021-tests-run-with-bun-test.mdx),
+      proposed 2026-11-01. ADR-0018 and ADR-0019 shipped with hand checks only; their checks become the
+      first tests once ADR-0021 is approved.
 - Tests: not applicable (process only).
 
 ## Docs to update on implementation
 
 - [ ] `AGENTS.md` §5 — the runner and its command, once its ADR is approved.
 - [ ] `README.md` scripts — the test command.
-- [ ] `content/docs/maintain/adr/index.mdx` — status.
+- [x] `content/docs/maintain/adr/index.mdx` — status.

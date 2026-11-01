@@ -5,7 +5,8 @@ title: "API — Machine-readable content routes"
 - **Status:** Current
 - **Last updated:** 2026-11-01
 - **Related ADRs:** [ADR-0013](../adr/ADR-0013-packages-and-projects-share-one-catalogue-shape.mdx),
-  [ADR-0015](../adr/ADR-0015-every-entry-lives-at-the-root-in-one-shape-and-one-look.mdx)
+  [ADR-0015](../adr/ADR-0015-every-entry-lives-at-the-root-in-one-shape-and-one-look.mdx),
+  [ADR-0011](../adr/ADR-0011-archify-diagrams-are-embedded-from-sandboxed-html.mdx)
 
 > Snapshot of the system as it stands today. Edit in place; never record what changed.
 
@@ -28,6 +29,7 @@ slug.
 | GET | `/llms-full.txt` | Every page's Markdown, concatenated | None |
 | GET | `/og/<slug>/image.png` | Open Graph image for a page | None |
 | GET | `/static.json` | Every page as an Algolia search record | None |
+| GET | `/diagrams/<project-slug>/<slug>.html` | One Archify diagram, a static file from `public/`, served sandboxed | None |
 
 ---
 
@@ -104,3 +106,33 @@ index settings change, which is publishing and waits for the owner.
 | Status | Meaning | Body |
 |---|---|---|
 | 200 | Always | JSON array of records |
+
+## `GET /diagrams/<project-slug>/<slug>.html`
+
+One Archify diagram, the file at `public/diagrams/<project-slug>/<slug>.html`, copied byte for
+byte from Archify's output (ADR-0011). Pages embed it with `<HtmlEmbed>`; **Open full screen**
+links straight to it.
+
+**Headers.** `Content-Security-Policy: sandbox allow-scripts allow-downloads`, set for
+`/diagrams/:path*` in `next.config.mjs`, so a direct visit runs the diagram's script in an
+opaque origin, as the embedding frame does (`sandbox="allow-scripts allow-downloads"`, no
+`allow-same-origin`).
+
+**Authorisation.** Public. Everything under `public/` is published; no diagram of a private
+project goes there.
+
+**Not indexed.** The files are not in `static.json`, the search index or `llms.txt`. A page's
+Markdown keeps the `<HtmlEmbed>` tag with its `src`.
+
+**Build checks** (`src/lib/diagrams.ts`, run by the loader plugin in `src/lib/diagrams-plugin.ts`
+and by `<HtmlEmbed>`): a `src` that is not `/diagrams/<project-slug>/<slug>.html`, a `src`
+without its file, a published diagram without `diagrams/<project-slug>/<slug>.json`, any other
+file under `public/diagrams/`, and an Archify receipt (`*.delivery*.json`) anywhere under
+`public/` each fail the build.
+
+**Responses**
+
+| Status | Meaning | Body |
+|---|---|---|
+| 200 | File found | HTML, `Content-Type: text/html` |
+| 404 | No such file | The site's not-found page |

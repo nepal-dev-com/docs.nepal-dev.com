@@ -2,12 +2,13 @@
 title: "ADR-0011 — Archify diagrams are embedded in pages from sandboxed HTML files"
 ---
 
-- **Status:** Proposed
+- **Status:** Approved
 - **Date:** 2026-10-31
-- **Deciders:** Puncoz Nepal
-- **Approved by:** —
-- **Approved on:** —
-- **Supersedes:** —
+- **Deciders:** [@puncoz](https://github.com/puncoz)
+- **Approved by:** [@puncoz](https://github.com/puncoz)
+- **Approved on:** 2026-11-01
+- **Supersedes:** [ADR-0002](./ADR-0002-living-design-documentation.mdx) decision 5 (in part:
+  rendering diagrams on the site)
 - **Superseded by:** —
 - **Design documents:** [`../app-flow/html-embeds.mdx`](../app-flow/html-embeds.mdx),
   [`../architecture/system.mdx`](../architecture/system.mdx),
@@ -135,34 +136,44 @@ Facts this decision rests on, checked against the installed packages and tools:
 
 - [x] App flow: [`../app-flow/html-embeds.mdx`](../app-flow/html-embeds.mdx), its flow made
       with Archify.
-- [ ] `src/components/html-embed.tsx`, registered in `src/components/mdx.tsx` (decision 3).
-- [ ] `next.config.mjs`: the `headers()` entry for `/diagrams/:path*`, with a comment linking
-      this ADR.
-- [ ] The app flow's diagram moved to `diagrams/docs/html-embeds.json` and
-      `public/diagrams/docs/html-embeds.html`, and embedded in the app flow page.
+- [x] `src/components/html-embed.tsx`, registered in `src/components/mdx.tsx` (decision 3). It
+      also fails the build when the file is missing from `public/` or the title is empty.
+- [x] `next.config.mjs`: the `headers()` entry for `/diagrams/:path*`, with a comment linking
+      this ADR. Checked against `next start`: the file is served with
+      `Content-Security-Policy: sandbox allow-scripts allow-downloads`.
+- [x] `diagrams` added to the reserved slugs (`src/lib/catalog-plugin.ts`).
+- [x] The build checks in `src/lib/diagrams.ts`, run by a loader plugin
+      (`src/lib/diagrams-plugin.ts`): a published diagram needs its JSON source, only
+      `<project-slug>/<slug>.html` belongs under `public/diagrams/`, and no `*.delivery*.json`
+      may be under `public/`.
+- [x] This site's seven diagrams published to `diagrams/docs/` and `public/diagrams/docs/`
+      (html-embeds, site-pages, package-navigation, solar-system, docs-sidebars,
+      adr-constellation, package-version-lifecycle), each embedded under its Mermaid version.
+      Each passed `check --require-provenance` and a scan for local paths and network calls.
+      The html-embeds flow was delivered again first: its source still named prototypes.
 - [ ] When the owner first opens it in a browser: the frame loads under the sandbox, PNG and
       SVG downloads work, and whether clipboard copy works is recorded in the app flow.
-- [ ] Tests, with the runner chosen under ADR-0007: `<HtmlEmbed>` renders the sandboxed frame
-      and the full-screen link; it rejects a `src` outside `/diagrams/`, or not ending in
-      `.html`; every `<HtmlEmbed>` `src` has its file in `public/`; every published diagram
-      has its JSON source; no `*.delivery*.json` file is under `public/`. Until that runner
-      exists, these are checked by hand before review and reported as such.
+- [x] Tests (ADR-0007, runner ADR-0021): `src/components/html-embed.test.tsx` (the sandboxed
+      frame and full-screen link; a `src` outside `/diagrams/`, an unpublished file, an empty
+      title) and `src/lib/diagrams.test.ts` (allowed and refused `src` values, a receipt
+      anywhere under `public/`, a diagram without its source, a stray file, and the loader
+      plugin passing and failing on a fixture folder).
 - [ ] `bun run lint`, `bun run types:check` and `bunx next build` pass.
 
 ## Docs to update on implementation
 
 - [x] [`../app-flow/html-embeds.mdx`](../app-flow/html-embeds.mdx)
-- [ ] [`../architecture/system.mdx`](../architecture/system.mdx): diagram sources, the embed
+- [x] [`../architecture/system.mdx`](../architecture/system.mdx): diagram sources, the embed
       component
-- [ ] [`../api/content-routes.mdx`](../api/content-routes.mdx): `/diagrams/…`, public, static,
+- [x] [`../api/content-routes.mdx`](../api/content-routes.mdx): `/diagrams/…`, public, static,
       sandboxed
-- [ ] [`../security/threat-model.mdx`](../security/threat-model.mdx): the attack-surface table;
+- [x] [`../security/threat-model.mdx`](../security/threat-model.mdx): the attack-surface table;
       [`../security/checklist.mdx`](../security/checklist.mdx): Archify rows under
       tool-specific checks
-- [ ] `AGENTS.md` §8 (where the files go, the component, the copy step) and §10 (`diagrams/`,
+- [x] `AGENTS.md` §8 (where the files go, the component, the copy step) and §10 (`diagrams/`,
       `public/`)
-- [ ] `PROJECT_AGENTS.md` §3 and §4: consumers' folders and the component
-- [ ] `.claude/agent-skills/INDEX.md`: the Archify override, which today keeps the HTML out of
+- [x] `PROJECT_AGENTS.md` §3 and §4: consumers' folders and the component
+- [x] `.claude/agent-skills/INDEX.md`: the Archify override, which today keeps the HTML out of
       `public/` until this ADR
-- [ ] `README.md`: project structure
-- [ ] [`./index.mdx`](./index.mdx): status on approval
+- [x] `README.md`: project structure
+- [x] [`./index.mdx`](./index.mdx): status on approval

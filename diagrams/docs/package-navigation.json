@@ -1,0 +1,192 @@
+{
+  "schema_version": 2,
+  "diagram_type": "workflow",
+  "meta": {
+    "title": "App flow — package navigation",
+    "subtitle": "Moving between a package's overview, its Use and Maintain tracks and its version lines",
+    "visual_preset": "editorial",
+    "quality_profile": "showcase",
+    "output": "package-navigation.html"
+  },
+  "lanes": [
+    {
+      "id": "entry",
+      "label": "Entry"
+    },
+    {
+      "id": "maintain",
+      "label": "Maintain track"
+    },
+    {
+      "id": "use",
+      "label": "Use track"
+    },
+    {
+      "id": "lines",
+      "label": "Other lines"
+    },
+    {
+      "id": "fallback",
+      "label": "Not in line",
+      "variant": "exception"
+    }
+  ],
+  "mainPath": [
+    "entry_node",
+    "overview",
+    "use_latest",
+    "use_dev"
+  ],
+  "nodes": [
+    {
+      "id": "entry_node",
+      "lane": "entry",
+      "col": 0,
+      "type": "external",
+      "label": "Catalogue row or search"
+    },
+    {
+      "id": "overview",
+      "lane": "entry",
+      "col": 1,
+      "type": "frontend",
+      "label": "Overview",
+      "sublabel": "/lodestar"
+    },
+    {
+      "id": "alias",
+      "lane": "entry",
+      "col": 2,
+      "type": "frontend",
+      "label": "Alias or old line",
+      "sublabel": "use/latest/… · a removed line"
+    },
+    {
+      "id": "maintain_node",
+      "lane": "maintain",
+      "col": 3,
+      "type": "frontend",
+      "label": "Maintain",
+      "sublabel": "/lodestar/maintain/releasing"
+    },
+    {
+      "id": "use_latest",
+      "lane": "use",
+      "col": 2,
+      "type": "frontend",
+      "label": "Use · latest line",
+      "sublabel": "/lodestar/use/v0.1/install"
+    },
+    {
+      "id": "use_dev",
+      "lane": "lines",
+      "col": 3,
+      "type": "frontend",
+      "label": "Use · dev line",
+      "sublabel": "banner: in development"
+    },
+    {
+      "id": "use_legacy",
+      "lane": "lines",
+      "col": 4,
+      "type": "frontend",
+      "label": "Use · older line",
+      "sublabel": "banner: older version"
+    },
+    {
+      "id": "first_page",
+      "lane": "fallback",
+      "col": 4,
+      "type": "security",
+      "label": "That line's first page",
+      "sublabel": "page not in that line"
+    }
+  ],
+  "edges": [
+    {
+      "id": "enter",
+      "from": "entry_node",
+      "to": "overview",
+      "variant": "emphasis"
+    },
+    {
+      "id": "alias-redirect",
+      "from": "alias",
+      "to": "use_latest",
+      "label": "redirect",
+      "variant": "dashed",
+      "role": "branch"
+    },
+    {
+      "id": "to-use",
+      "from": "overview",
+      "to": "use_latest",
+      "label": "track switch: Use",
+      "variant": "emphasis"
+    },
+    {
+      "id": "to-maintain",
+      "from": "overview",
+      "to": "maintain_node",
+      "label": "track switch: Maintain",
+      "variant": "default",
+      "role": "branch"
+    },
+    {
+      "id": "menu-next",
+      "from": "use_latest",
+      "to": "use_dev",
+      "label": "version menu: dev",
+      "variant": "default",
+      "role": "branch"
+    },
+    {
+      "id": "menu-legacy",
+      "from": "use_latest",
+      "to": "use_legacy",
+      "label": "version menu: older line",
+      "variant": "default",
+      "role": "branch"
+    },
+    {
+      "id": "next-back",
+      "from": "use_dev",
+      "to": "use_latest",
+      "label": "banner link",
+      "variant": "dashed",
+      "role": "return"
+    },
+    {
+      "id": "legacy-back",
+      "from": "use_legacy",
+      "to": "use_latest",
+      "label": "banner link",
+      "variant": "dashed",
+      "role": "return"
+    },
+    {
+      "id": "use-to-maintain",
+      "from": "use_latest",
+      "to": "maintain_node",
+      "label": "track switch",
+      "variant": "default",
+      "role": "branch"
+    },
+    {
+      "id": "maintain-to-use",
+      "from": "maintain_node",
+      "to": "use_latest",
+      "label": "track switch",
+      "variant": "default",
+      "role": "return"
+    },
+    {
+      "id": "not-in-line",
+      "from": "use_latest",
+      "to": "first_page",
+      "label": "page not in the chosen line",
+      "variant": "dashed",
+      "role": "error"
+    }
+  ]
+}

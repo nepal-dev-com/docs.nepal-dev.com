@@ -7,7 +7,10 @@ title: "Architecture — puncoz-packages-docs"
 - **Related ADRs:** [ADR-0013](../adr/ADR-0013-packages-and-projects-share-one-catalogue-shape.mdx),
   [ADR-0014](../adr/ADR-0014-home-page-is-a-search-first-release-map.mdx),
   [ADR-0015](../adr/ADR-0015-every-entry-lives-at-the-root-in-one-shape-and-one-look.mdx),
-  [ADR-0017](../adr/ADR-0017-the-whole-site-is-one-solar-system.mdx)
+  [ADR-0017](../adr/ADR-0017-the-whole-site-is-one-solar-system.mdx),
+  [ADR-0011](../adr/ADR-0011-archify-diagrams-are-embedded-from-sandboxed-html.mdx),
+  [ADR-0020](../adr/ADR-0020-people-in-adrs-are-github-usernames-shown-as-profile-chips.mdx),
+  [ADR-0021](../adr/ADR-0021-tests-run-with-bun-test.mdx)
 
 > Snapshot of the system as it stands today. Edit in place; never record what changed.
 
@@ -62,6 +65,11 @@ with a route (`api`, `og`, `static`, …). Contracts for the machine-readable ro
 | `src/lib/source.ts` | Loads `content/` with `defineDocs` at base URL `/`, swapping each line folder's URL segment for its name (`slugs`); exposes `source`, `getMeta` and `docsLlms` (version line in each page's Markdown and in `llms.txt`) | `fumadocs-mdx`, the two above |
 | `src/lib/catalog.ts` | Reads the page tree into typed catalogue entries (lines, tracks, demo), the page context for banners, and the home page's previews | `source.ts` |
 | `src/lib/catalog-routes.ts` | Meta files only (no compiled pages), for the proxy: the catalogued slugs, each package's line segments, `latest` and `dev`; `isEntryPath()`, `resolveLineRedirect()` | `fumadocs-mdx` |
+| `diagrams/`, `public/diagrams/` | Archify diagrams: the candidate JSON as source (not published) and the checked HTML, served from `/diagrams/<project-slug>/<slug>.html` with a CSP `sandbox` header from `next.config.mjs` (ADR-0011) | — |
+| `src/lib/diagrams.ts`, `diagrams-plugin.ts` | Which `<HtmlEmbed>` `src` is allowed, and the build check of the published diagrams (source present, no receipt under `public/`), run as a loader plugin | `node:fs` |
+| `src/components/html-embed.tsx` | `<HtmlEmbed>`, registered in `src/components/mdx.tsx`: the diagram in a sandboxed, lazy frame, **Open full screen** and a caption; fails the build on a bad `src` or a missing file | `diagrams.ts` |
+| `src/lib/github-profile.ts`, `src/components/profile-link.tsx` | Which links are GitHub profile links (`[@user](https://github.com/user)`), and `withProfileChips`, the page's `a` component, which shows them as a chip with the avatar loaded live from GitHub and hands every other link to `createRelativeLink` (ADR-0020) | `fumadocs-ui/mdx.server` |
+| `*.test.ts`, `*.test.tsx` beside the code | Unit tests, run with `bun run test` (`bun test --no-env-file`); type-checked through `tsconfig.test.json`, which adds Bun's types and is kept out of the site's own check (ADR-0021) | `bun:test`, `react-dom/server` |
 | `src/lib/search-scope.ts` | The scope tag of a page (`<slug>`, `<slug>:maintain`, `<slug>:use:<segment>`) | — |
 | `src/lib/adr-status.ts` | An ADR's status from its status line, its number and short title, whether a folder is named `adr` (ADR-0019) | — |
 | `src/lib/trajectory.ts`, `reading-time.ts` | Pure geometry for the trajectory and the station arcs, the probe's position and the time left; a page's reading time from its `structuredData` at 220 words a minute (ADR-0018) | — |
@@ -140,9 +148,9 @@ flowchart TB
   Markdown routes, `llms.txt` / `llms-full.txt`, `static.json`, the OG images or the search
   index. The catalogue schema rejects a private entry, so the build fails instead of publishing
   one (`AGENTS.md` §6.1).
-- **Demos are not published** until ADR-0011 is approved: a `use/<line>/demo.mdx` page would be
-  linked from the catalogue, but there is no sandboxed embed and the home page has no demo
-  section.
+- **Demos are not published.** A `use/<line>/demo.mdx` page would be linked from the catalogue,
+  but ADR-0011's embed takes only `/diagrams/…` files, so how a demo runs needs its own ADR; the
+  home page has no demo section.
 - **`defineCollections({ type: 'meta' })` is broken in fumadocs-mdx 15.4.10** (its generated
   call passes `meta` where the runtime reads `entries`), so `catalog-routes.ts` uses a
   `defineDocs` whose page pattern matches nothing.

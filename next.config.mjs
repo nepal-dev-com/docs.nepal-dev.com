@@ -9,6 +9,15 @@ const config = {
   cacheComponents: true,
   // Prefetch each route's reusable shell; set explicitly, as Next.js asks with cacheComponents.
   partialPrefetching: true,
+  // Archify diagrams opened directly get the same isolation as their embedding frame (ADR-0011).
+  async headers() {
+    return [
+      {
+        source: '/diagrams/:path*',
+        headers: [{ key: 'Content-Security-Policy', value: 'sandbox allow-scripts allow-downloads' }],
+      },
+    ];
+  },
 };
 
 export default withMDX(config);

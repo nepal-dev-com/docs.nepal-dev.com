@@ -17,9 +17,8 @@ width first; desktop differences are noted under each screen. The marks (planet,
 moon) are those of [The solar system](./solar-system.mdx); the characters in the wireframes stand
 for drawn SVG.
 
-The flow is made with Archify. Its source is `.archify/docs-sidebars-20261101/candidate.json`
-and its output `.archify/docs-sidebars-20261101/docs-sidebars.html`. Until ADR-0011 is approved,
-both stay in that folder and are not published.
+The flow is made with Archify. Its source is `diagrams/docs/docs-sidebars.json`; the published
+file, `/diagrams/docs/docs-sidebars.html`, is embedded under the Mermaid version below (ADR-0011).
 
 ## Entry points
 
@@ -47,6 +46,8 @@ flowchart LR
   T -->|end of page| H["Full horizon<br/>scene · planets · Back to top"]
   H -->|Back to top| P
 ```
+
+<HtmlEmbed src="/diagrams/docs/docs-sidebars.html" title="Docs page sidebars" />
 
 ## Screens
 

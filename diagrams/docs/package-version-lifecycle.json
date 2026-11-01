@@ -1,0 +1,96 @@
+{
+  "schema_version": 3,
+  "diagram_type": "lifecycle",
+  "meta": {
+    "title": "Package version line lifecycle",
+    "subtitle": "How a documented version line moves between dev, latest, legacy and removed",
+    "visual_preset": "editorial",
+    "quality_profile": "showcase",
+    "output": "package-version-lifecycle.html"
+  },
+  "mainPath": [
+    "dev",
+    "latest",
+    "legacy",
+    "removed"
+  ],
+  "states": [
+    {
+      "id": "dev",
+      "type": "start",
+      "label": "Dev",
+      "sublabel": "use/dev/, work in progress",
+      "tag": "opened"
+    },
+    {
+      "id": "latest",
+      "type": "success",
+      "label": "Latest",
+      "sublabel": "named released line"
+    },
+    {
+      "id": "legacy",
+      "type": "waiting",
+      "label": "Legacy",
+      "sublabel": "older line"
+    },
+    {
+      "id": "removed",
+      "type": "neutral",
+      "label": "Removed",
+      "sublabel": "no longer documented",
+      "tag": "terminal"
+    }
+  ],
+  "transitions": [
+    {
+      "id": "dev-latest",
+      "from": "dev",
+      "to": "latest",
+      "label": "release",
+      "note": "dev/ copied to a named line",
+      "variant": "emphasis"
+    },
+    {
+      "id": "latest-legacy",
+      "from": "latest",
+      "to": "legacy",
+      "label": "newer latest",
+      "note": "a newer line becomes latest"
+    },
+    {
+      "id": "legacy-removed",
+      "from": "legacy",
+      "to": "removed",
+      "label": "stop documenting",
+      "note": "stop documenting the line"
+    },
+    {
+      "id": "legacy-latest",
+      "from": "legacy",
+      "to": "latest",
+      "label": "newer withdrawn",
+      "note": "the newer line is withdrawn",
+      "variant": "dashed"
+    },
+    {
+      "id": "dev-removed",
+      "from": "dev",
+      "to": "removed",
+      "label": "development stops",
+      "note": "use/dev/ is deleted",
+      "variant": "security"
+    }
+  ],
+  "cards": [
+    {
+      "dot": "cyan",
+      "title": "Entry and exit",
+      "items": [
+        "A package opens use/dev/ for its unreleased work",
+        "Each release copies dev/ into a new named line",
+        "Removed is the end state"
+      ]
+    }
+  ]
+}

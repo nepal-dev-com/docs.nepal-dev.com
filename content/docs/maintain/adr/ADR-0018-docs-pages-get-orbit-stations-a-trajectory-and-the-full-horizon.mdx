@@ -4,8 +4,8 @@ title: "ADR-0018 — Docs pages get orbit stations, a trajectory and the full ho
 
 - **Status:** Approved
 - **Date:** 2026-11-01
-- **Deciders:** Puncoz Nepal
-- **Approved by:** Puncoz Nepal
+- **Deciders:** [@puncoz](https://github.com/puncoz)
+- **Approved by:** [@puncoz](https://github.com/puncoz)
 - **Approved on:** 2026-11-01
 - **Supersedes:** [ADR-0017](./ADR-0017-the-whole-site-is-one-solar-system.mdx) decision 8 (in
   part: docs pages dropping the horizon's scene) and decision 10 (in part: the sidebar's link
@@ -184,13 +184,12 @@ in the browser.
 - [x] `src/app/site.css`: station, trajectory, probe and phone bar styles, with reduced-motion
       and `hover: none` rules; the orbit-line and dot overrides on Fumadocs' list and table of
       contents removed.
-- [ ] Tests (ADR-0007): no runner is installed yet. The pure functions in `trajectory.ts` and
-      `reading-time.ts` were checked by hand with a throwaway script (not committed): offsets by
-      depth, an arc between equal depths and an S-curve across a change, one heading with no
-      path, no headings, the probe before the first heading, between two and at the last, time
-      left at 0%, 50% and 100%, before hydration and under a minute, the station arc's bow, ends
-      and slots, and the reading minutes. They become the first tests once the runner's ADR is
-      approved.
+- [x] Tests (ADR-0007, runner ADR-0021): `src/lib/trajectory.test.ts` and
+      `src/lib/reading-time.test.ts` cover the offsets by depth, the arc between equal depths and
+      the S-curve across a change, one heading and none, the probe before, within and past a
+      section, the time left (counting down, the end, before hydration, under a minute, never
+      zero), the station arc and its slots, and reading time. The client components that draw
+      them need a browser and are not unit-tested (ADR-0021 decision 5).
 - [x] Checked in the built HTML: twelve stations on this site's Maintain pages with the current
       one open and marked, the current page with `aria-current="page"`, the trajectory column and
       phone bar, and the full horizon with its closing line and scene. Not yet looked at in a

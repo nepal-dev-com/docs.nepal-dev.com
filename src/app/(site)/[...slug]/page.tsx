@@ -9,6 +9,7 @@ import {
 } from 'fumadocs-ui/layouts/notebook/page';
 import { notFound, redirect } from 'next/navigation';
 import { getMDXComponents } from '@/components/mdx';
+import { withProfileChips } from '@/components/profile-link';
 import type { Metadata } from 'next';
 import { createRelativeLink } from 'fumadocs-ui/mdx';
 import { getPageImageUrl, getPageMarkdownUrl, gitConfig } from '@/lib/shared';
@@ -84,8 +85,8 @@ export default async function Page(props: PageProps<'/[...slug]'>) {
         <DocsBody>
           <MDX
             components={getMDXComponents({
-              // this allows you to link to other pages with relative file paths
-              a: createRelativeLink(source, page),
+              // Relative file paths resolve to page URLs; GitHub profile links become chips (ADR-0020).
+              a: withProfileChips(createRelativeLink(source, page)),
             })}
           />
         </DocsBody>

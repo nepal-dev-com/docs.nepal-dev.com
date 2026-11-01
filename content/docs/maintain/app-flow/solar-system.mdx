@@ -42,8 +42,8 @@ The hero's legend teaches these once. Every mark is drawn SVG (`src/components/p
 `PlanetMark`, `MoonPhase` and `PlanetSystem`. The star uses `--home-star`, an unlit face
 `--home-night`.
 
-The flow is made with Archify. Its source is `.archify/solar-system-20261101/candidate.json`.
-Until ADR-0011 is approved, it stays in that folder and is not published.
+The flow is made with Archify. Its source is `diagrams/docs/solar-system.json`; the published
+file, `/diagrams/docs/solar-system.html`, is embedded under the Mermaid version below (ADR-0011).
 
 ## Entry points
 
@@ -68,6 +68,8 @@ flowchart TB
   L -->|Back to the system| H["Home /"]
   Any -->|footer: Back to orbit / Back to top| Any
 ```
+
+<HtmlEmbed src="/diagrams/docs/solar-system.html" title="The home page and the solar system" />
 
 ## Screens
 

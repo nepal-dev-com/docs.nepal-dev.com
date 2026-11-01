@@ -22,7 +22,8 @@ the version menu (on Use pages of a versioned package) and, under it, the packag
 Use | Maintain switch. The site header, its search and the theme switch are described in
 [site pages](./site-pages.mdx).
 
-The flow is made with Archify. Its source is `.archify/package-navigation-20261031/candidate.json`.
+The flow is made with Archify. Its source is `diagrams/docs/package-navigation.json`; the published
+file, `/diagrams/docs/package-navigation.html`, is embedded under the Mermaid version below (ADR-0011).
 
 ## Entry points
 
@@ -54,6 +55,8 @@ flowchart LR
   M -->|track switch| U
   U -.->|page not in the chosen line| F["That line's first page"]
 ```
+
+<HtmlEmbed src="/diagrams/docs/package-navigation.html" title="Package navigation" />
 
 ## Screens
 
@@ -190,5 +193,5 @@ no version menu and no version line.
 
 ### 6. `Demo page` — `/<slug>/use/<line>/demo`
 
-Not published until ADR-0011 is approved. When a line has a `demo.mdx` page, the home page
-catalogue links to it; the sandboxed embed that runs the package's demo is ADR-0011's.
+Not published: how a demo runs needs its own ADR, since ADR-0011's embed takes only diagrams.
+When a line has a `demo.mdx` page, the home page catalogue links to it.

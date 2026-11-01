@@ -2,11 +2,11 @@
 title: "ADR-0003 — Comments explain why; every branch takes a block"
 ---
 
-- **Status:** Proposed
+- **Status:** Approved
 - **Date:** 2026-10-31
-- **Deciders:** Puncoz Nepal
-- **Approved by:** —
-- **Approved on:** —
+- **Deciders:** [@puncoz](https://github.com/puncoz)
+- **Approved by:** [@puncoz](https://github.com/puncoz)
+- **Approved on:** 2026-11-01
 - **Supersedes:** —
 - **Superseded by:** —
 - **Design documents:** `AGENTS.md` §7
@@ -68,12 +68,14 @@ contain secrets; see ADR-0005.)
 ## Implementation notes
 
 - [ ] Add `curly: ["error", "all"]` to `eslint.config.mjs`, with a one-line comment linking
-      this ADR.
-- [ ] Run `bun run lint` and fix any violations in the scaffold.
+      this ADR. **Deferred by the owner's choice (2026-11-01)** to the ADR that makes
+      `bun run lint` run again: typescript-eslint does not support TypeScript 7, so the rule
+      could not be checked. The policy is followed by hand until then.
+- [ ] Run `bun run lint` and fix any violations, with that ADR.
 - [ ] Tests: none meaningful for a lint rule; verified by `bun run lint` failing on an unbraced
       branch and passing after.
 
 ## Docs to update on implementation
 
 - [ ] `AGENTS.md` §7 — say the brace rule is enforced (drop "once it is approved").
-- [ ] `content/docs/maintain/adr/index.mdx` — status.
+- [x] `content/docs/maintain/adr/index.mdx` — status.

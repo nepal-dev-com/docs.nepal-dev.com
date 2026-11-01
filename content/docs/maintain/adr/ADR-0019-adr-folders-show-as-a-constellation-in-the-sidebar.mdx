@@ -4,8 +4,8 @@ title: "ADR-0019 — ADR folders show as a constellation in the sidebar"
 
 - **Status:** Approved
 - **Date:** 2026-11-01
-- **Deciders:** Puncoz Nepal
-- **Approved by:** Puncoz Nepal
+- **Deciders:** [@puncoz](https://github.com/puncoz)
+- **Approved by:** [@puncoz](https://github.com/puncoz)
 - **Approved on:** 2026-11-01
 - **Supersedes:** [ADR-0018](./ADR-0018-docs-pages-get-orbit-stations-a-trajectory-and-the-full-horizon.mdx)
   decision 2 (in part: how an ADR folder's pages show inside its station)
@@ -132,9 +132,10 @@ same public pages it describes and sent with them; nothing new leaves the system
 - [x] `src/app/site.css`: constellation styles, with focus and reduced-motion rules. The readout
       keeps two lines of height, so pointing at moons doesn't move the links under it. On touch
       screens only focus sets the readout, so a tap opens the ADR.
-- [ ] Tests (ADR-0007): no runner yet. `adr-status.ts` was checked by hand with a throwaway
-      script (each status, a backticked status, no status line, another word, a title with and
-      without `ADR-NNNN`, the short title, folder detection), all passing.
+- [x] Tests (ADR-0007, runner ADR-0021): `src/lib/adr-status.test.ts`, each status, a
+      backticked status, no status line, another word, a title with and without `ADR-NNNN`, the
+      short title, folder detection. The constellation itself is a client component and is not
+      unit-tested (ADR-0021 decision 5).
 - [x] Checked in the built HTML: on ADR-0016 the Decisions station is a constellation of 19 moons
       (7 approved, 12 proposed), ADR-0016 lit as the planet, the readout "16 · Home search is…",
       previous and next, and "All 19 decisions"; on the register page the summary "19 decisions
