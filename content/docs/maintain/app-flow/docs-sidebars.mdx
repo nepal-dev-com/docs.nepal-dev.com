@@ -17,8 +17,9 @@ width first; desktop differences are noted under each screen. The marks (planet,
 moon) are those of [The solar system](./solar-system.mdx); the characters in the wireframes stand
 for drawn SVG.
 
-The flow is made with Archify. Its source is `diagrams/docs/docs-sidebars.json`; the published
-file, `/diagrams/docs/docs-sidebars.html`, is embedded under the Mermaid version below (ADR-0011).
+The flow and every screen are drawn with Archify; the page shows them and its Markdown
+carries their Mermaid (ADR-0022). Their sources are in `diagrams/docs/`: `docs-sidebars.json` for the
+flow, one `docs-sidebars-screen-<n>.json` per screen.
 
 ## Entry points
 
@@ -30,6 +31,8 @@ file, `/diagrams/docs/docs-sidebars.html`, is embedded under the Mermaid version
   content only.
 
 ## Flow
+
+<Diagram src="/diagrams/docs/docs-sidebars.html" title="Docs page sidebars">
 
 ```mermaid
 flowchart LR
@@ -47,11 +50,13 @@ flowchart LR
   H -->|Back to top| P
 ```
 
-<HtmlEmbed src="/diagrams/docs/docs-sidebars.html" title="Docs page sidebars" />
+</Diagram>
 
 ## Screens
 
 ### 1. `Planet row and orbit stations` — the left sidebar, `/lodestar/use/v0.1/install`
+
+<Diagram src="/diagrams/docs/docs-sidebars-screen-1.html" title="Screen 1 — Planet row and orbit stations">
 
 ```mermaid
 block-beta
@@ -75,6 +80,8 @@ block-beta
   end
 ```
 
+</Diagram>
+
 The planet row: the chip links to `/lodestar`; the sun and moon buttons open the same page on
 Use or Maintain ("Use, the day side" and "Maintain, the night side" as names and tooltips). The
 station holding the current page is open, its border in the ecosystem colour, its orbit drawing
@@ -83,6 +90,8 @@ is the accent planet with a halo. Other stations are closed and show their name 
 
 Desktop: the same, in the sidebar column; the sidebar's collapse button works as today. Phone:
 the same inside Fumadocs' drawer.
+
+<Diagram src="/diagrams/docs/docs-sidebars-screen-1-2.html" title="Screen 1 (2) — Planet row and orbit stations">
 
 ```mermaid
 block-beta
@@ -96,6 +105,8 @@ block-beta
     a3[" ◉ Keyboard shortcuts (current)"]:4
   end
 ```
+
+</Diagram>
 
 A nested folder is a smaller station inside its parent, with no card border. A folder named
 `adr` is a constellation instead, one moon per ADR ([The ADR constellation](./adr-constellation.mdx)).
@@ -117,6 +128,8 @@ A nested folder is a smaller station inside its parent, with no card border. A f
 
 ### 2. `Trajectory` — "On this page", desktop column
 
+<Diagram src="/diagrams/docs/docs-sidebars-screen-2.html" title="Screen 2 — Trajectory">
+
 ```mermaid
 block-beta
   columns 4
@@ -129,6 +142,8 @@ block-beta
   i6["○ Troubleshooting"]:4
   top["Back to top ↑"]:4
 ```
+
+</Diagram>
 
 The path curves through every dot: shallow outward arcs between headings of the same depth, an
 S-curve where depth changes. The read stretch is solid accent with filled dots; ahead is dashed
@@ -151,11 +166,17 @@ column sits to the right of the page from Fumadocs' desktop breakpoint up.
 
 ### 3. `Phone bar and sheet` — under the header, phone width
 
+<Diagram src="/diagrams/docs/docs-sidebars-screen-3.html" title="Screen 3 — Phone bar and sheet">
+
 ```mermaid
 block-beta
   columns 4
   ring["◔ ring + probe"]:1 cur["Props"]:2 min["4 min left ▾"]:1
 ```
+
+</Diagram>
+
+<Diagram src="/diagrams/docs/docs-sidebars-screen-3-2.html" title="Screen 3 (2) — Phone bar and sheet">
 
 ```mermaid
 block-beta
@@ -167,6 +188,8 @@ block-beta
   s4["  ○ Events"]:4
   s5["○ Options"]:4
 ```
+
+</Diagram>
 
 The bar replaces Fumadocs' table-of-contents bar: a small ring with the probe at the reading
 position, the current heading (truncated), the time left and a chevron. Tapping opens the same
@@ -182,6 +205,8 @@ trajectory as a sheet; choosing a heading scrolls there and closes it.
 
 ### 4. `Full horizon` — below every docs page
 
+<Diagram src="/diagrams/docs/docs-sidebars-screen-4.html" title="Screen 4 — Full horizon">
+
 ```mermaid
 block-beta
   columns 4
@@ -191,6 +216,8 @@ block-beta
   links["Search ⌘K · llms.txt · llms-full.txt · GitHub · Back to top"]:4
   credit["Packages and projects by Puncoz Nepal"]:4
 ```
+
+</Diagram>
 
 The same footer as the home page ([The solar system](./solar-system.mdx), screen 5), across the
 full width below the sidebar and the page; its last link reads "Back to top".

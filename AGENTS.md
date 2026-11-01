@@ -79,8 +79,9 @@ yet** besides the site itself, so the home page shows its empty states.
   `use cache` and `<Suspense>`, not route segment configs such as `revalidate`.
 - **Also here:** Algolia search, `llms.txt` / `llms-full.txt`, per-page Markdown and Open Graph
   images.
-- **Archify diagrams** are published from `public/diagrams/` and embedded with `<HtmlEmbed>` in a
-  sandboxed frame (ADR-0011).
+- **Every diagram is a `<Diagram>`** around its Mermaid fence (ADR-0022): the page shows its
+  Archify view from `diagrams/`, in a sandboxed frame with the site shell; every Markdown surface
+  carries the Mermaid. The build fails on a bare Mermaid fence outside the templates.
 - **Not published:** demos and private projects. Each waits for its own ADR: ADR-0011 covers
   diagrams only, so a demo's embed is not decided yet.
 
@@ -140,8 +141,8 @@ together. It shows:
 - **the flow**: the screens and the transitions between them, made with Archify, plus its
   Mermaid flowchart version (§8);
 - **one wireframe per screen**, as a Mermaid `block-beta` diagram with invented sample values,
-  at phone width first. No HTML prototypes or HTML wireframes: by the owner's decision, the
-  Mermaid wireframes are the screens;
+  at phone width first, and its Archify view drawn from it (ADR-0022). No HTML prototypes or
+  HTML wireframes: by the owner's decision, the wireframes are the screens;
 - **each screen's states**: empty, loading, not found, refused, error, degraded, success.
 
 Not needed for a bug fix, for content within the approved conventions, or for an ADR that
@@ -246,7 +247,7 @@ What is installed **today** (verified from `package.json`, `node_modules` and th
 | UI runtime | React 19.3 |
 | Language | TypeScript 7, `strict`; `@/*` → `./src/*` |
 | Styling | Tailwind CSS 4 through `@tailwindcss/postcss`; global styles in `src/app/global.css` |
-| Diagrams | Archify sources in `diagrams/<project-slug>/`, HTML in `public/diagrams/<project-slug>/`; `<HtmlEmbed>` in `src/components/html-embed.tsx` (registered in `src/components/mdx.tsx`); build checks in `src/lib/diagrams.ts`, run by the loader plugin `src/lib/diagrams-plugin.ts`; the CSP `sandbox` header for `/diagrams/:path*` in `next.config.mjs` — ADR-0011 |
+| Diagrams | Archify source and HTML side by side in `diagrams/<project-slug>/`; served by `src/app/diagrams/[project]/[file]/route.ts` with the site shell `src/lib/diagram-shell.ts`; `<Diagram>` in `src/components/diagram.tsx` and `diagram-frame.tsx` (registered in `src/components/mdx.tsx`); the shape check and Markdown filter in `src/lib/remark-diagrams.ts` (wired in `src/lib/source.ts`); file checks in `src/lib/diagrams.ts`, run by the loader plugin `src/lib/diagrams-plugin.ts`; the CSP `sandbox` header for `/diagrams/:path*` in `next.config.mjs` — ADR-0011, ADR-0022 |
 | Search | Algolia: `src/app/static.json/route.ts` emits the records (scope `tag` plus catalogue fields), `scripts/sync-content.ts` pushes them after `next build`; `src/lib/algolia.ts` is the search-only client used by `src/components/search.tsx`, the one search dialog (the home page's hero button opens it) |
 | Linting | ESLint 9 + `eslint-config-next` (core-web-vitals); ignores `.claude/**` (agent skills, ADR-0009). **`bun run lint` does not run today:** `typescript-eslint` does not support TypeScript 7; fixing it needs its own ADR |
 | Testing | `bun test` (Bun's built-in runner), tests beside the code as `*.test.ts(x)`; `@types/bun` 1.4.4 through `tsconfig.test.json`, which `tsconfig.json` leaves out so the site's own check never sees Bun's types; server components rendered with `react-dom/server`; client components not unit-tested until a DOM is chosen — ADR-0007, ADR-0021 |
@@ -403,9 +404,13 @@ flow, lifecycle, ERD, class, tree and timeline diagrams. This is the owner's sta
 Use the project copy in `.claude/skills/archify`. Archify produces a standalone, interactive
 HTML file.
 
-- **Every page also keeps a Mermaid version** in a fenced block: flows, sequences, states, ERDs
-  and screen wireframes (`block-beta`). The page then stays readable as Markdown (§6.5),
-  renders on GitHub and diffs as text.
+- **Every diagram is Mermaid and Archify together** ([ADR-0022](content/docs/maintain/adr/ADR-0022-diagrams-show-archify-on-the-page-and-mermaid-in-markdown.mdx)):
+  flows, sequences, states, ERDs and screen wireframes (`block-beta`) are written as a Mermaid
+  fence inside a `<Diagram>`, and each has its Archify view. The page shows only the Archify
+  view; every Markdown surface (Copy Markdown, `/<page>.md`, `llms-full.txt`) carries only the
+  Mermaid, so the docs stay readable as Markdown (§6.5), render on GitHub and diff as text. A
+  wireframe's Archify view is an `architecture` diagram drawn from its Mermaid, one per screen,
+  its boxes inside a labelled phone-screen region. Both versions change in the same change.
 - **How to run it** (the owner's settings): author the candidate JSON as the skill describes,
   then deliver and check it **without the browser gate**:
 
@@ -419,22 +424,33 @@ HTML file.
   reports a new version, tell the owner and never upgrade without their yes. Working folders go
   in `.archify/` (gitignored).
 - **No HTML prototypes or HTML wireframes.** By the owner's decision, an app flow's screens
-  are its Mermaid `block-beta` wireframes; no prototype skill is used.
-- **Publishing a diagram** ([ADR-0011](content/docs/maintain/adr/ADR-0011-archify-diagrams-are-embedded-from-sandboxed-html.mdx)):
-  copy the candidate to `diagrams/<project-slug>/<slug>.json` (the source, not published) and
-  the checked HTML, byte for byte, to `public/diagrams/<project-slug>/<slug>.html`. Never copy
-  a receipt (`*.delivery*.json`), journal or lock file: they hold local paths. In the page, put
-  the embed directly under the Mermaid version:
+  are its `block-beta` wireframes and their Archify views; no prototype skill is used.
+- **Publishing a diagram** (ADR-0022): put both files in `diagrams/<project-slug>/`: the
+  candidate as `<slug>.json` (Archify's classic style: no `visual_preset`) and the checked HTML,
+  byte for byte, as `<slug>.html`. Never copy a receipt (`*.delivery*.json`), journal or lock
+  file: they hold local paths. In the page, wrap the Mermaid fence, with nothing else inside:
 
-  ```mdx
-  <HtmlEmbed src="/diagrams/docs/site-pages.html" title="Site pages" />
+  ````mdx
+  <Diagram src="/diagrams/docs/site-pages.html" title="Site pages">
+
+  ```mermaid
+  flowchart LR
+    A --> B
   ```
 
-  The build fails on a `src` that is not `/diagrams/<project-slug>/<slug>.html`, a missing file,
-  a published diagram without its source, or a receipt under `public/`. `/diagrams/…` is served
-  with a CSP `sandbox` header (`next.config.mjs`), and the frame has no `allow-same-origin`.
-  Before publishing after an Archify upgrade, scan the HTML for external resources and network
-  calls (ADR-0011, security considerations).
+  </Diagram>
+  ````
+
+  The build fails on a Mermaid fence outside a `<Diagram>` (templates excepted), a `<Diagram>`
+  without a plain `src` and `title` or without exactly one Mermaid fence, a `src` that is not
+  `/diagrams/<project-slug>/<slug>.html` or has no file, an HTML without its JSON or not used by
+  any page, anything in `public/diagrams/`, and a receipt in `diagrams/` or `public/`. The site
+  shell hides Archify's title, notes and theme buttons in the frame, puts the diagram on the
+  site's colours, starts it Live and fits the frame to it; nothing per diagram is needed.
+  `/diagrams/…` is served with a CSP `sandbox` header (`next.config.mjs`), and the frame has no
+  `allow-same-origin`. Before publishing after an Archify upgrade, scan the HTML for external
+  resources and network calls, and run the shell's tests: they check what it hides against a
+  committed Archify file (ADR-0011, ADR-0022, security considerations).
 - No binary or externally hosted images, with one exception: the avatar in a GitHub profile
   chip, loaded live from GitHub (ADR-0020).
 
@@ -536,9 +552,10 @@ adopts a host, analytics, CI or an authentication provider adds its own checks**
 │   ├── app/             # App Router: layout.tsx (fonts, theme), global.css (tokens), site.css (header, theme switch,
 │   │                    #   planet header, notices, planet row, stations, trajectory, footer), not-found.tsx (the 404),
 │   │                    #   (home)/ (home page, home.css), (site)/[...slug]/ (every page, notebook layout),
-│   │                    #   llms.txt, llms-full.txt, llms.mdx/[...slug]/, og/[...slug]/, static.json
+│   │                    #   llms.txt, llms-full.txt, llms.mdx/[...slug]/, og/[...slug]/, static.json,
+│   │                    #   diagrams/[project]/[file]/ (each Archify diagram with the site shell)
 │   ├── components/      # site-header.tsx, theme-switch.tsx, planet.tsx (planet and moon marks),
-│   │                    #   horizon-footer.tsx, footer-actions.tsx, mdx.tsx, html-embed.tsx, profile-link.tsx, search.tsx (search dialog),
+│   │                    #   horizon-footer.tsx, footer-actions.tsx, mdx.tsx, diagram.tsx + diagram-frame.tsx, profile-link.tsx, search.tsx (search dialog),
 │   │                    #   docs/ (docs header, planet header, track switch, orbit stations,
 │   │                    #   ADR constellation, trajectory TOC, version notice),
 │   │                    #   home/ (home header, hero, orbit map, search button, planet cards,
@@ -546,13 +563,12 @@ adopts a host, analytics, CI or an authentication provider adds its own checks**
 │   │                    #   assistant actions)
 │   └── lib/             # source.ts (content loader), catalog*.ts (catalogue schema, checks, entries, redirects),
 │                        #   rings.ts (ecosystem rings and kind names), trajectory.ts, reading-time.ts, adr-status.ts,
-│                        #   search-scope.ts, algolia.ts, diagrams.ts + diagrams-plugin.ts (ADR-0011 checks),
+│                        #   search-scope.ts, algolia.ts, diagrams.ts + diagrams-plugin.ts (file checks), remark-diagrams.ts
+│                        #   (shape check, Markdown filter), diagram-shell.ts, diagram-files.ts (ADR-0022),
 │                        #   github-profile.ts (ADR-0020); tests beside the code, *.test.ts(x) (ADR-0021)
 │                        #   shared.ts (site name, routes, GitHub)
-├── diagrams/            # Archify candidate JSON, the source of each published diagram; not published (ADR-0011)
-│   └── <project-slug>/<slug>.json
-├── public/
-│   └── diagrams/        # PUBLISHED — Archify HTML, embedded with <HtmlEmbed>, served sandboxed (ADR-0011)
+├── diagrams/            # Archify diagrams, one pair each (ADR-0022)
+│   └── <project-slug>/  # <slug>.json, the source (not served) · <slug>.html, PUBLISHED at /diagrams/ with the site shell
 ├── scripts/
 │   └── sync-content.ts  # after next build: pushes static.json records to Algolia
 ├── .env.example         # every variable the site reads, names only (§9)

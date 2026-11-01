@@ -4,7 +4,6 @@
   "meta": {
     "title": "App flow — package navigation",
     "subtitle": "Moving between a package's overview, its Use and Maintain tracks and its version lines",
-    "visual_preset": "editorial",
     "quality_profile": "showcase",
     "output": "package-navigation.html"
   },

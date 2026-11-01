@@ -14,9 +14,9 @@ Phone width first; note where desktop differs.
 A link written `[@user](https://github.com/user)` shows as a chip: the person's GitHub avatar,
 20px and round, beside `@user`. In ADR headers, every decider and approver is written that way.
 
-The flow is made with Archify. Its source is `diagrams/docs/github-profile-chips.json`; the
-published file, `/diagrams/docs/github-profile-chips.html`, is embedded under the Mermaid
-version below (ADR-0011).
+The flow and every screen are drawn with Archify; the page shows them and its Markdown
+carries their Mermaid (ADR-0022). Their sources are in `diagrams/docs/`: `github-profile-chips.json` for the
+flow, one `github-profile-chips-screen-<n>.json` per screen.
 
 ## Entry points
 
@@ -27,6 +27,8 @@ version below (ADR-0011).
 - Everyone sees the same chips. Nothing here depends on who is reading.
 
 ## Flow
+
+<Diagram src="/diagrams/docs/github-profile-chips.html" title="GitHub profile chips">
 
 ```mermaid
 flowchart LR
@@ -39,7 +41,7 @@ flowchart LR
   M -->|the link| P
 ```
 
-<HtmlEmbed src="/diagrams/docs/github-profile-chips.html" title="GitHub profile chips" />
+</Diagram>
 
 ## Screens
 
@@ -47,6 +49,8 @@ flowchart LR
 
 Phone width. The chip sits inline in the header line, so a line with two people wraps after
 the first chip when it doesn't fit.
+
+<Diagram src="/diagrams/docs/github-profile-chips-screen-1.html" title="Screen 1 — ADR header">
 
 ```mermaid
 block-beta
@@ -59,6 +63,8 @@ block-beta
   date["Approved on: 2026-03-14"]:4
   body["## Context …"]:4
 ```
+
+</Diagram>
 
 `(M)` stands for the avatar. Desktop: the same, with the sidebar and the table of contents on
 either side.
@@ -80,6 +86,8 @@ either side.
 
 ### 2. `Page as Markdown` — `/<project-slug>/maintain/adr/ADR-0007-….md`
 
+<Diagram src="/diagrams/docs/github-profile-chips-screen-2.html" title="Screen 2 — Page as Markdown">
+
 ```mermaid
 block-beta
   columns 4
@@ -87,6 +95,8 @@ block-beta
   line1["- **Deciders:** [@mira-k](https://github.com/mira-k)"]:4
   line2["- **Approved by:** [@mira-k](https://github.com/mira-k)"]:4
 ```
+
+</Diagram>
 
 **States**
 

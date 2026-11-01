@@ -5,14 +5,18 @@ import { defineDocs } from 'fumadocs-mdx/macro';
 import { pageSchema } from 'fumadocs-core/source/schema';
 import { catalogMetaSchema, type CatalogMeta } from './catalog-schema';
 import { diagramsPlugin } from './diagrams-plugin';
+import { markdownFilter, remarkDiagrams } from './remark-diagrams';
+import { applyMdxPreset } from 'fumadocs-mdx/config';
 import { catalogPlugin, channelLabel, describeVersion, lineInfo, pageVersion } from './catalog-plugin';
 
 const docs = defineDocs({
   dir: 'content',
   docs: {
     schema: pageSchema,
+    // ADR-0022: the shape check runs before Fumadocs' own plugins; Markdown keeps a diagram's Mermaid.
+    mdxOptions: applyMdxPreset({ remarkPlugins: (plugins) => [remarkDiagrams, ...plugins] }),
     postprocess: {
-      includeProcessedMarkdown: true,
+      includeProcessedMarkdown: { filterElement: markdownFilter },
     },
   },
   meta: {

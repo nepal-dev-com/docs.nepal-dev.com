@@ -1,0 +1,181 @@
+{
+  "schema_version": 2,
+  "diagram_type": "workflow",
+  "meta": {
+    "title": "App flow — diagrams",
+    "subtitle": "The Archify view on the page, the Mermaid in every Markdown surface (ADR-0022, proposed)",
+    "quality_profile": "showcase",
+    "output": "diagrams.html"
+  },
+  "lanes": [
+    {
+      "id": "reader",
+      "label": "Reader"
+    },
+    {
+      "id": "page",
+      "label": "Docs page"
+    },
+    {
+      "id": "frame",
+      "label": "Diagram frame"
+    },
+    {
+      "id": "text",
+      "label": "Markdown"
+    }
+  ],
+  "mainPath": [
+    "person",
+    "docs",
+    "view",
+    "full"
+  ],
+  "nodes": [
+    {
+      "id": "person",
+      "lane": "reader",
+      "col": 0,
+      "type": "external",
+      "label": "Reader",
+      "sublabel": "search, link or URL"
+    },
+    {
+      "id": "tool",
+      "lane": "reader",
+      "col": 2,
+      "type": "external",
+      "label": "Tool or LLM",
+      "sublabel": "or Copy Markdown"
+    },
+    {
+      "id": "docs",
+      "lane": "page",
+      "col": 1,
+      "type": "frontend",
+      "label": "Docs page",
+      "sublabel": "the diagram, no Mermaid"
+    },
+    {
+      "id": "theme",
+      "lane": "page",
+      "col": 3,
+      "type": "frontend",
+      "label": "Theme switch",
+      "sublabel": "light or dark"
+    },
+    {
+      "id": "view",
+      "lane": "frame",
+      "col": 2,
+      "type": "frontend",
+      "label": "Archify view",
+      "sublabel": "diagram, labels, controls"
+    },
+    {
+      "id": "stage",
+      "lane": "frame",
+      "col": 3,
+      "type": "frontend",
+      "label": "Present stage",
+      "sublabel": "fullscreen, or own page"
+    },
+    {
+      "id": "full",
+      "lane": "frame",
+      "col": 4,
+      "type": "frontend",
+      "label": "Full screen",
+      "sublabel": "with title and notes"
+    },
+    {
+      "id": "markdown",
+      "lane": "text",
+      "col": 3,
+      "type": "backend",
+      "label": "Page as Markdown",
+      "sublabel": "the Mermaid fence"
+    }
+  ],
+  "edges": [
+    {
+      "id": "open",
+      "from": "person",
+      "to": "docs",
+      "label": "opens",
+      "variant": "emphasis"
+    },
+    {
+      "id": "scroll",
+      "from": "docs",
+      "to": "view",
+      "label": "scrolls to",
+      "variant": "emphasis"
+    },
+    {
+      "id": "expand",
+      "from": "view",
+      "to": "full",
+      "label": "Open full screen",
+      "variant": "emphasis"
+    },
+    {
+      "id": "present",
+      "from": "view",
+      "to": "stage",
+      "label": "Present",
+      "variant": "default",
+      "role": "branch"
+    },
+    {
+      "id": "leave",
+      "from": "stage",
+      "to": "view",
+      "label": "Esc",
+      "variant": "dashed",
+      "role": "return"
+    },
+    {
+      "id": "switch",
+      "from": "theme",
+      "to": "view",
+      "label": "same theme",
+      "variant": "dashed",
+      "role": "branch"
+    },
+    {
+      "id": "back",
+      "from": "full",
+      "to": "docs",
+      "label": "browser back",
+      "variant": "dashed",
+      "role": "return"
+    },
+    {
+      "id": "fetch",
+      "from": "tool",
+      "to": "markdown",
+      "label": "fetches",
+      "variant": "default",
+      "role": "branch"
+    }
+  ],
+  "cards": [
+    {
+      "dot": "cyan",
+      "title": "On the page",
+      "items": [
+        "Only the Archify view, in the site's colours",
+        "Live motion; no scrolling inside the frame"
+      ]
+    },
+    {
+      "dot": "amber",
+      "title": "In Markdown",
+      "items": [
+        "Only the Mermaid fence",
+        "Copy Markdown, .md, llms-full.txt"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,163 @@
+{
+  "schema_version": 1,
+  "diagram_type": "architecture",
+  "meta": {
+    "title": "Screen 6 — Site overview",
+    "subtitle": "Wireframe at phone width, drawn from its Mermaid version · site pages",
+    "output": "site-pages-screen-6.html",
+    "animation": "trace",
+    "quality_profile": "showcase",
+    "legend": {
+      "entries": {
+        "backend": {
+          "label": "Control or link"
+        },
+        "external": {
+          "label": "Content"
+        },
+        "frontend": {
+          "label": "Site chrome"
+        }
+      }
+    }
+  },
+  "components": [
+    {
+      "id": "hdr",
+      "type": "frontend",
+      "label": "◎ Puncoz Docs   ⌕ orrery ☰",
+      "pos": [
+        40,
+        60
+      ],
+      "size": [
+        436,
+        58
+      ]
+    },
+    {
+      "id": "kind",
+      "type": "external",
+      "label": "ringed planet",
+      "pos": [
+        54,
+        160
+      ],
+      "size": [
+        408,
+        70
+      ],
+      "sublabel": "Project"
+    },
+    {
+      "id": "name",
+      "type": "external",
+      "label": "Puncoz Docs",
+      "pos": [
+        54,
+        242
+      ],
+      "size": [
+        408,
+        58
+      ]
+    },
+    {
+      "id": "desc",
+      "type": "external",
+      "label": "This documentation site: how it is organised,",
+      "pos": [
+        54,
+        312
+      ],
+      "size": [
+        408,
+        70
+      ],
+      "sublabel": "built and decided."
+    },
+    {
+      "id": "maint",
+      "type": "backend",
+      "label": "Maintain",
+      "pos": [
+        54,
+        394
+      ],
+      "size": [
+        198,
+        58
+      ]
+    },
+    {
+      "id": "repo",
+      "type": "backend",
+      "label": "Repository ↗",
+      "pos": [
+        264,
+        394
+      ],
+      "size": [
+        198,
+        58
+      ]
+    },
+    {
+      "id": "draw",
+      "type": "external",
+      "label": "ringed planet, no moons",
+      "pos": [
+        54,
+        464
+      ],
+      "size": [
+        408,
+        58
+      ]
+    },
+    {
+      "id": "body",
+      "type": "backend",
+      "label": "what the site is",
+      "pos": [
+        40,
+        548
+      ],
+      "size": [
+        436,
+        70
+      ],
+      "sublabel": "where decisions and design documents live"
+    }
+  ],
+  "boundaries": [
+    {
+      "kind": "region",
+      "label": "Phone screen · /docs",
+      "wraps": [
+        "hdr",
+        "kind",
+        "name",
+        "desc",
+        "maint",
+        "repo",
+        "draw",
+        "body"
+      ],
+      "pad": 22
+    },
+    {
+      "kind": "region",
+      "label": "hero",
+      "wraps": [
+        "kind",
+        "name",
+        "desc",
+        "maint",
+        "repo",
+        "draw"
+      ],
+      "pad": 10
+    }
+  ]
+}

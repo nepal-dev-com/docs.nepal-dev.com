@@ -42,8 +42,9 @@ The hero's legend teaches these once. Every mark is drawn SVG (`src/components/p
 `PlanetMark`, `MoonPhase` and `PlanetSystem`. The star uses `--home-star`, an unlit face
 `--home-night`.
 
-The flow is made with Archify. Its source is `diagrams/docs/solar-system.json`; the published
-file, `/diagrams/docs/solar-system.html`, is embedded under the Mermaid version below (ADR-0011).
+The flow and every screen are drawn with Archify; the page shows them and its Markdown
+carries their Mermaid (ADR-0022). Their sources are in `diagrams/docs/`: `solar-system.json` for the
+flow, one `solar-system-screen-<n>.json` per screen.
 
 ## Entry points
 
@@ -54,6 +55,8 @@ file, `/diagrams/docs/solar-system.html`, is embedded under the Mermaid version 
 - Everyone sees the same pages.
 
 ## Flow
+
+<Diagram src="/diagrams/docs/solar-system.html" title="The home page and the solar system">
 
 ```mermaid
 flowchart TB
@@ -69,11 +72,13 @@ flowchart TB
   Any -->|footer: Back to orbit / Back to top| Any
 ```
 
-<HtmlEmbed src="/diagrams/docs/solar-system.html" title="The home page and the solar system" />
+</Diagram>
 
 ## Screens
 
 ### 1. `Theme switch` — the header, every page
+
+<Diagram src="/diagrams/docs/solar-system-screen-1.html" title="Screen 1 — Theme switch">
 
 ```mermaid
 block-beta
@@ -81,6 +86,8 @@ block-beta
   dark["Dark, the night side: sun behind the planet, small; planet a thin crescent · name: Switch to day side (light theme)"]:1
   light["Light, the day side: sun in front; planet fully lit · name: Switch to night side (dark theme)"]:1
 ```
+
+</Diagram>
 
 A 40 × 36px button (`src/components/theme-switch.tsx`): a tilted orbit, a sun on it, a planet
 with a terminator. A click switches the theme; the sun moves along its orbit and the shadow
@@ -99,6 +106,8 @@ name in short ("Night side · switch to day").
 
 ### 2. `Planet header` — `/lodestar`
 
+<Diagram src="/diagrams/docs/solar-system-screen-2.html" title="Screen 2 — Planet header">
+
 ```mermaid
 block-beta
   columns 4
@@ -109,6 +118,8 @@ block-beta
   links["[Use →] Maintain · Registry ↗ · Repository ↗"]:4
   draw["planet with labelled moons v0.1 and dev"]:4
 ```
+
+</Diagram>
 
 Above every overview (`src/components/docs/package-hero.tsx`), on the panel colour with a wash of
 the ecosystem colour from the right. Desktop: the text on the left, the planet and its moons on
@@ -124,6 +135,8 @@ the right.
 
 ### 3. `Sidebar top` — inside a package or project
 
+<Diagram src="/diagrams/docs/solar-system-screen-3.html" title="Screen 3 — Sidebar top">
+
 ```mermaid
 block-beta
   columns 4
@@ -131,6 +144,8 @@ block-beta
   moon["full moon · v0.1 · 0.1.4 · Latest ▾"]:4
   st["◎ Get started · 2 ▾ — the open station"]:4
 ```
+
+</Diagram>
 
 The planet row: the planet chip links to the overview; beside it a sun for Use and a moon for
 Maintain, shown when both tracks exist, each named "Use, the day side" or "Maintain, the night
@@ -147,11 +162,15 @@ The pages below are orbit stations ([Docs sidebars](./docs-sidebars.mdx), screen
 
 ### 4. `Version notice` — on `dev` and older lines
 
+<Diagram src="/diagrams/docs/solar-system-screen-4.html" title="Screen 4 — Version notice">
+
 ```mermaid
 block-beta
   columns 4
   notice["dashed new moon · In development. This page documents lodestar 0.2.0-dev.3, work in progress on the default branch. Read this page for 0.1.4, the latest release."]:4
 ```
+
+</Diagram>
 
 An older line shows a crescent and "Older version." The latest line shows a single quiet line
 instead: a full moon and "Documents lodestar 0.1.4".
@@ -163,6 +182,8 @@ instead: a full moon and "Documents lodestar 0.1.4".
 
 ### 5. `Horizon footer` — every page
 
+<Diagram src="/diagrams/docs/solar-system-screen-5.html" title="Screen 5 — Horizon footer">
+
 ```mermaid
 block-beta
   columns 4
@@ -172,6 +193,8 @@ block-beta
   links["Search ⌘K · llms.txt · llms-full.txt · GitHub · Back to orbit"]:4
   credit["Packages and projects by Puncoz Nepal"]:4
 ```
+
+</Diagram>
 
 `src/components/horizon-footer.tsx`, the same on every page: the closing line (the name links to
 `https://puncoz.com`), the scene, then the surface rows. On docs pages it runs across the full
@@ -188,6 +211,8 @@ orbit". The links wrap on phones.
 
 ### 6. `Out of orbit` — any unknown path
 
+<Diagram src="/diagrams/docs/solar-system-screen-6.html" title="Screen 6 — Out of orbit">
+
 ```mermaid
 block-beta
   columns 4
@@ -197,6 +222,8 @@ block-beta
   field["⌕  Search packages, projects and pages"]:4
   back["Back to the system →"]:4
 ```
+
+</Diagram>
 
 `src/app/not-found.tsx`, with the home page's header (its anchors lead to `/#packages` and
 `/#projects`) and the full footer.

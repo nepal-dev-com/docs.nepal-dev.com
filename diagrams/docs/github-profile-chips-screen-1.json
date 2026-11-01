@@ -1,0 +1,208 @@
+{
+  "schema_version": 1,
+  "diagram_type": "architecture",
+  "meta": {
+    "title": "Screen 1 — ADR header",
+    "subtitle": "Wireframe at phone width, drawn from its Mermaid version · github profile chips",
+    "output": "github-profile-chips-screen-1.html",
+    "animation": "trace",
+    "quality_profile": "showcase",
+    "legend": {
+      "entries": {
+        "backend": {
+          "label": "Control or link"
+        },
+        "database": {
+          "label": "Code or Markdown"
+        },
+        "external": {
+          "label": "Content"
+        },
+        "frontend": {
+          "label": "Site chrome"
+        }
+      }
+    }
+  },
+  "components": [
+    {
+      "id": "menu",
+      "type": "frontend",
+      "label": "☰",
+      "pos": [
+        40,
+        60
+      ],
+      "size": [
+        100,
+        58
+      ]
+    },
+    {
+      "id": "title",
+      "type": "frontend",
+      "label": "Site name",
+      "pos": [
+        152,
+        60
+      ],
+      "size": [
+        212,
+        58
+      ]
+    },
+    {
+      "id": "search",
+      "type": "frontend",
+      "label": "⌕",
+      "pos": [
+        376,
+        60
+      ],
+      "size": [
+        100,
+        58
+      ]
+    },
+    {
+      "id": "h1",
+      "type": "frontend",
+      "label": "ADR-0007 — Cache search results for an hour",
+      "pos": [
+        40,
+        130
+      ],
+      "size": [
+        436,
+        58
+      ]
+    },
+    {
+      "id": "status",
+      "type": "external",
+      "label": "Status: Approved",
+      "pos": [
+        40,
+        200
+      ],
+      "size": [
+        436,
+        58
+      ]
+    },
+    {
+      "id": "deciders",
+      "type": "external",
+      "label": "Deciders:",
+      "pos": [
+        40,
+        270
+      ],
+      "size": [
+        100,
+        58
+      ]
+    },
+    {
+      "id": "chip1",
+      "type": "backend",
+      "label": "(M) @mira-",
+      "pos": [
+        152,
+        270
+      ],
+      "size": [
+        100,
+        70
+      ],
+      "sublabel": "k"
+    },
+    {
+      "id": "chip2",
+      "type": "backend",
+      "label": "(T) @tomas-r",
+      "pos": [
+        264,
+        270
+      ],
+      "size": [
+        212,
+        58
+      ]
+    },
+    {
+      "id": "approved",
+      "type": "external",
+      "label": "Approved",
+      "pos": [
+        40,
+        352
+      ],
+      "size": [
+        100,
+        70
+      ],
+      "sublabel": "by:"
+    },
+    {
+      "id": "chip3",
+      "type": "backend",
+      "label": "(M) @mira-k",
+      "pos": [
+        152,
+        352
+      ],
+      "size": [
+        324,
+        58
+      ]
+    },
+    {
+      "id": "date",
+      "type": "external",
+      "label": "Approved on: 2026-03-14",
+      "pos": [
+        40,
+        434
+      ],
+      "size": [
+        436,
+        58
+      ]
+    },
+    {
+      "id": "body",
+      "type": "database",
+      "label": "## Context …",
+      "pos": [
+        40,
+        504
+      ],
+      "size": [
+        436,
+        58
+      ]
+    }
+  ],
+  "boundaries": [
+    {
+      "kind": "region",
+      "label": "Phone screen · /<project-slug>/maintain/adr/ADR-0007-…",
+      "wraps": [
+        "menu",
+        "title",
+        "search",
+        "h1",
+        "status",
+        "deciders",
+        "chip1",
+        "chip2",
+        "approved",
+        "chip3",
+        "date",
+        "body"
+      ],
+      "pad": 22
+    }
+  ]
+}

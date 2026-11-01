@@ -22,8 +22,9 @@ the version menu (on Use pages of a versioned package) and, under it, the packag
 Use | Maintain switch. The site header, its search and the theme switch are described in
 [site pages](./site-pages.mdx).
 
-The flow is made with Archify. Its source is `diagrams/docs/package-navigation.json`; the published
-file, `/diagrams/docs/package-navigation.html`, is embedded under the Mermaid version below (ADR-0011).
+The flow and every screen are drawn with Archify; the page shows them and its Markdown
+carries their Mermaid (ADR-0022). Their sources are in `diagrams/docs/`: `package-navigation.json` for the
+flow, one `package-navigation-screen-<n>.json` per screen.
 
 ## Entry points
 
@@ -39,6 +40,8 @@ file, `/diagrams/docs/package-navigation.html`, is embedded under the Mermaid ve
   the same 404 as for a page that does not exist, so the URL does not confirm the project exists.
 
 ## Flow
+
+<Diagram src="/diagrams/docs/package-navigation.html" title="Package navigation">
 
 ```mermaid
 flowchart LR
@@ -56,7 +59,7 @@ flowchart LR
   U -.->|page not in the chosen line| F["That line's first page"]
 ```
 
-<HtmlEmbed src="/diagrams/docs/package-navigation.html" title="Package navigation" />
+</Diagram>
 
 ## Screens
 
@@ -65,6 +68,8 @@ flowchart LR
 The package hero, then the package's own `index.mdx`, as its repository writes it. The sidebar
 shows the package name, the track switch, and both tracks as folders. The hero is drawn in
 [site pages](./site-pages.mdx).
+
+<Diagram src="/diagrams/docs/package-navigation-screen-1.html" title="Screen 1 — Overview">
 
 ```mermaid
 block-beta
@@ -82,6 +87,8 @@ block-beta
   body["the package's overview page"]:4
 ```
 
+</Diagram>
+
 Desktop: the same, with the sidebar always visible.
 
 **States**
@@ -97,6 +104,8 @@ Desktop: the same, with the sidebar always visible.
 ### 2. `Use page` — `/<slug>/use/<line>/<page>`
 
 Phone width: the sidebar is a drawer; the version menu and track switch sit at its top.
+
+<Diagram src="/diagrams/docs/package-navigation-screen-2.html" title="Screen 2 — Use page">
 
 ```mermaid
 block-beta
@@ -115,6 +124,8 @@ block-beta
   body["page content"]:4
 ```
 
+</Diagram>
+
 Desktop: the sidebar is always visible with the menu and switch at its top. Under the page
 description, a line states the version the page documents (invariant 3).
 
@@ -130,6 +141,8 @@ description, a line states the version the page documents (invariant 3).
 
 ### 3. `Version menu` — opened from the sidebar
 
+<Diagram src="/diagrams/docs/package-navigation-screen-3.html" title="Screen 3 — Version menu">
+
 ```mermaid
 block-beta
   columns 4
@@ -140,6 +153,8 @@ block-beta
     o2["dev · 0.2.0-dev.3 · In development"]:4
   end
 ```
+
+</Diagram>
 
 Lines are listed latest first, then `dev`, then older lines in the order of `use/meta.json`
 `pages`, or newest version first. Each option shows the line's name and names its channel in
@@ -153,6 +168,8 @@ words, not by colour alone.
 
 ### 4. `In development page` — `/<slug>/use/dev/<page>`
 
+<Diagram src="/diagrams/docs/package-navigation-screen-4.html" title="Screen 4 — In development page">
+
 ```mermaid
 block-beta
   columns 4
@@ -160,6 +177,8 @@ block-beta
   banner["In development — This page documents lodestar 0.2.0-dev.3, work in progress on the default branch. Read this page for 0.1.4, the latest release."]:4
   body["page content"]:4
 ```
+
+</Diagram>
 
 Older lines show the same shape: "Older version — This page documents ledgerly 3.6.2. Read this
 page for 4.0.1, the latest release."
@@ -173,6 +192,8 @@ page for 4.0.1, the latest release."
 
 ### 5. `Maintain page` — `/<slug>/maintain/<page>`
 
+<Diagram src="/diagrams/docs/package-navigation-screen-5.html" title="Screen 5 — Maintain page">
+
 ```mermaid
 block-beta
   columns 4
@@ -182,6 +203,8 @@ block-beta
   h1["Releasing"]:4
   body["How a release is cut, from the default branch"]:4
 ```
+
+</Diagram>
 
 The Maintain track is not versioned: it describes the repository's default branch, so it has
 no version menu and no version line.

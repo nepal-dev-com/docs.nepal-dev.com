@@ -7,6 +7,7 @@ title: "Threat model — puncoz-packages-docs"
 - **Related ADRs:** ADR-0005, [ADR-0016](../adr/ADR-0016-home-search-is-the-fumadocs-dialog-and-private-projects-render-server-side.mdx),
   [ADR-0017](../adr/ADR-0017-the-whole-site-is-one-solar-system.mdx),
   [ADR-0011](../adr/ADR-0011-archify-diagrams-are-embedded-from-sandboxed-html.mdx),
+  [ADR-0022](../adr/ADR-0022-diagrams-show-archify-on-the-page-and-mermaid-in-markdown.mdx),
   [ADR-0020](../adr/ADR-0020-people-in-adrs-are-github-usernames-shown-as-profile-chips.mdx)
 
 > Snapshot of the system as it stands today. Edit in place; never record what changed.
@@ -24,10 +25,10 @@ static markup listing three invented projects from `src/components/home/private-
 | Surface | Present | Detail |
 |---|---|---|
 | Authentication / sessions | No | — |
-| Route handlers | Yes | Markdown, `llms.txt`, `llms-full.txt`, OG images, `static.json` — all public, all static ([`../api/content-routes.mdx`](../api/content-routes.mdx)) |
+| Route handlers | Yes | Markdown, `llms.txt`, `llms-full.txt`, OG images, `static.json`, the Archify diagrams under `/diagrams/` — all public, all static ([`../api/content-routes.mdx`](../api/content-routes.mdx)) |
 | User input of any kind | Yes | The search query, sent from the browser straight to Algolia; the `Accept` header, read by `src/proxy.ts` |
 | Database or persistence | No | Content is files; the search index is a build output |
-| Files / uploads | No uploads | Archify diagrams in `public/diagrams/`: generated script, committed by the owner, run in a sandboxed frame and served with a CSP `sandbox` header (ADR-0011, [`../api/content-routes.mdx`](../api/content-routes.mdx)) |
+| Files / uploads | No uploads | Archify diagrams in `diagrams/`: generated script, committed by the owner, served with the site shell's added script and style, run in a sandboxed frame and served with a CSP `sandbox` header. The frame sends the page one message, its height, which the page takes only from that frame's window and only as a number from 120 to 4000 (ADR-0011, ADR-0022, [`../api/content-routes.mdx`](../api/content-routes.mdx)) |
 | Secrets / environment variables | Yes | Three Algolia variables, listed in [`secrets.mdx`](./secrets.mdx) |
 | Third-party integrations | Yes | Algolia (search). GitHub serves the avatar in each profile chip to the reader's browser, without a referrer (ADR-0020). The page actions' Open in ChatGPT, Claude, Cursor and Scira links, on docs pages and the home page, send a public page's URL to that service when the reader clicks one. The fonts are fetched by `next/font` at build time and served from the site's own origin |
 | Logging / audit trail | No | The sync script prints a record count |

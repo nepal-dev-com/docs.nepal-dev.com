@@ -27,8 +27,9 @@ the page is prerendered.
 Only this site, the project `docs`, is documented yet, so the page shows one project planet, the
 three private projects, no Two sides and no Every moon section.
 
-The flow is made with Archify. Its source is `diagrams/docs/solar-system.json`; the published
-file, `/diagrams/docs/solar-system.html`, is embedded under the Mermaid version below (ADR-0011).
+The flow and every screen are drawn with Archify; the page shows them and its Markdown
+carries their Mermaid (ADR-0022). Their sources are in `diagrams/docs/`: `solar-system.json` for the
+flow, one `home-page-screen-<n>.json` per screen.
 
 ## Entry points
 
@@ -43,6 +44,8 @@ file, `/diagrams/docs/solar-system.html`, is embedded under the Mermaid version 
   (invariant 5 covers documentation pages; the home page is navigation).
 
 ## Flow
+
+<Diagram src="/diagrams/docs/solar-system.html" title="The home page and the solar system">
 
 ```mermaid
 flowchart TB
@@ -63,11 +66,13 @@ flowchart TB
   F -->|Back to orbit| H
 ```
 
-<HtmlEmbed src="/diagrams/docs/solar-system.html" title="The home page and the solar system" />
+</Diagram>
 
 ## Screens
 
 ### 1. `The system` — `/`
+
+<Diagram src="/diagrams/docs/home-page-screen-1.html" title="Screen 1 — The system">
 
 ```mermaid
 block-beta
@@ -78,6 +83,8 @@ block-beta
   sub["Guides, APIs and release notes for npm, Composer, PyPI and Go packages"]:4
   field["⌕  Search packages, projects and pages"]:4
 ```
+
+</Diagram>
 
 The star sits in the system with "Puncoz Nepal" under it. Each ecosystem with entries is an
 orbit; every planet is labelled, carries its moons, and turns its night side away from the star.
@@ -110,6 +117,8 @@ the top 310px, the text and button below it.
 
 ### 2. `Search dialog` — over the home page
 
+<Diagram src="/diagrams/docs/home-page-screen-2.html" title="Screen 2 — Search dialog">
+
 ```mermaid
 block-beta
   columns 4
@@ -118,6 +127,8 @@ block-beta
   r2["Commands · lodestar"]:4
   foot["Search powered by Algolia"]:4
 ```
+
+</Diagram>
 
 Fumadocs' dialog, the one every page uses (`src/components/search.tsx`), in the site's colours:
 results as you type, arrow keys and Enter, Escape closes it.
@@ -133,6 +144,8 @@ results as you type, arrow keys and Enter, Escape closes it.
 - Success: choosing a result opens that page.
 
 ### 3. `Planet cards` — `/#packages`, `/#projects`
+
+<Diagram src="/diagrams/docs/home-page-screen-3.html" title="Screen 3 — Planet cards">
 
 ```mermaid
 block-beta
@@ -154,6 +167,8 @@ block-beta
   c3["orbit-board — ringed planet, no moons · Project · [Use →] Maintain"]:4
 ```
 
+</Diagram>
+
 No heading on screen (a visually hidden h2, "Packages and projects", keeps the outline). One card
 per public entry, in catalogue order: the sky draws the planet, one orbit per version line with
 its moon labelled by the line's name; then the name (the whole card links to the overview),
@@ -173,6 +188,8 @@ its moons a little and tints its border with the ecosystem colour.
 
 ### 4. `Beyond the belt` — `/#private`
 
+<Diagram src="/diagrams/docs/home-page-screen-4.html" title="Screen 4 — Beyond the belt">
+
 ```mermaid
 block-beta
   columns 4
@@ -183,16 +200,22 @@ block-beta
   p3["night planet · tessera · lock · Internal billing and invoicing service. · internal · Maintain"]:4
 ```
 
+</Diagram>
+
 A seeded asteroid belt divides the public planets from the private ones. Each private project is
 a night-side planet on a dashed orbit in a dashed card, with a drawn lock (read out as
 "private"). The list is in `src/components/home/private-projects.ts`, never in `content/`.
 Desktop: three cards across. Empty state:
+
+<Diagram src="/diagrams/docs/home-page-screen-4-2.html" title="Screen 4 (2) — Beyond the belt">
 
 ```mermaid
 block-beta
   columns 4
   orbit["dashed empty orbit"]:1 msg["No private projects in orbit yet. They'll appear here once private documentation is set up."]:3
 ```
+
+</Diagram>
 
 **States**
 
@@ -205,6 +228,8 @@ block-beta
 
 ### 5. `Two sides · Every moon · Read it anywhere`
 
+<Diagram src="/diagrams/docs/home-page-screen-5.html" title="Screen 5 — Two sides · Every moon · Read it anywhere">
+
 ```mermaid
 block-beta
   columns 4
@@ -216,6 +241,8 @@ block-beta
   term["[page.md] llms.txt Accept · $ curl -s …/install.md | head -6"]:4
   assist["Hand any page to your assistant · [Copy Markdown] [Open ▾]"]:4
 ```
+
+</Diagram>
 
 The sun, moon and phase characters stand for drawn SVG marks.
 

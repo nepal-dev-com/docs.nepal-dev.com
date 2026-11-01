@@ -1,0 +1,53 @@
+---
+title: "PRD — diagrams"
+---
+
+- **Status:** Current
+- **Last updated:** 2026-11-01
+- **Related ADRs:** [ADR-0022](../adr/ADR-0022-diagrams-show-archify-on-the-page-and-mermaid-in-markdown.mdx)
+
+> Snapshot of the system as it stands today. Edit in place; never record what changed.
+
+## Problem
+
+An embedded Archify diagram shows its own title, notes and theme buttons inside a frame that
+scrolls, on a background that ignores the site's theme, under a Mermaid block repeating the
+same diagram as code. Wireframes and four diagrams show only as Mermaid code.
+
+## Goal
+
+- On the page, every diagram is its Archify view: the diagram, its labels and its controls, at
+  its own height, in the site's colours, moving.
+- In Markdown, every diagram is its Mermaid.
+- No package or project can publish a diagram any other way.
+
+## Non-goals
+
+- Changing Archify itself, or drawing diagrams without it.
+- Rendering Mermaid on the page.
+
+## User stories
+
+| # | Story | Acceptance criteria |
+|---|---|---|
+| US-1 | As a **reader**, I want **only the diagram in the frame**, so that **I read it at a glance**. | - No Archify title, subtitle, notes rail, theme or style button in the frame.<br />- Live/Still, Present, Export and the diagram controls stay. |
+| US-2 | As a **reader**, I want **the frame to fit the diagram**, so that **I scroll the page, not the frame**. | - No vertical scrollbar inside the frame at phone or desktop width.<br />- The page doesn't jump when the diagram loads. |
+| US-3 | As a **reader**, I want **the diagram in the site's theme**, so that **it belongs to the page**. | - The background is the page's in light and dark.<br />- Switching the site's theme switches the diagram's. |
+| US-4 | As a **reader**, I want **the diagram to show its movement**, so that **I see the order of things**. | - It starts Live; with reduced motion it starts Still.<br />- Boxes keep their kind colours. |
+| US-5 | As a **reader copying a page**, I want **the diagrams as Mermaid**, so that **a tool or an LLM can read them**. | - Copy Markdown, `/<page>.md` and `llms-full.txt` hold the Mermaid fence.<br />- They never hold `<Diagram>` or an Archify URL. |
+| US-6 | As a **reader**, I want **screens drawn like the flows**, so that **I see each screen, not code**. | - Each wireframe shows as its Archify view. |
+| US-7 | As a **consuming repository**, I want **the build to tell me** when a diagram is wrong, so that **I fix it before it publishes**. | - A Mermaid fence outside `<Diagram>`, a `<Diagram>` without exactly one fence, or a missing file fails the build, naming the page. |
+
+## Rules and edge cases
+
+- Templates in `content/docs/maintain/_templates/` keep bare Mermaid; a copy must be wrapped.
+- **Open full screen** shows Archify's own page, with its title and notes, in the site's colours.
+- A wide diagram scrolls sideways inside the frame on a phone.
+
+## Out of scope for now
+
+- A shared Archify viewer loaded once for all diagrams on a page.
+
+## Open questions
+
+None.

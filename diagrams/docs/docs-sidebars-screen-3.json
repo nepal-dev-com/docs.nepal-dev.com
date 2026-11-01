@@ -1,0 +1,76 @@
+{
+  "schema_version": 1,
+  "diagram_type": "architecture",
+  "meta": {
+    "title": "Screen 3 — Phone bar and sheet",
+    "subtitle": "Wireframe at phone width, drawn from its Mermaid version · docs sidebars",
+    "output": "docs-sidebars-screen-3.html",
+    "animation": "trace",
+    "quality_profile": "showcase",
+    "legend": {
+      "entries": {
+        "backend": {
+          "label": "Control or link"
+        },
+        "external": {
+          "label": "Content"
+        }
+      }
+    }
+  },
+  "components": [
+    {
+      "id": "ring",
+      "type": "external",
+      "label": "◔ ring +",
+      "pos": [
+        40,
+        60
+      ],
+      "size": [
+        100,
+        70
+      ],
+      "sublabel": "probe"
+    },
+    {
+      "id": "cur",
+      "type": "backend",
+      "label": "Props",
+      "pos": [
+        152,
+        60
+      ],
+      "size": [
+        212,
+        58
+      ]
+    },
+    {
+      "id": "min",
+      "type": "backend",
+      "label": "4 min left",
+      "pos": [
+        376,
+        60
+      ],
+      "size": [
+        100,
+        70
+      ],
+      "sublabel": "▾"
+    }
+  ],
+  "boundaries": [
+    {
+      "kind": "region",
+      "label": "Phone screen · under the header, phone width",
+      "wraps": [
+        "ring",
+        "cur",
+        "min"
+      ],
+      "pad": 22
+    }
+  ]
+}

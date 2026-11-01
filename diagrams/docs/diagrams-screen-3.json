@@ -1,0 +1,75 @@
+{
+  "schema_version": 1,
+  "diagram_type": "architecture",
+  "meta": {
+    "title": "Screen 3 — Page as Markdown",
+    "subtitle": "Wireframe at phone width, drawn from its Mermaid version · diagrams",
+    "output": "diagrams-screen-3.html",
+    "animation": "trace",
+    "quality_profile": "showcase",
+    "legend": {
+      "entries": {
+        "database": {
+          "label": "Code or Markdown"
+        },
+        "external": {
+          "label": "Content"
+        }
+      }
+    }
+  },
+  "components": [
+    {
+      "id": "h",
+      "type": "database",
+      "label": "# Internals (/example-cli/use/v1.0/internals)",
+      "pos": [
+        40,
+        60
+      ],
+      "size": [
+        436,
+        58
+      ]
+    },
+    {
+      "id": "para",
+      "type": "external",
+      "label": "How a request moves through the CLI.",
+      "pos": [
+        40,
+        130
+      ],
+      "size": [
+        436,
+        58
+      ]
+    },
+    {
+      "id": "fence",
+      "type": "database",
+      "label": "mermaid fence: flowchart LR",
+      "pos": [
+        40,
+        200
+      ],
+      "size": [
+        436,
+        70
+      ],
+      "sublabel": "Parser --> Router --> Handler"
+    }
+  ],
+  "boundaries": [
+    {
+      "kind": "region",
+      "label": "Phone screen · **Copy Markdown**, /<project-slug>/<page>.md",
+      "wraps": [
+        "h",
+        "para",
+        "fence"
+      ],
+      "pad": 22
+    }
+  ]
+}

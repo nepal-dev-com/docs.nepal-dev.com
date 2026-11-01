@@ -1,0 +1,30 @@
+{
+  "schema_version": 2,
+  "diagram_type": "workflow",
+  "meta": {
+    "title": "Documentation map",
+    "subtitle": "How a need becomes a decision, design documents and published pages (ADR-0001, ADR-0002)",
+    "quality_profile": "showcase",
+    "output": "documentation-map.html"
+  },
+  "lanes": [
+    { "id": "owner", "label": "Owner" },
+    { "id": "maintain", "label": "Maintain track" },
+    { "id": "site", "label": "Site" }
+  ],
+  "mainPath": ["need", "adr", "build", "content"],
+  "nodes": [
+    { "id": "need", "lane": "owner", "col": 0, "type": "external", "label": "Need", "sublabel": "a feature or a decision" },
+    { "id": "adr", "lane": "maintain", "col": 1, "type": "cloud", "label": "adr/", "sublabel": "Proposed ADR" },
+    { "id": "docs", "lane": "maintain", "col": 3, "type": "database", "label": "Design documents", "sublabel": "app-flow · prd · dfd · …" },
+    { "id": "build", "lane": "site", "col": 2, "type": "backend", "label": "Implementation", "sublabel": "after approval" },
+    { "id": "content", "lane": "site", "col": 3, "type": "frontend", "label": "content/", "sublabel": "published pages" }
+  ],
+  "edges": [
+    { "id": "propose", "from": "need", "to": "adr", "label": "proposed", "variant": "emphasis" },
+    { "id": "approve", "from": "adr", "to": "build", "label": "owner approves", "variant": "emphasis" },
+    { "id": "with", "from": "adr", "to": "docs", "label": "written with", "variant": "dashed", "role": "branch" },
+    { "id": "sync", "from": "build", "to": "docs", "label": "kept in sync", "variant": "default", "role": "branch" },
+    { "id": "publish", "from": "build", "to": "content", "label": "content conventions", "variant": "emphasis" }
+  ]
+}

@@ -1,0 +1,75 @@
+{
+  "schema_version": 1,
+  "diagram_type": "architecture",
+  "meta": {
+    "title": "Screen 4 — In development or older page",
+    "subtitle": "Wireframe at phone width, drawn from its Mermaid version · site pages",
+    "output": "site-pages-screen-4.html",
+    "animation": "trace",
+    "quality_profile": "showcase",
+    "legend": {
+      "entries": {
+        "cloud": {
+          "label": "Notice or state"
+        },
+        "external": {
+          "label": "Content"
+        }
+      }
+    }
+  },
+  "components": [
+    {
+      "id": "h1",
+      "type": "external",
+      "label": "Install",
+      "pos": [
+        40,
+        60
+      ],
+      "size": [
+        436,
+        58
+      ]
+    },
+    {
+      "id": "banner",
+      "type": "cloud",
+      "label": "dashed new moon",
+      "pos": [
+        40,
+        130
+      ],
+      "size": [
+        436,
+        70
+      ],
+      "sublabel": "In development. This page documents lodestar 2.0.0-dev.4, work…"
+    },
+    {
+      "id": "body",
+      "type": "external",
+      "label": "page content",
+      "pos": [
+        40,
+        212
+      ],
+      "size": [
+        436,
+        58
+      ]
+    }
+  ],
+  "boundaries": [
+    {
+      "kind": "region",
+      "label": "Phone screen · /<slug>/use/dev/<page>, /<slug>/use/2024-lts/<page>",
+      "wraps": [
+        "h1",
+        "banner",
+        "body"
+      ],
+      "pad": 22
+    }
+  ]
+}

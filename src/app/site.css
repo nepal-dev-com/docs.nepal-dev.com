@@ -1455,22 +1455,28 @@
   grid-row: 4;
 }
 
-/* Archify diagrams embedded in a page (ADR-0011 decision 3) */
+/* Diagrams: the Archify view at its own height on the page's ground (ADR-0022) */
 
-.html-embed {
+.diagram {
+  container-type: inline-size;
   margin: 1.5rem 0;
+  --diagram-reserve: 10rem;
 }
 
-.html-embed iframe {
+.diagram iframe {
   display: block;
   width: 100%;
-  height: 420px;
+  height: calc(100cqw * var(--diagram-ratio) + var(--diagram-reserve));
   border: 1px solid var(--home-line);
   border-radius: 12px;
-  background: var(--home-panel);
+  background: var(--home-bg);
 }
 
-.html-embed figcaption {
+.diagram[data-wide] iframe {
+  height: calc(max(100cqw, 720px) * var(--diagram-ratio) + var(--diagram-reserve));
+}
+
+.diagram figcaption {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
@@ -1481,7 +1487,7 @@
   color: var(--home-muted);
 }
 
-.html-embed figcaption a {
+.diagram figcaption a {
   display: inline-flex;
   align-items: center;
   gap: 4px;
@@ -1491,26 +1497,20 @@
   text-decoration: none;
 }
 
-.html-embed figcaption a:hover {
+.diagram figcaption a:hover {
   text-decoration: underline;
   text-underline-offset: 3px;
 }
 
-.html-embed figcaption a:focus-visible {
+.diagram figcaption a:focus-visible {
   outline: 2px solid var(--home-accent);
   outline-offset: 2px;
   border-radius: 6px;
 }
 
-.html-embed figcaption svg {
+.diagram figcaption svg {
   width: 14px;
   height: 14px;
-}
-
-@media (min-width: 768px) {
-  .html-embed iframe {
-    height: 560px;
-  }
 }
 
 /* GitHub profile links as chips: the avatar, loaded live, over the username's initial (ADR-0020) */

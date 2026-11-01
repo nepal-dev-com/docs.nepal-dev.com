@@ -19,6 +19,11 @@ Phone width first; note where desktop differs.
 
 ## Flow
 
+Draw this diagram with Archify too. In a copy, wrap the fence in
+`<Diagram src="/diagrams/<project-slug>/<slug>.html" title="…">` … `</Diagram>`, with nothing else
+inside: the page shows the Archify view and its Markdown the Mermaid. Outside the templates, a
+bare Mermaid fence fails the build (ADR-0022).
+
 ```mermaid
 flowchart LR
   A[Screen A] -->|action| B[Screen B]
@@ -29,6 +34,10 @@ flowchart LR
 ## Screens
 
 ### 1. `<Screen name>` — `/route`
+
+The wireframe gets its own Archify view too, one per screen: an `architecture` diagram drawn
+from this Mermaid, its boxes placed as the rows, inside a labelled phone-screen region. Wrap the
+fence in its `<Diagram>` the same way.
 
 ```mermaid
 block-beta

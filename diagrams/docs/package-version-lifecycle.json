@@ -4,7 +4,6 @@
   "meta": {
     "title": "Package version line lifecycle",
     "subtitle": "How a documented version line moves between dev, latest, legacy and removed",
-    "visual_preset": "editorial",
     "quality_profile": "showcase",
     "output": "package-version-lifecycle.html"
   },

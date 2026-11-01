@@ -4,7 +4,6 @@
   "meta": {
     "title": "App flow — site pages",
     "subtitle": "Root URLs, the package hero, versions and the two tracks; one header with search and the theme switch on every page",
-    "visual_preset": "editorial",
     "quality_profile": "showcase",
     "output": "site-pages.html"
   },

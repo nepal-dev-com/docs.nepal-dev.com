@@ -19,6 +19,8 @@ projects each have their own folder, `content/<slug>/`, published at `/<slug>`.
 
 How they relate:
 
+<Diagram src="/diagrams/docs/documentation-map.html" title="Documentation map">
+
 ```mermaid
 flowchart LR
   N["Need<br/>a feature or a decision"] --> A["adr/<br/>Proposed ADR"]
@@ -28,12 +30,14 @@ flowchart LR
   I -->|content conventions| C["content/<br/>published pages"]
 ```
 
+</Diagram>
+
 ## Directories
 
 | Directory | Holds | Required when |
 |---|---|---|
 | [`adr/`](./adr/index.mdx) | Architecture Decision Records and their index | Every feature and functional change ([ADR-0001](./adr/ADR-0001-adr-driven-development-workflow.mdx)) |
-| [`app-flow/`](./app-flow/index.mdx) | Mermaid flow + screen wireframes, one file per feature | Any ADR that changes something a person sees ([ADR-0008](./adr/ADR-0008-a-ui-change-ships-an-app-flow.mdx)) |
+| [`app-flow/`](./app-flow/index.mdx) | The flow and screen wireframes, Mermaid and Archify, one file per feature | Any ADR that changes something a person sees ([ADR-0008](./adr/ADR-0008-a-ui-change-ships-an-app-flow.mdx)) |
 | [`prd/`](./prd/index.mdx) | Requirements and user stories | Any reader-facing feature |
 | [`architecture/`](./architecture/index.mdx) | High-level design | A new module, content source, build step or external integration |
 | [`erd/`](./erd/index.mdx) | Persisted data | The first ADR that stores data creates `erd/system.mdx` |
@@ -54,11 +58,11 @@ tasks to skills and `SOURCES.md` records provenance
 
 - **Frontmatter `title`**, no `#` heading; then the header: `Status`, `Last updated`, `Related ADRs`.
 - **Snapshot, not changelog**: no revision tables, no "previously", no strikethrough.
-- **Diagrams and flows are made with Archify**, and every page also keeps a **Mermaid version**
-  in a fenced block: flowcharts, sequences, state machines, ERDs and screen wireframes
-  (`block-beta`). Until an ADR decides how Archify's HTML appears on the site, the site shows
-  the Mermaid version, and Archify files stay outside `content/` and `public/`
-  (`AGENTS.md` §8). No binary or externally hosted images.
+- **Every diagram is Mermaid and Archify together**: flowcharts, sequences, state machines,
+  ERDs and screen wireframes (`block-beta`) are a Mermaid fence inside a `<Diagram>`, with the
+  Archify files in `diagrams/<project-slug>/`. The page shows the Archify view; the page's
+  Markdown carries the Mermaid ([ADR-0022](./adr/ADR-0022-diagrams-show-archify-on-the-page-and-mermaid-in-markdown.mdx),
+  `AGENTS.md` §8). No binary or externally hosted images.
 - **Sample values are invented**, never a real person's name, a client's name, a real token or
   a private project's details.
 - **Links between documents are relative and start with `./` or `../`** (`./adr/index.mdx`), so the site resolves them to page URLs and they still work on GitHub.

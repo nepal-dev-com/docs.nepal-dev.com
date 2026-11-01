@@ -1,9 +1,9 @@
-import { existsSync, readdirSync } from 'node:fs';
+import { existsSync, readdirSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import type { LoaderPlugin } from 'fumadocs-core/source';
-import { checkDiagrams } from './diagrams';
+import { checkDiagrams, diagramSrcs } from './diagrams';
 
-function listFiles(dir: string): string[] {
+export function listFiles(dir: string): string[] {
   if (!existsSync(dir)) {
     return [];
   }
@@ -12,15 +12,26 @@ function listFiles(dir: string): string[] {
     .map((entry) => join(entry.parentPath, entry.name).slice(dir.length + 1).split('\\').join('/'));
 }
 
-/** Fails the build on a published diagram without its source, or an Archify receipt (ADR-0011). */
+/**
+ * Fails the build on a diagram without its source, a diagram no page uses, a `<Diagram>` without
+ * its file, or an Archify receipt (ADR-0022 decision 5).
+ */
 export function diagramsPlugin(): LoaderPlugin {
   return {
     name: 'puncoz:diagrams',
     transformStorage() {
       const root = process.cwd();
-      const problems = checkDiagrams(listFiles(join(root, 'public')), listFiles(join(root, 'diagrams')));
+      const content = join(root, 'content');
+      const used = listFiles(content)
+        .filter((file) => file.endsWith('.mdx'))
+        .flatMap((file) => diagramSrcs(readFileSync(join(content, file), 'utf8')));
+      const problems = checkDiagrams({
+        diagrams: listFiles(join(root, 'diagrams')),
+        publicFiles: listFiles(join(root, 'public')),
+        used,
+      });
       if (problems.length > 0) {
-        throw new Error(`Diagram check failed (ADR-0011):\n- ${problems.join('\n- ')}`);
+        throw new Error(`Diagram check failed (ADR-0022):\n- ${problems.join('\n- ')}`);
       }
     },
   };

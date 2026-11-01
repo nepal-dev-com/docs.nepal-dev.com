@@ -1,0 +1,114 @@
+{
+  "schema_version": 1,
+  "diagram_type": "architecture",
+  "meta": {
+    "title": "Screen 3 — Phone bar and sheet (2)",
+    "subtitle": "Wireframe at phone width, drawn from its Mermaid version · docs sidebars",
+    "output": "docs-sidebars-screen-3-2.html",
+    "animation": "trace",
+    "quality_profile": "showcase",
+    "legend": {
+      "entries": {
+        "external": {
+          "label": "Content"
+        }
+      }
+    }
+  },
+  "components": [
+    {
+      "id": "sheet",
+      "type": "external",
+      "label": "On this page",
+      "pos": [
+        40,
+        60
+      ],
+      "size": [
+        436,
+        70
+      ],
+      "sublabel": "4 min left"
+    },
+    {
+      "id": "s1",
+      "type": "external",
+      "label": "● Add the package",
+      "pos": [
+        40,
+        142
+      ],
+      "size": [
+        436,
+        58
+      ]
+    },
+    {
+      "id": "s2",
+      "type": "external",
+      "label": "● Render a palette",
+      "pos": [
+        40,
+        212
+      ],
+      "size": [
+        436,
+        58
+      ]
+    },
+    {
+      "id": "s3",
+      "type": "external",
+      "label": "◉ Props",
+      "pos": [
+        40,
+        282
+      ],
+      "size": [
+        436,
+        58
+      ]
+    },
+    {
+      "id": "s4",
+      "type": "external",
+      "label": "○ Events",
+      "pos": [
+        40,
+        352
+      ],
+      "size": [
+        436,
+        58
+      ]
+    },
+    {
+      "id": "s5",
+      "type": "external",
+      "label": "○ Options",
+      "pos": [
+        40,
+        422
+      ],
+      "size": [
+        436,
+        58
+      ]
+    }
+  ],
+  "boundaries": [
+    {
+      "kind": "region",
+      "label": "Phone screen · under the header, phone width",
+      "wraps": [
+        "sheet",
+        "s1",
+        "s2",
+        "s3",
+        "s4",
+        "s5"
+      ],
+      "pad": 22
+    }
+  ]
+}

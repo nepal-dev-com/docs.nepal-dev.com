@@ -1,0 +1,133 @@
+{
+  "schema_version": 1,
+  "diagram_type": "architecture",
+  "meta": {
+    "title": "Screen 5 — Maintain page",
+    "subtitle": "Wireframe at phone width, drawn from its Mermaid version · package navigation",
+    "output": "package-navigation-screen-5.html",
+    "animation": "trace",
+    "quality_profile": "showcase",
+    "legend": {
+      "entries": {
+        "backend": {
+          "label": "Control or link"
+        },
+        "external": {
+          "label": "Content"
+        },
+        "frontend": {
+          "label": "Site chrome"
+        }
+      }
+    }
+  },
+  "components": [
+    {
+      "id": "title",
+      "type": "frontend",
+      "label": "◎ Puncoz Docs",
+      "pos": [
+        40,
+        60
+      ],
+      "size": [
+        212,
+        58
+      ]
+    },
+    {
+      "id": "search",
+      "type": "frontend",
+      "label": "⌕",
+      "pos": [
+        264,
+        60
+      ],
+      "size": [
+        100,
+        58
+      ]
+    },
+    {
+      "id": "menu",
+      "type": "frontend",
+      "label": "☰",
+      "pos": [
+        376,
+        60
+      ],
+      "size": [
+        100,
+        58
+      ]
+    },
+    {
+      "id": "name",
+      "type": "external",
+      "label": "lodestar",
+      "pos": [
+        40,
+        130
+      ],
+      "size": [
+        436,
+        58
+      ]
+    },
+    {
+      "id": "track",
+      "type": "backend",
+      "label": "Use | Maintain",
+      "pos": [
+        40,
+        200
+      ],
+      "size": [
+        436,
+        58
+      ]
+    },
+    {
+      "id": "h1",
+      "type": "external",
+      "label": "Releasing",
+      "pos": [
+        40,
+        270
+      ],
+      "size": [
+        436,
+        58
+      ]
+    },
+    {
+      "id": "body",
+      "type": "external",
+      "label": "How a release is cut, from the default branch",
+      "pos": [
+        40,
+        340
+      ],
+      "size": [
+        436,
+        58
+      ]
+    }
+  ],
+  "boundaries": [
+    {
+      "kind": "region",
+      "label": "Phone screen · /<slug>/maintain/<page>",
+      "wraps": [
+        "title",
+        "search",
+        "menu",
+        "name",
+        "track",
+        "h1",
+        "body"
+      ],
+      "pad": 22
+    }
+  ]
+}

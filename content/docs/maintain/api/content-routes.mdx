@@ -109,30 +109,42 @@ index settings change, which is publishing and waits for the owner.
 
 ## `GET /diagrams/<project-slug>/<slug>.html`
 
-One Archify diagram, the file at `public/diagrams/<project-slug>/<slug>.html`, copied byte for
-byte from Archify's output (ADR-0011). Pages embed it with `<HtmlEmbed>`; **Open full screen**
-links straight to it.
+One Archify diagram: the file at `diagrams/<project-slug>/<slug>.html`, exactly as Archify's
+`deliver` wrote it, with the site shell added (`src/lib/diagram-shell.ts`, ADR-0022). Prerendered
+by `src/app/diagrams/[project]/[file]/route.ts` for every file listed at build; no other path is
+served and no request data is read. `<Diagram>` frames it with `?frame=1&theme=…`;
+**Open full screen** links to it with `?theme=…` only. The frame carries `allow="fullscreen"`.
+
+**Query.** Read by the shell's script in the browser, never by the server: `frame=1` hides
+Archify's title, subtitle, notes rail, theme and style buttons and credit, and reports the
+content height to the embedding page with `postMessage({ type: 'archify-height', height })`,
+including an open toolbar menu. Present takes the frame to fullscreen; where fullscreen is
+refused, the frame posts `{ type: 'archify-present' }` and the page opens
+`<src>?theme=…&present=1` itself. `theme=light|dark` sets the theme before first paint and
+`present=1` opens Archify's Present stage (both Archify's own parameters).
 
 **Headers.** `Content-Security-Policy: sandbox allow-scripts allow-downloads`, set for
 `/diagrams/:path*` in `next.config.mjs`, so a direct visit runs the diagram's script in an
 opaque origin, as the embedding frame does (`sandbox="allow-scripts allow-downloads"`, no
 `allow-same-origin`).
 
-**Authorisation.** Public. Everything under `public/` is published; no diagram of a private
+**Authorisation.** Public. Everything in `diagrams/` is published; no diagram of a private
 project goes there.
 
 **Not indexed.** The files are not in `static.json`, the search index or `llms.txt`. A page's
-Markdown keeps the `<HtmlEmbed>` tag with its `src`.
+Markdown carries the diagram's Mermaid fence, never the `<Diagram>` tag or the file's URL.
 
-**Build checks** (`src/lib/diagrams.ts`, run by the loader plugin in `src/lib/diagrams-plugin.ts`
-and by `<HtmlEmbed>`): a `src` that is not `/diagrams/<project-slug>/<slug>.html`, a `src`
-without its file, a published diagram without `diagrams/<project-slug>/<slug>.json`, any other
-file under `public/diagrams/`, and an Archify receipt (`*.delivery*.json`) anywhere under
-`public/` each fail the build.
+**Build checks** (`src/lib/remark-diagrams.ts` as each page compiles; `src/lib/diagrams.ts`, run
+by the loader plugin in `src/lib/diagrams-plugin.ts`; and `<Diagram>` itself): a Mermaid fence
+outside a `<Diagram>` (templates excepted), a `<Diagram>` without a plain `src` and `title` or
+without exactly one Mermaid fence, a `src` that is not `/diagrams/<project-slug>/<slug>.html` or
+has no file, an HTML without its JSON (or the reverse), an HTML no page uses, any file in
+`public/diagrams/`, and an Archify receipt (`*.delivery*.json`) in `diagrams/` or `public/` each
+fail the build.
 
 **Responses**
 
 | Status | Meaning | Body |
 |---|---|---|
 | 200 | File found | HTML, `Content-Type: text/html` |
-| 404 | No such file | The site's not-found page |
+| 404 | Not a listed file, including the JSON sources | The site's not-found page |

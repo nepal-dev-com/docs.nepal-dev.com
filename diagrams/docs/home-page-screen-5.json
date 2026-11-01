@@ -1,0 +1,152 @@
+{
+  "schema_version": 1,
+  "diagram_type": "architecture",
+  "meta": {
+    "title": "Screen 5 — Two sides · Every moon · Read it anywhere",
+    "subtitle": "Wireframe at phone width, drawn from its Mermaid version · home page",
+    "output": "home-page-screen-5.html",
+    "animation": "trace",
+    "quality_profile": "showcase",
+    "legend": {
+      "entries": {
+        "backend": {
+          "label": "Control or link"
+        },
+        "database": {
+          "label": "Code or Markdown"
+        },
+        "external": {
+          "label": "Content"
+        }
+      }
+    }
+  },
+  "components": [
+    {
+      "id": "hs",
+      "type": "external",
+      "label": "Two sides of every planet",
+      "pos": [
+        40,
+        60
+      ],
+      "size": [
+        436,
+        58
+      ]
+    },
+    {
+      "id": "day",
+      "type": "backend",
+      "label": "☀ Use v0.1",
+      "pos": [
+        40,
+        130
+      ],
+      "size": [
+        212,
+        70
+      ],
+      "sublabel": "0.1.4 — Install · Commands…"
+    },
+    {
+      "id": "night",
+      "type": "backend",
+      "label": "☾ Maintain — Releasing",
+      "pos": [
+        264,
+        130
+      ],
+      "size": [
+        212,
+        70
+      ],
+      "sublabel": "Architecture · Decisions"
+    },
+    {
+      "id": "hm",
+      "type": "external",
+      "label": "Every moon, released or not",
+      "pos": [
+        40,
+        212
+      ],
+      "size": [
+        436,
+        58
+      ]
+    },
+    {
+      "id": "m1",
+      "type": "external",
+      "label": "ledgerly  ◔ v2.9 ── ◔ v3.2 ── ● v4.0 latest ┄ ○",
+      "pos": [
+        40,
+        282
+      ],
+      "size": [
+        436,
+        70
+      ],
+      "sublabel": "dev"
+    },
+    {
+      "id": "ha",
+      "type": "external",
+      "label": "Read it anywhere",
+      "pos": [
+        40,
+        364
+      ],
+      "size": [
+        436,
+        58
+      ]
+    },
+    {
+      "id": "term",
+      "type": "database",
+      "label": "[page.md] llms.txt Accept",
+      "pos": [
+        40,
+        434
+      ],
+      "size": [
+        436,
+        70
+      ],
+      "sublabel": "$ curl -s …/install.md | head -6"
+    },
+    {
+      "id": "assist",
+      "type": "database",
+      "label": "Hand any page to your assistant",
+      "pos": [
+        40,
+        516
+      ],
+      "size": [
+        436,
+        70
+      ],
+      "sublabel": "[Copy Markdown] [Open ▾]"
+    }
+  ],
+  "boundaries": [
+    {
+      "kind": "region",
+      "label": "Phone screen · Two sides · Every moon · Read it anywhere",
+      "wraps": [
+        "hs",
+        "day",
+        "night",
+        "hm",
+        "m1",
+        "ha",
+        "term",
+        "assist"
+      ],
+      "pad": 22
+    }
+  ]
+}

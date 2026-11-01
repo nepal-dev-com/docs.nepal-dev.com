@@ -1,0 +1,90 @@
+{
+  "schema_version": 1,
+  "diagram_type": "architecture",
+  "meta": {
+    "title": "Screen 2 — Search dialog",
+    "subtitle": "Wireframe at phone width, drawn from its Mermaid version · home page",
+    "output": "home-page-screen-2.html",
+    "animation": "trace",
+    "quality_profile": "showcase",
+    "legend": {
+      "entries": {
+        "external": {
+          "label": "Content"
+        },
+        "frontend": {
+          "label": "Site chrome"
+        }
+      }
+    }
+  },
+  "components": [
+    {
+      "id": "input",
+      "type": "frontend",
+      "label": "⌕  lodestar instal▍                      esc",
+      "pos": [
+        40,
+        60
+      ],
+      "size": [
+        436,
+        58
+      ]
+    },
+    {
+      "id": "r1",
+      "type": "external",
+      "label": "Install",
+      "pos": [
+        40,
+        130
+      ],
+      "size": [
+        436,
+        70
+      ],
+      "sublabel": "lodestar"
+    },
+    {
+      "id": "r2",
+      "type": "external",
+      "label": "Commands",
+      "pos": [
+        40,
+        212
+      ],
+      "size": [
+        436,
+        70
+      ],
+      "sublabel": "lodestar"
+    },
+    {
+      "id": "foot",
+      "type": "frontend",
+      "label": "Search powered by Algolia",
+      "pos": [
+        40,
+        294
+      ],
+      "size": [
+        436,
+        58
+      ]
+    }
+  ],
+  "boundaries": [
+    {
+      "kind": "region",
+      "label": "Phone screen · over the home page",
+      "wraps": [
+        "input",
+        "r1",
+        "r2",
+        "foot"
+      ],
+      "pad": 22
+    }
+  ]
+}

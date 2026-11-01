@@ -1,0 +1,119 @@
+{
+  "schema_version": 1,
+  "diagram_type": "architecture",
+  "meta": {
+    "title": "Screen 1 — Planet row and orbit stations (2)",
+    "subtitle": "Wireframe at phone width, drawn from its Mermaid version · docs sidebars",
+    "output": "docs-sidebars-screen-1-2.html",
+    "animation": "trace",
+    "quality_profile": "showcase",
+    "legend": {
+      "entries": {
+        "backend": {
+          "label": "Control or link"
+        },
+        "database": {
+          "label": "Code or Markdown"
+        },
+        "external": {
+          "label": "Content"
+        }
+      }
+    }
+  },
+  "components": [
+    {
+      "id": "h",
+      "type": "database",
+      "label": "◎ Guides",
+      "pos": [
+        54,
+        90
+      ],
+      "size": [
+        408,
+        70
+      ],
+      "sublabel": "6 ▾"
+    },
+    {
+      "id": "a1",
+      "type": "external",
+      "label": "○ Theming",
+      "pos": [
+        54,
+        172
+      ],
+      "size": [
+        408,
+        58
+      ]
+    },
+    {
+      "id": "sub",
+      "type": "backend",
+      "label": "◎ Recipes",
+      "pos": [
+        54,
+        242
+      ],
+      "size": [
+        408,
+        70
+      ],
+      "sublabel": "3 ▾ (nested station, no card)"
+    },
+    {
+      "id": "a2",
+      "type": "external",
+      "label": "○ Async commands",
+      "pos": [
+        54,
+        324
+      ],
+      "size": [
+        408,
+        58
+      ]
+    },
+    {
+      "id": "a3",
+      "type": "external",
+      "label": "◉ Keyboard shortcuts (current)",
+      "pos": [
+        54,
+        394
+      ],
+      "size": [
+        408,
+        58
+      ]
+    }
+  ],
+  "boundaries": [
+    {
+      "kind": "region",
+      "label": "Phone screen · the left sidebar, /lodestar/use/v0.1/install",
+      "wraps": [
+        "h",
+        "a1",
+        "sub",
+        "a2",
+        "a3"
+      ],
+      "pad": 22
+    },
+    {
+      "kind": "region",
+      "label": "nested folder",
+      "wraps": [
+        "h",
+        "a1",
+        "sub",
+        "a2",
+        "a3"
+      ],
+      "pad": 10
+    }
+  ]
+}

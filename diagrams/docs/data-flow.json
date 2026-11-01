@@ -1,0 +1,44 @@
+{
+  "schema_version": 1,
+  "diagram_type": "dataflow",
+  "meta": {
+    "title": "Data flow",
+    "subtitle": "What moves where, and the one trust boundary: the repository and the build",
+    "quality_profile": "showcase",
+    "animation": "trace",
+    "output": "data-flow.html"
+  },
+  "stages": [
+    { "label": "Authors" },
+    { "label": "Trust boundary · repository" },
+    { "label": "Trust boundary · build" },
+    { "label": "Public · deployed site" },
+    { "label": "Readers and services" }
+  ],
+  "nodes": [
+    { "id": "owner", "type": "external", "label": "Owner", "sublabel": "author", "stage": 0, "row": 0 },
+    { "id": "consumer", "type": "external", "label": "Consuming repos", "sublabel": "submodule", "stage": 0, "row": 2 },
+    { "id": "content", "type": "database", "label": "D1 · content/", "sublabel": "MDX + diagrams/", "stage": 1, "row": 0 },
+    { "id": "env", "type": "security", "label": "D2 · .env.local", "sublabel": "write key", "stage": 1, "row": 2 },
+    { "id": "build", "type": "backend", "label": "1.0 Build", "sublabel": "next build", "stage": 2, "row": 0 },
+    { "id": "syncp", "type": "backend", "label": "2.0 Sync index", "sublabel": "sync-content.ts", "stage": 2, "row": 2 },
+    { "id": "serve", "type": "frontend", "label": "3.0 Serve", "sublabel": "pages and routes", "stage": 3, "row": 0 },
+    { "id": "reader", "type": "external", "label": "Reader", "sublabel": "browser", "stage": 4, "row": 0 },
+    { "id": "bot", "type": "external", "label": "LLM tools", "sublabel": "and crawlers", "stage": 4, "row": 1 },
+    { "id": "algolia", "type": "cloud", "label": "Algolia", "sublabel": "search index", "stage": 3, "row": 2 },
+    { "id": "github", "type": "cloud", "label": "GitHub", "sublabel": "avatars", "stage": 4, "row": 2 }
+  ],
+  "flows": [
+    { "id": "pages-in", "from": "owner", "to": "content", "label": "MDX pages", "variant": "emphasis" },
+    { "id": "consumer-in", "from": "consumer", "to": "content", "label": "pages, owner commits", "variant": "default" },
+    { "id": "to-build", "from": "content", "to": "build", "label": "pages", "variant": "emphasis" },
+    { "id": "to-serve", "from": "build", "to": "serve", "label": "static output", "variant": "emphasis" },
+    { "id": "records", "from": "build", "to": "syncp", "label": "static.json records", "variant": "default" },
+    { "id": "key", "from": "env", "to": "syncp", "label": "ALGOLIA_WRITE_KEY", "variant": "security" },
+    { "id": "replace", "from": "syncp", "to": "algolia", "label": "every record", "variant": "security" },
+    { "id": "pages-out", "from": "serve", "to": "reader", "label": "pages", "variant": "emphasis" },
+    { "id": "md-out", "from": "serve", "to": "bot", "label": "Markdown, llms.txt", "variant": "default" },
+    { "id": "query", "from": "reader", "to": "algolia", "label": "query, search-only key", "variant": "dashed" },
+    { "id": "avatar", "from": "reader", "to": "github", "label": "avatar, no referrer", "variant": "dashed" }
+  ]
+}

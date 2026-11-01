@@ -1,0 +1,75 @@
+{
+  "schema_version": 1,
+  "diagram_type": "architecture",
+  "meta": {
+    "title": "Screen 4 — In development page",
+    "subtitle": "Wireframe at phone width, drawn from its Mermaid version · package navigation",
+    "output": "package-navigation-screen-4.html",
+    "animation": "trace",
+    "quality_profile": "showcase",
+    "legend": {
+      "entries": {
+        "cloud": {
+          "label": "Notice or state"
+        },
+        "external": {
+          "label": "Content"
+        }
+      }
+    }
+  },
+  "components": [
+    {
+      "id": "h1",
+      "type": "external",
+      "label": "Install",
+      "pos": [
+        40,
+        60
+      ],
+      "size": [
+        436,
+        58
+      ]
+    },
+    {
+      "id": "banner",
+      "type": "cloud",
+      "label": "In development — This page documents lodestar",
+      "pos": [
+        40,
+        130
+      ],
+      "size": [
+        436,
+        70
+      ],
+      "sublabel": "0.2.0-dev.3, work in progress on the default branch. Read this…"
+    },
+    {
+      "id": "body",
+      "type": "external",
+      "label": "page content",
+      "pos": [
+        40,
+        212
+      ],
+      "size": [
+        436,
+        58
+      ]
+    }
+  ],
+  "boundaries": [
+    {
+      "kind": "region",
+      "label": "Phone screen · /<slug>/use/dev/<page>",
+      "wraps": [
+        "h1",
+        "banner",
+        "body"
+      ],
+      "pad": 22
+    }
+  ]
+}

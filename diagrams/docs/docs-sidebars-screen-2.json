@@ -1,0 +1,155 @@
+{
+  "schema_version": 1,
+  "diagram_type": "architecture",
+  "meta": {
+    "title": "Screen 2 — Trajectory",
+    "subtitle": "Wireframe at phone width, drawn from its Mermaid version · docs sidebars",
+    "output": "docs-sidebars-screen-2.html",
+    "animation": "trace",
+    "quality_profile": "showcase",
+    "legend": {
+      "entries": {
+        "external": {
+          "label": "Content"
+        }
+      }
+    }
+  },
+  "components": [
+    {
+      "id": "head",
+      "type": "external",
+      "label": "On this page",
+      "pos": [
+        40,
+        60
+      ],
+      "size": [
+        324,
+        58
+      ]
+    },
+    {
+      "id": "left",
+      "type": "external",
+      "label": "4 min left",
+      "pos": [
+        376,
+        60
+      ],
+      "size": [
+        100,
+        58
+      ]
+    },
+    {
+      "id": "i1",
+      "type": "external",
+      "label": "● Add the package (read)",
+      "pos": [
+        40,
+        130
+      ],
+      "size": [
+        436,
+        58
+      ]
+    },
+    {
+      "id": "i2",
+      "type": "external",
+      "label": "● Render a palette (read)",
+      "pos": [
+        40,
+        200
+      ],
+      "size": [
+        436,
+        58
+      ]
+    },
+    {
+      "id": "i3",
+      "type": "external",
+      "label": "◉ Props (probe)",
+      "pos": [
+        40,
+        270
+      ],
+      "size": [
+        436,
+        58
+      ]
+    },
+    {
+      "id": "i4",
+      "type": "external",
+      "label": "○ Events (dashed ahead)",
+      "pos": [
+        40,
+        340
+      ],
+      "size": [
+        436,
+        58
+      ]
+    },
+    {
+      "id": "i5",
+      "type": "external",
+      "label": "○ Options",
+      "pos": [
+        40,
+        410
+      ],
+      "size": [
+        436,
+        58
+      ]
+    },
+    {
+      "id": "i6",
+      "type": "external",
+      "label": "○ Troubleshooting",
+      "pos": [
+        40,
+        480
+      ],
+      "size": [
+        436,
+        58
+      ]
+    },
+    {
+      "id": "top",
+      "type": "external",
+      "label": "Back to top ↑",
+      "pos": [
+        40,
+        550
+      ],
+      "size": [
+        436,
+        58
+      ]
+    }
+  ],
+  "boundaries": [
+    {
+      "kind": "region",
+      "label": "Phone screen · \"On this page\", desktop column",
+      "wraps": [
+        "head",
+        "left",
+        "i1",
+        "i2",
+        "i3",
+        "i4",
+        "i5",
+        "i6",
+        "top"
+      ],
+      "pad": 22
+    }
+  ]
+}

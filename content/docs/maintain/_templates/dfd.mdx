@@ -15,6 +15,11 @@ Which process this decomposes, and its parent diagram.
 
 ## Diagram
 
+Draw this diagram with Archify too. In a copy, wrap the fence in
+`<Diagram src="/diagrams/<project-slug>/<slug>.html" title="…">` … `</Diagram>`, with nothing else
+inside: the page shows the Archify view and its Markdown the Mermaid. Outside the templates, a
+bare Mermaid fence fails the build (ADR-0022).
+
 ```mermaid
 flowchart LR
   Ext["External Entity"]

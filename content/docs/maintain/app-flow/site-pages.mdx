@@ -29,8 +29,9 @@ Maintain track, `/docs/maintain/…`. Every page, the home page included, shares
 the orrery theme switch; docs pages add a search button, and use the home page's colours and
 type without its motion.
 
-The flow is made with Archify. Its source is `diagrams/docs/site-pages.json`; the published
-file, `/diagrams/docs/site-pages.html`, is embedded under the Mermaid version below (ADR-0011).
+The flow and every screen are drawn with Archify; the page shows them and its Markdown
+carries their Mermaid (ADR-0022). Their sources are in `diagrams/docs/`: `site-pages.json` for the
+flow, one `site-pages-screen-<n>.json` per screen.
 
 ## Entry points
 
@@ -46,6 +47,8 @@ file, `/diagrams/docs/site-pages.html`, is embedded under the Mermaid version be
   private-documentation ADR; a private URL then gets the same 404 as a missing page.
 
 ## Flow
+
+<Diagram src="/diagrams/docs/site-pages.html" title="Site pages">
 
 ```mermaid
 flowchart TB
@@ -68,17 +71,21 @@ flowchart TB
   D -->|Maintain| DM["/docs/maintain/adr/…"]
 ```
 
-<HtmlEmbed src="/diagrams/docs/site-pages.html" title="Site pages" />
+</Diagram>
 
 ## Screens
 
 ### 0. `Header` — on every page
+
+<Diagram src="/diagrams/docs/site-pages-screen-0.html" title="Screen 0 — Header">
 
 ```mermaid
 block-beta
   columns 6
   mark["◎ Puncoz Docs"]:2 search["⌕"] gh["GitHub"] theme["orrery"] menu["☰"]
 ```
+
+</Diagram>
 
 Phone width: the wordmark (a ringed planet with the star's light on it), then 36px icon buttons:
 search (docs pages only), GitHub, the theme switch (40px wide) and, on docs pages, a menu button that opens the sidebar. The nav links are hidden; on
@@ -101,6 +108,8 @@ it carries a hairline border; on the home page it gains one once the page scroll
 
 ### 1. `Package overview` — `/<slug>`
 
+<Diagram src="/diagrams/docs/site-pages-screen-1.html" title="Screen 1 — Package overview">
+
 ```mermaid
 block-beta
   columns 4
@@ -116,6 +125,8 @@ block-beta
   end
   body["the package's own overview page"]:4
 ```
+
+</Diagram>
 
 The planet header ([The solar system](./solar-system.mdx), screen 2): the planet mark and a
 faint wash take the ecosystem colour; a project is a ringed planet. Desktop: the text on the
@@ -137,6 +148,8 @@ stations, "On this page" the overview's headings on its trajectory.
 
 ### 2. `Use page` — `/<slug>/use/<line>/<page>`
 
+<Diagram src="/diagrams/docs/site-pages-screen-2.html" title="Screen 2 — Use page">
+
 ```mermaid
 block-beta
   columns 4
@@ -154,6 +167,8 @@ block-beta
   stated["● Documents lodestar 1.4.2"]:4
   body["page content · code in JetBrains Mono"]:4
 ```
+
+</Diagram>
 
 The drawer is the sidebar, opened from the header's menu button. Its top holds the planet row
 (the chip linking to the overview, a sun for Use and a moon for Maintain) and the moon picker;
@@ -177,6 +192,8 @@ code on the panel colour.
 
 ### 3. `Moon picker` — opened from the sidebar
 
+<Diagram src="/diagrams/docs/site-pages-screen-3.html" title="Screen 3 — Moon picker">
+
 ```mermaid
 block-beta
   columns 4
@@ -188,6 +205,8 @@ block-beta
     o3["crescent · 2024 LTS · 0.9.3 · Older version"]:4
   end
 ```
+
+</Diagram>
 
 Latest first, then `dev`, then older lines in the order `use/meta.json` gives, or newest
 version first. Each option shows its line's moon, the line's name as the package set it, its
@@ -201,6 +220,8 @@ version, and its channel in words.
 
 ### 4. `In development or older page` — `/<slug>/use/dev/<page>`, `/<slug>/use/2024-lts/<page>`
 
+<Diagram src="/diagrams/docs/site-pages-screen-4.html" title="Screen 4 — In development or older page">
+
 ```mermaid
 block-beta
   columns 4
@@ -208,6 +229,8 @@ block-beta
   banner["dashed new moon · In development. This page documents lodestar 2.0.0-dev.4, work in progress on the default branch. Read this page for 1.4.2, the latest release."]:4
   body["page content"]:4
 ```
+
+</Diagram>
 
 An older line shows a crescent and reads "Older version. This page documents lodestar 0.9.3.
 Read this page for 1.4.2, the latest release."
@@ -220,6 +243,8 @@ Read this page for 1.4.2, the latest release."
 
 ### 5. `Maintain page` — `/<slug>/maintain/<page>`
 
+<Diagram src="/diagrams/docs/site-pages-screen-5.html" title="Screen 5 — Maintain page">
+
 ```mermaid
 block-beta
   columns 4
@@ -230,6 +255,8 @@ block-beta
   body["How a release is cut from the default branch"]:4
 ```
 
+</Diagram>
+
 Not versioned: no moon picker and no version line.
 
 **States**
@@ -238,6 +265,8 @@ Not versioned: no moon picker and no version line.
 - Other states: as the Use page.
 
 ### 6. `Site overview` — `/docs`
+
+<Diagram src="/diagrams/docs/site-pages-screen-6.html" title="Screen 6 — Site overview">
 
 ```mermaid
 block-beta
@@ -253,6 +282,8 @@ block-beta
   end
   body["what the site is · where decisions and design documents live"]:4
 ```
+
+</Diagram>
 
 The site's own entry has the project's planet header with a Maintain link and its repository. Its Maintain
 track holds

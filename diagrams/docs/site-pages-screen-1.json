@@ -1,0 +1,208 @@
+{
+  "schema_version": 1,
+  "diagram_type": "architecture",
+  "meta": {
+    "title": "Screen 1 — Package overview",
+    "subtitle": "Wireframe at phone width, drawn from its Mermaid version · site pages",
+    "output": "site-pages-screen-1.html",
+    "animation": "trace",
+    "quality_profile": "showcase",
+    "legend": {
+      "entries": {
+        "backend": {
+          "label": "Control or link"
+        },
+        "external": {
+          "label": "Content"
+        },
+        "frontend": {
+          "label": "Site chrome"
+        }
+      }
+    }
+  },
+  "components": [
+    {
+      "id": "hdr",
+      "type": "frontend",
+      "label": "◎ Puncoz Docs   ⌕ orrery ☰",
+      "pos": [
+        40,
+        60
+      ],
+      "size": [
+        436,
+        58
+      ]
+    },
+    {
+      "id": "kind",
+      "type": "external",
+      "label": "● npm package",
+      "pos": [
+        54,
+        160
+      ],
+      "size": [
+        408,
+        58
+      ]
+    },
+    {
+      "id": "name",
+      "type": "external",
+      "label": "lodestar",
+      "pos": [
+        54,
+        230
+      ],
+      "size": [
+        408,
+        58
+      ]
+    },
+    {
+      "id": "desc",
+      "type": "external",
+      "label": "Keyboard-first command palette for React.",
+      "pos": [
+        54,
+        300
+      ],
+      "size": [
+        408,
+        58
+      ]
+    },
+    {
+      "id": "facts",
+      "type": "external",
+      "label": "Latest 1.4.2",
+      "pos": [
+        54,
+        370
+      ],
+      "size": [
+        408,
+        70
+      ],
+      "sublabel": "v1.4 · In development 2.0.0-dev.4 · Older 2024 LTS"
+    },
+    {
+      "id": "use",
+      "type": "backend",
+      "label": "Use →",
+      "pos": [
+        54,
+        452
+      ],
+      "size": [
+        93,
+        58
+      ]
+    },
+    {
+      "id": "maint",
+      "type": "backend",
+      "label": "Maintain",
+      "pos": [
+        159,
+        452
+      ],
+      "size": [
+        93,
+        58
+      ]
+    },
+    {
+      "id": "reg",
+      "type": "backend",
+      "label": "Registry ↗",
+      "pos": [
+        264,
+        452
+      ],
+      "size": [
+        93,
+        58
+      ]
+    },
+    {
+      "id": "repo",
+      "type": "backend",
+      "label": "Repository",
+      "pos": [
+        369,
+        452
+      ],
+      "size": [
+        93,
+        70
+      ],
+      "sublabel": "↗"
+    },
+    {
+      "id": "draw",
+      "type": "external",
+      "label": "planet with labelled moons v1.4",
+      "pos": [
+        54,
+        534
+      ],
+      "size": [
+        408,
+        70
+      ],
+      "sublabel": "dev · 2024 LTS"
+    },
+    {
+      "id": "body",
+      "type": "external",
+      "label": "the package's own overview page",
+      "pos": [
+        40,
+        630
+      ],
+      "size": [
+        436,
+        58
+      ]
+    }
+  ],
+  "boundaries": [
+    {
+      "kind": "region",
+      "label": "Phone screen · /<slug>",
+      "wraps": [
+        "hdr",
+        "kind",
+        "name",
+        "desc",
+        "facts",
+        "use",
+        "maint",
+        "reg",
+        "repo",
+        "draw",
+        "body"
+      ],
+      "pad": 22
+    },
+    {
+      "kind": "region",
+      "label": "hero",
+      "wraps": [
+        "kind",
+        "name",
+        "desc",
+        "facts",
+        "use",
+        "maint",
+        "reg",
+        "repo",
+        "draw"
+      ],
+      "pad": 10
+    }
+  ]
+}

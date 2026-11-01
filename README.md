@@ -132,8 +132,7 @@ Open [http://localhost:3000](http://localhost:3000). The docs are at `/docs`.
 │   ├── app/             # home, every page at /<slug>/…, llms.txt, OG images, search records, tokens
 │   ├── components/      # site header, MDX components, search dialog, docs/ (hero, track switch, version banners), home/
 │   └── lib/             # content loader, catalogue schema and checks, search client, site settings
-├── diagrams/            # Archify sources (candidate JSON) of the published diagrams; not published
-├── public/diagrams/     # the published Archify diagrams, embedded with <HtmlEmbed>, served sandboxed
+├── diagrams/            # Archify diagrams: the candidate JSON (not served) and the HTML, served sandboxed at /diagrams/
 ├── scripts/
 │   └── sync-content.ts  # pushes search records to Algolia after a build
 ├── .env.example         # every variable the site reads, names only
@@ -195,11 +194,12 @@ the skills a task needs; [`SOURCES.md`](.claude/agent-skills/SOURCES.md) records
 
 [`content/docs/maintain/index.mdx`](content/docs/maintain/index.mdx) is the map: what each directory holds, which documents a
 change requires, and the conventions for each. Diagrams and flows are made with
-[Archify](https://github.com/tt-a1i/archify), and app-flow screens are Mermaid wireframes.
-Every page also keeps a Mermaid version,
-so it stays readable as Markdown, renders on GitHub and diffs as text; the Archify HTML is
-embedded under it from `public/diagrams/` in a sandboxed frame (ADR-0011). Pages are `.mdx`
-(ADR-0012), so they can embed components where needed.
+[Archify](https://github.com/tt-a1i/archify), app-flow screens included. Each diagram is a
+`<Diagram>` around its Mermaid version: the page shows the Archify view, fitted to the diagram,
+in the site's colours and moving; Copy Markdown, `/<page>.md` and `llms-full.txt` carry the
+Mermaid, so the docs stay readable as Markdown, render on GitHub and diff as text. The build
+fails on a bare Mermaid fence (ADR-0022). Pages are `.mdx` (ADR-0012), so they can embed
+components where needed.
 
 ### Security and privacy
 
@@ -237,3 +237,4 @@ threat model, data classification, secrets inventory and audit checklist live in
 | [0019](content/docs/maintain/adr/ADR-0019-adr-folders-show-as-a-constellation-in-the-sidebar.mdx) | ADR folders show as a constellation in the sidebar | Approved |
 | [0020](content/docs/maintain/adr/ADR-0020-people-in-adrs-are-github-usernames-shown-as-profile-chips.mdx) | People in ADRs are GitHub usernames, shown as profile chips | Approved |
 | [0021](content/docs/maintain/adr/ADR-0021-tests-run-with-bun-test.mdx) | Tests run with Bun's built-in test runner | Approved |
+| [0022](content/docs/maintain/adr/ADR-0022-diagrams-show-archify-on-the-page-and-mermaid-in-markdown.mdx) | Diagrams show their Archify view on the page and their Mermaid in Markdown | Approved |

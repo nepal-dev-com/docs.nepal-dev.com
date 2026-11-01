@@ -4,35 +4,153 @@
   "meta": {
     "title": "App flow: orbit stations, the trajectory and the horizon",
     "subtitle": "Moving through a docs page: the left sidebar's stations, the right-hand trajectory with its probe, and the full horizon below",
-    "visual_preset": "editorial",
     "quality_profile": "showcase",
     "output": "docs-sidebars.html"
   },
   "lanes": [
-    { "id": "reader", "label": "Reader" },
-    { "id": "left", "label": "Left sidebar" },
-    { "id": "page", "label": "Docs page" },
-    { "id": "right", "label": "On this page" }
+    {
+      "id": "reader",
+      "label": "Reader"
+    },
+    {
+      "id": "left",
+      "label": "Left sidebar"
+    },
+    {
+      "id": "page",
+      "label": "Docs page"
+    },
+    {
+      "id": "right",
+      "label": "On this page"
+    }
   ],
-  "mainPath": ["reader_node", "console", "station", "article", "trajectory", "horizon"],
+  "mainPath": [
+    "reader_node",
+    "console",
+    "station",
+    "article",
+    "trajectory",
+    "horizon"
+  ],
   "nodes": [
-    { "id": "reader_node", "lane": "reader", "col": 0, "type": "external", "label": "Reader" },
-    { "id": "console", "lane": "left", "col": 1, "type": "frontend", "label": "Planet row", "sublabel": "chip · day/night · moon" },
-    { "id": "station", "lane": "left", "col": 2, "type": "frontend", "label": "Orbit station", "sublabel": "section · pages as moons" },
-    { "id": "closed", "lane": "left", "col": 3, "type": "frontend", "label": "Closed station", "sublabel": "title · moon count" },
-    { "id": "article", "lane": "page", "col": 3, "type": "frontend", "label": "Docs page", "sublabel": "headings · body" },
-    { "id": "horizon", "lane": "page", "col": 5, "type": "frontend", "label": "Full horizon", "sublabel": "scene · planets · top" },
-    { "id": "trajectory", "lane": "right", "col": 4, "type": "frontend", "label": "Trajectory", "sublabel": "probe · min left" },
-    { "id": "popover", "lane": "right", "col": 2, "type": "frontend", "label": "Phone bar", "sublabel": "ring · heading · min" }
+    {
+      "id": "reader_node",
+      "lane": "reader",
+      "col": 0,
+      "type": "external",
+      "label": "Reader"
+    },
+    {
+      "id": "console",
+      "lane": "left",
+      "col": 1,
+      "type": "frontend",
+      "label": "Planet row",
+      "sublabel": "chip · day/night · moon"
+    },
+    {
+      "id": "station",
+      "lane": "left",
+      "col": 2,
+      "type": "frontend",
+      "label": "Orbit station",
+      "sublabel": "section · pages as moons"
+    },
+    {
+      "id": "closed",
+      "lane": "left",
+      "col": 3,
+      "type": "frontend",
+      "label": "Closed station",
+      "sublabel": "title · moon count"
+    },
+    {
+      "id": "article",
+      "lane": "page",
+      "col": 3,
+      "type": "frontend",
+      "label": "Docs page",
+      "sublabel": "headings · body"
+    },
+    {
+      "id": "horizon",
+      "lane": "page",
+      "col": 5,
+      "type": "frontend",
+      "label": "Full horizon",
+      "sublabel": "scene · planets · top"
+    },
+    {
+      "id": "trajectory",
+      "lane": "right",
+      "col": 4,
+      "type": "frontend",
+      "label": "Trajectory",
+      "sublabel": "probe · min left"
+    },
+    {
+      "id": "popover",
+      "lane": "right",
+      "col": 2,
+      "type": "frontend",
+      "label": "Phone bar",
+      "sublabel": "ring · heading · min"
+    }
   ],
   "edges": [
-    { "id": "open", "from": "reader_node", "to": "console", "label": "opens a page", "variant": "emphasis" },
-    { "id": "pick", "from": "console", "to": "station", "label": "station opens", "variant": "emphasis" },
-    { "id": "moon", "from": "station", "to": "article", "label": "a moon", "variant": "emphasis" },
-    { "id": "expand", "from": "station", "to": "closed", "label": "toggle" },
-    { "id": "read", "from": "article", "to": "trajectory", "label": "scroll", "variant": "emphasis" },
-    { "id": "jump", "from": "trajectory", "to": "article", "label": "a heading" },
-    { "id": "end", "from": "trajectory", "to": "horizon", "label": "end of page", "variant": "emphasis" },
-    { "id": "phone", "from": "article", "to": "popover", "label": "phone width" }
+    {
+      "id": "open",
+      "from": "reader_node",
+      "to": "console",
+      "label": "opens a page",
+      "variant": "emphasis"
+    },
+    {
+      "id": "pick",
+      "from": "console",
+      "to": "station",
+      "label": "station opens",
+      "variant": "emphasis"
+    },
+    {
+      "id": "moon",
+      "from": "station",
+      "to": "article",
+      "label": "a moon",
+      "variant": "emphasis"
+    },
+    {
+      "id": "expand",
+      "from": "station",
+      "to": "closed",
+      "label": "toggle"
+    },
+    {
+      "id": "read",
+      "from": "article",
+      "to": "trajectory",
+      "label": "scroll",
+      "variant": "emphasis"
+    },
+    {
+      "id": "jump",
+      "from": "trajectory",
+      "to": "article",
+      "label": "a heading"
+    },
+    {
+      "id": "end",
+      "from": "trajectory",
+      "to": "horizon",
+      "label": "end of page",
+      "variant": "emphasis"
+    },
+    {
+      "id": "phone",
+      "from": "article",
+      "to": "popover",
+      "label": "phone width"
+    }
   ]
 }

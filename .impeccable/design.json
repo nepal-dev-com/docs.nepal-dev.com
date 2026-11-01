@@ -732,6 +732,14 @@
       "description": "A private project beyond the belt: a night planet on a dashed orbit, the name with a lock, a description and who it is for, in a dashed card.",
       "html": "<article class=\"ds-priv\"><svg viewBox=\"-28 -28 56 56\" aria-hidden=\"true\"><ellipse rx=\"25\" ry=\"8\" transform=\"rotate(-18)\" fill=\"none\" stroke=\"var(--home-line-2)\" stroke-dasharray=\"2 3\"/><circle r=\"13\" fill=\"var(--home-night)\" stroke=\"var(--home-line-2)\"/></svg><div><h3>harbor-ops</h3><p>Operations dashboard for a shipping client.</p><small>client · Use, Maintain</small></div></article>",
       "css": ".ds-priv{display:grid;grid-template-columns:56px 1fr;gap:14px;max-width:320px;padding:18px;background:var(--home-bg-2);border:1px dashed var(--home-line-2);border-radius:14px}.ds-priv svg{width:56px;height:56px}.ds-priv h3{margin:0;font:500 16px var(--home-font-data);color:var(--home-ink)}.ds-priv p{margin:2px 0 0;font-size:14px;color:var(--home-muted)}.ds-priv small{display:block;margin-top:8px;font:12px var(--home-font-data);color:var(--home-faint)}"
+    },
+    {
+      "name": "Diagram",
+      "kind": "figure",
+      "refersTo": "diagram",
+      "description": "A diagram's Archify view in a sandboxed frame the width of the text column, fitted to its height, on the page's ground, with the caption and Open full screen under it. Kind colours stay vivid; the trace starts Live unless reduced motion (ADR-0022).",
+      "html": "<figure class=\"ds-diagram\"><div class=\"ds-diagram-frame\"><span class=\"ds-node ds-a\">Parser</span><span class=\"ds-arrow\"></span><span class=\"ds-node ds-b\">Router</span></div><figcaption><span>Request flow</span><a href=\"#\">Open full screen ↗</a></figcaption></figure>",
+      "css": ".ds-diagram{margin:0}.ds-diagram-frame{display:flex;align-items:center;justify-content:center;gap:12px;min-height:140px;background:var(--home-bg);border:1px solid var(--home-line);border-radius:12px}.ds-node{padding:10px 14px;font:12px var(--home-font-data);color:var(--home-ink);border:1.5px solid;border-radius:8px}.ds-a{border-color:#22d3ee;background:color-mix(in srgb,#22d3ee 14%,transparent)}.ds-b{border-color:#34d399;background:color-mix(in srgb,#34d399 14%,transparent)}.ds-arrow{width:40px;height:2px;background:#34d399}.ds-diagram figcaption{display:flex;justify-content:space-between;margin-top:8px;font:13px var(--home-font-text);color:var(--home-muted)}.ds-diagram figcaption a{font-weight:500;color:var(--home-accent);text-decoration:none}"
     }
   ],
   "narrative": {

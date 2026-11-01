@@ -1,0 +1,134 @@
+{
+  "schema_version": 1,
+  "diagram_type": "architecture",
+  "meta": {
+    "title": "Screen 1 — The system",
+    "subtitle": "Wireframe at phone width, drawn from its Mermaid version · home page",
+    "output": "home-page-screen-1.html",
+    "animation": "trace",
+    "quality_profile": "showcase",
+    "legend": {
+      "entries": {
+        "external": {
+          "label": "Content"
+        },
+        "frontend": {
+          "label": "Site chrome"
+        }
+      }
+    }
+  },
+  "components": [
+    {
+      "id": "word",
+      "type": "external",
+      "label": "◎ Puncoz Docs",
+      "pos": [
+        40,
+        60
+      ],
+      "size": [
+        212,
+        58
+      ]
+    },
+    {
+      "id": "gh",
+      "type": "frontend",
+      "label": "GitHub",
+      "pos": [
+        264,
+        60
+      ],
+      "size": [
+        100,
+        58
+      ]
+    },
+    {
+      "id": "theme",
+      "type": "frontend",
+      "label": "orrery swi",
+      "pos": [
+        376,
+        60
+      ],
+      "size": [
+        100,
+        70
+      ],
+      "sublabel": "tch"
+    },
+    {
+      "id": "sys",
+      "type": "external",
+      "label": "star",
+      "pos": [
+        40,
+        142
+      ],
+      "size": [
+        436,
+        70
+      ],
+      "sublabel": "Puncoz Nepal, orbits npm · Composer · PyPI · projects, planets…"
+    },
+    {
+      "id": "h1",
+      "type": "external",
+      "label": "Every package and project, documented to the",
+      "pos": [
+        40,
+        224
+      ],
+      "size": [
+        436,
+        70
+      ],
+      "sublabel": "version."
+    },
+    {
+      "id": "sub",
+      "type": "external",
+      "label": "Guides, APIs and release notes for npm, Composer,",
+      "pos": [
+        40,
+        306
+      ],
+      "size": [
+        436,
+        70
+      ],
+      "sublabel": "PyPI and Go packages"
+    },
+    {
+      "id": "field",
+      "type": "frontend",
+      "label": "⌕  Search packages, projects and pages",
+      "pos": [
+        40,
+        388
+      ],
+      "size": [
+        436,
+        58
+      ]
+    }
+  ],
+  "boundaries": [
+    {
+      "kind": "region",
+      "label": "Phone screen · /",
+      "wraps": [
+        "word",
+        "gh",
+        "theme",
+        "sys",
+        "h1",
+        "sub",
+        "field"
+      ],
+      "pad": 22
+    }
+  ]
+}

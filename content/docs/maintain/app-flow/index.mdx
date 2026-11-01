@@ -12,8 +12,9 @@ that changes the UI ([ADR-0008](../adr/ADR-0008-a-ui-change-ships-an-app-flow.md
 ## Conventions
 
 - File name: `<feature-slug>.mdx`, matching the feature's PRD slug.
-- Flow made with Archify, plus its Mermaid `flowchart` version in the page; one Mermaid
-  `block-beta` wireframe per screen, **phone width first**.
+- The flow as a Mermaid `flowchart` with its Archify view; one `block-beta` wireframe per
+  screen, **phone width first**, with its Archify view drawn from it (an `architecture`
+  diagram inside a phone-screen region). Each is a `<Diagram>` (ADR-0022).
 - Every screen lists its states: empty, loading, not found, refused, error, degraded, success.
   *Degraded* is what the person sees when an external service (search, for one) is
   unavailable: a clear notice, never a hang or a raw error.
@@ -28,8 +29,8 @@ that changes the UI ([ADR-0008](../adr/ADR-0008-a-ui-change-ships-an-app-flow.md
 | Document | Status | ADR |
 |---|---|---|
 | [The ADR constellation](./adr-constellation.mdx) | Current | [ADR-0019](../adr/ADR-0019-adr-folders-show-as-a-constellation-in-the-sidebar.mdx) |
+| [Diagrams](./diagrams.mdx) | Current | [ADR-0022](../adr/ADR-0022-diagrams-show-archify-on-the-page-and-mermaid-in-markdown.mdx), [ADR-0011](../adr/ADR-0011-archify-diagrams-are-embedded-from-sandboxed-html.mdx) |
 | [Docs sidebars: orbit stations, the trajectory and the horizon](./docs-sidebars.mdx) | Current | [ADR-0018](../adr/ADR-0018-docs-pages-get-orbit-stations-a-trajectory-and-the-full-horizon.mdx) |
-| [Embedded diagrams](./html-embeds.mdx) | Current | [ADR-0011](../adr/ADR-0011-archify-diagrams-are-embedded-from-sandboxed-html.mdx) |
 | [GitHub profile chips](./github-profile-chips.mdx) | Current | [ADR-0020](../adr/ADR-0020-people-in-adrs-are-github-usernames-shown-as-profile-chips.mdx) |
 | [Home page](./home-page.mdx) | Current | [ADR-0017](../adr/ADR-0017-the-whole-site-is-one-solar-system.mdx), [ADR-0016](../adr/ADR-0016-home-search-is-the-fumadocs-dialog-and-private-projects-render-server-side.mdx), [ADR-0014](../adr/ADR-0014-home-page-is-a-search-first-release-map.mdx) |
 | [The solar system: marks, theme switch, planet header, footer, 404](./solar-system.mdx) | Current | [ADR-0017](../adr/ADR-0017-the-whole-site-is-one-solar-system.mdx) |

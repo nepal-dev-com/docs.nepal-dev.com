@@ -62,12 +62,15 @@ with a route (`api`, `og`, `static`, …). Contracts for the machine-readable ro
 | `content/` | The published pages and `meta.json` files, one folder per catalogue entry | — |
 | `src/lib/catalog-schema.ts` | `catalogMetaSchema`: Fumadocs' `metaSchema` plus `catalog`, `name`, `version` and `channel` (`latest`, `dev`, `legacy`), as a Standard Schema; rejects any `visibility` but `public` | `fumadocs-core` |
 | `src/lib/catalog-plugin.ts` | Loader plugin: the build checks of ADR-0015 decision 5, typed roots (`root: true` on an entry, `'track'` on `use/` and `maintain/`, `'line'` on a version line), line names and descriptions (`version · channel`) and line order (latest, `dev`, then older lines in `use/meta.json` `pages` order or newest first); `lineInfo()`, `lineSegment()`, `pageVersion()` | `fumadocs-core` |
-| `src/lib/source.ts` | Loads `content/` with `defineDocs` at base URL `/`, swapping each line folder's URL segment for its name (`slugs`); exposes `source`, `getMeta` and `docsLlms` (version line in each page's Markdown and in `llms.txt`) | `fumadocs-mdx`, the two above |
+| `src/lib/source.ts` | Loads `content/` with `defineDocs` at base URL `/`, swapping each line folder's URL segment for its name (`slugs`), with the diagram shape check first among the remark plugins and the Markdown filter for `<Diagram>` (ADR-0022); exposes `source`, `getMeta` and `docsLlms` (version line in each page's Markdown and in `llms.txt`) | `fumadocs-mdx`, the two above |
 | `src/lib/catalog.ts` | Reads the page tree into typed catalogue entries (lines, tracks, demo), the page context for banners, and the home page's previews | `source.ts` |
 | `src/lib/catalog-routes.ts` | Meta files only (no compiled pages), for the proxy: the catalogued slugs, each package's line segments, `latest` and `dev`; `isEntryPath()`, `resolveLineRedirect()` | `fumadocs-mdx` |
-| `diagrams/`, `public/diagrams/` | Archify diagrams: the candidate JSON as source (not published) and the checked HTML, served from `/diagrams/<project-slug>/<slug>.html` with a CSP `sandbox` header from `next.config.mjs` (ADR-0011) | — |
-| `src/lib/diagrams.ts`, `diagrams-plugin.ts` | Which `<HtmlEmbed>` `src` is allowed, and the build check of the published diagrams (source present, no receipt under `public/`), run as a loader plugin | `node:fs` |
-| `src/components/html-embed.tsx` | `<HtmlEmbed>`, registered in `src/components/mdx.tsx`: the diagram in a sandboxed, lazy frame, **Open full screen** and a caption; fails the build on a bad `src` or a missing file | `diagrams.ts` |
+| `diagrams/` | Archify diagrams, one pair per diagram: the candidate JSON (not published) and the HTML exactly as `deliver` wrote it (ADR-0022) | — |
+| `src/app/diagrams/[project]/[file]/route.ts`, `src/lib/diagram-files.ts` | Prerenders every HTML in `diagrams/` at `/diagrams/<project-slug>/<slug>.html` with the site shell; the CSP `sandbox` header comes from `next.config.mjs` | `diagram-shell.ts` |
+| `src/lib/diagram-shell.ts` | The site shell added as a diagram is served: in a frame (`?frame=1`) it hides Archify's title, notes rail, theme and style buttons and credit; it sets the page colours to the site's tokens, starts motion Live (unless reduced motion) and reports the content height to the page | — |
+| `src/components/diagram.tsx`, `diagram-frame.tsx` | `<Diagram src title>`, registered in `src/components/mdx.tsx`: the sandboxed, lazy frame sized from the diagram's `viewBox`, with the site's theme in its URL and the reported height taken only from that frame; the caption and **Open full screen**. The Mermaid it holds is not rendered | `diagrams.ts`, `fumadocs-ui/provider/base` |
+| `src/lib/remark-diagrams.ts` | The shape check (a Mermaid fence only inside a `<Diagram>` that holds exactly that fence; templates exempt) and `markdownFilter`, which keeps a `<Diagram>`'s fence in the processed Markdown and drops the tag (ADR-0022) | `diagrams.ts` |
+| `src/lib/diagrams.ts`, `diagrams-plugin.ts` | Which `src` is allowed, a diagram's size, the bounds of a height report, and the file checks run as a loader plugin: every HTML with its JSON and used by a page, every `src` with its file, nothing in `public/diagrams/`, no Archify receipt | `node:fs` |
 | `src/lib/github-profile.ts`, `src/components/profile-link.tsx` | Which links are GitHub profile links (`[@user](https://github.com/user)`), and `withProfileChips`, the page's `a` component, which shows them as a chip with the avatar loaded live from GitHub and hands every other link to `createRelativeLink` (ADR-0020) | `fumadocs-ui/mdx.server` |
 | `*.test.ts`, `*.test.tsx` beside the code | Unit tests, run with `bun run test` (`bun test --no-env-file`); type-checked through `tsconfig.test.json`, which adds Bun's types and is kept out of the site's own check (ADR-0021) | `bun:test`, `react-dom/server` |
 | `src/lib/search-scope.ts` | The scope tag of a page (`<slug>`, `<slug>:maintain`, `<slug>:use:<segment>`) | — |
@@ -104,6 +107,8 @@ folders of the same type into one switcher whose options keep the reader on the 
 
 ## Diagram
 
+<Diagram src="/diagrams/docs/system-architecture.html" title="System architecture">
+
 ```mermaid
 flowchart TB
   subgraph Repo["Repository"]
@@ -119,6 +124,7 @@ flowchart TB
     PAGES["/slug pages"]
     MD["Markdown · llms.txt · llms-full.txt"]
     OG["OG images"]
+    DIAG["/diagrams/ Archify views, with the site shell"]
     REC["static.json"]
   end
   ALG[("Algolia index<br/>document")]
@@ -130,7 +136,10 @@ flowchart TB
   Reader --> PROXY --> HOME & PAGES
   Reader -->|search-only key, from the dialog and the hero| ALG
   Bot --> PROXY --> MD
+  PAGES -.->|frames| DIAG
 ```
+
+</Diagram>
 
 ## Key decisions in force
 

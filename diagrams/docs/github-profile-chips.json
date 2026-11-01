@@ -4,35 +4,153 @@
   "meta": {
     "title": "App flow — GitHub profile chips",
     "subtitle": "How a reader meets a decider or approver on an ADR page (ADR-0020)",
-    "visual_preset": "editorial",
     "quality_profile": "showcase",
     "output": "github-profile-chips.html"
   },
   "lanes": [
-    { "id": "reader", "label": "Reader" },
-    { "id": "page", "label": "ADR page" },
-    { "id": "github", "label": "GitHub" },
-    { "id": "fail", "label": "Avatar missing", "variant": "exception" }
+    {
+      "id": "reader",
+      "label": "Reader"
+    },
+    {
+      "id": "page",
+      "label": "ADR page"
+    },
+    {
+      "id": "github",
+      "label": "GitHub"
+    },
+    {
+      "id": "fail",
+      "label": "Avatar missing",
+      "variant": "exception"
+    }
   ],
-  "mainPath": ["person", "header", "chip", "profile"],
+  "mainPath": [
+    "person",
+    "header",
+    "chip",
+    "profile"
+  ],
   "nodes": [
-    { "id": "person", "lane": "reader", "col": 0, "type": "external", "label": "Reader", "sublabel": "opens an ADR" },
-    { "id": "tool", "lane": "reader", "col": 2, "type": "external", "label": "Markdown reader", "sublabel": "tool or LLM" },
-    { "id": "header", "lane": "page", "col": 1, "type": "frontend", "label": "ADR header", "sublabel": "Deciders · Approved by" },
-    { "id": "chip", "lane": "page", "col": 2, "type": "frontend", "label": "Profile chip", "sublabel": "avatar + @user" },
-    { "id": "markdown", "lane": "page", "col": 3, "type": "frontend", "label": "Page as Markdown", "sublabel": "the plain link" },
-    { "id": "avatar", "lane": "github", "col": 2, "type": "external", "label": "Avatar", "sublabel": "github.com/user.png" },
-    { "id": "profile", "lane": "github", "col": 3, "type": "external", "label": "GitHub profile", "sublabel": "new tab" },
-    { "id": "letter", "lane": "fail", "col": 2, "type": "security", "label": "First letter", "sublabel": "loading, blocked or none" }
+    {
+      "id": "person",
+      "lane": "reader",
+      "col": 0,
+      "type": "external",
+      "label": "Reader",
+      "sublabel": "opens an ADR"
+    },
+    {
+      "id": "tool",
+      "lane": "reader",
+      "col": 2,
+      "type": "external",
+      "label": "Markdown reader",
+      "sublabel": "tool or LLM"
+    },
+    {
+      "id": "header",
+      "lane": "page",
+      "col": 1,
+      "type": "frontend",
+      "label": "ADR header",
+      "sublabel": "Deciders · Approved by"
+    },
+    {
+      "id": "chip",
+      "lane": "page",
+      "col": 2,
+      "type": "frontend",
+      "label": "Profile chip",
+      "sublabel": "avatar + @user"
+    },
+    {
+      "id": "markdown",
+      "lane": "page",
+      "col": 3,
+      "type": "frontend",
+      "label": "Page as Markdown",
+      "sublabel": "the plain link"
+    },
+    {
+      "id": "avatar",
+      "lane": "github",
+      "col": 2,
+      "type": "external",
+      "label": "Avatar",
+      "sublabel": "github.com/user.png"
+    },
+    {
+      "id": "profile",
+      "lane": "github",
+      "col": 3,
+      "type": "external",
+      "label": "GitHub profile",
+      "sublabel": "new tab"
+    },
+    {
+      "id": "letter",
+      "lane": "fail",
+      "col": 2,
+      "type": "security",
+      "label": "First letter",
+      "sublabel": "loading, blocked or none"
+    }
   ],
   "edges": [
-    { "id": "open", "from": "person", "to": "header", "label": "reads", "variant": "emphasis" },
-    { "id": "render", "from": "header", "to": "chip", "label": "a profile link", "variant": "emphasis" },
-    { "id": "load", "from": "chip", "to": "avatar", "label": "loads, no referrer", "variant": "default" },
-    { "id": "click", "from": "chip", "to": "profile", "label": "clicks", "variant": "emphasis" },
-    { "id": "fallback", "from": "avatar", "to": "letter", "label": "fails", "variant": "security", "role": "error" },
-    { "id": "fetch", "from": "tool", "to": "markdown", "label": "fetches", "variant": "default", "role": "branch" },
-    { "id": "follow", "from": "markdown", "to": "profile", "label": "the link", "variant": "dashed", "role": "branch" }
+    {
+      "id": "open",
+      "from": "person",
+      "to": "header",
+      "label": "reads",
+      "variant": "emphasis"
+    },
+    {
+      "id": "render",
+      "from": "header",
+      "to": "chip",
+      "label": "a profile link",
+      "variant": "emphasis"
+    },
+    {
+      "id": "load",
+      "from": "chip",
+      "to": "avatar",
+      "label": "loads, no referrer",
+      "variant": "default"
+    },
+    {
+      "id": "click",
+      "from": "chip",
+      "to": "profile",
+      "label": "clicks",
+      "variant": "emphasis"
+    },
+    {
+      "id": "fallback",
+      "from": "avatar",
+      "to": "letter",
+      "label": "fails",
+      "variant": "security",
+      "role": "error"
+    },
+    {
+      "id": "fetch",
+      "from": "tool",
+      "to": "markdown",
+      "label": "fetches",
+      "variant": "default",
+      "role": "branch"
+    },
+    {
+      "id": "follow",
+      "from": "markdown",
+      "to": "profile",
+      "label": "the link",
+      "variant": "dashed",
+      "role": "branch"
+    }
   ],
   "cards": [
     {

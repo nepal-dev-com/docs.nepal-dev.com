@@ -9,8 +9,8 @@ title: "ADR-0011 — Archify diagrams are embedded in pages from sandboxed HTML 
 - **Approved on:** 2026-11-01
 - **Supersedes:** [ADR-0002](./ADR-0002-living-design-documentation.mdx) decision 5 (in part:
   rendering diagrams on the site)
-- **Superseded by:** —
-- **Design documents:** [`../app-flow/html-embeds.mdx`](../app-flow/html-embeds.mdx),
+- **Superseded by:** [ADR-0022](./ADR-0022-diagrams-show-archify-on-the-page-and-mermaid-in-markdown.mdx) decisions 1 to 3
+- **Design documents:** [`../app-flow/diagrams.mdx`](../app-flow/diagrams.mdx),
   [`../architecture/system.mdx`](../architecture/system.mdx),
   [`../api/content-routes.mdx`](../api/content-routes.mdx),
   [`../security/threat-model.mdx`](../security/threat-model.mdx), `AGENTS.md` §8,
@@ -134,7 +134,7 @@ Facts this decision rests on, checked against the installed packages and tools:
 
 ## Implementation notes
 
-- [x] App flow: [`../app-flow/html-embeds.mdx`](../app-flow/html-embeds.mdx), its flow made
+- [x] App flow: [`../app-flow/diagrams.mdx`](../app-flow/diagrams.mdx), its flow made
       with Archify.
 - [x] `src/components/html-embed.tsx`, registered in `src/components/mdx.tsx` (decision 3). It
       also fails the build when the file is missing from `public/` or the title is empty.
@@ -162,7 +162,7 @@ Facts this decision rests on, checked against the installed packages and tools:
 
 ## Docs to update on implementation
 
-- [x] [`../app-flow/html-embeds.mdx`](../app-flow/html-embeds.mdx)
+- [x] [`../app-flow/diagrams.mdx`](../app-flow/diagrams.mdx)
 - [x] [`../architecture/system.mdx`](../architecture/system.mdx): diagram sources, the embed
       component
 - [x] [`../api/content-routes.mdx`](../api/content-routes.mdx): `/diagrams/…`, public, static,

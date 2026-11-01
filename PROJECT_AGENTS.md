@@ -124,9 +124,9 @@ built from:
   redirects to the line marked `latest`, so the link never goes stale.
 - **No `demo.mdx` yet.** Demos wait for their own ADR.
 - **Diagrams sit beside your folder**
-  ([ADR-0011](content/docs/maintain/adr/ADR-0011-archify-diagrams-are-embedded-from-sandboxed-html.mdx)):
-  the Archify candidate at `diagrams/<project-slug>/<slug>.json` and the published HTML at
-  `public/diagrams/<project-slug>/<slug>.html`. These two folders are yours too.
+  ([ADR-0022](content/docs/maintain/adr/ADR-0022-diagrams-show-archify-on-the-page-and-mermaid-in-markdown.mdx)):
+  the Archify candidate and its HTML side by side, `diagrams/<project-slug>/<slug>.json` and
+  `diagrams/<project-slug>/<slug>.html`. That folder is yours too.
 - **The build checks the shape** and fails, naming the file, on: a page directly in
   `content/`, a folder without a `catalog`, an invalid or non-`public` `catalog`, a slug that is
   not lowercase letters, digits and hyphens or is reserved (`api`, `auth`, `callback`, `sign-in`,
@@ -137,8 +137,7 @@ built from:
   a `latest`. Fix the folder rather than working around the check.
 - **The slug is agreed with the owner** when the folder is first created. Don't invent one.
   `docs` is taken: it is this site.
-- **Edit only your folders**: `content/<project-slug>/`, `diagrams/<project-slug>/` and
-  `public/diagrams/<project-slug>/`. A change anywhere else, such as another project's pages, `src/`,
+- **Edit only your folders**: `content/<project-slug>/` and `diagrams/<project-slug>/`. A change anywhere else, such as another project's pages, `src/`,
   configuration, dependencies, `AGENTS.md` or this site's own pages in `content/docs/`, is a change to the
   site itself. It goes through this repository's ADR process (`AGENTS.md` §2): propose it, don't
   make it.
@@ -154,8 +153,8 @@ These are this site's content invariants (`AGENTS.md` §6):
    the site prints it under the description and in the page's Markdown.
 3. **Examples run** against that version, with invented values.
 4. **Readable as Markdown.** Plain Markdown and the MDX components registered in
-   `src/components/mdx.tsx` only: Fumadocs' defaults and `<HtmlEmbed>`. Another component is a
-   site change (§3).
+   `src/components/mdx.tsx` only: Fumadocs' defaults and `<Diagram>`. Another component is a
+   site change (§3). Every diagram's Markdown is its Mermaid.
 
 Format:
 
@@ -167,8 +166,9 @@ Format:
 - Links between pages are relative paths that **start with `./` or `../`**
   (`./getting-started.mdx`). Only those resolve to page URLs.
 - **Diagrams and flows: always Archify**, the skill installed in this repository at
-  `.claude/skills/archify`. It produces a standalone HTML file. **Also put a Mermaid version of
-  each diagram** in a fenced code block in the page, so the page stays readable as Markdown.
+  `.claude/skills/archify`. It produces a standalone HTML file. **Every diagram is Mermaid and
+  Archify together**: a Mermaid fence inside a `<Diagram>` (below). The page shows only the
+  Archify view; Copy Markdown, `/<page>.md` and `llms-full.txt` carry only the Mermaid.
   Run it without the browser gate, from the submodule root, with working files in `.archify/`:
 
   ```sh
@@ -178,20 +178,32 @@ Format:
 
   Don't run `finalize`, `browser-check` or `visual-check` (they launch Chrome) unless the owner
   asks. Never upgrade Archify; tell the owner when it reports an update.
-- **Screens are Mermaid `block-beta` wireframes**, phone width first. No HTML prototypes or
-  HTML wireframes.
-- **Publish a diagram** (ADR-0011): copy the candidate to `diagrams/<project-slug>/<slug>.json`
-  and the checked HTML, byte for byte, to `public/diagrams/<project-slug>/<slug>.html`. Never
-  copy a `*.delivery*.json` receipt: it holds local paths. Embed it directly under its Mermaid
-  version:
+- **Screens are `block-beta` wireframes**, phone width first, each with its Archify view: an
+  `architecture` diagram drawn from the Mermaid, its boxes inside a labelled phone-screen region,
+  one per screen. No HTML prototypes or HTML wireframes.
+- **Publish a diagram** (ADR-0022): put the candidate (Archify's classic style: no
+  `visual_preset`) and the checked HTML, byte for byte, in `diagrams/<project-slug>/` as
+  `<slug>.json` and `<slug>.html`. Never copy a `*.delivery*.json` receipt: it holds local
+  paths. Wrap the diagram's Mermaid fence, with nothing else inside:
 
-  ```mdx
-  <HtmlEmbed src="/diagrams/<project-slug>/request-flow.html" title="Request flow" />
+  ````mdx
+  <Diagram src="/diagrams/<project-slug>/request-flow.html" title="Request flow">
+
+  ```mermaid
+  flowchart LR
+    Parser --> Router --> Handler
   ```
 
-  The build fails on a `src` outside `/diagrams/<project-slug>/<slug>.html`, a missing file, a
-  published diagram without its JSON source, or a receipt under `public/`. A diagram of
-  anything private never goes there: `public/` is published.
+  </Diagram>
+  ````
+
+  The site does the rest: the frame fits the diagram, follows the site's theme, starts Live, and
+  shows only the diagram and its controls. The build fails, naming the page or file, on a
+  Mermaid fence outside a `<Diagram>`, a `<Diagram>` without a plain `src` and `title` or
+  without exactly one Mermaid fence, a `src` outside `/diagrams/<project-slug>/<slug>.html` or
+  without its file, an HTML without its JSON or used by no page, anything in
+  `public/diagrams/`, and a receipt. A diagram of anything private never goes in `diagrams/`:
+  its HTML is published.
 - No binary or externally hosted images. The one exception is automatic: a GitHub profile link,
   `[@user](https://github.com/user)`, shows as a chip with the avatar loaded from GitHub
   (ADR-0020).

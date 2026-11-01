@@ -1,11 +1,11 @@
 import defaultMdxComponents from 'fumadocs-ui/mdx';
 import type { MDXComponents } from 'mdx/types';
-import { HtmlEmbed } from '@/components/html-embed';
+import { Diagram } from '@/components/diagram';
 
 export function getMDXComponents(components?: MDXComponents) {
   return {
     ...defaultMdxComponents,
-    HtmlEmbed,
+    Diagram,
     ...components,
   } satisfies MDXComponents;
 }
