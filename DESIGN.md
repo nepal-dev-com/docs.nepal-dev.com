@@ -184,6 +184,10 @@ components:
     typography: "{typography.body-sm}"
     rounded: "{rounded.lg}"
     padding: "0 4px 5px"
+  constellation:
+    textColor: "{colors.steel-muted}"
+    typography: "{typography.body-sm}"
+    padding: "2px 10px 11px"
   trajectory:
     textColor: "{colors.steel-muted}"
     typography: "{typography.body-sm}"
@@ -203,7 +207,7 @@ components:
 
 # Design System: Puncoz Docs
 
-**Scope.** The whole site: the home page, every documentation page and the 404. The tokens live on `:root` (light) and `.dark` (dark) in `src/app/global.css`, which also maps Fumadocs' own `--color-fd-*` colours onto them; the fonts are loaded once in `src/app/layout.tsx`; the shared header, theme switch, planet header, notices, the sidebar's planet row and orbit stations, the trajectory and the Horizon footer are styled in `src/app/site.css`; the home page's sections and the 404 in `src/app/(home)/home.css`. The planet and moon marks are drawn by `src/components/planet.tsx`. Docs pages use the Fumadocs notebook layout under that header. The reasons are in ADR-0014, ADR-0015, ADR-0016, ADR-0017 and ADR-0018 (`content/docs/maintain/adr/`); this file only records how the built site looks.
+**Scope.** The whole site: the home page, every documentation page and the 404. The tokens live on `:root` (light) and `.dark` (dark) in `src/app/global.css`, which also maps Fumadocs' own `--color-fd-*` colours onto them; the fonts are loaded once in `src/app/layout.tsx`; the shared header, theme switch, planet header, notices, the sidebar's planet row and orbit stations, the trajectory and the Horizon footer are styled in `src/app/site.css`; the home page's sections and the 404 in `src/app/(home)/home.css`. The planet and moon marks are drawn by `src/components/planet.tsx`. Docs pages use the Fumadocs notebook layout under that header. The reasons are in ADR-0014 to ADR-0019 (`content/docs/maintain/adr/`); this file only records how the built site looks.
 
 ## Overview
 
@@ -358,6 +362,7 @@ The brand mark is a ringed planet in Frost Ink with a teal body and a small star
 - The Fumadocs notebook layout below the shared header, coloured by the site tokens. Headings h1 to h3 use the Display face at -0.02em; body, sidebar and contents keep the Text face, code the Data face. The sidebar sits on Graphite Panel.
 - The sidebar opens with the **planet row**: the **planet chip** (planet mark, name in data, kind) linking to the overview, then two 32px icon buttons in a 10px Graphite Ground 2 track, a drawn **sun** for Use and a **moon** for Maintain (the selected one raised on Graphite Panel, its sun star-coloured; a small tooltip names each). On Use, the **moon picker** follows: Fumadocs' version menu with each line's phase mark as its icon.
 - **Orbit stations.** Each folder is a Graphite Panel card with a hairline border and 12px corners; the station holding the current page is open and its border takes 45% of the ecosystem colour, the others are closed. Its header: an 18px orbit glyph (a tilted ring, a faint core and a planet that fills with the ecosystem colour in the current station), the name in 13.5px Text 500, a page count in an 11.5px Data pill, the chevron. Its pages are 13.5px Text rows, 30px in from the left, each with a 7px hollow moon dot on one hairline arc that bows outward. The current page is a 10px teal planet with its glow, its row tinted with 10% of the ecosystem colour, in Frost Ink 500. A nested folder is a smaller station without a card; a dotted rule carries a separator's label.
+- **The ADR constellation.** A folder named `adr` shows, inside its open station, a grid of 24px cells, one per ADR, each holding a 12px moon phased by status: full teal approved, dashed new moon proposed, crescent superseded, a faint ring rejected or unknown. The current ADR is a 12px teal planet ringed in the panel colour and then the ecosystem colour. Under it: a two-line readout (the number in 12.5px Data, Frost Ink; the title in 12.5px Text, muted), previous and next in 12.5px Data with 13px arrows, "All N decisions" in teal, and an 11px legend with 10px moons.
 - **"On this page" is a trajectory.** A header row ("On this page" in 13px Text 500, the minutes left in 12px Data, tabular). Below, the headings in 13px Text, indented by depth (6, 18 and 26px dot offsets), with one curved path through a 6px dot each: the stretch read solid teal (1.6px), the stretch ahead a dashed Line 2 hairline with hollow dots. A 12px probe, a teal planet with a glow and a shaded night side, rides the path at the reading position. "Back to top ↑" in 12.5px under the list once the reader passes the first heading. On phones the bar under the header shows a 20px progress ring with the probe on it, the current heading and the minutes left.
 - **Version line:** on the latest line, a 14px full moon and "Documents ‹name› ‹version›" in muted 14px. **Notice:** on `dev` and older lines, a Graphite Ground 2 box with a Line 2 border and 10px corners, the line's 22px moon, a bold lead ("In development." or "Older version."), the version and a teal link to the latest line.
 

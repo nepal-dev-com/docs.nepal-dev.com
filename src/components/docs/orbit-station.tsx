@@ -12,6 +12,8 @@ import {
 } from 'fumadocs-ui/components/sidebar/base';
 import { useTreeContext, useTreePath } from 'fumadocs-ui/contexts/tree';
 import { arcRow, arcSlot } from '@/lib/trajectory';
+import { isAdrFolder } from '@/lib/adr-status';
+import { AdrConstellation } from '@/components/docs/adr-constellation';
 
 // The children of the station a node sits in; undefined at the top level.
 const StationNodes = createContext<PageTree.Node[] | undefined>(undefined);
@@ -105,6 +107,9 @@ export function OrbitStation({ item, children }: { item: PageTree.Folder; childr
   const holdsCurrent = path.includes(item);
   const count = countPages(item);
   const nested = level === 2;
+  // A folder of ADRs with sub-folders keeps the plain station, so none of its pages are hidden.
+  const constellation =
+    isAdrFolder(item.$ref?.folder) && !item.children.some((node) => node.type === 'folder');
 
   const label = (
     <>
@@ -124,6 +129,7 @@ export function OrbitStation({ item, children }: { item: PageTree.Folder; childr
       className="station"
       data-level={Math.min(level, 3)}
       data-current={holdsCurrent ? '' : undefined}
+      data-constellation={constellation ? '' : undefined}
     >
       {/* A nested station lets its parent's arc run past it, so the arc stays one line. */}
       {nested && <ArcPiece d={arc.d} />}
@@ -141,9 +147,13 @@ export function OrbitStation({ item, children }: { item: PageTree.Folder; childr
         <SidebarFolderTrigger className="station-head">{label}</SidebarFolderTrigger>
       )}
       <SidebarFolderContent className="station-body">
-        <div className="station-moons">
-          <StationNodes value={item.children}>{children}</StationNodes>
-        </div>
+        {constellation ? (
+          <AdrConstellation folder={item} />
+        ) : (
+          <div className="station-moons">
+            <StationNodes value={item.children}>{children}</StationNodes>
+          </div>
+        )}
       </SidebarFolderContent>
     </SidebarFolder>
   );

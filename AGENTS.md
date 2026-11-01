@@ -66,7 +66,8 @@ yet** besides the site itself, so the home page shows its empty states.
   button on docs pages), the tokens and fonts, and the full Horizon footer. Docs pages use the
   Fumadocs notebook layout: a planet header on each overview; in the sidebar the planet row
   (chip, a sun for Use and a moon for Maintain), the moon picker and orbit stations (each folder
-  a card, its pages moons on an arc, only the current one open); "On this page" as a trajectory
+  a card, its pages moons on an arc, only the current one open; a folder named `adr` a
+  constellation of moons phased by status, ADR-0019); "On this page" as a trajectory
   with a probe riding at the reading position and the minutes left; moon notices on `dev` and
   older lines. Unknown paths get the out-of-orbit 404 (`src/app/not-found.tsx`).
 - **The home page is the system** (ADR-0014, ADR-0016, ADR-0017): the turning system beside
@@ -236,7 +237,7 @@ What is installed **today** (verified from `package.json`, `node_modules` and th
 | Routes | `/` is `src/app/(home)/`; every page is `src/app/(site)/[...slug]/` at `/<slug>/…` (`docsRoute` is `''` in `src/lib/shared.ts`); `src/proxy.ts` acts only on catalogued paths — ADR-0015 |
 | Look | Tokens on `:root` and `.dark` in `src/app/global.css`, mapped onto Fumadocs' `--color-fd-*`; site header, orrery theme switch (`src/components/theme-switch.tsx`, `useTheme` from `fumadocs-ui/provider/base`), docs typography, planet header, notices, planet row, orbit stations, trajectory and Horizon footer in `src/app/site.css`; planet and moon marks in `src/components/planet.tsx`; fonts Bricolage Grotesque, Onest and JetBrains Mono through `next/font/google` in `src/app/layout.tsx`; light/dark through next-themes (dark by default); visual system in `DESIGN.md` — ADR-0015, ADR-0017, ADR-0018 |
 | Home page | `src/app/(home)/` and `src/components/home/`; styles in `src/app/(home)/home.css` (also the 404's) — ADR-0014, ADR-0016, ADR-0017 |
-| Docs pages | Fumadocs notebook layout in `src/app/(site)/layout.tsx`, header `src/components/site-header.tsx` (shared with the home page), `src/components/docs/` (docs header, planet header, the planet row in `track-switch.tsx`, orbit stations in `orbit-station.tsx` passed as `sidebar.components`, the trajectory in `trajectory-toc.tsx` passed as `slots.toc` from the page, version notice), moon icons on the version menu, `src/lib/trajectory.ts` and `src/lib/reading-time.ts` (geometry, time left, reading time), `src/components/horizon-footer.tsx` below every page — ADR-0015, ADR-0017, ADR-0018 |
+| Docs pages | Fumadocs notebook layout in `src/app/(site)/layout.tsx`, header `src/components/site-header.tsx` (shared with the home page), `src/components/docs/` (docs header, planet header, the planet row in `track-switch.tsx`, orbit stations in `orbit-station.tsx` passed as `sidebar.components`, the ADR constellation in `adr-constellation.tsx` with `src/lib/adr-status.ts`, the trajectory in `trajectory-toc.tsx` passed as `slots.toc` from the page, version notice), moon icons on the version menu, `src/lib/trajectory.ts` and `src/lib/reading-time.ts` (geometry, time left, reading time), `src/components/horizon-footer.tsx` below every page — ADR-0015, ADR-0017, ADR-0018, ADR-0019 |
 | UI runtime | React 19.3 |
 | Language | TypeScript 7, `strict`; `@/*` → `./src/*` |
 | Styling | Tailwind CSS 4 through `@tailwindcss/postcss`; global styles in `src/app/global.css` |
@@ -520,12 +521,12 @@ adopts a host, analytics, CI or an authentication provider adds its own checks**
 │   ├── components/      # site-header.tsx, theme-switch.tsx, planet.tsx (planet and moon marks),
 │   │                    #   horizon-footer.tsx, footer-actions.tsx, mdx.tsx, search.tsx (search dialog),
 │   │                    #   docs/ (docs header, planet header, track switch, orbit stations,
-│   │                    #   trajectory TOC, version notice),
+│   │                    #   ADR constellation, trajectory TOC, version notice),
 │   │                    #   home/ (home header, hero, orbit map, search button, planet cards,
 │   │                    #   beyond-the-belt + private-projects.ts, two sides, moon rows, terminal,
 │   │                    #   assistant actions)
 │   └── lib/             # source.ts (content loader), catalog*.ts (catalogue schema, checks, entries, redirects),
-│                        #   rings.ts (ecosystem rings and kind names), trajectory.ts, reading-time.ts,
+│                        #   rings.ts (ecosystem rings and kind names), trajectory.ts, reading-time.ts, adr-status.ts,
 │                        #   search-scope.ts, algolia.ts,
 │                        #   shared.ts (site name, routes, GitHub)
 ├── scripts/

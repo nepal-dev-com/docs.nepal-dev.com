@@ -68,8 +68,15 @@ content/<project-slug>/
 │       └── meta.json  # {"name": "2.x LTS", "version": "2.9.1", "channel": "legacy"} → /<project-slug>/use/2.x-lts
 └── maintain/          # not versioned: describes the default branch
     ├── meta.json      # {"title": "Maintain"}
+    ├── adr/           # your ADRs, if you keep them: index.mdx + ADR-NNNN-*.mdx
     └── ...            # architecture, local setup, tests, releasing, contributing
 ```
+
+**Keep ADRs in a folder named `adr`.** The sidebar shows such a folder as a constellation, one
+moon per ADR phased by its status
+([ADR-0019](content/docs/maintain/adr/ADR-0019-adr-folders-show-as-a-constellation-in-the-sidebar.mdx)).
+Title each `ADR-NNNN — …` and keep the template's `- **Status:** Approved` line (Approved,
+Proposed, Superseded or Rejected) near the top; the folder's `index.mdx` is the full list.
 
 The root `meta.json` carries the catalogue entry that the home page, search and `llms.txt` are
 built from:
