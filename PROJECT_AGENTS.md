@@ -29,6 +29,16 @@ switch branches inside the submodule; never put private content there; ask the o
 anything is unclear.
 ```
 
+**A project with several repositories** (§3.1) adds two lines, with `<repository-id>` this
+repository's `id` in the project's catalogue:
+
+```markdown
+This repository is `<repository-id>` in `<project-slug>`'s catalogue (primary: yes or no). Edit
+only `content/<project-slug>/use/<repository-id>/` (inside each line, when the project has lines),
+`content/<project-slug>/maintain/<repository-id>/` and `diagrams/<project-slug>/<repository-id>-*`;
+only the primary repository edits the project's shared files.
+```
+
 ## 2. Public only, for now
 
 Every file under `content/` is **published**: on the website, in the search index, in
@@ -118,7 +128,10 @@ built from:
   `channel: "latest"`, mark the previous `latest` `legacy`, and keep working in `dev/`. A link to
   a line that no longer exists redirects to the same path in `latest`.
 - **A project is unversioned by default**: its `use/` holds pages directly. A project that ships
-  releases may use lines like a package.
+  releases has `use/dev/` and at most one released line (`channel: "latest"`), never `legacy`
+  lines: older versions are for packages
+  ([ADR-0024](content/docs/maintain/adr/ADR-0024-a-project-can-span-several-repositories.mdx)).
+  Releasing a project copies `dev/` to the new released line and removes the previous one.
 - **Either track may be missing**; the Use | Maintain switch then hides it.
 - **Link to `/<project-slug>/use/latest/…`** from your README and registry page. It
   redirects to the line marked `latest`, so the link never goes stale.
@@ -133,8 +146,9 @@ built from:
   `sign-out`, `og`, `search`, `static`, `assets`, `public`, `diagrams`, `_next`), a line without `version` or
   `channel`, `channel: "dev"` anywhere but `use/dev/` (or `use/dev/` with another channel), a
   name whose segment is empty, `dev`, `latest` or ends in `.md`, two lines with the same
-  segment, pages directly in a versioned `use/`, two `latest` lines, and `legacy` lines without
-  a `latest`. Fix the folder rather than working around the check.
+  segment, pages directly in a versioned `use/`, two `latest` lines, `legacy` lines without
+  a `latest`, a `legacy` line in a project, and a wrong `repositories` list (§3.1). Fix the
+  folder rather than working around the check.
 - **The slug is agreed with the owner** when the folder is first created. Don't invent one.
   `docs` is taken: it is this site.
 - **Edit only your folders**: `content/<project-slug>/` and `diagrams/<project-slug>/`. A change anywhere else, such as another project's pages, `src/`,
@@ -142,6 +156,61 @@ built from:
   site itself. It goes through this repository's ADR process (`AGENTS.md` §2): propose it, don't
   make it.
 - Writing and updating pages inside your folder needs no ADR, as long as it follows this guide.
+
+### 3.1 A project with several repositories
+
+A project made of several repositories, such as a frontend, a backend and an API, is still one
+folder, one overview and one planet
+([ADR-0024](content/docs/maintain/adr/ADR-0024-a-project-can-span-several-repositories.mdx)).
+Each repository includes this submodule and writes its own folders.
+
+```json
+"catalog": {
+  "kind": "project",
+  "visibility": "public",
+  "repositories": [
+    { "id": "frontend", "name": "Frontend", "url": "https://github.com/example/acme-web", "primary": true },
+    { "id": "backend", "name": "Backend", "url": "https://github.com/example/acme-server" },
+    { "id": "api", "name": "API" }
+  ]
+}
+```
+
+- **`repositories`** replaces `repository`: two or more, on a project only. `id` is the
+  repository's folder name: lowercase letters, digits and hyphens, unique, not `dev`, `latest`,
+  `adr` or a line's URL segment. `name` is what readers see (the `id` without it). `url` is an
+  optional `https` URL. Exactly one repository has `primary: true`.
+- **A private repository** is listed without `url`, or not at all: listing it publishes its name
+  and location. Ask the owner.
+- **Folders.** Each repository's pages go in `use/<id>/` and `maintain/<id>/`; either may be
+  missing. With lines, the folders sit inside each line: `use/dev/<id>/`, `use/<line>/<id>/`.
+  Pages about the whole project (an architecture across the repositories) sit beside them. A
+  repository folder shows as a sidebar station titled with the repository's `name`, unless its
+  `meta.json` sets a `title`.
+
+  ```
+  content/acme/
+  ├── meta.json        # catalog.repositories: frontend (primary), backend, api
+  ├── index.mdx
+  ├── use/
+  │   ├── frontend/
+  │   ├── backend/
+  │   └── api/
+  └── maintain/
+      ├── architecture.mdx
+      ├── frontend/
+      ├── backend/
+      └── api/
+  ```
+
+- **Who edits what.** The **primary** repository edits the root `meta.json`, `index.mdx`,
+  `use/meta.json`, `maintain/meta.json`, each line's `meta.json`, every page outside a
+  repository folder, and does releases. **Every other repository** edits only its own folders
+  and its diagrams, named `diagrams/<project-slug>/<id>-<slug>.json` and `.html`. Need a change
+  outside your folders? Ask the primary repository's maintainers or the owner. The build cannot
+  check this rule; keep to it.
+- **The list of repositories, their ids and which one is primary** are agreed with the owner,
+  like the slug.
 
 ## 4. What every page must do
 

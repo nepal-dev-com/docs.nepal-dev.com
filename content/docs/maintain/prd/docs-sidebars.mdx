@@ -32,7 +32,7 @@ shortened footer that differs from every other page's.
 
 | # | Story | Acceptance criteria |
 |---|---|---|
-| US-1 | As a **reader**, I want **to see the sections of a package at a glance**, so that **I can find the right page in a long sidebar**. | - Each folder is a station with its name and page count.<br />- The station holding the current page is open; the others are closed.<br />- The chevron opens and closes a station. |
+| US-1 | As a **reader**, I want **to see the sections of a package at a glance**, so that **I can find the right page in a long sidebar**. | - Each folder is a station with its name and page count.<br />- The station holding the current page is open; the others are closed.<br />- The chevron opens and closes a station; opening one closes the open one beside it, at every level (ADR-0023). |
 | US-2 | As a **reader**, I want **to see where I am in the sidebar**, so that **I keep my place**. | - The current page is the accent planet on its station's arc, its row tinted, with `aria-current="page"`.<br />- Its station's orbit drawing shows a filled planet. |
 | US-3 | As a **reader**, I want **to switch between Use and Maintain from the sidebar's first row**, so that **it takes no extra space**. | - The chip and the sun and moon buttons share one row.<br />- Each button has its full name as its accessible name and tooltip. |
 | US-4 | As a **reader**, I want **to see how far through a page I am**, so that **I know what is left**. | - The read stretch of the path is solid with filled dots; ahead is dashed with hollow dots.<br />- A probe rides the path at the reading position. |

@@ -179,6 +179,21 @@ export function checkCatalogue(files: string[], read: (path: string) => CatalogM
       }
     }
 
+    if (root.catalog.kind === 'project') {
+      for (const line of declared) {
+        if (line.data.channel === 'legacy') {
+          problems.push(
+            `content/${line.path}: a project keeps only \`dev\` and one released line; older lines are for packages (ADR-0024)`,
+          );
+        }
+      }
+    }
+    for (const repository of root.catalog.repositories ?? []) {
+      if (lines.some((line) => line.segment === repository.id)) {
+        problems.push(`content/${slug}/meta.json: the repository id "${repository.id}" is also a line's URL segment (ADR-0024)`);
+      }
+    }
+
     const count = (channel: Channel) => lines.filter((line) => line.channel === channel).length;
     if (count('latest') > 1) {
       problems.push(`content/${slug}: more than one line has \`channel: "latest"\``);
@@ -229,12 +244,40 @@ export function catalogPlugin(): LoaderPlugin {
             node.root = 'line';
             node.name = info.name;
             node.description = `${info.version} · ${channelLabel[info.channel]}`;
+            return node;
           }
+        }
+
+        const name = repositoryName(folderPath, (path) => readMeta(this.storage, path));
+        if (name) {
+          node.name = name;
         }
         return node;
       },
     },
   };
+}
+
+/**
+ * The repository's name for a repository folder without its own title: `<slug>/<track>/<id>`, or
+ * `<slug>/use/<line>/<id>` in a project with lines (ADR-0024 decision 2).
+ */
+export function repositoryName(folderPath: string, read: (path: string) => CatalogMeta | undefined): string | undefined {
+  const parts = folderPath.split('/');
+  const [slug, track] = parts;
+  const repositories = read(`${slug}/meta.json`)?.catalog?.repositories;
+  if (!repositories || !(trackNames as readonly string[]).includes(track)) {
+    return undefined;
+  }
+  const inLine = parts.length === 4 && track === 'use' && lineInfo(parts[2], read(`${slug}/use/${parts[2]}/meta.json`));
+  if (parts.length !== 3 && !inLine) {
+    return undefined;
+  }
+  const repository = repositories.find((repo) => repo.id === parts[parts.length - 1]);
+  if (!repository || read(`${folderPath}/meta.json`)?.title) {
+    return undefined;
+  }
+  return repository.name;
 }
 
 function sortLines(

@@ -5,6 +5,12 @@ import type { CatalogEntry } from '@/lib/catalog';
 import { kindName, ringOf } from '@/lib/rings';
 import { PlanetMark, PlanetSystem } from '@/components/planet';
 
+/** The card's kind line: the kind, and a project's number of repositories (ADR-0024). */
+export function kindLine(entry: CatalogEntry): string {
+  const kind = kindName[ringOf(entry)];
+  return entry.repositories ? `${kind} · ${entry.repositories.length} repositories` : kind;
+}
+
 function PlanetCard({ entry, id }: { entry: CatalogEntry; id?: string }) {
   const ring = ringOf(entry);
   const older = entry.lines.filter((line) => line.channel === 'legacy');
@@ -20,7 +26,7 @@ function PlanetCard({ entry, id }: { entry: CatalogEntry; id?: string }) {
         </h3>
         <p className="planet-kind">
           <PlanetMark ring={ring} kind={entry.kind} />
-          {kindName[ring]}
+          {kindLine(entry)}
         </p>
         {entry.description && <p className="planet-desc">{entry.description}</p>}
         {entry.lines.length > 0 && (

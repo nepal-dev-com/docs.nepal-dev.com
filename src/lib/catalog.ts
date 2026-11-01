@@ -1,7 +1,7 @@
 import type * as PageTree from 'fumadocs-core/page-tree';
 import { getMeta, source } from './source';
 import { compareLines, lineInfo, pageVersion, type LineInfo, type PageVersion, type TrackName } from './catalog-plugin';
-import { ecosystems, type Ecosystem } from './catalog-schema';
+import { ecosystems, type Ecosystem, type Repository } from './catalog-schema';
 
 export interface CatalogLine extends LineInfo {
   url: string;
@@ -14,6 +14,8 @@ export interface CatalogEntry {
   kind: 'package' | 'project';
   ecosystem?: Ecosystem;
   repository?: string;
+  /** A project's repositories, primary first (ADR-0024). */
+  repositories?: Repository[];
   registry?: string;
   featured: boolean;
   url: string;
@@ -97,6 +99,7 @@ function readEntry(folder: PageTree.Folder): CatalogEntry | undefined {
     kind: catalog.kind,
     ecosystem: catalog.ecosystem,
     repository: catalog.repository,
+    repositories: catalog.repositories,
     registry: catalog.registry,
     featured: catalog.featured,
     url,

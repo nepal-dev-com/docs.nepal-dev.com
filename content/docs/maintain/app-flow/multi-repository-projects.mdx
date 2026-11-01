@@ -1,0 +1,180 @@
+---
+title: "App flow — multi-repository projects"
+---
+
+- **Status:** Current
+- **Last updated:** 2026-11-01
+- **Related ADRs:** [ADR-0024](../adr/ADR-0024-a-project-can-span-several-repositories.mdx),
+  [ADR-0023](../adr/ADR-0023-sidebar-stations-open-one-at-a-time.mdx)
+
+> Snapshot of the system as it stands today. Edit in place; never record what changed.
+
+What a reader sees of a project made of several repositories (ADR-0024). Sample values are
+invented (ADR-0008): `acme` and its repositories are not real. Phone width first.
+
+The flow and every screen are drawn with Archify; the page shows them and its Markdown carries
+their Mermaid (ADR-0022). Their sources are in `diagrams/docs/`:
+`multi-repository-projects.json` for the flow, one `multi-repository-projects-screen-<n>.json`
+per screen.
+
+## Entry points
+
+- The home page's planet card, search, a direct URL, or a repository's README linking to
+  `/acme` or `/acme/use/latest/…`.
+- Everyone sees the same; every project here is public (AGENTS.md §6.1).
+- The per-page Markdown and `llms.txt` carry each page as today; a page in a repository
+  folder sits under that folder in `llms.txt`.
+
+## Flow
+
+<Diagram src="/diagrams/docs/multi-repository-projects.html" title="Multi-repository projects">
+
+```mermaid
+flowchart LR
+  H["Home planet card<br/>Project · 3 repositories"] -->|opens| O["Project overview<br/>repositories linked"]
+  O -->|Use| U["Use track<br/>a station per repository"]
+  O -->|Maintain| M["Maintain track<br/>shared pages + repository stations"]
+  O -->|Frontend ↗| G["Repository on GitHub"]
+  U -->|a repository's page| P["Docs page<br/>breadcrumb names the repository"]
+  M -->|a repository's page| P
+  P -->|sun or moon| U
+  P -->|sun or moon| M
+```
+
+</Diagram>
+
+## Screens
+
+### 1. `Home planet card` — `/`
+
+<Diagram src="/diagrams/docs/multi-repository-projects-screen-1.html" title="Screen 1 — Home planet card">
+
+```mermaid
+block-beta
+  columns 4
+  draw["ringed planet with moons released and dev"]:4
+  kind["◉ Project · 3 repositories"]:4
+  name["acme"]:4
+  desc["Bookings for small studios."]:4
+  links["[Use →] Maintain"]:4
+```
+
+</Diagram>
+
+The kind line adds the number of repositories; a one-repository project shows the kind alone,
+as today.
+
+**States**
+
+- Empty: no project, no card (the home page's own empty state).
+- Loading: none; the card is prerendered.
+- Not found, refused, error: not applicable; a broken catalogue fails the build.
+- Degraded: with reduced motion the planet does not turn.
+- Success: the card opens the overview.
+
+### 2. `Project overview` — `/acme`
+
+<Diagram src="/diagrams/docs/multi-repository-projects-screen-2.html" title="Screen 2 — Project overview">
+
+```mermaid
+block-beta
+  columns 4
+  kind["◉ Project"]:4
+  name["acme"]:4
+  desc["Bookings for small studios."]:4
+  facts["Latest 2.0.0 · v2 · In development 2.1.0-dev.1"]:4
+  repos["Repositories: Frontend, Backend, API"]:4
+  links["[Use →] Maintain"]:4
+  repolinks["Frontend ↗ · Backend ↗ · API"]:4
+  draw["ringed planet with moons v2 and dev"]:4
+```
+
+</Diagram>
+
+The planet header (`src/components/docs/package-hero.tsx`) links each repository by name,
+primary first; *API* has no `url`, so it is named without a link. Desktop: the text on the left,
+the planet on the right, as today.
+
+**States**
+
+- Empty: a project without a released line shows *In development* only.
+- Loading, refused, error: as every overview.
+- Not found: an unknown slug gets the out-of-orbit 404.
+- Degraded: a repository without a `url` shows its name only.
+- Success: each repository link opens the repository in the same tab.
+
+### 3. `Use track` — the sidebar on `/acme/use/v2/frontend/getting-started`
+
+<Diagram src="/diagrams/docs/multi-repository-projects-screen-3.html" title="Screen 3 — Use track">
+
+```mermaid
+block-beta
+  columns 4
+  chip["◉ acme · Project"]:3 sw["☀ | ☾"]:1
+  moon["full moon · v2 · 2.0.0 · Latest ▾"]:4
+  top["◌ Overview of the Use track"]:4
+  block:s1:4
+    columns 4
+    h1["◎ Frontend · 4 ▾ (open, current)"]:4
+    p1["  ◉ Getting started (current)"]:4
+    p2[" ○ Booking widget"]:4
+  end
+  block:s2:4
+    columns 4
+    h2["○ Backend · 3 ▸"]:4
+  end
+  block:s3:4
+    columns 4
+    h3["○ API · 6 ▸"]:4
+  end
+```
+
+</Diagram>
+
+Each repository folder is a station titled with its name; one station is open at a time
+(ADR-0023). The moon picker lists at most two moons, the latest line and `dev`.
+
+**States**
+
+- Empty: a repository with no `use/<id>/` has no station here.
+- Loading: none; prerendered.
+- Not found: a page in a removed line redirects to the same path in the released line.
+- Refused, error: not applicable.
+- Degraded: an unversioned project has no moon picker.
+- Success: a moon opens the repository's page; its breadcrumb reads *Use › Frontend*.
+
+### 4. `Maintain track` — the sidebar on `/acme/maintain/architecture`
+
+<Diagram src="/diagrams/docs/multi-repository-projects-screen-4.html" title="Screen 4 — Maintain track">
+
+```mermaid
+block-beta
+  columns 4
+  chip["◉ acme · Project"]:3 sw["☀ | ☾"]:1
+  arc1["◉ Architecture (current, spans the repositories)"]:4
+  arc2["○ Releasing"]:4
+  block:s1:4
+    columns 4
+    h1["○ Frontend · 5 ▸"]:4
+  end
+  block:s2:4
+    columns 4
+    h2["○ Backend · 7 ▸"]:4
+  end
+  block:s3:4
+    columns 4
+    h3["○ API · 2 ▸"]:4
+  end
+```
+
+</Diagram>
+
+Pages about the whole project sit on the top-level arc, above the repository stations. Maintain
+has no moon picker (it is not versioned).
+
+**States**
+
+- Empty: a project with no `maintain/` has no moon button in the planet row.
+- Loading, not found, refused, error: as screen 3.
+- Degraded: as screen 3.
+- Success: a repository's station opens and the others close; a moon opens its page.

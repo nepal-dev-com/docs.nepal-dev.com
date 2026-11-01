@@ -1,0 +1,125 @@
+---
+title: "App flow — one open station"
+---
+
+- **Status:** Current
+- **Last updated:** 2026-11-01
+- **Related ADRs:** [ADR-0023](../adr/ADR-0023-sidebar-stations-open-one-at-a-time.mdx),
+  [ADR-0018](../adr/ADR-0018-docs-pages-get-orbit-stations-a-trajectory-and-the-full-horizon.mdx)
+
+> Snapshot of the system as it stands today. Edit in place; never record what changed.
+
+How the sidebar's orbit stations open and close under ADR-0023: at most one open station
+beside another, at every level. Everything else about stations is in
+[Docs sidebars](./docs-sidebars.mdx), screen 1. Sample values are invented (ADR-0008):
+`lodestar` is not a real package. Phone width first.
+
+The flow and every screen are drawn with Archify; the page shows them and its Markdown carries
+their Mermaid (ADR-0022). Their sources are in `diagrams/docs/`: `one-open-station.json` for
+the flow, one `one-open-station-screen-<n>.json` per screen.
+
+## Entry points
+
+- Any docs page with stations in its sidebar: on desktop the sidebar column, on phones the
+  sidebar drawer from the header.
+- Everyone sees the same. The per-page Markdown and `llms.txt` carry no sidebar.
+
+## Flow
+
+<Diagram src="/diagrams/docs/one-open-station.html" title="One open station">
+
+```mermaid
+flowchart LR
+  R[Reader] -->|opens a page| A["Current station open<br/>others closed"]
+  A -->|opens another station| B["That station open<br/>the current one closed"]
+  B -->|closes it| C["Every station closed"]
+  C -->|opens a station| B
+  B -->|a moon in it| P["New page<br/>its station open"]
+  B -->|a link elsewhere| Q["Other page<br/>its station open, the rest closed"]
+  P --> A
+  Q --> A
+```
+
+</Diagram>
+
+## Screens
+
+### 1. `Current station open` — the sidebar on `/lodestar/use/v0.1/install`
+
+<Diagram src="/diagrams/docs/one-open-station-screen-1.html" title="Screen 1 — Current station open">
+
+```mermaid
+block-beta
+  columns 4
+  chip["● lodestar"]:3 sw["☀ | ☾"]:1
+  moon["full moon · v0.1 · 0.1.4 · Latest ▾"]:4
+  block:s1:4
+    columns 4
+    h1["◎ Get started · 2 ▾ (open)"]:4
+    p1["  ◉ Install (current, tinted)"]:4
+    p2[" ○ Commands"]:4
+  end
+  block:s2:4
+    columns 4
+    h2["○ Reference · 3 ▸ (closed)"]:4
+  end
+  block:s3:4
+    columns 4
+    h3["○ Guides · 4 ▸ (closed)"]:4
+  end
+```
+
+</Diagram>
+
+The station holding the current page is open; the others are closed, as today.
+
+**States**
+
+- Empty: a track with no folders has no stations.
+- Loading: none; the sidebar is prerendered open on the current path. Before scripts load,
+  the chevrons do nothing.
+- Not found: the out-of-orbit 404 has no sidebar.
+- Refused: not applicable; every page is public.
+- Error: not applicable at runtime.
+- Degraded: with reduced motion, stations open and close without animation.
+- Success: one station open, the current page's.
+
+### 2. `Another station opened` — the reader opens Guides on the same page
+
+<Diagram src="/diagrams/docs/one-open-station-screen-2.html" title="Screen 2 — Another station opened">
+
+```mermaid
+block-beta
+  columns 4
+  chip["● lodestar"]:3 sw["☀ | ☾"]:1
+  moon["full moon · v0.1 · 0.1.4 · Latest ▾"]:4
+  block:s1:4
+    columns 4
+    h1["◎ Get started · 2 ▸ (closed, holds the current page)"]:4
+  end
+  block:s2:4
+    columns 4
+    h2["○ Reference · 3 ▸ (closed)"]:4
+  end
+  block:s3:4
+    columns 4
+    h3["○ Guides · 4 ▾ (open)"]:4
+    g1[" ○ Theming"]:4
+    g2[" ○ Keyboard shortcuts"]:4
+    g3[" ○ Recipes · 3 ▸ (nested, closed)"]:4
+  end
+```
+
+</Diagram>
+
+Get started closes as Guides opens; its border keeps the ecosystem colour, because it still
+holds the current page. Opening the nested Recipes station closes any other nested station
+inside Guides, and leaves Guides open. Closing Guides leaves every station closed. Following a
+moon or any link to another page opens that page's stations and closes the rest (screen 1 for
+the new page).
+
+**States**
+
+- Empty, loading, not found, refused, error: as screen 1.
+- Degraded: as screen 1.
+- Success: one station open at each level, the one the reader opened last.

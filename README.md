@@ -25,6 +25,11 @@ shape ([ADR-0013](content/docs/maintain/adr/ADR-0013-packages-and-projects-share
   `2024 LTS`, any string);
 - a **Maintain** track for the people who look after it, not versioned.
 
+A project keeps at most `dev` and one released line; older lines are for packages. A project
+made of several repositories (a frontend, a backend, an API) is still one folder, with a folder
+per repository in each track
+([ADR-0024](content/docs/maintain/adr/ADR-0024-a-project-can-span-several-repositories.mdx)).
+
 This site is one of them: project `docs`, whose Maintain track holds its own decisions and
 design documents at `/docs/maintain`. The build checks the shape.
 `/<slug>/use/latest/…` always redirects to the current release. The whole site is one solar
@@ -36,7 +41,7 @@ and night sides. The home page
 is that system beside the site's search, then a planet card for every package and project, and
 private projects beyond an asteroid belt. On docs pages
 ([ADR-0018](content/docs/maintain/adr/ADR-0018-docs-pages-get-orbit-stations-a-trajectory-and-the-full-horizon.mdx))
-each sidebar section is an orbit station with its pages as moons, and "On this page" is a curved
+each sidebar section is an orbit station with its pages as moons, one open at a time (ADR-0023), and "On this page" is a curved
 trajectory with a probe at your reading position and the minutes left.
 
 How private project documentation is kept away from the public site is still open, and demos
@@ -112,7 +117,8 @@ Open [http://localhost:3000](http://localhost:3000). The docs are at `/docs`.
 ├── PROJECT_AGENTS.md    # for project repositories that include this one as a git submodule
 ├── .claude/agent-skills/  # trusted agent skills, pinned; INDEX.md says which to load when
 ├── content/             # every published page, one folder per package or project, at /<slug>
-│   ├── <project-slug>/  # catalogue entry, overview, use/ (dev/ + named lines), maintain/
+│   ├── <project-slug>/  # catalogue entry, overview, use/ (dev/ + named lines), maintain/;
+│   │                    #   one folder per repository in each track for a multi-repository project
 │   └── docs/            # this site as a project, at /docs
 │       └── maintain/    # its Maintain track: this site's own docs — index.mdx is the map
 │           ├── adr/         # Architecture Decision Records — immutable once approved
@@ -178,6 +184,8 @@ their pages into their own folder, `content/<project-slug>/`. Their agents follo
 [`PROJECT_AGENTS.md`](PROJECT_AGENTS.md): edit only that folder, never commit inside the submodule,
 public projects only for now
 ([ADR-0010](content/docs/maintain/adr/ADR-0010-projects-document-themselves-through-a-submodule.mdx)).
+In a project of several repositories each repository edits its own folders, and the primary one
+the shared files (ADR-0024).
 
 ### Skills
 
@@ -238,3 +246,5 @@ threat model, data classification, secrets inventory and audit checklist live in
 | [0020](content/docs/maintain/adr/ADR-0020-people-in-adrs-are-github-usernames-shown-as-profile-chips.mdx) | People in ADRs are GitHub usernames, shown as profile chips | Approved |
 | [0021](content/docs/maintain/adr/ADR-0021-tests-run-with-bun-test.mdx) | Tests run with Bun's built-in test runner | Approved |
 | [0022](content/docs/maintain/adr/ADR-0022-diagrams-show-archify-on-the-page-and-mermaid-in-markdown.mdx) | Diagrams show their Archify view on the page and their Mermaid in Markdown | Approved |
+| [0023](content/docs/maintain/adr/ADR-0023-sidebar-stations-open-one-at-a-time.mdx) | Sidebar stations open one at a time | Approved |
+| [0024](content/docs/maintain/adr/ADR-0024-a-project-can-span-several-repositories.mdx) | A project can span several repositories | Approved |

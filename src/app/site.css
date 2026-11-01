@@ -435,6 +435,17 @@
   background: color-mix(in srgb, var(--home-accent) 88%, var(--home-ink));
 }
 
+/* A repository without a URL is named, not linked (ADR-0024). */
+.pkg-links .pkg-link-plain {
+  display: inline-flex;
+  align-items: center;
+  padding: 6px 12px;
+  border: 1px dashed var(--home-line);
+  border-radius: 8px;
+  font-size: 14px;
+  color: var(--home-muted);
+}
+
 .pkg-links svg {
   width: 15px;
   height: 15px;

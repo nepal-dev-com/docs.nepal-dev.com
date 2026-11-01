@@ -1,0 +1,141 @@
+{
+  "schema_version": 2,
+  "diagram_type": "workflow",
+  "meta": {
+    "title": "App flow: one open station",
+    "subtitle": "Sidebar stations open one at a time at every level; the current page sets the open path",
+    "quality_profile": "showcase",
+    "output": "one-open-station.html"
+  },
+  "lanes": [
+    {
+      "id": "reader",
+      "label": "Reader"
+    },
+    {
+      "id": "sidebar",
+      "label": "Sidebar"
+    },
+    {
+      "id": "pages",
+      "label": "Pages"
+    }
+  ],
+  "mainPath": [
+    "reader_node",
+    "current",
+    "another",
+    "newpage"
+  ],
+  "nodes": [
+    {
+      "id": "reader_node",
+      "lane": "reader",
+      "col": 0,
+      "type": "external",
+      "label": "Reader"
+    },
+    {
+      "id": "current",
+      "lane": "sidebar",
+      "col": 1,
+      "type": "frontend",
+      "label": "Current station open",
+      "sublabel": "others closed"
+    },
+    {
+      "id": "another",
+      "lane": "sidebar",
+      "col": 2,
+      "type": "frontend",
+      "label": "That station open",
+      "sublabel": "the current one closed"
+    },
+    {
+      "id": "none",
+      "lane": "sidebar",
+      "col": 3,
+      "type": "frontend",
+      "label": "Every station closed"
+    },
+    {
+      "id": "newpage",
+      "lane": "pages",
+      "col": 3,
+      "type": "backend",
+      "label": "New page",
+      "sublabel": "its station open"
+    },
+    {
+      "id": "other",
+      "lane": "pages",
+      "col": 2,
+      "type": "backend",
+      "label": "Other page",
+      "sublabel": "its station open, rest closed"
+    }
+  ],
+  "edges": [
+    {
+      "id": "open",
+      "from": "reader_node",
+      "to": "current",
+      "label": "opens a page",
+      "variant": "emphasis"
+    },
+    {
+      "id": "another_e",
+      "from": "current",
+      "to": "another",
+      "label": "opens another",
+      "variant": "emphasis"
+    },
+    {
+      "id": "close",
+      "from": "another",
+      "to": "none",
+      "label": "closes it",
+      "variant": "default",
+      "role": "branch"
+    },
+    {
+      "id": "reopen",
+      "from": "none",
+      "to": "another",
+      "label": "opens a station",
+      "variant": "dashed",
+      "role": "return"
+    },
+    {
+      "id": "moon",
+      "from": "another",
+      "to": "newpage",
+      "label": "a moon in it",
+      "variant": "emphasis"
+    },
+    {
+      "id": "elsewhere",
+      "from": "another",
+      "to": "other",
+      "label": "a link elsewhere",
+      "variant": "default",
+      "role": "branch"
+    },
+    {
+      "id": "back1",
+      "from": "newpage",
+      "to": "current",
+      "label": "path opens",
+      "variant": "dashed",
+      "role": "return"
+    },
+    {
+      "id": "back2",
+      "from": "other",
+      "to": "current",
+      "label": "path opens",
+      "variant": "dashed",
+      "role": "return"
+    }
+  ]
+}

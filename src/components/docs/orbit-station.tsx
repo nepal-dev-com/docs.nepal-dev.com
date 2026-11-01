@@ -1,5 +1,5 @@
 'use client';
-import { createContext, use, type CSSProperties, type ReactNode } from 'react';
+import { createContext, use, useCallback, useEffect, useMemo, useRef, useState, type CSSProperties, type ReactNode } from 'react';
 import { usePathname } from 'next/navigation';
 import type * as PageTree from 'fumadocs-core/page-tree';
 import {
@@ -8,15 +8,78 @@ import {
   SidebarFolderLink,
   SidebarFolderTrigger,
   SidebarItem,
+  useFolder,
   useFolderDepth,
 } from 'fumadocs-ui/components/sidebar/base';
 import { useTreeContext, useTreePath } from 'fumadocs-ui/contexts/tree';
 import { arcRow, arcSlot } from '@/lib/trajectory';
 import { isAdrFolder } from '@/lib/adr-status';
 import { AdrConstellation } from '@/components/docs/adr-constellation';
+import { groupAfter, stationFollows, stationOnPageChange, type GroupEvent } from '@/lib/station-group';
 
 // The children of the station a node sits in; undefined at the top level.
 const StationNodes = createContext<PageTree.Node[] | undefined>(undefined);
+
+interface Group {
+  openId: string | null;
+  dispatch: (event: GroupEvent) => void;
+}
+
+// Sibling stations, of which at most one is open (ADR-0023).
+const StationGroupContext = createContext<Group | null>(null);
+
+/** A group of sibling stations: the sidebar's top level, or the inside of one station. */
+export function StationGroup({ children }: { children: ReactNode }) {
+  const [openId, setOpenId] = useState<string | null>(null);
+  const dispatch = useCallback((event: GroupEvent) => setOpenId((current) => groupAfter(current, event)), []);
+  const value = useMemo(() => ({ openId, dispatch }), [openId, dispatch]);
+  return <StationGroupContext value={value}>{children}</StationGroupContext>;
+}
+
+/** Keeps one station in step with its group, through Fumadocs' own folder state (ADR-0023). */
+function OneOpen({ id, holdsCurrent }: { id: string; holdsCurrent: boolean }) {
+  const group = use(StationGroupContext);
+  const folder = useFolder();
+  const pathname = usePathname();
+  const open = folder?.open ?? false;
+  const setOpen = folder?.setOpen;
+  const dispatch = group?.dispatch;
+  const openId = group?.openId ?? null;
+  // The last open state seen, so only a real change is reported; it also keeps React's
+  // development double run of effects from reporting a station's first state as a click.
+  const seen = useRef(open);
+
+  useEffect(() => {
+    if (!setOpen || !dispatch) {
+      return;
+    }
+    const action = stationOnPageChange(holdsCurrent);
+    setOpen(action === 'open');
+    if (action === 'open') {
+      dispatch({ type: 'opened', id });
+    }
+    // Runs on page changes only: a station the reader opens stays open until the next one.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [pathname]);
+
+  useEffect(() => {
+    if (!dispatch || seen.current === open) {
+      return;
+    }
+    seen.current = open;
+    dispatch({ type: open ? 'opened' : 'closed', id });
+  }, [open, id, dispatch]);
+
+  useEffect(() => {
+    if (setOpen && stationFollows(id, openId, open) === 'close') {
+      setOpen(false);
+    }
+    // Follows the group only; the station's own changes are reported above.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [openId]);
+
+  return null;
+}
 
 function samePage(url: string, pathname: string) {
   const trim = (value: string) => (value.length > 1 ? value.replace(/\/$/, '') : value);
@@ -131,6 +194,9 @@ export function OrbitStation({ item, children }: { item: PageTree.Folder; childr
       data-current={holdsCurrent ? '' : undefined}
       data-constellation={constellation ? '' : undefined}
     >
+      {item.collapsible !== false && (
+        <OneOpen id={item.$id ?? item.$ref?.folder ?? item.name?.toString() ?? ''} holdsCurrent={holdsCurrent} />
+      )}
       {/* A nested station lets its parent's arc run past it, so the arc stays one line. */}
       {nested && <ArcPiece d={arc.d} />}
       {item.index ? (
@@ -151,7 +217,9 @@ export function OrbitStation({ item, children }: { item: PageTree.Folder; childr
           <AdrConstellation folder={item} />
         ) : (
           <div className="station-moons">
-            <StationNodes value={item.children}>{children}</StationNodes>
+            <StationNodes value={item.children}>
+              <StationGroup>{children}</StationGroup>
+            </StationNodes>
           </div>
         )}
       </SidebarFolderContent>

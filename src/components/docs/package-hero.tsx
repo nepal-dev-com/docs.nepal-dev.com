@@ -26,14 +26,24 @@ export function PackageHero({ entry }: { entry: CatalogEntry }) {
         </p>
         <p className="pkg-name">{entry.title}</p>
         {entry.description && <p className="pkg-desc">{entry.description}</p>}
-        {entry.lines.length > 0 && (
+        {(entry.lines.length > 0 || entry.repositories) && (
           <dl className="fact-sheet">
-            <dt>Latest</dt>
-            <dd>{entry.latest ? `${entry.latest.version} · ${entry.latest.name}` : 'unreleased'}</dd>
+            {entry.lines.length > 0 && (
+              <>
+                <dt>Latest</dt>
+                <dd>{entry.latest ? `${entry.latest.version} · ${entry.latest.name}` : 'unreleased'}</dd>
+              </>
+            )}
             {entry.dev && (
               <>
                 <dt>In development</dt>
                 <dd className="dim">{entry.dev.version}</dd>
+              </>
+            )}
+            {entry.repositories && (
+              <>
+                <dt>Repositories</dt>
+                <dd>{entry.repositories.map((repo) => repo.name).join(', ')}</dd>
               </>
             )}
             {older.length > 0 && (
@@ -63,6 +73,18 @@ export function PackageHero({ entry }: { entry: CatalogEntry }) {
               Repository
               <ArrowUpRight aria-hidden />
             </a>
+          )}
+          {entry.repositories?.map((repo) =>
+            repo.url ? (
+              <a key={repo.id} href={repo.url} rel="noreferrer noopener">
+                {repo.name}
+                <ArrowUpRight aria-hidden />
+              </a>
+            ) : (
+              <span key={repo.id} className="pkg-link-plain">
+                {repo.name}
+              </span>
+            ),
           )}
         </nav>
       </div>

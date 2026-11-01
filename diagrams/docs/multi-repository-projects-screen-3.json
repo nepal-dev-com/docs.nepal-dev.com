@@ -1,0 +1,189 @@
+{
+  "schema_version": 1,
+  "diagram_type": "architecture",
+  "meta": {
+    "title": "Screen 3 — Use track",
+    "subtitle": "Wireframe at phone width, drawn from its Mermaid version · multi repository projects",
+    "output": "multi-repository-projects-screen-3.html",
+    "animation": "trace",
+    "quality_profile": "showcase",
+    "legend": {
+      "entries": {
+        "backend": {
+          "label": "Control or link"
+        },
+        "external": {
+          "label": "Content"
+        }
+      }
+    }
+  },
+  "components": [
+    {
+      "id": "chip",
+      "type": "backend",
+      "label": "◉ acme",
+      "pos": [
+        40,
+        60
+      ],
+      "size": [
+        324,
+        70
+      ],
+      "sublabel": "Project"
+    },
+    {
+      "id": "sw",
+      "type": "external",
+      "label": "☀ | ☾",
+      "pos": [
+        376,
+        60
+      ],
+      "size": [
+        100,
+        58
+      ]
+    },
+    {
+      "id": "moon",
+      "type": "backend",
+      "label": "full moon",
+      "pos": [
+        40,
+        142
+      ],
+      "size": [
+        436,
+        70
+      ],
+      "sublabel": "v2 · 2.0.0 · Latest ▾"
+    },
+    {
+      "id": "top",
+      "type": "backend",
+      "label": "◌ Overview of the Use track",
+      "pos": [
+        40,
+        224
+      ],
+      "size": [
+        436,
+        58
+      ]
+    },
+    {
+      "id": "h1",
+      "type": "backend",
+      "label": "◎ Frontend",
+      "pos": [
+        54,
+        324
+      ],
+      "size": [
+        408,
+        70
+      ],
+      "sublabel": "4 ▾ (open, current)"
+    },
+    {
+      "id": "p1",
+      "type": "external",
+      "label": "◉ Getting started (current)",
+      "pos": [
+        54,
+        406
+      ],
+      "size": [
+        408,
+        58
+      ]
+    },
+    {
+      "id": "p2",
+      "type": "external",
+      "label": "○ Booking widget",
+      "pos": [
+        54,
+        476
+      ],
+      "size": [
+        408,
+        58
+      ]
+    },
+    {
+      "id": "h2",
+      "type": "external",
+      "label": "○ Backend",
+      "pos": [
+        54,
+        590
+      ],
+      "size": [
+        408,
+        70
+      ],
+      "sublabel": "3 ▸"
+    },
+    {
+      "id": "h3",
+      "type": "external",
+      "label": "○ API",
+      "pos": [
+        54,
+        716
+      ],
+      "size": [
+        408,
+        70
+      ],
+      "sublabel": "6 ▸"
+    }
+  ],
+  "boundaries": [
+    {
+      "kind": "region",
+      "label": "Phone screen · the sidebar on /acme/use/v2/frontend/getting-started",
+      "wraps": [
+        "chip",
+        "sw",
+        "moon",
+        "top",
+        "h1",
+        "p1",
+        "p2",
+        "h2",
+        "h3"
+      ],
+      "pad": 22
+    },
+    {
+      "kind": "region",
+      "label": "station 1",
+      "wraps": [
+        "h1",
+        "p1",
+        "p2"
+      ],
+      "pad": 10
+    },
+    {
+      "kind": "region",
+      "label": "station 2",
+      "wraps": [
+        "h2"
+      ],
+      "pad": 10
+    },
+    {
+      "kind": "region",
+      "label": "station 3",
+      "wraps": [
+        "h3"
+      ],
+      "pad": 10
+    }
+  ]
+}

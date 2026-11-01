@@ -1,6 +1,6 @@
 import { describe, expect, test } from 'bun:test';
 import type { CatalogMeta } from './catalog-schema';
-import { checkCatalogue, compareLines, lineInfo, lineSegment } from './catalog-plugin';
+import { checkCatalogue, compareLines, lineInfo, lineSegment, repositoryName } from './catalog-plugin';
 
 const pkg: CatalogMeta = { title: 'lodestar', catalog: { kind: 'package', ecosystem: 'npm', visibility: 'public', featured: false } };
 
@@ -123,5 +123,75 @@ describe('checkCatalogue', () => {
     expect(
       check({ 'lodestar/meta.json': pkg, 'lodestar/use/a/meta.json': { version: '1.0.0', channel: 'legacy' } }),
     ).toEqual(['content/lodestar: released lines exist but none has `channel: "latest"`']);
+  });
+});
+
+describe('projects (ADR-0024)', () => {
+  const project = (repositories?: { id: string; name: string; primary: boolean }[]): CatalogMeta => ({
+    title: 'acme',
+    catalog: { kind: 'project', visibility: 'public', featured: false, repositories },
+  });
+  const repos = [
+    { id: 'frontend', name: 'Frontend', primary: true },
+    { id: 'backend', name: 'Backend', primary: false },
+  ];
+
+  test('dev and one released line, holding the repository folders, pass', () => {
+    expect(
+      check(
+        {
+          'acme/meta.json': project(repos),
+          'acme/use/dev/meta.json': { version: '2.1.0-dev.1', channel: 'dev' },
+          'acme/use/v2/meta.json': { version: '2.0.0', channel: 'latest' },
+        },
+        ['acme/index.mdx', 'acme/use/dev/frontend/index.mdx', 'acme/use/v2/backend/index.mdx'],
+      ),
+    ).toEqual([]);
+  });
+
+  test('an older line in a project fails; a package keeps its older lines', () => {
+    const lines = {
+      'acme/use/v2/meta.json': { version: '2.0.0', channel: 'latest' as const },
+      'acme/use/v1/meta.json': { version: '1.0.0', channel: 'legacy' as const },
+    };
+    expect(check({ 'acme/meta.json': project(), ...lines })).toEqual([
+      'content/acme/use/v1/meta.json: a project keeps only `dev` and one released line; older lines are for packages (ADR-0024)',
+    ]);
+    expect(check({ 'acme/meta.json': pkg, ...lines })).toEqual([]);
+  });
+
+  test("a repository id can't be a line's URL segment", () => {
+    expect(
+      check({
+        'acme/meta.json': project([repos[0], { id: 'v2', name: 'V2', primary: false }]),
+        'acme/use/v2/meta.json': { version: '2.0.0', channel: 'latest' },
+      }),
+    ).toEqual(['content/acme/meta.json: the repository id "v2" is also a line\'s URL segment (ADR-0024)']);
+  });
+});
+
+describe('repositoryName', () => {
+  const repositories = [
+    { id: 'frontend', name: 'Frontend', primary: true },
+    { id: 'api', name: 'API', primary: false },
+  ];
+  const metas: Record<string, CatalogMeta> = {
+    'acme/meta.json': { title: 'acme', catalog: { kind: 'project', visibility: 'public', featured: false, repositories } },
+    'acme/use/dev/meta.json': { version: '2.1.0-dev.1', channel: 'dev' },
+    'acme/maintain/api/meta.json': { title: 'The API' },
+  };
+  const read = (path: string) => metas[path];
+
+  test("a repository folder takes the repository's name", () => {
+    expect(repositoryName('acme/use/frontend', read)).toBe('Frontend');
+    expect(repositoryName('acme/maintain/frontend', read)).toBe('Frontend');
+    expect(repositoryName('acme/use/dev/frontend', read)).toBe('Frontend');
+  });
+
+  test('unless its meta.json sets a title, or it is not a repository folder', () => {
+    expect(repositoryName('acme/maintain/api', read)).toBeUndefined();
+    expect(repositoryName('acme/maintain/guides', read)).toBeUndefined();
+    expect(repositoryName('acme/use/v9/frontend', read)).toBeUndefined();
+    expect(repositoryName('acme/maintain/frontend/deep', read)).toBeUndefined();
   });
 });

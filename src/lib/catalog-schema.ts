@@ -6,14 +6,27 @@ export const channels = ['latest', 'dev', 'legacy'] as const;
 export type Ecosystem = (typeof ecosystems)[number];
 export type Channel = (typeof channels)[number];
 
+export interface Repository {
+  id: string;
+  name: string;
+  url?: string;
+  primary: boolean;
+}
+
 export interface CatalogField {
   kind: 'package' | 'project';
   ecosystem?: Ecosystem;
   visibility: 'public';
   repository?: string;
+  /** A project's repositories, primary first (ADR-0024). */
+  repositories?: Repository[];
   registry?: string;
   featured: boolean;
 }
+
+const repositoryId = /^[a-z0-9][a-z0-9-]*$/;
+// A repository folder named like these would be read as a line or an ADR constellation.
+export const reservedRepositoryIds = new Set(['dev', 'latest', 'adr']);
 
 type BaseMeta = ReturnType<typeof metaSchema.parse>;
 
@@ -52,7 +65,7 @@ export function validateCatalog(value: unknown, issues: Issue[]): CatalogField |
     return undefined;
   }
 
-  const { kind, ecosystem, visibility, repository, registry, featured } = value;
+  const { kind, ecosystem, visibility, repository, repositories, registry, featured } = value;
   const at = (key: string) => ['catalog', key];
 
   if (kind !== 'package' && kind !== 'project') {
@@ -81,6 +94,8 @@ export function validateCatalog(value: unknown, issues: Issue[]): CatalogField |
   if (registry !== undefined && !isHttpsUrl(registry)) {
     issues.push({ message: '`catalog.registry` must be an https URL', path: at('registry') });
   }
+  const repositoryList =
+    repositories === undefined ? undefined : validateRepositories(repositories, kind, repository, issues);
   if (featured !== undefined && typeof featured !== 'boolean') {
     issues.push({ message: '`catalog.featured` must be true or false', path: at('featured') });
   }
@@ -90,9 +105,65 @@ export function validateCatalog(value: unknown, issues: Issue[]): CatalogField |
     ecosystem: ecosystem as Ecosystem | undefined,
     visibility: 'public',
     repository: repository as string | undefined,
+    repositories: repositoryList,
     registry: registry as string | undefined,
     featured: featured === true,
   };
+}
+
+function validateRepositories(value: unknown, kind: unknown, repository: unknown, issues: Issue[]): Repository[] | undefined {
+  const at = (...keys: PropertyKey[]) => ['catalog', 'repositories', ...keys];
+  if (!Array.isArray(value)) {
+    issues.push({ message: '`catalog.repositories` must be a list of repositories', path: at() });
+    return undefined;
+  }
+  if (kind !== 'project') {
+    issues.push({ message: '`catalog.repositories` is only on a project; a package is one repository (ADR-0024)', path: at() });
+  }
+  if (repository !== undefined) {
+    issues.push({ message: 'set `catalog.repository` or `catalog.repositories`, not both (ADR-0024)', path: at() });
+  }
+  if (value.length < 2) {
+    issues.push({ message: '`catalog.repositories` lists two or more; one repository is `catalog.repository` (ADR-0024)', path: at() });
+  }
+
+  const list: Repository[] = [];
+  const seen = new Set<string>();
+  value.forEach((item, index) => {
+    const entry = isRecord(item) ? item : {};
+    const { id, name, url, primary } = entry;
+    if (typeof id !== 'string' || !repositoryId.test(id)) {
+      issues.push({ message: `\`catalog.repositories[${index}].id\` is lowercase letters, digits and hyphens`, path: at(index, 'id') });
+      return;
+    }
+    if (reservedRepositoryIds.has(id)) {
+      issues.push({ message: `the repository id "${id}" is reserved: ${[...reservedRepositoryIds].join(', ')} (ADR-0024)`, path: at(index, 'id') });
+    }
+    if (seen.has(id)) {
+      issues.push({ message: `the repository id "${id}" is listed more than once`, path: at(index, 'id') });
+    }
+    seen.add(id);
+    if (name !== undefined && (typeof name !== 'string' || name.trim() === '')) {
+      issues.push({ message: `\`catalog.repositories[${index}].name\` must be the name readers see`, path: at(index, 'name') });
+    }
+    if (url !== undefined && !isHttpsUrl(url)) {
+      issues.push({ message: `\`catalog.repositories[${index}].url\` must be an https URL`, path: at(index, 'url') });
+    }
+    if (primary !== undefined && typeof primary !== 'boolean') {
+      issues.push({ message: `\`catalog.repositories[${index}].primary\` must be true or false`, path: at(index, 'primary') });
+    }
+    list.push({
+      id,
+      name: typeof name === 'string' && name.trim() !== '' ? name : id,
+      url: typeof url === 'string' ? url : undefined,
+      primary: primary === true,
+    });
+  });
+
+  if (list.length === value.length && list.filter((repo) => repo.primary).length !== 1) {
+    issues.push({ message: 'exactly one of `catalog.repositories` has `primary: true` (ADR-0024)', path: at() });
+  }
+  return [...list].sort((a, b) => Number(b.primary) - Number(a.primary));
 }
 
 function validate(value: unknown): Result {

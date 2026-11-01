@@ -1,0 +1,103 @@
+{
+  "schema_version": 1,
+  "diagram_type": "architecture",
+  "meta": {
+    "title": "Screen 1 — Home planet card",
+    "subtitle": "Wireframe at phone width, drawn from its Mermaid version · multi repository projects",
+    "output": "multi-repository-projects-screen-1.html",
+    "animation": "trace",
+    "quality_profile": "showcase",
+    "legend": {
+      "entries": {
+        "backend": {
+          "label": "Control or link"
+        },
+        "external": {
+          "label": "Content"
+        }
+      }
+    }
+  },
+  "components": [
+    {
+      "id": "draw",
+      "type": "external",
+      "label": "ringed planet with moons released and dev",
+      "pos": [
+        40,
+        60
+      ],
+      "size": [
+        436,
+        58
+      ]
+    },
+    {
+      "id": "kind",
+      "type": "external",
+      "label": "◉ Project",
+      "pos": [
+        40,
+        130
+      ],
+      "size": [
+        436,
+        70
+      ],
+      "sublabel": "3 repositories"
+    },
+    {
+      "id": "name",
+      "type": "external",
+      "label": "acme",
+      "pos": [
+        40,
+        212
+      ],
+      "size": [
+        436,
+        58
+      ]
+    },
+    {
+      "id": "desc",
+      "type": "external",
+      "label": "Bookings for small studios.",
+      "pos": [
+        40,
+        282
+      ],
+      "size": [
+        436,
+        58
+      ]
+    },
+    {
+      "id": "links",
+      "type": "backend",
+      "label": "[Use →] Maintain",
+      "pos": [
+        40,
+        352
+      ],
+      "size": [
+        436,
+        58
+      ]
+    }
+  ],
+  "boundaries": [
+    {
+      "kind": "region",
+      "label": "Phone screen · /",
+      "wraps": [
+        "draw",
+        "kind",
+        "name",
+        "desc",
+        "links"
+      ],
+      "pad": 22
+    }
+  ]
+}

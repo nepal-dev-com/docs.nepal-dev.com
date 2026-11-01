@@ -5,7 +5,8 @@ title: "State machine — package version line"
 - **Status:** Current
 - **Last updated:** 2026-11-01
 - **Related ADRs:** [ADR-0013](../adr/ADR-0013-packages-and-projects-share-one-catalogue-shape.mdx),
-  [ADR-0015](../adr/ADR-0015-every-entry-lives-at-the-root-in-one-shape-and-one-look.mdx)
+  [ADR-0015](../adr/ADR-0015-every-entry-lives-at-the-root-in-one-shape-and-one-look.mdx),
+  [ADR-0024](../adr/ADR-0024-a-project-can-span-several-repositories.mdx)
 
 > Snapshot of the system as it stands today. Edit in place; never record what changed.
 
@@ -20,6 +21,12 @@ A **line** is one documented version of a package's Use track: a folder under `u
 
 The consuming repository moves a line from one state to the next by editing those files, and a
 human commits the change (ADR-0010).
+
+**Projects have no Legacy state** (ADR-0024). A versioned project has Dev and at most one Latest
+line, for the whole project: with several repositories each line holds their folders
+(`use/dev/frontend/`). A release copies `dev/` to the new Latest line and removes the previous
+one, which goes straight from Latest to Removed; links to it redirect to the new line. The build
+fails on a `legacy` line in a project. The lifecycle below is a package's.
 
 The diagram is drawn with Archify from its source, `diagrams/docs/package-version-lifecycle.json`; the page shows
 it and its Markdown carries the Mermaid (ADR-0022).

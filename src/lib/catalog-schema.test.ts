@@ -46,3 +46,53 @@ describe('catalogMetaSchema', () => {
     expect(messages({ catalog: 'yes' })).toContain('`catalog` must be an object');
   });
 });
+
+describe('catalog.repositories (ADR-0024)', () => {
+  const project = { kind: 'project', visibility: 'public' };
+  const repos = [
+    { id: 'frontend', name: 'Frontend', url: 'https://github.com/example/acme-web', primary: true },
+    { id: 'backend', name: 'Backend', url: 'https://github.com/example/acme-server' },
+    { id: 'api' },
+  ];
+
+  test('a project with several repositories is accepted, primary first', () => {
+    const result = validate({ title: 'acme', catalog: { ...project, repositories: [repos[1], repos[0], repos[2]] } });
+    expect(result.issues).toBeUndefined();
+    const value = result.issues ? undefined : result.value.catalog?.repositories;
+    expect(value?.map((repo) => repo.id)).toEqual(['frontend', 'backend', 'api']);
+    expect(value?.[2]).toEqual({ id: 'api', name: 'api', url: undefined, primary: false });
+  });
+
+  test('two or more, on a project only, never with repository', () => {
+    expect(messages({ title: 'x', catalog: { ...project, repositories: [repos[0]] } })[0]).toContain('two or more');
+    expect(messages({ title: 'x', catalog: { ...catalog, repositories: repos } })[0]).toContain('only on a project');
+    expect(messages({ title: 'x', catalog: { ...project, repository: 'https://github.com/example/acme', repositories: repos } })[0]).toContain(
+      'not both',
+    );
+    expect(messages({ title: 'x', catalog: { ...project, repositories: 'frontend' } })[0]).toContain('a list');
+  });
+
+  test('exactly one primary', () => {
+    const none = repos.map(({ primary: _primary, ...repo }) => repo);
+    expect(messages({ title: 'x', catalog: { ...project, repositories: none } })[0]).toContain('exactly one');
+    const two = repos.map((repo) => ({ ...repo, primary: true }));
+    expect(messages({ title: 'x', catalog: { ...project, repositories: two } })[0]).toContain('exactly one');
+  });
+
+  test('ids: lowercase, unique and not reserved', () => {
+    const withId = (id: unknown) => ({ title: 'x', catalog: { ...project, repositories: [repos[0], { id }] } });
+    expect(messages(withId('Backend'))[0]).toContain('lowercase');
+    expect(messages(withId('frontend'))[0]).toContain('more than once');
+    for (const id of ['dev', 'latest', 'adr']) {
+      expect(messages(withId(id))[0]).toContain('reserved');
+    }
+    expect(messages(withId(undefined))[0]).toContain('lowercase');
+  });
+
+  test('names and links', () => {
+    const withRepo = (repo: Record<string, unknown>) => ({ title: 'x', catalog: { ...project, repositories: [repos[0], { id: 'api', ...repo }] } });
+    expect(messages(withRepo({ url: 'http://example.com' }))[0]).toContain('https');
+    expect(messages(withRepo({ name: ' ' }))[0]).toContain('].name` must be');
+    expect(messages(withRepo({ primary: 'yes' }))[0]).toContain('].primary` must be');
+  });
+});

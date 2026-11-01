@@ -54,7 +54,9 @@ yet** besides the site itself, so the home page shows its empty states.
   its `meta.json`, a `use/` track and a `maintain/` track. A versioned `use/` holds version
   lines: `dev/` for unreleased work in progress, and released lines whose URL segment is the
   `name` set in their `meta.json` (any string, such as `v1.0` or `2024 LTS`). Maintain is not
-  versioned.
+  versioned. A project has at most `dev` and one released line; older lines are for packages.
+  A project of several repositories lists them in `catalog.repositories` (one primary) and gives
+  each a folder in each track, `use/<id>/` and `maintain/<id>/` (ADR-0024).
 - **The build checks the shape.** Line redirects, version banners, scoped sidebars, search
   fields and `llms.txt` labels all come from it.
 - **The whole site is one solar system** (ADR-0015, ADR-0017, ADR-0018). The star is the maker; a package
@@ -65,7 +67,7 @@ yet** besides the site itself, so the home page shows its empty states.
   button on docs pages), the tokens and fonts, and the full Horizon footer. Docs pages use the
   Fumadocs notebook layout: a planet header on each overview; in the sidebar the planet row
   (chip, a sun for Use and a moon for Maintain), the moon picker and orbit stations (each folder
-  a card, its pages moons on an arc, only the current one open; a folder named `adr` a
+  a card, its pages moons on an arc, one open at a time at each level, ADR-0023; a folder named `adr` a
   constellation of moons phased by status, ADR-0019); "On this page" as a trajectory
   with a probe riding at the reading position and the minutes left; moon notices on `dev` and
   older lines. Unknown paths get the out-of-orbit 404 (`src/app/not-found.tsx`).
@@ -530,7 +532,8 @@ adopts a host, analytics, CI or an authentication provider adds its own checks**
 ├── DESIGN.md            # the home page's visual system, with .impeccable/design.json; not published (§8)
 ├── PROJECT_AGENTS.md    # guide for repositories that include this one as a git submodule (§1)
 ├── content/             # PUBLISHED — every page readers see; one folder per entry, at /<slug> (ADR-0015)
-│   ├── <project-slug>/  # a package or project: meta.json `catalog`, index.mdx, use/ (dev/ + named lines), maintain/
+│   ├── <project-slug>/  # a package or project: meta.json `catalog`, index.mdx, use/ (dev/ + named lines), maintain/;
+│   │                    #   a project of several repositories has use/<id>/ and maintain/<id>/ per repository (ADR-0024)
 │   └── docs/            # this site as a project, at /docs: meta.json `catalog`, index.mdx
 │       └── maintain/    # its Maintain track: this site's own decisions and design documents
 │           ├── meta.json    # title, page order

@@ -1,0 +1,158 @@
+{
+  "schema_version": 1,
+  "diagram_type": "architecture",
+  "meta": {
+    "title": "Screen 4 — Maintain track",
+    "subtitle": "Wireframe at phone width, drawn from its Mermaid version · multi repository projects",
+    "output": "multi-repository-projects-screen-4.html",
+    "animation": "trace",
+    "quality_profile": "showcase",
+    "legend": {
+      "entries": {
+        "backend": {
+          "label": "Control or link"
+        },
+        "external": {
+          "label": "Content"
+        }
+      }
+    }
+  },
+  "components": [
+    {
+      "id": "chip",
+      "type": "backend",
+      "label": "◉ acme",
+      "pos": [
+        40,
+        60
+      ],
+      "size": [
+        324,
+        70
+      ],
+      "sublabel": "Project"
+    },
+    {
+      "id": "sw",
+      "type": "external",
+      "label": "☀ | ☾",
+      "pos": [
+        376,
+        60
+      ],
+      "size": [
+        100,
+        58
+      ]
+    },
+    {
+      "id": "arc1",
+      "type": "external",
+      "label": "◉ Architecture (current, spans the repositories)",
+      "pos": [
+        40,
+        142
+      ],
+      "size": [
+        436,
+        58
+      ]
+    },
+    {
+      "id": "arc2",
+      "type": "external",
+      "label": "○ Releasing",
+      "pos": [
+        40,
+        212
+      ],
+      "size": [
+        436,
+        58
+      ]
+    },
+    {
+      "id": "h1",
+      "type": "external",
+      "label": "○ Frontend",
+      "pos": [
+        54,
+        312
+      ],
+      "size": [
+        408,
+        70
+      ],
+      "sublabel": "5 ▸"
+    },
+    {
+      "id": "h2",
+      "type": "external",
+      "label": "○ Backend",
+      "pos": [
+        54,
+        438
+      ],
+      "size": [
+        408,
+        70
+      ],
+      "sublabel": "7 ▸"
+    },
+    {
+      "id": "h3",
+      "type": "external",
+      "label": "○ API",
+      "pos": [
+        54,
+        564
+      ],
+      "size": [
+        408,
+        70
+      ],
+      "sublabel": "2 ▸"
+    }
+  ],
+  "boundaries": [
+    {
+      "kind": "region",
+      "label": "Phone screen · the sidebar on /acme/maintain/architecture",
+      "wraps": [
+        "chip",
+        "sw",
+        "arc1",
+        "arc2",
+        "h1",
+        "h2",
+        "h3"
+      ],
+      "pad": 22
+    },
+    {
+      "kind": "region",
+      "label": "station 1",
+      "wraps": [
+        "h1"
+      ],
+      "pad": 10
+    },
+    {
+      "kind": "region",
+      "label": "station 2",
+      "wraps": [
+        "h2"
+      ],
+      "pad": 10
+    },
+    {
+      "kind": "region",
+      "label": "station 3",
+      "wraps": [
+        "h3"
+      ],
+      "pad": 10
+    }
+  ]
+}
