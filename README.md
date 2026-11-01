@@ -34,7 +34,10 @@ and night sides. The home page
 ([ADR-0014](content/docs/maintain/adr/ADR-0014-home-page-is-a-search-first-release-map.mdx),
 [ADR-0016](content/docs/maintain/adr/ADR-0016-home-search-is-the-fumadocs-dialog-and-private-projects-render-server-side.mdx))
 is that system beside the site's search, then a planet card for every package and project, and
-private projects beyond an asteroid belt.
+private projects beyond an asteroid belt. On docs pages
+([ADR-0018](content/docs/maintain/adr/ADR-0018-docs-pages-get-orbit-stations-a-trajectory-and-the-full-horizon.mdx))
+each sidebar section is an orbit station with its pages as moons, and "On this page" is a curved
+trajectory with a probe at your reading position and the minutes left.
 
 How private project documentation is kept away from the public site is still open, and demos
 wait for ADR-0011. Until the private-documentation ADR is approved, **no private project content
@@ -187,8 +190,8 @@ the skills a task needs; [`SOURCES.md`](.claude/agent-skills/SOURCES.md) records
 
 [`content/docs/maintain/index.mdx`](content/docs/maintain/index.mdx) is the map: what each directory holds, which documents a
 change requires, and the conventions for each. Diagrams and flows are made with
-[Archify](https://github.com/tt-a1i/archify), and app-flow prototypes with the vendored
-effective-html skills in this site's prototype theme. Every page also keeps a Mermaid version,
+[Archify](https://github.com/tt-a1i/archify), and app-flow screens are Mermaid wireframes.
+Every page also keeps a Mermaid version,
 so it stays readable as Markdown, renders on GitHub and diffs as text. Pages are `.mdx`
 (ADR-0012), so they can embed components where needed.
 
@@ -217,7 +220,7 @@ threat model, data classification, secrets inventory and audit checklist live in
 | [0008](content/docs/maintain/adr/ADR-0008-a-ui-change-ships-an-app-flow.mdx) | A UI change ships an app flow, drawn in Mermaid | Proposed |
 | [0009](content/docs/maintain/adr/ADR-0009-trusted-agent-skills-are-vendored.mdx) | Trusted agent skills are vendored in `.claude/agent-skills/`, routed by an index | Proposed |
 | [0010](content/docs/maintain/adr/ADR-0010-projects-document-themselves-through-a-submodule.mdx) | Projects document themselves here through a git submodule, one folder each | Proposed |
-| [0011](content/docs/maintain/adr/ADR-0011-diagrams-and-prototypes-are-embedded-from-sandboxed-html.mdx) | Archify diagrams and HTML prototypes are embedded in pages from sandboxed HTML files | Proposed |
+| [0011](content/docs/maintain/adr/ADR-0011-archify-diagrams-are-embedded-from-sandboxed-html.mdx) | Archify diagrams are embedded in pages from sandboxed HTML files | Proposed |
 | [0012](content/docs/maintain/adr/ADR-0012-every-page-is-mdx.mdx) | Every page in `content/docs` is MDX | Approved |
 | [0013](content/docs/maintain/adr/ADR-0013-packages-and-projects-share-one-catalogue-shape.mdx) | Packages and projects share one catalogue shape: two tracks, version lines and demos | Approved |
 | [0014](content/docs/maintain/adr/ADR-0014-home-page-is-a-search-first-release-map.mdx) | The home page is a search-first map of every release | Approved |

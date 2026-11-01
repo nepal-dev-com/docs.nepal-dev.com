@@ -71,8 +71,6 @@ Paths below are relative to this file.
 | Task | Load |
 |---|---|
 | **Any** diagram or flow: architecture, workflow, sequence, data flow, lifecycle, ERD, class, tree, timeline (always) | `archify` (installed, project copy in `.claude/skills/archify`), plus the Mermaid version the page keeps (`AGENTS.md` §8) |
-| An app flow's screens as a low-fidelity wireframe: structure, hierarchy, navigation, click-through | [html-wireframe](./plannotator-effective-html/skills/html-wireframe/SKILL.md) |
-| An app flow's screens as a working prototype: states, input, feedback, recovery | [html-prototype](./plannotator-effective-html/skills/html-prototype/SKILL.md) |
 
 ### Search (Algolia)
 
@@ -127,7 +125,6 @@ be used.
 | receiving-code-review | Feedback that would change an approved ADR's decision needs a superseding ADR, not an edit. |
 | writing-guidelines | Read `./vercel-labs-writing-guidelines/command.md` instead of fetching it. Skip the Vercel-specific rules: `meta.contentType`, `meta.category` and `meta.navLabel`, dashboard deep links, product links, model strings, ACME screenshots, `vercel/examples` and the PR process. Where a rule contradicts a convention this repository already uses (hard-wrapped Markdown, em dashes in titles, `<slug>` placeholders in the maintainer documentation), keep the repository's convention. Adopting the rule instead, or an MDX component such as `<Steps/>`, is a cross-cutting convention change and needs an ADR (`AGENTS.md` §2, §8). |
 | writing-for-agents | `agents/openai.yaml` is for another agent runtime; ignore it. |
-| html-wireframe, html-prototype | Used for app flows (ADR-0008), with the page keeping its Mermaid wireframes. The look comes from this site's prototype theme once ADR-0011 defines it: that is "the project's established design language" in html-prototype's order of authority, so don't invent a per-prototype direction. `design-artifact` is not vendored; skip the steps that read it. *Verify and hand off* opens a browser: don't, unless the owner asks; list the checks left unverified instead, as html-prototype allows. Deliver the file where ADR-0011 says, never into `content/`, and until it is approved keep it in `.prototypes/` (gitignored) and give the owner the path. `agents/openai.yaml` is for another agent runtime; ignore it. |
 | frontend-design | Applies only after the UI change's ADR and app flow are approved (ADR-0008). New fonts, icon sets or libraries are dependencies and need an ADR. Use the existing Tailwind 4 and Fumadocs UI setup. |
 | web-design-guidelines | Read `./vercel-labs-web-interface-guidelines/command.md` instead of fetching it. Findings on an unapproved change go into its app flow, not into code. Its *Content & Copy* rules (Title Case headings) contradict writing-guidelines (sentence case). No convention is decided yet, so raise it with the owner (`AGENTS.md` §4). |
 | react-best-practices | Load `SKILL.md`, then only the `rules/*.md` files whose topic matches. `AGENTS.md` and `README.md` inside that skill are the compiled full rule set and upstream notes; don't load them. |

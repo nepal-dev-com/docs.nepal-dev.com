@@ -505,19 +505,48 @@
   text-underline-offset: 4px;
 }
 
-/* Sidebar: planet chip, day/night switch, moon picker icons, the current page on its orbit */
+/* Sidebar: the planet row and orbit stations (ADR-0018 decisions 1 and 2) */
 
+#nd-sidebar,
+#nd-sidebar-mobile {
+  --eco: var(--home-accent);
+}
+
+:is(#nd-sidebar, #nd-sidebar-mobile):has(.planet-banner[data-ring='npm']) {
+  --eco: var(--home-npm);
+}
+
+:is(#nd-sidebar, #nd-sidebar-mobile):has(.planet-banner[data-ring='composer']) {
+  --eco: var(--home-composer);
+}
+
+:is(#nd-sidebar, #nd-sidebar-mobile):has(.planet-banner[data-ring='pypi']) {
+  --eco: var(--home-pypi);
+}
+
+:is(#nd-sidebar, #nd-sidebar-mobile):has(.planet-banner[data-ring='go']) {
+  --eco: var(--home-go);
+}
+
+:is(#nd-sidebar, #nd-sidebar-mobile):has(.planet-banner[data-ring='cargo']) {
+  --eco: var(--home-cargo);
+}
+
+/* Fumadocs puts its version menu before the banner; the planet comes first. */
 .planet-banner {
+  order: -1;
   display: flex;
-  flex-direction: column;
-  gap: 10px;
+  align-items: center;
+  gap: 8px;
 }
 
 .planet-chip {
   display: flex;
+  flex: 1;
+  min-width: 0;
   align-items: center;
-  gap: 10px;
-  padding: 9px 11px;
+  gap: 9px;
+  padding: 7px 10px;
   color: var(--home-ink);
   background: var(--home-bg-2);
   border: 1px solid var(--home-line);
@@ -530,38 +559,48 @@
 }
 
 .planet-chip .planet-mark {
-  width: 26px;
-  height: 26px;
+  flex: none;
+  width: 24px;
+  height: 24px;
+}
+
+.planet-chip span {
+  min-width: 0;
+}
+
+.planet-chip b,
+.planet-chip small {
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .planet-chip b {
-  display: block;
-  font: 500 14.5px var(--home-font-data);
+  font: 500 14px var(--home-font-data);
 }
 
 .planet-chip small {
-  display: block;
-  font-size: 12px;
+  font-size: 11.5px;
   color: var(--home-faint);
 }
 
 .planet-sides {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 4px;
-  padding: 4px;
+  display: flex;
+  flex: none;
+  gap: 2px;
+  padding: 3px;
   background: var(--home-bg-2);
   border: 1px solid var(--home-line);
   border-radius: 10px;
 }
 
 .planet-sides a {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 7px;
-  padding: 6px;
-  font-size: 13.5px;
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
   color: var(--home-muted);
   border-radius: 7px;
   transition: color 0.2s, background-color 0.2s;
@@ -571,6 +610,11 @@
   color: var(--home-ink);
 }
 
+.planet-sides a:focus-visible {
+  outline: 2px solid var(--home-accent);
+  outline-offset: 1px;
+}
+
 .planet-sides a[aria-current] {
   color: var(--home-ink);
   background: var(--home-panel);
@@ -578,12 +622,43 @@
 }
 
 .planet-sides svg {
-  width: 15px;
-  height: 15px;
+  width: 16px;
+  height: 16px;
 }
 
 .planet-sides a[aria-current] .side-sun {
   color: var(--home-star);
+}
+
+.planet-side-tip {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  z-index: 30;
+  padding: 4px 8px;
+  font: 400 12px var(--home-font-text);
+  white-space: nowrap;
+  color: var(--home-ink);
+  background: var(--home-panel);
+  border: 1px solid var(--home-line);
+  border-radius: 7px;
+  box-shadow: 0 4px 12px var(--home-shadow);
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(-2px);
+  transition: opacity 0.15s, transform 0.15s;
+}
+
+@media (hover: hover) {
+  .planet-sides a:hover .planet-side-tip {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.planet-sides a:focus-visible .planet-side-tip {
+  opacity: 1;
+  transform: none;
 }
 
 #nd-sidebar .moon-phase,
@@ -593,34 +668,500 @@
   padding: 2px;
 }
 
-/* The current page is a planet on the folder's orbit line (Fumadocs draws the line at 10px). */
-#nd-sidebar a[data-active='true']::before,
-#nd-sidebar-mobile a[data-active='true']::before {
-  inset-block: auto;
-  top: calc(50% - 4px);
-  inset-inline-start: 6px;
-  width: 9px;
-  height: 9px;
-  border-radius: 50%;
-  box-shadow: 0 0 0 3px var(--home-panel);
+.station[data-level='1'] {
+  margin-block: 3px;
+  background: var(--home-panel);
+  border: 1px solid var(--home-line);
+  border-radius: 12px;
+  transition: border-color 0.25s;
 }
 
-/* A top-level page has no line to sit on, so its planet sits at the end of the row. */
-#nd-sidebar a[data-active='true'][style*='calc(2 ']::after,
-#nd-sidebar-mobile a[data-active='true'][style*='calc(2 ']::after {
-  content: '';
+.station[data-level='1'][data-current] {
+  border-color: color-mix(in srgb, var(--eco) 45%, var(--home-line));
+}
+
+.station[data-level='2'] {
+  position: relative;
+}
+
+.station-head {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  width: 100%;
+  padding: 8px 9px;
+  font: 500 13.5px/1.35 var(--home-font-text);
+  text-align: start;
+  color: var(--home-ink);
+  border-radius: 10px;
+  transition: background-color 0.15s;
+}
+
+.station-head:hover {
+  background: var(--home-bg-2);
+}
+
+.station-head:focus-visible,
+.orbit-item:focus-visible {
+  outline: 2px solid var(--home-accent);
+  outline-offset: -2px;
+}
+
+.station-head[data-active='true'] .station-name {
+  color: var(--home-accent);
+}
+
+.station-head svg[data-icon] {
+  flex: none;
+  width: 14px;
+  height: 14px;
+  margin-inline-start: 0;
+  color: var(--home-faint);
+}
+
+.station[data-level='2'] > .station-head,
+.station[data-level='3'] > .station-head {
+  padding-inline-start: 30px;
+  font-size: 13px;
+  border-radius: 8px;
+}
+
+.station[data-level='3'] > .station-head {
+  color: var(--home-muted);
+}
+
+.station-glyph {
+  flex: none;
+  width: 18px;
+  height: 18px;
+  overflow: visible;
+}
+
+.station[data-level='2'] > .station-head .station-glyph {
+  width: 15px;
+  height: 15px;
+}
+
+.station-glyph-orbit {
+  fill: none;
+  stroke: var(--home-line-2);
+  stroke-width: 1.2;
+}
+
+.station-glyph-core {
+  fill: var(--home-faint);
+  opacity: 0.55;
+}
+
+.station-glyph-planet {
+  fill: var(--home-panel);
+  stroke: var(--home-faint);
+  stroke-width: 1.2;
+  transition: fill 0.25s, stroke 0.25s;
+}
+
+.station[data-current] > .station-head .station-glyph-planet {
+  fill: var(--eco);
+  stroke: var(--eco);
+}
+
+.station-name {
+  min-width: 0;
+  flex: 1;
+}
+
+.station-count {
+  flex: none;
+  min-width: 22px;
+  padding: 1px 6px;
+  font: 500 11.5px/1.5 var(--home-font-data);
+  font-variant-numeric: tabular-nums;
+  text-align: center;
+  color: var(--home-faint);
+  background: var(--home-bg-2);
+  border-radius: 9px;
+}
+
+.station-moons {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  padding: 0 4px 5px;
+}
+
+.station[data-level='2'] .station-moons {
+  padding: 0 0 2px 22px;
+}
+
+.station[data-level='3'] .station-moons {
+  padding: 0 0 2px 14px;
+}
+
+.orbit-item {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 32px;
+  padding: 6px 8px 6px 30px;
+  font: 400 13.5px/1.35 var(--home-font-text);
+  color: var(--home-muted);
+  border-radius: 8px;
+  transition: color 0.15s, background-color 0.15s;
+}
+
+.orbit-item:hover {
+  color: var(--home-ink);
+  background: var(--home-bg-2);
+}
+
+.orbit-item[data-active='true'] {
+  font-weight: 500;
+  color: var(--home-ink);
+  background: color-mix(in srgb, var(--eco) 10%, transparent);
+}
+
+.orbit-arc {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 24px;
+  height: 100%;
+  overflow: visible;
+  pointer-events: none;
+}
+
+.orbit-arc path {
+  fill: none;
+  stroke: var(--home-line-2);
+  stroke-width: 1.2;
+}
+
+.orbit-dot {
+  position: absolute;
+  top: calc(50% - 3.5px);
+  left: calc(var(--dot-x) - 3.5px);
   width: 7px;
   height: 7px;
-  margin-inline-start: auto;
-  flex: none;
   border-radius: 50%;
-  background: var(--home-accent);
+  background: var(--home-panel);
+  box-shadow: inset 0 0 0 1.4px var(--home-line-2);
+  transition: background-color 0.15s, box-shadow 0.15s;
 }
 
-#nd-toc .rounded-full.bg-fd-primary {
-  width: 8px;
-  height: 8px;
-  box-shadow: 0 0 0 3px var(--home-bg);
+.orbit-item:hover .orbit-dot {
+  background: var(--home-line-2);
+}
+
+.orbit-item[data-active='true'] .orbit-dot {
+  top: calc(50% - 5px);
+  left: calc(var(--dot-x) - 5px);
+  width: 10px;
+  height: 10px;
+  background: var(--home-accent);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--home-accent) 22%, transparent);
+}
+
+.orbit-name {
+  min-width: 0;
+}
+
+.orbit-separator {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 14px 4px 6px;
+  font: 500 12px var(--home-font-text);
+  color: var(--home-faint);
+}
+
+.orbit-separator::after {
+  content: '';
+  flex: 1;
+  border-top: 1px dotted var(--home-line-2);
+}
+
+/* "On this page": the trajectory and its probe (ADR-0018 decision 3) */
+
+.trajectory-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 14px;
+}
+
+.trajectory-head h3 {
+  margin: 0;
+  font: 500 13px var(--home-font-text);
+  color: var(--home-ink);
+}
+
+.trajectory-head span,
+.trajectory-bar-time {
+  font: 500 12px var(--home-font-data);
+  font-variant-numeric: tabular-nums;
+  color: var(--home-faint);
+}
+
+.trajectory-scroll {
+  min-height: 0;
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: var(--home-line-2) transparent;
+}
+
+.trajectory {
+  position: relative;
+}
+
+.trajectory-path {
+  position: absolute;
+  top: 0;
+  left: 0;
+  overflow: visible;
+  pointer-events: none;
+}
+
+.trajectory-ahead {
+  fill: none;
+  stroke: var(--home-line-2);
+  stroke-width: 1.2;
+  stroke-dasharray: 3 4;
+}
+
+.trajectory-read {
+  fill: none;
+  stroke: var(--home-accent);
+  stroke-width: 1.6;
+  stroke-linecap: round;
+}
+
+.trajectory-probe {
+  position: absolute;
+  top: -6px;
+  left: -6px;
+  width: 12px;
+  height: 12px;
+  pointer-events: none;
+}
+
+.trajectory-probe svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+
+.trajectory-probe-halo {
+  fill: var(--home-accent);
+  opacity: 0.22;
+}
+
+.trajectory-probe-body {
+  fill: var(--home-accent);
+}
+
+.trajectory-probe-shade {
+  fill: var(--home-ink);
+  opacity: 0.32;
+}
+
+.trajectory ol {
+  display: flex;
+  flex-direction: column;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+/* Before scripts measure the path: one dashed line through the dots. */
+.trajectory:not([data-ready]) ol {
+  background: repeating-linear-gradient(to bottom, var(--home-line-2) 0 3px, transparent 3px 7px) 5.4px 14px /
+    1.2px calc(100% - 28px) no-repeat;
+}
+
+.trajectory li a {
+  position: relative;
+  display: block;
+  padding: 5px 0 5px calc(var(--x) + 16px);
+  font: 400 13px/1.45 var(--home-font-text);
+  color: var(--home-muted);
+  text-decoration: none;
+  transition: color 0.15s;
+}
+
+.trajectory li a:hover {
+  color: var(--home-ink);
+}
+
+.trajectory li a:focus-visible {
+  outline: 2px solid var(--home-accent);
+  outline-offset: 1px;
+  border-radius: 6px;
+}
+
+.trajectory li[data-state='current'] a {
+  font-weight: 500;
+  color: var(--home-ink);
+}
+
+.trajectory-dot {
+  position: absolute;
+  top: calc(5px + 0.725em - 3px);
+  left: calc(var(--x) - 3px);
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--color-fd-background);
+  box-shadow: inset 0 0 0 1.3px var(--home-line-2);
+}
+
+.trajectory li:is([data-state='read'], [data-state='current']) .trajectory-dot {
+  background: var(--home-accent);
+  box-shadow: none;
+}
+
+.trajectory-empty {
+  margin: 0;
+  font-size: 13px;
+  color: var(--home-faint);
+}
+
+.trajectory-top {
+  display: inline-flex;
+  align-self: flex-start;
+  align-items: center;
+  gap: 6px;
+  margin-top: 14px;
+  padding: 4px 0;
+  font: 500 12.5px var(--home-font-text);
+  color: var(--home-muted);
+  background: none;
+  border: 0;
+  cursor: pointer;
+  transition: color 0.15s;
+}
+
+.trajectory-top:hover {
+  color: var(--home-accent);
+}
+
+.trajectory-top svg {
+  width: 13px;
+  height: 13px;
+}
+
+.trajectory-bar {
+  background: color-mix(in srgb, var(--color-fd-background) 86%, transparent);
+  border-bottom: 1px solid var(--home-line);
+  backdrop-filter: blur(8px);
+  transition: box-shadow 0.2s;
+}
+
+.trajectory-bar[data-open] {
+  background: var(--color-fd-background);
+  box-shadow: 0 10px 24px var(--home-shadow);
+}
+
+.trajectory-bar-trigger {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  height: 40px;
+  padding: 0 16px;
+  font: 400 13.5px var(--home-font-text);
+  text-align: start;
+  color: var(--home-muted);
+  background: none;
+  border: 0;
+}
+
+.trajectory-bar-trigger:focus-visible {
+  outline: 2px solid var(--home-accent);
+  outline-offset: -2px;
+}
+
+.trajectory-ring {
+  flex: none;
+  width: 20px;
+  height: 20px;
+  overflow: visible;
+}
+
+.trajectory-ring-track {
+  fill: none;
+  stroke: var(--home-line-2);
+  stroke-width: 1.5;
+}
+
+.trajectory-ring-read {
+  fill: none;
+  stroke: var(--home-accent);
+  stroke-width: 1.8;
+  stroke-linecap: round;
+}
+
+.trajectory-ring-probe {
+  fill: var(--home-accent);
+}
+
+.trajectory-bar-title {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: var(--home-ink);
+}
+
+.trajectory-bar-title[data-muted] {
+  color: var(--home-faint);
+}
+
+.trajectory-bar-chevron {
+  flex: none;
+  width: 16px;
+  height: 16px;
+  transition: transform 0.2s;
+}
+
+.trajectory-bar[data-open] .trajectory-bar-chevron {
+  transform: rotate(180deg);
+}
+
+.trajectory-sheet {
+  max-height: 50vh;
+  overflow-y: auto;
+  padding: 4px 16px 16px;
+}
+
+@media (min-width: 768px) {
+  .trajectory-bar-trigger {
+    padding: 0 24px;
+  }
+
+  .trajectory-sheet {
+    padding: 4px 24px 16px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .station[data-level='1'],
+  .station-glyph-planet,
+  .orbit-item,
+  .orbit-dot,
+  .planet-side-tip,
+  .trajectory-bar,
+  .trajectory-bar-chevron {
+    transition: none;
+  }
+
+  .station-body {
+    transition: none !important;
+  }
 }
 
 /* The Horizon footer (ADR-0017 decision 8) */
@@ -686,15 +1227,6 @@
   padding: 10px 16px 40px;
   text-align: center;
   background: var(--home-bg-2);
-}
-
-.horizon[data-compact] {
-  margin-top: 0;
-  border-top: 1px solid var(--home-line);
-}
-
-.horizon[data-compact] .horizon-surface {
-  padding-top: 32px;
 }
 
 .horizon-planets {

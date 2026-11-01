@@ -38,13 +38,13 @@ function Moon() {
 }
 
 const sides = [
-  { key: 'use', label: 'Use', icon: Sun },
-  { key: 'maintain', label: 'Maintain', icon: Moon },
+  { key: 'use', label: 'Use, the day side', icon: Sun },
+  { key: 'maintain', label: 'Maintain, the night side', icon: Moon },
 ] as const;
 
 /**
- * The planet chip and its day side (Use) | night side (Maintain) switch, at the top of a
- * package's sidebar (ADR-0013, ADR-0017 decision 10).
+ * The planet row at the top of a package's sidebar: its chip, then a sun for Use and a moon for
+ * Maintain (ADR-0013, ADR-0018 decision 1).
  */
 export function TrackSwitch({ entries, docsRoute }: { entries: TrackSwitchEntry[]; docsRoute: string }) {
   const pathname = usePathname();
@@ -60,7 +60,7 @@ export function TrackSwitch({ entries, docsRoute }: { entries: TrackSwitchEntry[
   const available = sides.filter((item) => urls[item.key]);
 
   return (
-    <div className="planet-banner">
+    <div className="planet-banner" data-ring={entry.ring}>
       <Link href={entry.url} className="planet-chip">
         <PlanetMark ring={entry.ring} kind={entry.kind} />
         <span>
@@ -71,9 +71,16 @@ export function TrackSwitch({ entries, docsRoute }: { entries: TrackSwitchEntry[
       {available.length > 1 && (
         <nav aria-label="Track" className="planet-sides">
           {available.map(({ key, label, icon: Icon }) => (
-            <Link key={key} href={urls[key] as string} aria-current={track === key ? 'page' : undefined}>
+            <Link
+              key={key}
+              href={urls[key] as string}
+              aria-label={label}
+              aria-current={track === key ? 'page' : undefined}
+            >
               <Icon />
-              {label}
+              <span className="planet-side-tip" aria-hidden>
+                {label}
+              </span>
             </Link>
           ))}
         </nav>

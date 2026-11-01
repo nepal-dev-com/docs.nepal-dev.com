@@ -1,0 +1,210 @@
+---
+title: "ADR-0018 — Docs pages get orbit stations, a trajectory and the full horizon"
+---
+
+- **Status:** Approved
+- **Date:** 2026-11-01
+- **Deciders:** Puncoz Nepal
+- **Approved by:** Puncoz Nepal
+- **Approved on:** 2026-11-01
+- **Supersedes:** [ADR-0017](./ADR-0017-the-whole-site-is-one-solar-system.mdx) decision 8 (in
+  part: docs pages dropping the horizon's scene) and decision 10 (in part: the sidebar's link
+  list and the table of contents hanging on a thin orbit line, and the sidebar top's layout)
+- **Superseded by:** —
+- **Design documents:** [`../app-flow/docs-sidebars.mdx`](../app-flow/docs-sidebars.mdx),
+  [`../prd/docs-sidebars.mdx`](../prd/docs-sidebars.mdx),
+  [`../app-flow/solar-system.mdx`](../app-flow/solar-system.mdx),
+  [`../app-flow/site-pages.mdx`](../app-flow/site-pages.mdx),
+  [`../architecture/system.mdx`](../architecture/system.mdx), `DESIGN.md`
+
+## Context
+
+ADR-0017 made the whole site one solar system, but the two columns a reader uses most on a docs
+page still look like Fumadocs' defaults with a dot added:
+
+- **The left sidebar** is Fumadocs' list: folders as plain rows with a straight guide line, the
+  current page marked by a dot. The metaphor stops at the planet chip.
+- **The right-hand "On this page"** is Fumadocs' `normal` table of contents. Its rail curves only
+  where heading depth changes (`components/toc/default.js` draws a cubic curve between items of
+  different depth and a straight line otherwise), so on a page whose headings are all `##` it is
+  one straight line. The owner remembers it as "tech-like" and curvy, and finds it plain now.
+- **The horizon** below docs pages drops its scene and closing line (ADR-0017 decision 8). The
+  owner wants the full horizon on every page.
+
+The owner chose, from options with previews (2026-11-01): **orbit stations** for the left
+sidebar, a **trajectory with a probe** for "On this page", and the **full horizon** on docs
+pages.
+
+Facts this decision rests on, read from the installed Fumadocs 16.17.9:
+
+- The notebook layout's `sidebar.components` accepts `Item`, `Folder` and `Separator`
+  components (`SidebarPageTreeComponents`, `components/sidebar/page-tree.d.ts`). The default
+  renderer opens a folder when the current page is inside it (`active: path.includes(node)`),
+  and otherwise follows `defaultOpenLevel`, 0 by default, so other folders start closed.
+- `DocsPage` takes `slots.toc` with `provider`, `main` and `popover`
+  (`layouts/notebook/page/index.d.ts`); `main` is the desktop column and `popover` the bar on
+  narrow screens.
+- `fumadocs-core/toc` exports `useItems`, `useActiveAnchors` and `AnchorProvider`; each item has
+  `title`, `url` and `depth`.
+- Each page's `structuredData` (fumadocs-mdx) holds its headings and text, so its word count is
+  known at build time without reading the file again.
+
+## Decision
+
+1. **The sidebar top becomes one planet row.** The planet chip (mark and name, linked to the
+   overview) and the day/night switch share one row: the switch shrinks to two icon buttons, a
+   drawn sun for Use and a drawn moon for Maintain, each with its full name as its accessible
+   name and tooltip. The moon picker sits under it on Use, as today.
+
+2. **Every section is an orbit station.** A sidebar folder renders as a station: a card
+   (12px radius, 1px border, the panel colour) with a header and its pages.
+   - **Header:** a small orbit drawing (a ring, with a filled planet on it when the current page
+     is inside), the section's name, the number of pages in it, and a chevron. When the folder
+     has an index page, the name links to it, as Fumadocs does today.
+   - **Pages are moons.** Inside an open station each page is a row with a moon dot, and the
+     dots sit on one arc of the station's orbit, drawn in the left gutter: the arc bows outward,
+     so a long station is a gentle curve, never a ruled line. The current page is the planet: an
+     accent dot with a halo, its row tinted with the entry's ecosystem colour, marked
+     `aria-current="page"`. Hovering a row fills its dot.
+   - **Open and closed.** The station holding the current page opens and its border takes the
+     ecosystem colour; the others start closed and show only their header, so a long sidebar
+     (this site's Maintain track has twelve sections) scans as a list of station names. The
+     chevron opens and closes a station.
+   - **Nested folders** are smaller stations inside their parent, without a card border: a
+     smaller orbit drawing and a shorter arc. Deeper levels indent without a further drawing.
+   - **Top-level pages** outside any folder (an overview) sit above the stations on their own
+     short arc, with the same moon dots. A Fumadocs separator is a dotted line with its label.
+
+3. **"On this page" is a trajectory with a probe.** Our own component replaces Fumadocs'
+   `normal` table of contents in both `slots.toc.main` and `slots.toc.popover`, built on
+   `useItems` and `useActiveAnchors`.
+   - **The path.** One continuous curved path through a dot per heading, drawn in a 28px gutter.
+     Depth sets each dot's offset (`##` 6px, `###` 18px, deeper 26px). Between two headings of
+     the same depth the path bows outward in a shallow arc; across a depth change it swings in an
+     S-curve. So the path curves on every page, including one with only `##` headings.
+   - **Read and unread.** The stretch already read is drawn solid in the accent colour, and its
+     dots filled. The stretch ahead is drawn dashed and muted, with hollow dots, the same dashed
+     language as an unreleased moon.
+   - **The probe.** A small planet (accent, with a halo and a shaded night side) rides the path
+     at the reader's position, gliding between dots as they scroll through a section, not jumping
+     from heading to heading. The active heading's text takes the foreground colour.
+   - **Time left.** The header reads "On this page" and, at the right, "4 min left": the page's
+     reading time, from its word count at build time at 220 words a minute, scaled by how much
+     is still unread and rounded up. At the end of the page it reads "End of page". A page under
+     one minute shows no time.
+   - **Back to top.** Under the list, "Back to top ↑", shown once the reader has scrolled past
+     the first heading.
+   - **On phones**, Fumadocs' bar under the header becomes our bar: a small ring with the probe
+     at the reading position, the current heading, and the time left. Tapping it opens the same
+     trajectory as a sheet; choosing a heading scrolls there and closes it.
+   - Choosing a heading scrolls to it smoothly, and instantly under reduced motion, where the
+     probe also jumps from dot to dot instead of gliding.
+
+4. **The full horizon closes every page** (supersedes ADR-0017 decision 8, in part). Docs pages
+   get the same footer as the home page: the closing line, the star rising over the planet's
+   edge, the planet row and the link row, across the full width below the sidebar and the page.
+   Its last link reads "Back to top" on docs pages and "Back to orbit" on the home page and the
+   404. The `compact` variant is removed.
+
+5. **What stays.** The moon picker, version notices, planet header, page headings, body text
+   and reading column are unchanged. Search, the header and the theme switch are unchanged.
+   Every drawing is inline SVG in the existing tokens (ADR-0017 decision 13); no dependency is
+   added.
+
+## Options considered
+
+| Concern | Option | Pros | Cons | Verdict |
+|---|---|---|---|---|
+| Left sidebar | A — orbit stations | Each section reads as a place in the system; closed stations make long sidebars short | A custom `Folder` and `Item` to own; a card per section takes more height when open | Chosen (owner) |
+| Left sidebar | B — planet console: the moons as the version picker, a sliding terminator for Use and Maintain, one continuous path through every page | The strongest use of the metaphor | The most custom code; replaces Fumadocs' version menu | Rejected |
+| Left sidebar | C — refined classic: today's structure, polished | Lowest risk | Changes little; the metaphor still stops at the chip | Rejected |
+| On this page | A — trajectory with a probe and time left | Curves on every page; shows progress and what is left | Our own component in place of Fumadocs' | Chosen (owner) |
+| On this page | B — orbit dial: a reading-progress orbit above a curved list | Compact and playful | Progress and the list sit apart | Rejected |
+| On this page | C — Fumadocs' `clerk` style, recoloured | No custom code | Least distinctive; still Fumadocs' look | Rejected |
+| Horizon on docs pages | A — the full horizon | One footer everywhere | A long page ends with a tall footer | Chosen (owner) |
+| Horizon on docs pages | B — the scene without the closing line | Shorter | Two footers to keep | Rejected |
+| Reading time | A — word count at build time from `structuredData` | No work in the browser; the same number in every visit | Code blocks count as words | Chosen |
+| Reading time | B — count the rendered text in the browser | Counts exactly what is shown | Work on every visit; differs before hydration | Rejected |
+
+## Consequences
+
+**Positive**
+
+- Both columns carry the metaphor: sections are stations, pages are moons, reading is a
+  trajectory.
+- "On this page" curves on every page and tells the reader how far they are and how long is
+  left.
+- Long sidebars, such as this site's Maintain track, collapse to station names.
+- One footer on every page.
+
+**Negative / accepted trade-offs**
+
+- Two Fumadocs parts are replaced by our own (the sidebar's folder and item, the table of
+  contents and its phone bar). A Fumadocs upgrade that changes those slots needs a check.
+- An open station takes more height than a plain folder.
+- The full horizon adds height to the end of every docs page.
+- Reading time is an estimate; long code blocks overstate it.
+
+## Content invariants
+
+- **3 (Version on every page)** and **5 (Readable as Markdown)**: unchanged. The trajectory and
+  stations are page chrome; the per-page Markdown, `llms.txt` and `llms-full.txt` don't include
+  them.
+- No other invariant is touched; no content changes.
+
+## Security considerations
+
+None. This change touches no data, no endpoint and no secret. The reading time is computed at
+build time from the page's own public text; nothing new leaves the system, and nothing is stored
+in the browser.
+
+## Implementation notes
+
+- [x] `src/lib/trajectory.ts`: the path builder (dot offsets by depth, arcs and S-curves between
+      dots, the length at each dot), the probe's position, the time-left function, and the
+      sidebar's station arcs (`arcRow`, `arcSlot`). Pure functions, no React.
+- [x] `src/lib/reading-time.ts`: words in a page's `structuredData`, and its minutes at 220 a
+      minute. Found on implementation: fumadocs-mdx structures headings, paragraphs, quotes,
+      tables and JSX blocks, not code blocks, so code does not count towards the reading time.
+- [x] `src/components/docs/trajectory-toc.tsx` (client): the desktop column and the phone bar,
+      passed as `slots.toc.main` and `slots.toc.popover` from `src/app/(site)/[...slug]/page.tsx`,
+      which also passes the page's minutes through `ReadingTimeProvider`. Fumadocs' `TOCProvider`
+      stays the provider. The reading position is measured from the headings' places on the page
+      (the probe needs how far between two headings the reader is), so it uses `useTOCItems`
+      rather than `useActiveAnchors`.
+- [x] `src/components/docs/orbit-station.tsx` (client): `OrbitStation`, `OrbitItem` and
+      `OrbitSeparator`, passed as `sidebar.components` in `src/app/(site)/layout.tsx`, built on
+      Fumadocs' sidebar primitives (`fumadocs-ui/components/sidebar/base`) so opening, closing
+      and the drawer keep working.
+- [x] `src/components/docs/track-switch.tsx`: the planet row (decision 1); the banner carries
+      `data-ring`, from which the sidebar takes its ecosystem colour.
+- [x] `src/app/(site)/layout.tsx`: the full `HorizonFooter` with `backLabel="Back to top"`;
+      `compact` removed from `src/components/horizon-footer.tsx`.
+- [x] `src/app/site.css`: station, trajectory, probe and phone bar styles, with reduced-motion
+      and `hover: none` rules; the orbit-line and dot overrides on Fumadocs' list and table of
+      contents removed.
+- [ ] Tests (ADR-0007): no runner is installed yet. The pure functions in `trajectory.ts` and
+      `reading-time.ts` were checked by hand with a throwaway script (not committed): offsets by
+      depth, an arc between equal depths and an S-curve across a change, one heading with no
+      path, no headings, the probe before the first heading, between two and at the last, time
+      left at 0%, 50% and 100%, before hydration and under a minute, the station arc's bow, ends
+      and slots, and the reading minutes. They become the first tests once the runner's ADR is
+      approved.
+- [x] Checked in the built HTML: twelve stations on this site's Maintain pages with the current
+      one open and marked, the current page with `aria-current="page"`, the trajectory column and
+      phone bar, and the full horizon with its closing line and scene. Not yet looked at in a
+      browser.
+- [ ] `bun run lint` is blocked by typescript-eslint and TypeScript 7 (reported);
+      `bun run types:check` and `bunx next build` pass.
+
+## Docs to update on implementation
+
+- [x] [`../app-flow/docs-sidebars.mdx`](../app-flow/docs-sidebars.mdx): status Current
+- [x] [`../prd/docs-sidebars.mdx`](../prd/docs-sidebars.mdx): status Current
+- [x] [`../app-flow/solar-system.mdx`](../app-flow/solar-system.mdx): screen 3 (sidebar top) and
+      screen 5 (the footer on docs pages)
+- [x] [`../app-flow/site-pages.mdx`](../app-flow/site-pages.mdx): the docs page screen
+- [x] [`../architecture/system.mdx`](../architecture/system.mdx): the new components and lib files
+- [x] `DESIGN.md` and `.impeccable/design.json`: the station, trajectory and probe components
+- [x] `AGENTS.md` §1, §5 and §10; `README.md` if its layout section names the changed files
+- [x] [`./index.mdx`](./index.mdx): index row and status; ADR-0017's "Superseded by" header

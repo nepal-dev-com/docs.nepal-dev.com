@@ -1,0 +1,62 @@
+---
+title: "PRD — docs sidebars: orbit stations, the trajectory and the horizon"
+---
+
+- **Status:** Current
+- **Last updated:** 2026-11-01
+- **Related ADRs:** [ADR-0018](../adr/ADR-0018-docs-pages-get-orbit-stations-a-trajectory-and-the-full-horizon.mdx)
+
+> Snapshot of the system as it stands today. Edit in place; never record what changed.
+
+## Problem
+
+Readers spend most of their time on docs pages, between the left sidebar and "On this page".
+Both are Fumadocs' defaults with a dot added: long sidebars, such as this site's Maintain track
+with twelve sections, are a long list of rows, and "On this page" is a straight line on any page
+whose headings are one depth. Neither says how much of the page is left. Docs pages also end on a
+shortened footer that differs from every other page's.
+
+## Goal
+
+- Each sidebar section reads as one station; only the current one is open.
+- "On this page" curves on every page, shows where the reader is, and how long is left.
+- Every page, docs pages included, ends on the same full horizon.
+
+## Non-goals
+
+- Changing page headings, body text or the reading column.
+- Changing the moon picker, version notices or planet header (ADR-0017).
+- Search, the header and the theme switch.
+
+## User stories
+
+| # | Story | Acceptance criteria |
+|---|---|---|
+| US-1 | As a **reader**, I want **to see the sections of a package at a glance**, so that **I can find the right page in a long sidebar**. | - Each folder is a station with its name and page count.<br />- The station holding the current page is open; the others are closed.<br />- The chevron opens and closes a station. |
+| US-2 | As a **reader**, I want **to see where I am in the sidebar**, so that **I keep my place**. | - The current page is the accent planet on its station's arc, its row tinted, with `aria-current="page"`.<br />- Its station's orbit drawing shows a filled planet. |
+| US-3 | As a **reader**, I want **to switch between Use and Maintain from the sidebar's first row**, so that **it takes no extra space**. | - The chip and the sun and moon buttons share one row.<br />- Each button has its full name as its accessible name and tooltip. |
+| US-4 | As a **reader**, I want **to see how far through a page I am**, so that **I know what is left**. | - The read stretch of the path is solid with filled dots; ahead is dashed with hollow dots.<br />- A probe rides the path at the reading position. |
+| US-5 | As a **reader**, I want **to know how long the rest of the page takes**, so that **I can decide to read now or later**. | - The header shows the minutes left, from the build-time word count at 220 a minute, rounded up.<br />- "End of page" at the end; no time for a page under a minute. |
+| US-6 | As a **reader on a phone**, I want **the same progress and section list**, so that **I can jump without scrolling back up**. | - The bar under the header shows the ring, the current heading and the time left.<br />- Tapping opens the trajectory; choosing a heading scrolls there and closes it. |
+| US-7 | As a **reader at the end of a docs page**, I want **the same footer as every page**, so that **the site feels like one place**. | - The full horizon, with its closing line and scene, closes every docs page.<br />- Its last link reads "Back to top". |
+| US-8 | As a **reader who prefers less motion, or uses a keyboard or a screen reader**, I want **the same information**, so that **nothing depends on animation or pointing**. | - With reduced motion, stations and the sheet open without animation and the probe jumps.<br />- Stations, headings and buttons are reachable by keyboard and named for screen readers. |
+
+## Rules and edge cases
+
+- A track with no folders shows its top-level pages only. A nested folder is a smaller station
+  without a card border.
+- A page without headings shows its reading time and "This page has no sections." on desktop,
+  and no bar on phones. One heading: one dot, no path.
+- Before scripts load, stations show their starting state, the path is dashed throughout with
+  the total reading time, and there is no probe.
+- Reading time counts the page's headings, paragraphs, quotes, tables and components, not its
+  code blocks.
+
+## Out of scope for now
+
+- Remembering which stations a reader opened, across pages or visits: it would need browser
+  storage and a decision of its own.
+
+## Open questions
+
+None.

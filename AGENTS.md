@@ -58,15 +58,17 @@ yet** besides the site itself, so the home page shows its empty states.
   versioned.
 - **The build checks the shape.** Line redirects, version banners, scoped sidebars, search
   fields and `llms.txt` labels all come from it.
-- **The whole site is one solar system** (ADR-0015, ADR-0017). The star is the maker; a package
+- **The whole site is one solar system** (ADR-0015, ADR-0017, ADR-0018). The star is the maker; a package
   is a solid planet, a project a ringed one; each version line is a moon (full = latest,
   crescent = older, dashed new moon = `dev`); Use and Maintain are a planet's day and night
   sides. The marks are drawn by `src/components/planet.tsx` and mean the same on every page.
   Every page shares the site header (brand, nav, GitHub, the orrery theme switch; a search
-  button on docs pages), the tokens and fonts, and the Horizon footer (without its scene on docs
-  pages). Docs pages use the Fumadocs notebook layout: a planet header on each overview, the
-  planet chip, day/night switch and moon picker in the sidebar, moon notices on `dev` and older
-  lines. Unknown paths get the out-of-orbit 404 (`src/app/not-found.tsx`).
+  button on docs pages), the tokens and fonts, and the full Horizon footer. Docs pages use the
+  Fumadocs notebook layout: a planet header on each overview; in the sidebar the planet row
+  (chip, a sun for Use and a moon for Maintain), the moon picker and orbit stations (each folder
+  a card, its pages moons on an arc, only the current one open); "On this page" as a trajectory
+  with a probe riding at the reading position and the minutes left; moon notices on `dev` and
+  older lines. Unknown paths get the out-of-orbit 404 (`src/app/not-found.tsx`).
 - **The home page is the system** (ADR-0014, ADR-0016, ADR-0017): the turning system beside
   the hero search button (it opens the site's Fumadocs search dialog), one planet card per entry
   with no section heading, private projects beyond an asteroid belt (three invented names from
@@ -132,8 +134,8 @@ together. It shows:
 - **the flow**: the screens and the transitions between them, made with Archify, plus its
   Mermaid flowchart version (§8);
 - **one wireframe per screen**, as a Mermaid `block-beta` diagram with invented sample values,
-  at phone width first; and, when clicking through or seeing states would settle a question,
-  an HTML wireframe or prototype (§8);
+  at phone width first. No HTML prototypes or HTML wireframes: by the owner's decision, the
+  Mermaid wireframes are the screens;
 - **each screen's states**: empty, loading, not found, refused, error, degraded, success.
 
 Not needed for a bug fix, for content within the approved conventions, or for an ADR that
@@ -232,9 +234,9 @@ What is installed **today** (verified from `package.json`, `node_modules` and th
 | Content source | `defineDocs` from `fumadocs-mdx/macro` in `src/lib/source.ts`, reading `content/`; no `source.config.ts`; generated files in `.source/` (gitignored) |
 | Catalogue | `src/lib/catalog-schema.ts` (meta schema with `catalog`, `name`, `version`, `channel`), `src/lib/catalog-plugin.ts` (build checks, line names and URL segments, typed roots), `src/lib/catalog.ts` (entries for pages and the home page), `src/lib/catalog-routes.ts` (line redirects in the proxy) — ADR-0013, ADR-0015 |
 | Routes | `/` is `src/app/(home)/`; every page is `src/app/(site)/[...slug]/` at `/<slug>/…` (`docsRoute` is `''` in `src/lib/shared.ts`); `src/proxy.ts` acts only on catalogued paths — ADR-0015 |
-| Look | Tokens on `:root` and `.dark` in `src/app/global.css`, mapped onto Fumadocs' `--color-fd-*`; site header, orrery theme switch (`src/components/theme-switch.tsx`, `useTheme` from `fumadocs-ui/provider/base`), docs typography, planet header, notices, sidebar marks and Horizon footer in `src/app/site.css`; planet and moon marks in `src/components/planet.tsx`; fonts Bricolage Grotesque, Onest and JetBrains Mono through `next/font/google` in `src/app/layout.tsx`; light/dark through next-themes (dark by default); visual system in `DESIGN.md` — ADR-0015, ADR-0017 |
+| Look | Tokens on `:root` and `.dark` in `src/app/global.css`, mapped onto Fumadocs' `--color-fd-*`; site header, orrery theme switch (`src/components/theme-switch.tsx`, `useTheme` from `fumadocs-ui/provider/base`), docs typography, planet header, notices, planet row, orbit stations, trajectory and Horizon footer in `src/app/site.css`; planet and moon marks in `src/components/planet.tsx`; fonts Bricolage Grotesque, Onest and JetBrains Mono through `next/font/google` in `src/app/layout.tsx`; light/dark through next-themes (dark by default); visual system in `DESIGN.md` — ADR-0015, ADR-0017, ADR-0018 |
 | Home page | `src/app/(home)/` and `src/components/home/`; styles in `src/app/(home)/home.css` (also the 404's) — ADR-0014, ADR-0016, ADR-0017 |
-| Docs pages | Fumadocs notebook layout in `src/app/(site)/layout.tsx`, header `src/components/site-header.tsx` (shared with the home page), `src/components/docs/` (docs header, planet header, planet chip and day/night switch, version notice), moon icons on the version menu, `src/components/horizon-footer.tsx` below every page — ADR-0015, ADR-0017 |
+| Docs pages | Fumadocs notebook layout in `src/app/(site)/layout.tsx`, header `src/components/site-header.tsx` (shared with the home page), `src/components/docs/` (docs header, planet header, the planet row in `track-switch.tsx`, orbit stations in `orbit-station.tsx` passed as `sidebar.components`, the trajectory in `trajectory-toc.tsx` passed as `slots.toc` from the page, version notice), moon icons on the version menu, `src/lib/trajectory.ts` and `src/lib/reading-time.ts` (geometry, time left, reading time), `src/components/horizon-footer.tsx` below every page — ADR-0015, ADR-0017, ADR-0018 |
 | UI runtime | React 19.3 |
 | Language | TypeScript 7, `strict`; `@/*` → `./src/*` |
 | Styling | Tailwind CSS 4 through `@tailwindcss/postcss`; global styles in `src/app/global.css` |
@@ -407,15 +409,13 @@ HTML file.
   when the owner asks, for a broken diagram. The update check inside `deliver` may run. When it
   reports a new version, tell the owner and never upgrade without their yes. Working folders go
   in `.archify/` (gitignored).
-- **Prototypes and HTML wireframes of an app flow's screens** are made with the vendored
-  `html-wireframe` (structure, navigation, click-through) and `html-prototype` (states, input,
-  feedback) skills, in this site's prototype theme, phone width first. The Mermaid
-  `block-beta` wireframe stays in the page. Working files go in `.prototypes/` (gitignored).
+- **No HTML prototypes or HTML wireframes.** By the owner's decision, an app flow's screens
+  are its Mermaid `block-beta` wireframes; no prototype skill is used.
 - **How this HTML is stored and shown on the site is decided by its own ADR**, because it is a
   UI change: ADR-0011, proposed (embedded with an `<HtmlEmbed>` component in a sandboxed
   frame). Until it is approved, the site shows the Mermaid version as highlighted code, and
-  Archify and prototype files stay out of `content/` and `public/`: save them outside the
-  published folders and give the owner the path.
+  Archify files stay out of `content/` and `public/`: save them outside the published folders
+  and give the owner the path.
 - No binary or externally hosted images.
 
 ### Always check these
@@ -514,17 +514,19 @@ adopts a host, analytics, CI or an authentication provider adds its own checks**
 ├── src/
 │   ├── proxy.ts         # catalogued paths only: line redirects (use/latest, unknown lines), then /<page>.md and Markdown negotiation
 │   ├── app/             # App Router: layout.tsx (fonts, theme), global.css (tokens), site.css (header, theme switch,
-│   │                    #   planet header, notices, sidebar marks, footer), not-found.tsx (the 404),
+│   │                    #   planet header, notices, planet row, stations, trajectory, footer), not-found.tsx (the 404),
 │   │                    #   (home)/ (home page, home.css), (site)/[...slug]/ (every page, notebook layout),
 │   │                    #   llms.txt, llms-full.txt, llms.mdx/[...slug]/, og/[...slug]/, static.json
 │   ├── components/      # site-header.tsx, theme-switch.tsx, planet.tsx (planet and moon marks),
 │   │                    #   horizon-footer.tsx, footer-actions.tsx, mdx.tsx, search.tsx (search dialog),
-│   │                    #   docs/ (docs header, planet header, track switch, version notice),
+│   │                    #   docs/ (docs header, planet header, track switch, orbit stations,
+│   │                    #   trajectory TOC, version notice),
 │   │                    #   home/ (home header, hero, orbit map, search button, planet cards,
 │   │                    #   beyond-the-belt + private-projects.ts, two sides, moon rows, terminal,
 │   │                    #   assistant actions)
 │   └── lib/             # source.ts (content loader), catalog*.ts (catalogue schema, checks, entries, redirects),
-│                        #   rings.ts (ecosystem rings and kind names), search-scope.ts, algolia.ts,
+│                        #   rings.ts (ecosystem rings and kind names), trajectory.ts, reading-time.ts,
+│                        #   search-scope.ts, algolia.ts,
 │                        #   shared.ts (site name, routes, GitHub)
 ├── scripts/
 │   └── sync-content.ts  # after next build: pushes static.json records to Algolia
@@ -601,7 +603,7 @@ violation is invisible in the diff, because the diff looks like good work.
 [ADR-0009](content/docs/maintain/adr/ADR-0009-trusted-agent-skills-are-vendored.mdx). The trusted skills for
 this repository are **vendored** in [`.claude/agent-skills/`](.claude/agent-skills/INDEX.md) at pinned
 commits: process skills (brainstorming, debugging, TDD, verification, code review), ADRs and
-source-driven work, writing, front end, prototypes, Next.js bundles, Algolia, security and
+source-driven work, writing, front end, Next.js bundles, Algolia, security and
 supply chain.
 They sit outside `content/`, so they are not published, and outside `.claude/skills/`, so
 Claude Code does not auto-load them.

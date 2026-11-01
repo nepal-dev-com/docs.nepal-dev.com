@@ -8,6 +8,7 @@ import { TrackSwitch } from '@/components/docs/track-switch';
 import { DocsHeader } from '@/components/docs/docs-header';
 import { MoonPhase } from '@/components/planet';
 import { HorizonFooter } from '@/components/horizon-footer';
+import { OrbitItem, OrbitSeparator, OrbitStation } from '@/components/docs/orbit-station';
 
 export default function Layout({ children }: LayoutProps<'/'>) {
   const catalog = getCatalog();
@@ -50,10 +51,13 @@ export default function Layout({ children }: LayoutProps<'/'>) {
         },
       }}
       tabMode="sidebar"
-      sidebar={{ banner: <TrackSwitch entries={entries} docsRoute={docsRoute} /> }}
+      sidebar={{
+        banner: <TrackSwitch entries={entries} docsRoute={docsRoute} />,
+        components: { Folder: OrbitStation, Item: OrbitItem, Separator: OrbitSeparator },
+      }}
     >
       {children}
-      <HorizonFooter entries={catalog} githubUrl={githubUrl} compact />
+      <HorizonFooter entries={catalog} githubUrl={githubUrl} backLabel="Back to top" />
     </DocsLayout>
   );
 }

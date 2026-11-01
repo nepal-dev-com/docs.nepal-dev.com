@@ -3,7 +3,7 @@
   "generatedAt": "2026-11-01T00:00:00Z",
   "title": "Design System: Puncoz Docs",
   "extensions": {
-    "scope": "The whole site: tokens on :root (light) and .dark (dark) in src/app/global.css as --home-*, mapped onto Fumadocs colours; header, theme switch, planet header, notices, sidebar marks and Horizon footer in src/app/site.css; home sections and the 404 in src/app/(home)/home.css; planet and moon marks drawn by src/components/planet.tsx. Docs pages use the Fumadocs notebook layout under the shared header.",
+    "scope": "The whole site: tokens on :root (light) and .dark (dark) in src/app/global.css as --home-*, mapped onto Fumadocs colours; header, theme switch, planet header, notices, the sidebar's planet row and orbit stations, the trajectory and Horizon footer in src/app/site.css; home sections and the 404 in src/app/(home)/home.css; planet and moon marks drawn by src/components/planet.tsx. Docs pages use the Fumadocs notebook layout under the shared header.",
     "colorMeta": {
       "signal-teal": {
         "role": "primary",
@@ -676,6 +676,22 @@
       "description": "Sticky translucent header: brand mark and wordmark, muted links, ghost GitHub button.",
       "html": "<header class=\"ds-header\"><a class=\"ds-brand\" href=\"#\"><span class=\"ds-mark\"></span>Puncoz Docs</a><nav><a href=\"#\">Packages</a><a href=\"#\">Projects</a><a href=\"#\">llms.txt</a></nav><span style=\"flex:1\"></span></header>",
       "css": ".ds-header{display:flex;align-items:center;gap:28px;height:60px;padding:0 24px;background:color-mix(in srgb,var(--home-bg) 80%,transparent);backdrop-filter:saturate(1.4) blur(12px);border-bottom:1px solid var(--home-line)}.ds-brand{display:flex;align-items:center;gap:10px;font:600 17px var(--home-font-display);letter-spacing:-.01em;color:var(--home-ink);text-decoration:none}.ds-mark{position:relative;width:22px;height:22px}.ds-mark::before{content:'';position:absolute;inset:0;border:1.5px solid var(--home-ink);border-radius:50%;transform:scaleY(.45) rotate(-18deg)}.ds-mark::after{content:'';position:absolute;left:7px;top:7px;width:8px;height:8px;border-radius:50%;background:var(--home-accent)}.ds-header nav{display:flex;gap:22px;font:14px var(--home-font-text)}.ds-header nav a{color:var(--home-muted);text-decoration:none}.ds-header nav a:hover{color:var(--home-ink)}.ds-header a:focus-visible{outline:2px solid var(--home-accent);outline-offset:2px;border-radius:6px}"
+    },
+    {
+      "name": "Orbit station",
+      "kind": "nav",
+      "refersTo": "orbit-station",
+      "description": "A docs sidebar section as a station: an orbit glyph, the name and a page count, then its pages as moon dots on one outward-bowing arc; the current page is the teal planet.",
+      "html": "<div class=\"ds-station\"><div class=\"ds-station-head\"><svg viewBox=\"-10 -10 20 20\" aria-hidden=\"true\"><ellipse rx=\"8.5\" ry=\"3.6\" transform=\"rotate(-18)\" class=\"ds-st-orbit\"/><circle r=\"2.6\" class=\"ds-st-core\"/><circle cx=\"7.4\" cy=\"-2.4\" r=\"2\" class=\"ds-st-planet\"/></svg><span>Get started</span><b>2</b></div><a class=\"ds-moon\" href=\"#\" aria-current=\"page\"><i style=\"left:8px\"></i>Install</a><a class=\"ds-moon\" href=\"#\"><i style=\"left:10.5px\"></i>Commands</a></div>",
+      "css": ".ds-station{width:240px;padding:0 4px 5px;background:var(--home-panel);border:1px solid color-mix(in srgb,var(--home-npm) 45%,var(--home-line));border-radius:12px}.ds-station-head{display:flex;align-items:center;gap:9px;padding:8px 9px;font:500 13.5px var(--home-font-text);color:var(--home-ink)}.ds-station-head svg{width:18px;height:18px;overflow:visible}.ds-st-orbit{fill:none;stroke:var(--home-line-2);stroke-width:1.2}.ds-st-core{fill:var(--home-faint);opacity:.55}.ds-st-planet{fill:var(--home-npm)}.ds-station-head span{flex:1}.ds-station-head b{min-width:22px;padding:1px 6px;font:500 11.5px var(--home-font-data);text-align:center;color:var(--home-faint);background:var(--home-bg-2);border-radius:9px}.ds-moon{position:relative;display:flex;align-items:center;min-height:32px;padding:6px 8px 6px 30px;font:13.5px var(--home-font-text);color:var(--home-muted);border-radius:8px;text-decoration:none}.ds-moon i{position:absolute;top:calc(50% - 3.5px);width:7px;height:7px;border-radius:50%;background:var(--home-panel);box-shadow:inset 0 0 0 1.4px var(--home-line-2)}.ds-moon[aria-current]{font-weight:500;color:var(--home-ink);background:color-mix(in srgb,var(--home-npm) 10%,transparent)}.ds-moon[aria-current] i{width:10px;height:10px;top:calc(50% - 5px);background:var(--home-accent);box-shadow:0 0 0 3px color-mix(in srgb,var(--home-accent) 22%,transparent)}"
+    },
+    {
+      "name": "Trajectory",
+      "kind": "nav",
+      "refersTo": "trajectory",
+      "description": "\"On this page\": the headings on one curved path, read stretch solid teal, the rest dashed, a probe planet riding at the reading position, the minutes left in the header.",
+      "html": "<div class=\"ds-traj\"><div class=\"ds-traj-head\"><b>On this page</b><span>4 min left</span></div><svg width=\"28\" height=\"96\" aria-hidden=\"true\"><path d=\"M6 13 C2 20 2 30 6 37\" class=\"ds-tr-read\"/><path d=\"M6 37 C6 49 18 49 18 61 C14 68 14 78 18 85\" class=\"ds-tr-ahead\"/><circle cx=\"7\" cy=\"46\" r=\"5\" class=\"ds-tr-halo\"/><circle cx=\"7\" cy=\"46\" r=\"3.4\" class=\"ds-tr-probe\"/></svg><ol><li class=\"read\">Add the package</li><li class=\"read\">Render a palette</li><li class=\"sub\">Props</li><li class=\"sub\">Events</li></ol></div>",
+      "css": ".ds-traj{position:relative;width:240px;font:13px/1.45 var(--home-font-text);color:var(--home-muted)}.ds-traj-head{display:flex;justify-content:space-between;margin-bottom:14px}.ds-traj-head b{font-weight:500;color:var(--home-ink)}.ds-traj-head span{font:500 12px var(--home-font-data);color:var(--home-faint)}.ds-traj svg{position:absolute;left:0;top:32px;overflow:visible}.ds-tr-read{fill:none;stroke:var(--home-accent);stroke-width:1.6}.ds-tr-ahead{fill:none;stroke:var(--home-line-2);stroke-width:1.2;stroke-dasharray:3 4}.ds-tr-halo{fill:var(--home-accent);opacity:.22}.ds-tr-probe{fill:var(--home-accent)}.ds-traj ol{margin:0;padding:0;list-style:none}.ds-traj li{padding:5px 0 5px 22px}.ds-traj li.read{color:var(--home-ink)}.ds-traj li.sub{padding-left:34px}"
     },
     {
       "name": "Theme switch",

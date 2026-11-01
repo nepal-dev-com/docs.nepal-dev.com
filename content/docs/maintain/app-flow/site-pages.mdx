@@ -4,7 +4,8 @@ title: "App flow — site pages: root URLs, header and docs pages"
 
 - **Status:** Current
 - **Last updated:** 2026-11-01
-- **Related ADRs:** [ADR-0017](../adr/ADR-0017-the-whole-site-is-one-solar-system.mdx),
+- **Related ADRs:** [ADR-0018](../adr/ADR-0018-docs-pages-get-orbit-stations-a-trajectory-and-the-full-horizon.mdx),
+  [ADR-0017](../adr/ADR-0017-the-whole-site-is-one-solar-system.mdx),
   [ADR-0016](../adr/ADR-0016-home-search-is-the-fumadocs-dialog-and-private-projects-render-server-side.mdx),
   [ADR-0015](../adr/ADR-0015-every-entry-lives-at-the-root-in-one-shape-and-one-look.mdx),
   [ADR-0013](../adr/ADR-0013-packages-and-projects-share-one-catalogue-shape.mdx),
@@ -14,8 +15,9 @@ title: "App flow — site pages: root URLs, header and docs pages"
 
 What a person sees and how they move through it: the root URLs, the header and the docs pages
 (ADR-0015), drawn in the site's solar-system look (ADR-0017). The look's shared pieces, the
-theme switch, the planet header, the sidebar's planet chip and moon picker, the notices, the
-footer and the 404, are drawn in [The solar system](./solar-system.mdx). Sample values are
+theme switch, the planet header, the sidebar's planet row and moon picker, the notices, the
+footer and the 404, are drawn in [The solar system](./solar-system.mdx); the sidebar's stations
+and "On this page" in [Docs sidebars](./docs-sidebars.mdx). Sample values are
 invented (ADR-0008): `lodestar`, `ledgerly` and `orbit-board` are not real packages or projects.
 Phone width first; desktop differences are noted under each screen.
 
@@ -115,8 +117,8 @@ block-beta
 
 The planet header ([The solar system](./solar-system.mdx), screen 2): the planet mark and a
 faint wash take the ecosystem colour; a project is a ringed planet. Desktop: the text on the
-left, the planet and its labelled moons on the right; the sidebar shows the planet chip and its
-tracks, the contents panel the overview's headings.
+left, the planet and its labelled moons on the right; the sidebar shows the planet row and its
+stations, "On this page" the overview's headings on its trajectory.
 
 **States**
 
@@ -139,23 +141,26 @@ block-beta
   hdr["◎ Puncoz Docs   ⌕ orrery ☰"]:4
   block:drawer:4
     columns 4
-    chip["● lodestar · npm package"]:4
-    track["☀ Use | ☾ Maintain"]:4
+    chip["● lodestar · npm package"]:3 track["☀ | ☾"]:1
     ver["● v1.4 · 1.4.2 · Latest ▾"]:4
-    l1["Install"]:4
-    l2["Commands"]:4
+    st["◎ Get started · 2 ▾"]:4
+    l1[" ◉ Install"]:4
+    l2[" ○ Commands"]:4
   end
+  bar["◔ Add the package · 4 min left ▾"]:4
   h1["Install"]:4
   stated["● Documents lodestar 1.4.2"]:4
   body["page content · code in JetBrains Mono"]:4
 ```
 
-The drawer is the sidebar, opened from the header's menu button. Its top holds the planet chip
-(links to the overview), the day/night switch (Use with a drawn sun, Maintain with a drawn moon)
-and the moon picker; the current page is a planet dot on its folder's orbit line, or at the end
-of its row at the top level. The sun, moon and dot characters in the wireframes stand for drawn
-SVG marks. Desktop: sidebar on the left with those three at its top, the page in the middle, the contents panel on
-the right. Headings in Bricolage Grotesque, text in Onest, code on the panel colour.
+The drawer is the sidebar, opened from the header's menu button. Its top holds the planet row
+(the chip linking to the overview, a sun for Use and a moon for Maintain) and the moon picker;
+below, each folder is an orbit station whose pages are moons on an arc, the current page the
+teal planet ([Docs sidebars](./docs-sidebars.mdx), screen 1). Under the header, the "On this
+page" bar shows the reading position and time left (screen 3 there). The sun, moon and dot
+characters in the wireframes stand for drawn SVG marks. Desktop: the sidebar on the left, the
+page in the middle, the trajectory on the right. Headings in Bricolage Grotesque, text in Onest,
+code on the panel colour.
 
 **States**
 
@@ -260,4 +265,4 @@ and templates, in today's order.
 ### 7. `Theme switch` and `Footer`
 
 Drawn in [The solar system](./solar-system.mdx): the orrery theme switch (screen 1) and, below
-every docs page, the Horizon footer's surface rows without its scene (screen 5).
+every docs page, the full Horizon footer (screen 5).

@@ -59,33 +59,26 @@ function Scene() {
   );
 }
 
-/**
- * The Horizon footer (ADR-0017 decision 8). Docs pages leave out the closing line and the scene,
- * so reading pages stay calm.
- */
+/** The Horizon footer, the same on every page (ADR-0017 decision 8, ADR-0018 decision 4). */
 export function HorizonFooter({
   entries,
   githubUrl,
-  compact = false,
+  backLabel = 'Back to orbit',
 }: {
   entries: CatalogEntry[];
   githubUrl: string;
-  compact?: boolean;
+  backLabel?: string;
 }) {
   return (
-    <footer className="horizon" data-compact={compact ? '' : undefined}>
-      {!compact && (
-        <>
-          <p className="horizon-closing">
-            Everything here orbits one maker:{' '}
-            <a href={owner.url} rel="noreferrer noopener">
-              {owner.name}
-            </a>
-            .
-          </p>
-          <Scene />
-        </>
-      )}
+    <footer className="horizon">
+      <p className="horizon-closing">
+        Everything here orbits one maker:{' '}
+        <a href={owner.url} rel="noreferrer noopener">
+          {owner.name}
+        </a>
+        .
+      </p>
+      <Scene />
       <div className="horizon-surface">
         {entries.length > 0 && (
           <nav className="horizon-planets" aria-label="Packages and projects">
@@ -104,7 +97,7 @@ export function HorizonFooter({
           <a href={githubUrl} rel="noreferrer noopener">
             GitHub
           </a>
-          <BackToTop label={compact ? 'Back to top' : 'Back to orbit'} />
+          <BackToTop label={backLabel} />
         </nav>
         <small>
           Packages and projects by{' '}

@@ -50,13 +50,11 @@ licence file, where the repository has one.
 | `mattpocock-skills` | [mattpocock/skills](https://github.com/mattpocock/skills) | `a496f5513d4a4cf889bc48e189e579f4b0bdf6aa` | 2026-10-29 | MIT (`LICENSE`) | Trusted by many: ~307k stars; Matt Pocock, TypeScript educator | writing-for-agents |
 | `trailofbits-skills` | [trailofbits/skills](https://github.com/trailofbits/skills) | `2be6433b39e009cd2b6fd3be1895f6b1faa5af9a` | 2026-10-28 | CC-BY-SA-4.0 (`LICENSE`): attribution and share-alike apply to these files | High trust: Trail of Bits, security research firm; ~7.9k stars | supply-chain-risk-auditor |
 | `algolia-skills` | [algolia/skills](https://github.com/algolia/skills) | `476d5c32dd249940ab7a7ded3330d9cfb0199ac3` | 2026-10-30 | MIT (`LICENSE`) | Owner: Algolia's official skills, for the search service this site uses. Few stars; trusted as the vendor | algolia-data-modeling, algolia-index-configuration, algolia-audit |
-| `plannotator-effective-html` | [plannotator/effective-html](https://github.com/plannotator/effective-html) | `e9e256e36270a359d0f6c89b3b33f41778ba6dce` | 2026-10-30 | MIT (`LICENSE`) | Trusted by many: ~3.8k stars; inspired by Thariq Shihipar's *The unreasonable effectiveness of HTML*. Added on the owner's yes, 2026-10-31 | html-wireframe, html-prototype |
 
 ### What was read
 
 - **In full:** every `SKILL.md` above, `SKILL-MECHANICS.md` (writing-for-agents), and both
-  `command.md` snapshots. For effective-html also `skills/html/references/interfaces.md`, and
-  its two example outputs scanned: one inline `<script>` each, no external resources.
+  `command.md` snapshots.
 - **Scanned** for command execution, network calls, credentials and override text: every other
   vendored file, including the 72 `rules/*.md` of react-best-practices, the Algolia and Next.js
   `references/`, and the supply-chain auditor's Python scripts. Nothing instructs an agent to
@@ -71,7 +69,6 @@ licence file, where the repository has one.
 | obra-superpowers | `skills/systematic-debugging/condition-based-waiting-example.ts` | TypeScript; the technique is in `condition-based-waiting.md` |
 | algolia-skills | `skills/*/evals/` | Test prompts for the skill authors; not used at run time |
 | trailofbits-skills | The plugin's `README.md`, `.claude-plugin/`, `evals/` | Packaging and tests, outside the skill folder |
-| plannotator-effective-html | `html`, `html-diagram`, `design-artifact`, `one-pager`, `html-plan`, `big-pics-little-words`, `examples/`, `site/`, plugin manifests | `html-diagram` overlaps Archify; `design-artifact` is optional to both skills ("when available") and brings a house editorial style; the rest are not needed |
 | all | Everything in each repository not listed under *Skills* | Not selected |
 
 ## Rejected candidates
@@ -87,6 +84,7 @@ licence file, where the repository has one.
 | fuma-nama/fumadocs | Ships no public skill (only an internal `.cursor/skills/radix-base-ui-sync`); the installed Fumadocs source is read directly |
 | Tailwind CSS, React, TypeScript, ESLint | No official skill exists |
 | algolia/skills `algolia-discovery-planning`, `algolia-events-insights`, `algolia-release-qa`, `algolia-instantsearch-ui` and the rest | Net-new or ecommerce builds, Insights events and InstantSearch, none of which this site uses; `algolia-cli` and `algolia-mcp` perform live account operations |
+| plannotator/effective-html `html-wireframe`, `html-prototype` | Removed on the owner's decision, 2026-11-01: app flows show screens as Mermaid `block-beta` wireframes only |
 | trailofbits/skills, other plugins | Smart contracts, C/C++, fuzzing and binary analysis; not relevant |
 
 ## Approved installed skills

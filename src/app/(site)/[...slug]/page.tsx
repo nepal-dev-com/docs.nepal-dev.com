@@ -15,6 +15,9 @@ import { getPageImageUrl, getPageMarkdownUrl, gitConfig } from '@/lib/shared';
 import { getEntry, getPageContext, pageInLine } from '@/lib/catalog';
 import { VersionNotice } from '@/components/docs/version-notice';
 import { PackageHero } from '@/components/docs/package-hero';
+import { ReadingTimeProvider, TrajectoryPopover, TrajectoryTOC } from '@/components/docs/trajectory-toc';
+import { TOCProvider } from 'fumadocs-ui/layouts/notebook/page/slots/toc';
+import { readingMinutes } from '@/lib/reading-time';
 
 /**
  * `/<slug>/use` and a line's own address have no page of their own: they open the first page
@@ -51,36 +54,43 @@ export default async function Page(props: PageProps<'/[...slug]'>) {
   const overview = context && page.slugs.length === 1;
 
   return (
-    <DocsPage toc={page.data.toc} full={page.data.full}>
-      {overview && <PackageHero entry={context.entry} />}
-      <DocsTitle>{page.data.title}</DocsTitle>
-      <DocsDescription className="mb-0">{page.data.description}</DocsDescription>
-      {version && (
-        <VersionNotice
-          version={version}
-          latest={
-            latest && latest.segment !== version.segment
-              ? { version: latest.version, url: pageInLine(page, latest) }
-              : undefined
-          }
-        />
-      )}
-      <div className="flex flex-row gap-2 items-center border-b pb-6">
-        <MarkdownCopyButton markdownUrl={markdownUrl} />
-        <ViewOptionsPopover
-          markdownUrl={markdownUrl}
-          githubUrl={`https://github.com/${gitConfig.user}/${gitConfig.repo}/blob/${gitConfig.branch}/content/${page.path}`}
-        />
-      </div>
-      <DocsBody>
-        <MDX
-          components={getMDXComponents({
-            // this allows you to link to other pages with relative file paths
-            a: createRelativeLink(source, page),
-          })}
-        />
-      </DocsBody>
-    </DocsPage>
+    <ReadingTimeProvider minutes={readingMinutes(page.data.structuredData)}>
+      <DocsPage
+        toc={page.data.toc}
+        full={page.data.full}
+        // "On this page" is a trajectory with a probe (ADR-0018 decision 3).
+        slots={{ toc: { provider: TOCProvider, main: TrajectoryTOC, popover: TrajectoryPopover } }}
+      >
+        {overview && <PackageHero entry={context.entry} />}
+        <DocsTitle>{page.data.title}</DocsTitle>
+        <DocsDescription className="mb-0">{page.data.description}</DocsDescription>
+        {version && (
+          <VersionNotice
+            version={version}
+            latest={
+              latest && latest.segment !== version.segment
+                ? { version: latest.version, url: pageInLine(page, latest) }
+                : undefined
+            }
+          />
+        )}
+        <div className="flex flex-row gap-2 items-center border-b pb-6">
+          <MarkdownCopyButton markdownUrl={markdownUrl} />
+          <ViewOptionsPopover
+            markdownUrl={markdownUrl}
+            githubUrl={`https://github.com/${gitConfig.user}/${gitConfig.repo}/blob/${gitConfig.branch}/content/${page.path}`}
+          />
+        </div>
+        <DocsBody>
+          <MDX
+            components={getMDXComponents({
+              // this allows you to link to other pages with relative file paths
+              a: createRelativeLink(source, page),
+            })}
+          />
+        </DocsBody>
+      </DocsPage>
+    </ReadingTimeProvider>
   );
 }
 

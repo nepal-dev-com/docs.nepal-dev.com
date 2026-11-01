@@ -111,7 +111,7 @@ built from:
 - **Link to `/<project-slug>/use/latest/…`** from your README and registry page. It
   redirects to the line marked `latest`, so the link never goes stale.
 - **No `demo.mdx` yet.** Demos wait for
-  [ADR-0011](content/docs/maintain/adr/ADR-0011-diagrams-and-prototypes-are-embedded-from-sandboxed-html.mdx).
+  [ADR-0011](content/docs/maintain/adr/ADR-0011-archify-diagrams-are-embedded-from-sandboxed-html.mdx).
 - **The build checks the shape** and fails, naming the file, on: a page directly in
   `content/`, a folder without a `catalog`, an invalid or non-`public` `catalog`, a slug that is
   not lowercase letters, digits and hyphens or is reserved (`api`, `auth`, `callback`, `sign-in`,
@@ -163,11 +163,10 @@ Format:
 
   Don't run `finalize`, `browser-check` or `visual-check` (they launch Chrome) unless the owner
   asks. Never upgrade Archify; tell the owner when it reports an update.
-- **Prototypes and HTML wireframes** of your screens: the vendored `html-wireframe` and
-  `html-prototype` skills (`.claude/agent-skills/INDEX.md`), in this site's prototype theme,
-  phone width first, with a Mermaid `block-beta` version kept in the page.
-- Until ADR-0011 is approved, keep Archify and prototype HTML out of `content/` and
-  `public/`, and give the owner its path. Once approved, pages embed it with `<HtmlEmbed>`.
+- **Screens are Mermaid `block-beta` wireframes**, phone width first. No HTML prototypes or
+  HTML wireframes.
+- Until ADR-0011 is approved, keep Archify HTML out of `content/` and `public/`, and give the
+  owner its path. Once approved, pages embed it with `<HtmlEmbed>`.
 - No binary or externally hosted images.
 
 ## 5. Git: edit only

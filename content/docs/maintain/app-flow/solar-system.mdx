@@ -4,7 +4,8 @@ title: "App flow — the solar system"
 
 - **Status:** Current
 - **Last updated:** 2026-11-01
-- **Related ADRs:** [ADR-0017](../adr/ADR-0017-the-whole-site-is-one-solar-system.mdx),
+- **Related ADRs:** [ADR-0018](../adr/ADR-0018-docs-pages-get-orbit-stations-a-trajectory-and-the-full-horizon.mdx),
+  [ADR-0017](../adr/ADR-0017-the-whole-site-is-one-solar-system.mdx),
   [ADR-0016](../adr/ADR-0016-home-search-is-the-fumadocs-dialog-and-private-projects-render-server-side.mdx),
   [ADR-0015](../adr/ADR-0015-every-entry-lives-at-the-root-in-one-shape-and-one-look.mdx),
   [ADR-0013](../adr/ADR-0013-packages-and-projects-share-one-catalogue-shape.mdx)
@@ -13,7 +14,8 @@ title: "App flow — the solar system"
 
 The look every page shares (ADR-0017). The home page's own screens are in
 [Home page](./home-page.mdx); the routes, header and docs page layout are in
-[Site pages](./site-pages.mdx). Sample values are invented (ADR-0008): `lodestar`, `ledgerly`
+[Site pages](./site-pages.mdx); the sidebar's stations and "On this page" in
+[Docs sidebars](./docs-sidebars.mdx). Sample values are invented (ADR-0008): `lodestar`, `ledgerly`
 and `orbit-board` are not real packages or projects. Phone width first; desktop differences are
 noted under each screen.
 
@@ -28,6 +30,9 @@ One metaphor, stated once and used everywhere:
 | A solid planet in an ecosystem colour, its night side shaded | a package | the system, cards, planet header, sidebar chip, footer |
 | A ringed planet | a project | the same places |
 | A full moon | the latest release | cards, planet header, moon picker, version line, Every moon |
+| A small orbit with a planet on it | a section of pages, an orbit station | the docs sidebar |
+| A moon dot on an arc | a page; the current page is the teal planet | the docs sidebar |
+| A small planet riding a curved path | the reader's place on the page | "On this page" |
 | A crescent | an older release | the same places |
 | A dashed new moon | `dev`, in development | the same places |
 | The day side, a drawn sun | Use | Two sides, the sidebar's switch |
@@ -38,13 +43,12 @@ The hero's legend teaches these once. Every mark is drawn SVG (`src/components/p
 `--home-night`.
 
 The flow is made with Archify. Its source is `.archify/solar-system-20261101/candidate.json`.
-The HTML prototype is `.prototypes/solar-system/index.html`. Until ADR-0011 is approved, both
-stay in those folders and are not published.
+Until ADR-0011 is approved, it stays in that folder and is not published.
 
 ## Entry points
 
 - The theme switch and the footer are on every page. The planet header opens every package and
-  project overview; the sidebar's planet chip, day/night switch and moon picker are on every page
+  project overview; the sidebar's planet row and moon picker are on every page
   inside a package or project; the notices are on `dev` and older lines; the 404 is at every
   unknown path.
 - Everyone sees the same pages.
@@ -121,25 +125,23 @@ the right.
 ```mermaid
 block-beta
   columns 4
-  chip["● lodestar · npm package"]:4
-  sw["[☀ Use | ☾ Maintain]"]:4
+  chip["● lodestar · npm package"]:3 sw["☀ | ☾"]:1
   moon["full moon · v0.1 · 0.1.4 · Latest ▾"]:4
-  l1["Install  ●"]:4
-  l2["Commands"]:4
+  st["◎ Get started · 2 ▾ — the open station"]:4
 ```
 
-The planet chip links to the overview. The day/night switch shows when both tracks exist; the
-current side is raised and, on the day side, its sun takes the star's colour. The moon picker is
-Fumadocs' version menu with each line's moon as its icon. The current page is a planet dot: on
-its folder's orbit line when nested, at the end of its row at the top level. The table of
-contents on desktop marks the current heading with a dot on its line too.
+The planet row: the planet chip links to the overview; beside it a sun for Use and a moon for
+Maintain, shown when both tracks exist, each named "Use, the day side" or "Maintain, the night
+side" with a tooltip; the current side is raised and, on the day side, its sun takes the star's
+colour. The moon picker under it is Fumadocs' version menu with each line's moon as its icon.
+The pages below are orbit stations ([Docs sidebars](./docs-sidebars.mdx), screen 1).
 
 **States**
 
-- One track: no switch.
+- One track: no sun and moon.
 - Maintain: no moon picker (Maintain is not versioned).
-- Success: the switch and the picker open the same page on the other side or line, when it
-  exists.
+- Success: the sun, the moon and the picker open the same page on the other side or line, when
+  it exists.
 
 ### 4. `Version notice` — on `dev` and older lines
 
@@ -169,18 +171,18 @@ block-beta
   credit["Packages and projects by Puncoz Nepal"]:4
 ```
 
-`src/components/horizon-footer.tsx`. On the home page and the 404: the closing line (the name
-links to `https://puncoz.com`), the scene, then the surface rows. On docs pages: the surface rows
-only, across the full width below the sidebar and the page, and "Back to top" instead of "Back
-to orbit". The links wrap on phones.
+`src/components/horizon-footer.tsx`, the same on every page: the closing line (the name links to
+`https://puncoz.com`), the scene, then the surface rows. On docs pages it runs across the full
+width below the sidebar and the page, and its last link reads "Back to top" instead of "Back to
+orbit". The links wrap on phones.
 
 **States**
 
 - Empty: with no public entries, the planet row is left out.
 - Degraded: with reduced motion, Back to orbit jumps instead of scrolling. Without scripts,
   Search and Back to orbit do nothing; the links work.
-- Success: a planet link opens its overview; Search opens the dialog; Back to orbit returns to
-  the top.
+- Success: a planet link opens its overview; Search opens the dialog; Back to orbit (Back to top
+  on docs pages) returns to the top.
 
 ### 6. `Out of orbit` — any unknown path
 
