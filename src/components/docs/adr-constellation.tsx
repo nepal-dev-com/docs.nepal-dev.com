@@ -72,7 +72,7 @@ export function AdrConstellation({ folder }: { folder: PageTree.Folder }) {
     });
 
   if (moons.length === 0) {
-    return <p className="constellation-empty">No decisions yet.</p>;
+    return <p className="constellation-empty">No decisions in this constellation yet.</p>;
   }
 
   const current = moons.findIndex((moon) => trim(moon.url) === pathname);

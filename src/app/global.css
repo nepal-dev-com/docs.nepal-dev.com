@@ -106,3 +106,117 @@ samp {
   font-family: var(--home-font-data);
   font-variant-numeric: tabular-nums;
 }
+
+/* The still sky (ADR-0029 decision 3): behind every page, cleared from the content column. */
+.verse-sky {
+  --sky-clear: 600px;
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  overflow: hidden;
+  pointer-events: none;
+  mask-image: linear-gradient(
+    to right,
+    #000 calc(50% - var(--sky-clear) - 100px),
+    transparent calc(50% - var(--sky-clear)),
+    transparent calc(50% + var(--sky-clear)),
+    #000 calc(50% + var(--sky-clear) + 100px)
+  );
+}
+
+/* The notebook layout is 97rem wide, wider than the home page's column. */
+:root:has(.site-header[data-docs]) .verse-sky {
+  --sky-clear: 786px;
+}
+
+.verse-sky svg {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+:root:not(.dark) .verse-sky,
+:root:not(.dark) .header-sky {
+  opacity: 0.6;
+}
+
+@media print {
+  .verse-sky,
+  .header-sky {
+    display: none;
+  }
+}
+
+/* Zooming along the scale ladder and the planet morph (ADR-0029 decisions 6 and 7). */
+::view-transition {
+  pointer-events: none;
+}
+
+::view-transition-group(.morph) {
+  animation-duration: 350ms;
+  animation-timing-function: var(--home-ease);
+}
+
+::view-transition-old(.zoom-in) {
+  animation:
+    160ms ease-in both verse-fade reverse,
+    350ms var(--home-ease) both verse-to-large;
+}
+
+::view-transition-new(.zoom-in) {
+  animation:
+    220ms ease-out 120ms both verse-fade,
+    350ms var(--home-ease) both verse-from-small;
+}
+
+::view-transition-old(.zoom-out) {
+  animation:
+    160ms ease-in both verse-fade reverse,
+    350ms var(--home-ease) both verse-to-small;
+}
+
+::view-transition-new(.zoom-out) {
+  animation:
+    220ms ease-out 120ms both verse-fade,
+    350ms var(--home-ease) both verse-from-large;
+}
+
+@keyframes verse-fade {
+  from {
+    opacity: 0;
+  }
+}
+
+@keyframes verse-from-small {
+  from {
+    scale: 0.98;
+  }
+}
+
+@keyframes verse-from-large {
+  from {
+    scale: 1.02;
+  }
+}
+
+@keyframes verse-to-large {
+  to {
+    scale: 1.02;
+  }
+}
+
+@keyframes verse-to-small {
+  to {
+    scale: 0.98;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-old(*),
+  ::view-transition-new(*),
+  ::view-transition-group(*) {
+    animation-duration: 0s !important;
+    animation-delay: 0s !important;
+  }
+}

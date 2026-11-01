@@ -1,0 +1,267 @@
+---
+title: "ADR-0029 — The Verse is a still sky you zoom through"
+---
+
+- **Status:** Approved
+- **Date:** 2026-11-01
+- **Deciders:** [@puncoz](https://github.com/puncoz)
+- **Approved by:** [@puncoz](https://github.com/puncoz)
+- **Approved on:** 2026-11-01
+- **Supersedes:** —
+- **Superseded by:** —
+- **Design documents:** [`../app-flow/universe-theme.mdx`](../app-flow/universe-theme.mdx),
+  [`../prd/universe-theme.mdx`](../prd/universe-theme.mdx)
+
+## Context
+
+The site is named *Puncoz Verse*, as in universe (ADR-0028). When the owner chose the name, they
+asked for the whole site to carry that theme, and ADR-0028 left the theme to this ADR.
+
+The solar system is already on every page (ADR-0017, ADR-0018, ADR-0027): the star is the maker,
+entries are planets, version lines are moons, Use and Maintain are a planet's day and night sides,
+and the sidebar is a scale ladder down to the page. What the site does not have:
+
+- **A level above the system.** The home page shows one system and nothing around it, so the
+  name *Verse* has no place on the map.
+- **A mark of its own.** The header's brand mark is a ringed planet, and under DESIGN.md's
+  *Mark Means* rule a ring means a project.
+- **A sky on reading pages.** Docs pages are plain graphite; the space feeling lives on the home
+  page, the 404 and the footer only.
+- **A sense of scale between pages.** Moving from the home page to a planet, or from a page back
+  up to its planet, is an ordinary page change. Fumadocs' breadcrumb names the folders but none of
+  the levels above them.
+
+Facts that shape the options:
+
+- React 19.3 ships `<ViewTransition>` and `addTransitionType`, and Next.js 16.4 runs App Router
+  navigations as transitions with no configuration; `<Link>` takes `transitionTypes`
+  (`node_modules/next/dist/docs/01-app/02-guides/view-transitions.md`, `…/02-components/link.md`).
+  Browsers without the View Transitions API navigate normally.
+- Fumadocs' notebook page takes its breadcrumb as a slot (`slots.breadcrumb` on `DocsPage`).
+- The site has no favicon or app icon (`src/app/` holds no `icon` file).
+- DESIGN.md's *One Orbit* rule: the turning system is the only continuous motion of the site's
+  own.
+
+The owner chose on 2026-11-01:
+
+- all three parts of the theme, **staged**: identity and sky, then zoom, then words, each
+  built and reviewed as its own step;
+- **one system, a wider sky** at the top level;
+- the approach **still sky, morph zoom**.
+
+## Decision
+
+1. **The Verse is the sky around the one system.** ADR-0017's metaphor stands: the star is the
+   maker, and every public entry orbits it. Above the system there is only sky, the asteroid belt
+   and, beyond it, the private projects, dim and far. The site has one scale ladder, from the top:
+   **Verse** (the site) → **System** (the home page) → **Planet** (an entry's overview) → **Side
+   and moon** (a track and its version line) → **Orbit** (a folder) → **Satellite** (a page) →
+   **Probe** (where the reader is).
+
+### Stage 1: identity and sky
+
+2. **The Verse mark.** A new brand mark replaces the ringed planet in the header and on Open
+   Graph images, and becomes the site's icon (`src/app/icon.svg`, Next.js' file convention): the
+   system seen from outside, a star-coloured centre inside two nested, tilted orbits in Frost Ink
+   with a teal planet on the inner one. It has no ring, so it never reads as a project. The
+   wordmark keeps its face and size; the name stays *Puncoz Verse*. The final drawing is reviewed
+   with stage 1.
+3. **A still sky on every page.** The home page, docs pages and the 404 stand on one star field:
+   - drawn on the server as SVG from a fixed seed, so it is the same on every load and needs no
+     script;
+   - still: it never moves, twinkles or drifts (the *One Orbit* rule holds);
+   - three sizes of star (about 0.6, 1 and 1.6px) in Steel Faint and Frost Ink at low opacity,
+     thickest at the page's edges and behind the header, thinning toward the content;
+   - **never behind text**: none under the reading column, the sidebar's rows or the table of
+     contents, so every contrast measured in DESIGN.md stays as it is;
+   - in the light theme, the same field as fine graphite specks at lower opacity, like a printed
+     star chart.
+   The home page's turning system draws over the sky, with its own stars removed so the two don't
+   double.
+
+### Stage 2: zoom
+
+4. **The scale strip.** On every docs page Fumadocs' breadcrumb is replaced by a strip naming
+   each level with its mark: `Verse ▸ System ▸ ● lodestar ▸ ☀ Use · ◯ v0.1 ▸ ○ Guides ▸ Forms`.
+   - *Verse* links to `/#verse`, *System* to `/`, the planet to its overview, the side and moon to
+     the line's first page, the orbit to its index when it has one (otherwise it is plain text);
+     the current page is plain text with `aria-current="page"`.
+   - It is a `nav` labelled *Scale*. On phones it shows only the parent level, with a back arrow,
+     and the current page's name.
+   - An overview shows `Verse ▸ System ▸ ● planet`. Maintain shows a moon for the side and no
+     version line.
+5. **The Verse view.** The home page's system gets one control at its lower right, *Zoom out to
+   the Verse*. Pressing it, or opening `/#verse`, eases the camera out over about 1.2 seconds with
+   the site's ease: the system shrinks to the centre, still turning, the wider sky opens around it,
+   the belt and the private planets show dim and far, labels fade except *Puncoz Nepal*, and a
+   caption reads *The Verse · one system so far*. The control becomes *Back to the system*;
+   pressing it, or the system itself, eases back in. It is a single response to input, so the
+   *One Orbit* rule holds.
+6. **The morph.** Opening a planet from its home page card morphs the card's planet into the
+   overview's planet header (a shared `<ViewTransition>` named for the entry), and coming back
+   morphs it back. Links in the scale strip and the sidebar's planet chip carry a transition type:
+   going up a level the new page settles in from slightly larger (zoom out), going down from
+   slightly smaller (zoom in), in about 0.35 seconds.
+7. **Motion off means no motion.** With reduced motion the Verse view changes instantly and no
+   page morphs or zooms; in a browser without view transitions, navigation is unchanged. Nothing
+   is hidden before scripts run.
+
+### Stage 3: words
+
+8. **Space words name places, never controls.** Controls and the labels readers scan for keep
+   their plain names: Search, Overview, Use, Maintain, On this page, version names, Back to top.
+   Space words go where the site describes itself: empty states, hints, the scale strip's top two
+   levels, the Verse view, the 404 and the footer, always alongside a plain sentence. The copy
+   that changes is listed in the app flow's *Words* table; DESIGN.md gains the vocabulary as a
+   named rule.
+
+### How it is built
+
+9. **One stage at a time, reviewed between.** Stage 1 is built on approval. Stage 2 starts once
+   the owner has reviewed stage 1 in the working tree, and stage 3 once they have reviewed stage
+   2. This departs from `AGENTS.md` §3 ("don't stop for per-change review") by the owner's
+   choice. Each stage ships its tests, DESIGN.md, the app flow's status and the docs below.
+10. **Unchanged:** the marks and their meanings, the scale ladder in the sidebar (ADR-0027), the
+    search button's text, every URL, and every Markdown surface: the sky, the strip, the zoom and
+    the morph are only drawn on the page, so per-page Markdown, `llms.txt` and `llms-full.txt`
+    stay the same.
+
+## Options considered
+
+| Concern | Option | Pros | Cons | Verdict |
+|---|---|---|---|---|
+| Scope | A — identity and a quiet sky | Smallest change seen everywhere | The name still has no place on the map | Rejected (owner) |
+| Scope | B — zoom between scales | The hierarchy becomes something you move through | A navigation element and transitions | Rejected alone (owner) |
+| Scope | C — words only | Cheap | Clarity risk on a docs site; nothing visible | Rejected alone (owner) |
+| Scope | D — all three, staged | The whole theme, reviewed in steps | Largest; three reviews | Chosen (owner) |
+| Top level | A — one system, a wider sky | ADR-0017 stays true; nothing changes meaning | The top level is atmosphere more than navigation | Chosen (owner) |
+| Top level | B — ecosystems as star systems, the maker as the galaxy's core | Real navigation at the top | Supersedes ADR-0017's metaphor; redraws the home page | Rejected (owner) |
+| Top level | C — a public and a private system | Prepares sign-in | Decides how private work shows, which needs its own ADR | Rejected (owner) |
+| Top level | D — no level above the system | Smallest | *Verse* is only a name | Rejected (owner) |
+| Approach | A — still sky, morph zoom | Keeps the *One Orbit* rule; reading pages stay server-rendered; no new library | The sky never moves | Chosen (owner) |
+| Approach | B — a living sky with a camera zoom | Most immersive | A second continuous motion; a client canvas on every reading page | Rejected (owner) |
+| Approach | C — zoom as a place only | Safest for motion | The zoom is never seen happening | Rejected (owner) |
+| Sky on reading pages | A — around the content, never behind text | Contrast unchanged | Fewer stars on narrow screens | Chosen |
+| Sky on reading pages | B — everywhere, dimmed behind text | Fuller sky | Every text pair re-measured; busier reading | Rejected |
+| Phone strip | A — parent level and current page | Fits 360px; one tap up | The full ladder is only on wider screens | Chosen |
+| Phone strip | B — the full strip, scrolled sideways | Every level | Horizontal scrolling inside the page | Rejected |
+
+## Consequences
+
+**Positive**
+
+- The name has a place: the Verse is the first level of the ladder and a view on the home page.
+- Every page shares one sky and one mark, so the site reads as one place.
+- Readers see where they are in the ladder on every page, and moving up or down it shows as a
+  zoom.
+- The brand mark no longer borrows the project mark.
+
+**Negative / accepted trade-offs**
+
+- Three stages and three reviews before the theme is complete.
+- The star field adds an inline SVG to every page (a few kilobytes).
+- The morph works only between a home page card and its overview; the canvas planets can't be
+  part of a view transition.
+- The Verse view is mostly atmosphere until there is more than one system to show.
+
+## Content invariants
+
+None touched. No page moves and no URL changes. The sky, the strip, the Verse view and the morph
+are drawn on the page only, so every Markdown surface stays as it is (§6.5). The private planets
+in the Verse view are the three invented names already on the home page (ADR-0017); no private
+content is added.
+
+## Security considerations
+
+None. This change touches no data, no endpoint and no secret. `/#verse` is a fragment read in the
+browser; it never reaches the server and carries nothing about the reader. No new third party is
+involved and no dependency is added.
+
+## Implementation notes
+
+**Stage 1: identity and sky**
+
+- [x] `src/components/verse-mark.tsx`: the mark (decision 2), used by `site-header.tsx` and the
+      Open Graph image; `src/app/icon.svg` from the same drawing.
+- [x] `src/components/sky.tsx` and `src/lib/sky.ts`: the seeded field as a server component,
+      with the regions kept clear of text (decision 3); placed once in `src/app/layout.tsx`;
+      styles in `src/app/global.css` for both themes. The home page's canvas drew no background
+      stars, so nothing there changed; the home wrapper's own ground fill, which hid the sky, is
+      removed (the body paints the same colour). The header's band is `HeaderSky`, evenly spread
+      and masked to the gap between the links and the buttons.
+- [x] Tests (ADR-0007, ADR-0021): the field is the same for the same seed and different for
+      another; no star falls in a cleared region; star counts and sizes stay in their ranges; the
+      mark renders with no ring and with its title for assistive tech.
+- [x] Checked in Chrome on localhost against `bunx next build`, dark and light: home and a docs page
+      on a wide screen (the sky in the gutters, clear of the column and the contents), the header
+      band at 1600px and at 570px (clear of the wordmark and the buttons), the 404, the Open Graph
+      image and the icon link. Where the content fills the width there is no page sky, only the
+      header's band. `impeccable detect` over the changed files: one advisory, the existing 11px
+      profile chip (ADR-0020).
+
+**Stage 2: zoom**
+
+- [x] `src/components/docs/scale-strip.tsx` and `src/lib/scale-strip.ts`: the levels from the
+      page tree and the catalogue (decision 4). Fumadocs' `slots.breadcrumb` receives only its
+      own breadcrumb options and its `component` option is deprecated, so the page turns the
+      breadcrumb off (`breadcrumb={{ enabled: false }}`) and renders the strip as its first
+      child, in the same place. A side level links to the first page of its line or track; an
+      orbit links to its folder's index when it has one.
+- [x] `src/components/home/orbit-map.tsx` with `src/lib/verse-view.ts`: the Verse view, its
+      control and caption, and `#verse` (decision 5). The far planets sit up-right, right and
+      below the star, so they never reach the hero's text; a click on the canvas in the Verse
+      view zooms back in.
+- [x] `src/components/zoom-page.tsx`: `ZoomPage` around each page (the home page and every docs
+      page) and `PlanetMorph` on the card's and the planet header's planet (decision 6).
+      `src/lib/zoom.ts` holds the two transition types, apart from `scale-strip.ts` so client
+      components do not pull in the catalogue's build checks. Zoom-out on the strip's links and
+      the planet chip; zoom-in on the card's name and on the Use and Maintain links of the card
+      and the planet header. The CSS for both directions and for reduced motion is in
+      `src/app/global.css` (decision 7).
+- [x] Tests: the strip's levels for an overview, a Use page in a line, a Maintain page, a page in
+      a nested folder, a folder's index and a folder without one, a page outside the catalogue;
+      the phone level; the Verse view's easing, scale and far planets; the wrappers add no
+      markup.
+- [x] Checked in Chrome on localhost against `bunx next build`: the strip at 1600px and 570px
+      (links and their targets, the phone's parent level and back arrow), the Verse view in and
+      out by the button and by a click, `/#verse` easing out on load, and the morph from the card
+      to the planet header with the `zoom-in` type. Between two docs pages the page zooms out;
+      between the home page and a docs page the route groups' layouts differ, so the page itself
+      crossfades and only the planet morphs. Coming back, the home page opens at its top with the
+      card below the fold, so the planet fades out rather than morphing into it (the app flow's
+      off-screen case). Reduced motion was checked in the CSS and the
+      easing's tests, not by emulating the setting in the browser. `impeccable detect` over the
+      changed files: no findings beyond the existing 11px profile chip.
+
+**Stage 3: words**
+
+- [x] The *Words* table in the app flow, applied (decision 8): the home page's and the ADR
+      constellation's empty states, and the search dialog's no results. Fumadocs'
+      `SearchDialogList` takes an `Empty` component, so `src/components/search-empty.tsx` replaces
+      the message there, with the same `role="status"`, rather than through Fumadocs'
+      translations, which would mean configuring its i18n for one string. The other rows were
+      built in stages 1 and 2 or were already in place.
+- [x] Tests: the home page's empty state and the search message, both rendered on the server.
+      The constellation is a client component, not unit-tested until a DOM is chosen (ADR-0021).
+
+**Every stage**
+
+- [x] `bun run test`, `bun run types:check` and `bunx next build` pass; `bun run lint` is
+      reported while it stays blocked.
+
+## Docs to update on implementation
+
+- [x] [`../app-flow/universe-theme.mdx`](../app-flow/universe-theme.mdx): each stage's screens
+      marked built; Current after stage 3.
+- [x] [`../prd/universe-theme.mdx`](../prd/universe-theme.mdx): Current after stage 3.
+- [x] `DESIGN.md` and `.impeccable/design.json`: the mark and the sky (stage 1), the strip, the
+      Verse view and the morph (stage 2), the vocabulary rule (stage 3).
+- [x] `PRODUCT.md` (the Verse as the top level), `AGENTS.md` §1 and §10, `PROJECT_AGENTS.md` if
+      the strip changes what consuming repositories see, `README.md`,
+      [`../architecture/system.mdx`](../architecture/system.mdx).
+- [x] The app flows that draw the header's mark or the breadcrumb, their Mermaid and Archify views:
+      site pages (the mark's description), multi-repository projects (the strip names the
+      repository); the home page and package navigation name the wordmark only in text, which
+      still holds. The home page and ADR constellation app flows and the home page PRD carry the
+      new empty states.
+- [x] [`./index.mdx`](./index.mdx): status (Approved; the app flow and PRD rows are Current).

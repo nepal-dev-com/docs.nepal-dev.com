@@ -64,9 +64,16 @@ yet** besides the site itself, so the home page shows its empty states.
   is a solid planet, a project a ringed one; each version line is a moon (full = latest,
   crescent = older, dashed new moon = `dev`); Use and Maintain are a planet's day and night
   sides. The marks are drawn by `src/components/planet.tsx` and mean the same on every page.
-  Every page shares the site header (brand, nav, GitHub, the orrery theme switch; a search
-  button on docs pages), the tokens and fonts, and the full Horizon footer. Docs pages use the
-  Fumadocs notebook layout: a planet header on each overview; in the sidebar the planet row
+  The system sits in a wider sky, the Verse (ADR-0029): the Verse mark, the still sky, the zoom
+  (the scale strip, the Verse view, the morph) and its words. Space words name places, never
+  controls: Search, Overview, Use, Maintain, On this page and version names keep their plain
+  names, and a space word always stands beside a plain sentence (DESIGN.md, *The Places, Not
+  Controls Rule*). Every page stands on one still star field, never behind
+  text, and shares the site header (the Verse mark and wordmark, nav, GitHub, the orrery theme
+  switch; a search button on docs pages), the tokens and fonts, and the full Horizon footer. Docs pages use the
+  Fumadocs notebook layout: the scale strip above every page in place of Fumadocs' breadcrumb
+  (Verse ▸ System ▸ planet ▸ side and moon ▸ orbits ▸ page; going up zooms out); a planet header
+  on each overview, its planet morphing from the home page's card; in the sidebar the planet row
   (chip, a sun for Use and a moon for Maintain), the moon picker, then a scale ladder (ADR-0027): top-level
   pages as landmarks (*Overview* first in every track, ADR-0025), separators as belts, folders as
   orbit rows with only the open one a card, its pages satellites on an arc (one open at a time at
@@ -74,8 +81,9 @@ yet** besides the site itself, so the home page shows its empty states.
   ADR-0019); the overview shows its default track's sidebar (ADR-0025); "On this page" as a trajectory
   with a probe riding at the reading position and the minutes left; moon notices on `dev` and
   older lines. Unknown paths get the out-of-orbit 404 (`src/app/not-found.tsx`).
-- **The home page is the system** (ADR-0014, ADR-0016, ADR-0017): the turning system beside
-  the hero search button (it opens the site's Fumadocs search dialog), one planet card per entry
+- **The home page is the system** (ADR-0014, ADR-0016, ADR-0017): the turning system, with
+  *Zoom out to the Verse* (the Verse view, also at `/#verse`, ADR-0029), beside the hero search
+  button (it opens the site's Fumadocs search dialog), one planet card per entry
   with no section heading, private projects beyond an asteroid belt (three invented names from
   `src/components/home/private-projects.ts`, shown to everyone by the owner's decision; never a
   real private name there), Two sides of every planet, Every moon and "Read it anywhere"
@@ -246,14 +254,14 @@ What is installed **today** (verified from `package.json`, `node_modules` and th
 | Content source | `defineDocs` from `fumadocs-mdx/macro` in `src/lib/source.ts`, reading `content/`; no `source.config.ts`; generated files in `.source/` (gitignored) |
 | Catalogue | `src/lib/catalog-schema.ts` (meta schema with `catalog`, `name`, `version`, `channel`), `src/lib/catalog-plugin.ts` (build checks, line names and URL segments, typed roots), `src/lib/catalog.ts` (entries for pages and the home page), `src/lib/catalog-routes.ts` (line redirects in the proxy) — ADR-0013, ADR-0015 |
 | Routes | `/` is `src/app/(home)/`; every page is `src/app/(site)/[...slug]/` at `/<slug>/…` (`docsRoute` is `''` in `src/lib/shared.ts`); `src/proxy.ts` acts only on catalogued paths — ADR-0015 |
-| Look | Tokens on `:root` and `.dark` in `src/app/global.css`, mapped onto Fumadocs' `--color-fd-*`; site header, orrery theme switch (`src/components/theme-switch.tsx`, `useTheme` from `fumadocs-ui/provider/base`), docs typography, planet header, notices, planet row, orbit stations, trajectory and Horizon footer in `src/app/site.css`; planet and moon marks in `src/components/planet.tsx`; fonts Bricolage Grotesque, Onest and JetBrains Mono through `next/font/google` in `src/app/layout.tsx`; light/dark through next-themes (dark by default); visual system in `DESIGN.md` — ADR-0015, ADR-0017, ADR-0018 |
-| Home page | `src/app/(home)/` and `src/components/home/`; styles in `src/app/(home)/home.css` (also the 404's) — ADR-0014, ADR-0016, ADR-0017 |
-| Docs pages | Fumadocs notebook layout in `src/app/(site)/layout.tsx`, header `src/components/site-header.tsx` (shared with the home page), `src/components/docs/` (docs header, planet header, the planet row in `track-switch.tsx` with `src/lib/overview-sidebar.ts`, orbit stations in `orbit-station.tsx` passed as `sidebar.components`, the ADR constellation in `adr-constellation.tsx` with `src/lib/adr-status.ts`, the trajectory in `trajectory-toc.tsx` passed as `slots.toc` from the page, version notice), moon icons on the version menu, `src/lib/trajectory.ts` and `src/lib/reading-time.ts` (geometry, time left, reading time), `src/components/horizon-footer.tsx` below every page — ADR-0015, ADR-0017, ADR-0018, ADR-0019 |
+| Look | Tokens on `:root` and `.dark` in `src/app/global.css`, mapped onto Fumadocs' `--color-fd-*`; site header, orrery theme switch (`src/components/theme-switch.tsx`, `useTheme` from `fumadocs-ui/provider/base`), docs typography, planet header, notices, planet row, orbit stations, trajectory and Horizon footer in `src/app/site.css`; planet and moon marks in `src/components/planet.tsx`; the Verse mark in `src/components/verse-mark.tsx` and the site icon `src/app/icon.svg`; the still sky in `src/components/sky.tsx` from `src/lib/sky.ts`, styled in `global.css` and `site.css`; the zoom: `src/components/zoom-page.tsx` (`ZoomPage` in each page, `PlanetMorph` on the card's and the planet header's planet), the transition types in `src/lib/zoom.ts`, their CSS in `global.css` (ADR-0029); fonts Bricolage Grotesque, Onest and JetBrains Mono through `next/font/google` in `src/app/layout.tsx`; light/dark through next-themes (dark by default); visual system in `DESIGN.md` — ADR-0015, ADR-0017, ADR-0018, ADR-0029 |
+| Home page | `src/app/(home)/` and `src/components/home/`; the Verse view in `orbit-map.tsx` with `src/lib/verse-view.ts`; styles in `src/app/(home)/home.css` (also the 404's) — ADR-0014, ADR-0016, ADR-0017, ADR-0029 |
+| Docs pages | Fumadocs notebook layout in `src/app/(site)/layout.tsx`, header `src/components/site-header.tsx` (shared with the home page), `src/components/docs/` (the scale strip in `scale-strip.tsx` with `src/lib/scale-strip.ts`, rendered first in the page with Fumadocs' breadcrumb off, docs header, planet header, the planet row in `track-switch.tsx` with `src/lib/overview-sidebar.ts`, orbit stations in `orbit-station.tsx` passed as `sidebar.components`, the ADR constellation in `adr-constellation.tsx` with `src/lib/adr-status.ts`, the trajectory in `trajectory-toc.tsx` passed as `slots.toc` from the page, version notice), moon icons on the version menu, `src/lib/trajectory.ts` and `src/lib/reading-time.ts` (geometry, time left, reading time), `src/components/horizon-footer.tsx` below every page — ADR-0015, ADR-0017, ADR-0018, ADR-0019, ADR-0029 |
 | UI runtime | React 19.3 |
 | Language | TypeScript 7, `strict`; `@/*` → `./src/*` |
 | Styling | Tailwind CSS 4 through `@tailwindcss/postcss`; global styles in `src/app/global.css` |
 | Diagrams | Archify source and HTML side by side in `diagrams/<project-slug>/`; served by `src/app/diagrams/[project]/[file]/route.ts` with the site shell `src/lib/diagram-shell.ts`; `<Diagram>` in `src/components/diagram.tsx` and `diagram-frame.tsx` (registered in `src/components/mdx.tsx`); the shape check and Markdown filter in `src/lib/remark-diagrams.ts` (wired in `src/lib/source.ts`); file checks in `src/lib/diagrams.ts`, run by the loader plugin `src/lib/diagrams-plugin.ts`; the CSP `sandbox` header for `/diagrams/:path*` in `next.config.mjs` — ADR-0011, ADR-0022 |
-| Search | Algolia: `src/app/static.json/route.ts` emits the records (scope `tag` plus catalogue fields), `scripts/sync-content.ts` pushes them after `next build`; `src/lib/algolia.ts` is the search-only client used by `src/components/search.tsx`, the one search dialog (the home page's hero button opens it) |
+| Search | Algolia: `src/app/static.json/route.ts` emits the records (scope `tag` plus catalogue fields), `scripts/sync-content.ts` pushes them after `next build`; `src/lib/algolia.ts` is the search-only client used by `src/components/search.tsx`, the one search dialog (its no-results line in `search-empty.tsx`) (the home page's hero button opens it) |
 | Linting | ESLint 9 + `eslint-config-next` (core-web-vitals); ignores `.claude/**` (agent skills, ADR-0009). **`bun run lint` does not run today:** `typescript-eslint` does not support TypeScript 7; fixing it needs its own ADR |
 | Testing | `bun test` (Bun's built-in runner), tests beside the code as `*.test.ts(x)`; `@types/bun` 1.4.4 through `tsconfig.test.json`, which `tsconfig.json` leaves out so the site's own check never sees Bun's types; server components rendered with `react-dom/server`; client components not unit-tested until a DOM is chosen — ADR-0007, ADR-0021 |
 | Package manager | Bun (`bun.lock`; 1.4.4 on the owner's machine). `scripts/sync-content.ts` runs on Node (v24) |
@@ -559,16 +567,17 @@ adopts a host, analytics, CI or an authentication provider adds its own checks**
 │   │                    #   planet header, notices, planet row, stations, trajectory, footer), not-found.tsx (the 404),
 │   │                    #   (home)/ (home page, home.css), (site)/[...slug]/ (every page, notebook layout),
 │   │                    #   llms.txt, llms-full.txt, llms.mdx/[...slug]/, og/[...slug]/, static.json,
-│   │                    #   diagrams/[project]/[file]/ (each Archify diagram with the site shell)
+│   │                    #   diagrams/[project]/[file]/ (each Archify diagram with the site shell), icon.svg (the Verse mark)
 │   ├── components/      # site-header.tsx, theme-switch.tsx, planet.tsx (planet and moon marks),
-│   │                    #   horizon-footer.tsx, footer-actions.tsx, mdx.tsx, diagram.tsx + diagram-frame.tsx, profile-link.tsx, search.tsx (search dialog),
-│   │                    #   docs/ (docs header, planet header, track switch, orbit stations,
+│   │                    #   verse-mark.tsx (the brand mark), sky.tsx (the still sky), zoom-page.tsx (zoom and morph, ADR-0029),
+│   │                    #   horizon-footer.tsx, footer-actions.tsx, mdx.tsx, diagram.tsx + diagram-frame.tsx, profile-link.tsx, search.tsx + search-empty.tsx (search dialog),
+│   │                    #   docs/ (scale strip, docs header, planet header, track switch, orbit stations,
 │   │                    #   ADR constellation, trajectory TOC, version notice),
-│   │                    #   home/ (home header, hero, orbit map, search button, planet cards,
+│   │                    #   home/ (home header, hero, orbit map with the Verse view, search button, planet cards,
 │   │                    #   beyond-the-belt + private-projects.ts, two sides, moon rows, terminal,
 │   │                    #   assistant actions)
 │   └── lib/             # source.ts (content loader), catalog*.ts (catalogue schema, checks, entries, redirects),
-│                        #   rings.ts (ecosystem rings and kind names), overview-sidebar.ts (ADR-0025), sidebar-ladder.ts (ADR-0027),
+│                        #   rings.ts (ecosystem rings and kind names), sky.ts (seeded star fields), scale-strip.ts, verse-view.ts and zoom.ts (ADR-0029), overview-sidebar.ts (ADR-0025), sidebar-ladder.ts (ADR-0027),
 │                        #   docs-layout.ts (DocsLayout options: Fumadocs' theme switch off), trajectory.ts, reading-time.ts, adr-status.ts,
 │                        #   search-scope.ts, algolia.ts, diagrams.ts + diagrams-plugin.ts (file checks), remark-diagrams.ts
 │                        #   (shape check, Markdown filter), diagram-shell.ts, diagram-files.ts (ADR-0022),

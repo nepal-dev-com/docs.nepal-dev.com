@@ -2,6 +2,7 @@ import { source } from '@/lib/source';
 import { notFound } from 'next/navigation';
 import { generateOGImage } from 'fumadocs-ui/og';
 import { appName, getPageImageUrl } from '@/lib/shared';
+import { VerseMark, verseMarkColors } from '@/components/verse-mark';
 
 export async function GET(_req: Request, { params }: RouteContext<'/og/[...slug]'>) {
   const { slug } = await params;
@@ -12,6 +13,8 @@ export async function GET(_req: Request, { params }: RouteContext<'/og/[...slug]
     title: page.data.title,
     description: page.data.description,
     site: appName,
+    // Open Graph images can't read CSS variables, so the mark takes its dark-theme colours.
+    icon: <VerseMark colors={verseMarkColors.dark} size={56} />,
   });
 }
 

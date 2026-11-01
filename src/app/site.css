@@ -33,7 +33,46 @@
   border-radius: 6px;
 }
 
+/* The header's band of sky, cleared from the brand, the links and the buttons (ADR-0029). */
+.header-sky {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+  mask-image: linear-gradient(
+    to right,
+    #000 calc(50% - 630px),
+    transparent calc(50% - 590px),
+    transparent calc(50% - 150px),
+    #000 calc(50% - 70px),
+    #000 calc(50% + 300px),
+    transparent calc(50% + 380px),
+    transparent calc(50% + 590px),
+    #000 calc(50% + 630px)
+  );
+}
+
+.site-header[data-docs] .header-sky {
+  mask-image: linear-gradient(
+    to right,
+    transparent 440px,
+    #000 520px,
+    #000 calc(100% - 580px),
+    transparent calc(100% - 500px)
+  );
+}
+
+.site-header .header-sky svg {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  width: 2560px;
+  height: 60px;
+  transform: translateX(-50%);
+}
+
 .site-header-row {
+  position: relative;
   display: flex;
   align-items: center;
   gap: 24px;
@@ -268,6 +307,18 @@
   .site-header-row {
     gap: 10px;
     padding: 0 16px;
+  }
+
+  /* Only the gap between the wordmark and the buttons; the narrowest phones have none. */
+  .header-sky,
+  .site-header[data-docs] .header-sky {
+    mask-image: linear-gradient(
+      to right,
+      transparent 190px,
+      #000 240px,
+      #000 calc(100% - 250px),
+      transparent calc(100% - 210px)
+    );
   }
 
   .site-nav,
@@ -1632,5 +1683,129 @@
 @media (prefers-reduced-motion: reduce) {
   .profile-chip {
     transition: none;
+  }
+}
+
+/* The scale strip above every docs page (ADR-0029 decision 4). */
+.scale-strip {
+  margin: 0 0 14px;
+  font: 400 13px/1.4 var(--home-font-text);
+  color: var(--home-muted);
+}
+
+.scale-strip ol {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px 6px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.scale-strip li {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+}
+
+.scale-strip a,
+.scale-here {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+  padding: 2px 4px;
+  border-radius: 6px;
+}
+
+.scale-strip a {
+  color: inherit;
+  text-decoration: none;
+  transition: color 0.2s;
+}
+
+.scale-strip a:hover {
+  color: var(--home-ink);
+}
+
+.scale-strip a:focus-visible {
+  outline: 2px solid var(--home-accent);
+  outline-offset: 1px;
+}
+
+.scale-strip [aria-current='page'] .scale-here {
+  font-weight: 500;
+  color: var(--home-ink);
+}
+
+.scale-mark,
+.scale-strip .planet-mark,
+.scale-strip .moon-phase {
+  width: 14px;
+  height: 14px;
+  flex: none;
+}
+
+.scale-strip li[data-kind='side'] .scale-mark {
+  color: var(--home-star);
+}
+
+.scale-strip li[data-kind='orbit'] .scale-mark {
+  color: var(--home-faint);
+}
+
+.scale-line {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  margin-left: 2px;
+  font: 400 12px var(--home-font-data);
+  font-variant-numeric: tabular-nums;
+  color: var(--home-faint);
+}
+
+.scale-line .moon-phase {
+  width: 12px;
+  height: 12px;
+}
+
+.scale-sep {
+  width: 12px;
+  height: 12px;
+  flex: none;
+  color: var(--home-faint);
+}
+
+.scale-back {
+  display: none;
+  width: 14px;
+  height: 14px;
+  flex: none;
+}
+
+/* On phones: the parent level with a back arrow, then the page (ADR-0029 decision 4). */
+@media (max-width: 720px) {
+  .scale-strip ol {
+    flex-wrap: nowrap;
+  }
+
+  .scale-strip li:not([data-parent]):not([aria-current]) {
+    display: none;
+  }
+
+  .scale-strip li[data-parent] .scale-sep {
+    display: none;
+  }
+
+  .scale-strip li[data-parent] .scale-back {
+    display: block;
+  }
+
+  .scale-strip li[aria-current] .scale-here span {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
   }
 }

@@ -1,0 +1,133 @@
+{
+  "schema_version": 1,
+  "diagram_type": "architecture",
+  "meta": {
+    "title": "Screen 5 — The morph",
+    "subtitle": "Wireframe at phone width, drawn from its Mermaid version · universe theme",
+    "output": "universe-theme-screen-5.html",
+    "animation": "trace",
+    "quality_profile": "showcase",
+    "legend": {
+      "entries": {
+        "external": {
+          "label": "Content"
+        },
+        "frontend": {
+          "label": "Site chrome"
+        }
+      }
+    }
+  },
+  "components": [
+    {
+      "id": "before",
+      "type": "external",
+      "label": "Home",
+      "pos": [
+        40,
+        60
+      ],
+      "size": [
+        436,
+        70
+      ],
+      "sublabel": "lodestar card · its planet in the sky panel"
+    },
+    {
+      "id": "arrow",
+      "type": "external",
+      "label": "planet morphs, about 0.35 seconds",
+      "pos": [
+        40,
+        142
+      ],
+      "size": [
+        436,
+        58
+      ]
+    },
+    {
+      "id": "mark",
+      "type": "frontend",
+      "label": "Verse mark",
+      "pos": [
+        40,
+        212
+      ],
+      "size": [
+        324,
+        70
+      ],
+      "sublabel": "Puncoz Verse"
+    },
+    {
+      "id": "menu",
+      "type": "frontend",
+      "label": "☰",
+      "pos": [
+        376,
+        212
+      ],
+      "size": [
+        100,
+        58
+      ]
+    },
+    {
+      "id": "strip",
+      "type": "external",
+      "label": "Verse ▸ System ▸ ● lodestar",
+      "pos": [
+        40,
+        294
+      ],
+      "size": [
+        436,
+        58
+      ]
+    },
+    {
+      "id": "hero",
+      "type": "frontend",
+      "label": "Planet header",
+      "pos": [
+        40,
+        364
+      ],
+      "size": [
+        436,
+        70
+      ],
+      "sublabel": "lodestar · the same planet, larger"
+    },
+    {
+      "id": "title",
+      "type": "frontend",
+      "label": "lodestar",
+      "pos": [
+        40,
+        446
+      ],
+      "size": [
+        436,
+        58
+      ]
+    }
+  ],
+  "boundaries": [
+    {
+      "kind": "region",
+      "label": "Phone screen · a planet card opening its overview (stage 2)",
+      "wraps": [
+        "before",
+        "arrow",
+        "mark",
+        "menu",
+        "strip",
+        "hero",
+        "title"
+      ],
+      "pad": 22
+    }
+  ]
+}

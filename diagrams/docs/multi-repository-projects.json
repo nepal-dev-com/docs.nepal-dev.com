@@ -70,7 +70,7 @@
       "col": 3,
       "type": "backend",
       "label": "Docs page",
-      "sublabel": "breadcrumb names the repo"
+      "sublabel": "scale strip names the repo"
     },
     {
       "id": "repo",

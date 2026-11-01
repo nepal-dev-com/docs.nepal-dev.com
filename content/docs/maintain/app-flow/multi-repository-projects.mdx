@@ -35,7 +35,7 @@ flowchart LR
   O -->|Use| U["Use track<br/>a station per repository"]
   O -->|Maintain| M["Maintain track<br/>shared pages + repository stations"]
   O -->|Frontend ↗| G["Repository on GitHub"]
-  U -->|a repository's page| P["Docs page<br/>breadcrumb names the repository"]
+  U -->|a repository's page| P["Docs page<br/>scale strip names the repository"]
   M -->|a repository's page| P
   P -->|sun or moon| U
   P -->|sun or moon| M
@@ -141,7 +141,8 @@ Each repository folder is a station titled with its name; one station is open at
 - Not found: a page in a removed line redirects to the same path in the released line.
 - Refused, error: not applicable.
 - Degraded: an unversioned project has no moon picker.
-- Success: a moon opens the repository's page; its breadcrumb reads *Use › Frontend*.
+- Success: a moon opens the repository's page; its scale strip reads *Use ▸ Frontend*, with the
+  line's moon and name beside *Use* (ADR-0029).
 
 ### 4. `Maintain track` — the sidebar on `/acme/maintain/architecture`
 

@@ -14,6 +14,7 @@ import { HorizonFooter } from '@/components/horizon-footer';
 import { Terminal, type TerminalTab } from '@/components/home/terminal';
 import { AssistantActions } from '@/components/home/assistant-actions';
 import { Reveal } from '@/components/home/reveal';
+import { ZoomPage } from '@/components/zoom-page';
 
 export const metadata: Metadata = {
   title: `${appName} — every package and project, documented to the version`,
@@ -58,69 +59,71 @@ export default async function HomePage() {
         hasPackages={entries.some((entry) => entry.kind === 'package')}
         hasProjects={entries.some((entry) => entry.kind === 'project')}
       />
-      <main>
-        <Hero
-          entries={entries}
-          title={{ lead: 'Every package and project,', rest: 'documented to the version.' }}
-          subtitle="Guides, APIs and release notes for npm, Composer, PyPI and Go packages, read from each package's own source."
-        />
+      <ZoomPage>
+        <main>
+          <Hero
+            entries={entries}
+            title={{ lead: 'Every package and project,', rest: 'documented to the version.' }}
+            subtitle="Guides, APIs and release notes for npm, Composer, PyPI and Go packages, read from each package's own source."
+          />
 
-        <section className="planets wrap" id="planets" aria-labelledby="planets-heading">
-          <h2 id="planets-heading" className="sr-only">
-            Packages and projects
-          </h2>
-          <PlanetCards entries={entries} />
-          <PrivateProjects />
-        </section>
-
-        {tracks && (
-          <section className="section wrap" aria-labelledby="sides-heading">
-            <TwoSides entry={tracks.entry} use={tracks.use} maintain={tracks.maintain} />
+          <section className="planets wrap" id="planets" aria-labelledby="planets-heading">
+            <h2 id="planets-heading" className="sr-only">
+              Packages and projects
+            </h2>
+            <PlanetCards entries={entries} />
+            <PrivateProjects />
           </section>
-        )}
 
-        {moons.length > 0 && (
-          <section className="section wrap" aria-labelledby="moons-heading">
-            <MoonRows entries={moons} />
-          </section>
-        )}
+          {tracks && (
+            <section className="section wrap" aria-labelledby="sides-heading">
+              <TwoSides entry={tracks.entry} use={tracks.use} maintain={tracks.maintain} />
+            </section>
+          )}
 
-        <section className="section wrap" id="anywhere" aria-labelledby="anywhere-heading">
-          <div className="section-head">
-            <h2 id="anywhere-heading">Read it anywhere</h2>
-            <p>
-              Every page is also plain Markdown, so your editor, your terminal and your AI assistant can read the same
-              docs you do.
-            </p>
-          </div>
-          <div className="anywhere">
-            <div className="anywhere-term">
-              <Terminal tabs={tabs} />
-              <p className="anywhere-full">
-                Everything in one file: <a href="/llms-full.txt">/llms-full.txt</a>
+          {moons.length > 0 && (
+            <section className="section wrap" aria-labelledby="moons-heading">
+              <MoonRows entries={moons} />
+            </section>
+          )}
+
+          <section className="section wrap" id="anywhere" aria-labelledby="anywhere-heading">
+            <div className="section-head">
+              <h2 id="anywhere-heading">Read it anywhere</h2>
+              <p>
+                Every page is also plain Markdown, so your editor, your terminal and your AI assistant can read the same
+                docs you do.
               </p>
             </div>
-            {example && (
-              <Reveal className="assist">
-                <h3>Hand any page to your assistant</h3>
-                <p>
-                  Every page has these two buttons. Copy it as Markdown, or open it in ChatGPT, Claude, Cursor or
-                  Scira with the page already attached. Try them on <b>{example.data.title}</b>.
+            <div className="anywhere">
+              <div className="anywhere-term">
+                <Terminal tabs={tabs} />
+                <p className="anywhere-full">
+                  Everything in one file: <a href="/llms-full.txt">/llms-full.txt</a>
                 </p>
-                <AssistantActions
-                  pageUrl={example.url}
-                  markdownUrl={getPageMarkdownUrl(example).url}
-                  githubUrl={`${githubUrl}/blob/${gitConfig.branch}/content/${example.path}`}
-                />
-                <Link className="assist-link" href={example.url}>
-                  See it on a page
-                  <ArrowRight aria-hidden />
-                </Link>
-              </Reveal>
-            )}
-          </div>
-        </section>
-      </main>
+              </div>
+              {example && (
+                <Reveal className="assist">
+                  <h3>Hand any page to your assistant</h3>
+                  <p>
+                    Every page has these two buttons. Copy it as Markdown, or open it in ChatGPT, Claude, Cursor or
+                    Scira with the page already attached. Try them on <b>{example.data.title}</b>.
+                  </p>
+                  <AssistantActions
+                    pageUrl={example.url}
+                    markdownUrl={getPageMarkdownUrl(example).url}
+                    githubUrl={`${githubUrl}/blob/${gitConfig.branch}/content/${example.path}`}
+                  />
+                  <Link className="assist-link" href={example.url}>
+                    See it on a page
+                    <ArrowRight aria-hidden />
+                  </Link>
+                </Reveal>
+              )}
+            </div>
+          </section>
+        </main>
+      </ZoomPage>
       <HorizonFooter entries={entries} githubUrl={githubUrl} />
     </>
   );

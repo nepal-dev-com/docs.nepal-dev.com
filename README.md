@@ -4,7 +4,7 @@
 > libraries across ecosystems, and public and private projects.
 
 **Status:** the site is **Puncoz Verse**; its own documentation is **Puncoz Verse Docs** (ADR-0028). The catalogue shape, root addresses, one site-wide
-look with a light/dark switch and the home page's release map are built; no package or project
+look with a light/dark switch, the Verse mark, a still sky on every page, the scale strip, the Verse view and the planet morph (ADR-0029), and the home page's release map are built; no package or project
 is documented yet besides this site itself, so the home page shows its empty states.
 · **Owner:** [Puncoz Nepal](https://puncoz.com)
 
@@ -137,7 +137,7 @@ Open [http://localhost:3000](http://localhost:3000). The docs are at `/docs`.
 ├── src/
 │   ├── proxy.ts         # version-line redirects and Markdown versions of pages
 │   ├── app/             # home, every page at /<slug>/…, llms.txt, OG images, search records, tokens
-│   ├── components/      # site header, MDX components, search dialog, docs/ (hero, track switch, version banners), home/
+│   ├── components/      # site header, MDX components, search dialog, docs/ (scale strip, hero, track switch, version banners), home/
 │   └── lib/             # content loader, catalogue schema and checks, search client, site settings
 ├── diagrams/            # Archify diagrams: the candidate JSON (not served) and the HTML, served sandboxed at /diagrams/
 ├── scripts/

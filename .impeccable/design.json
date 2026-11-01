@@ -673,9 +673,23 @@
     {
       "name": "Header",
       "kind": "nav",
-      "description": "Sticky translucent header: brand mark and wordmark, muted links, ghost GitHub button.",
-      "html": "<header class=\"ds-header\"><a class=\"ds-brand\" href=\"#\"><span class=\"ds-mark\"></span>Puncoz Verse</a><nav><a href=\"#\">Packages</a><a href=\"#\">Projects</a><a href=\"#\">llms.txt</a></nav><span style=\"flex:1\"></span></header>",
-      "css": ".ds-header{display:flex;align-items:center;gap:28px;height:60px;padding:0 24px;background:color-mix(in srgb,var(--home-bg) 80%,transparent);backdrop-filter:saturate(1.4) blur(12px);border-bottom:1px solid var(--home-line)}.ds-brand{display:flex;align-items:center;gap:10px;font:600 17px var(--home-font-display);letter-spacing:-.01em;color:var(--home-ink);text-decoration:none}.ds-mark{position:relative;width:22px;height:22px}.ds-mark::before{content:'';position:absolute;inset:0;border:1.5px solid var(--home-ink);border-radius:50%;transform:scaleY(.45) rotate(-18deg)}.ds-mark::after{content:'';position:absolute;left:7px;top:7px;width:8px;height:8px;border-radius:50%;background:var(--home-accent)}.ds-header nav{display:flex;gap:22px;font:14px var(--home-font-text)}.ds-header nav a{color:var(--home-muted);text-decoration:none}.ds-header nav a:hover{color:var(--home-ink)}.ds-header a:focus-visible{outline:2px solid var(--home-accent);outline-offset:2px;border-radius:6px}"
+      "description": "Sticky translucent header: the Verse mark and wordmark, muted links, ghost GitHub button, with a band of the still sky between the links and the buttons.",
+      "html": "<header class=\"ds-header\"><a class=\"ds-brand\" href=\"#\"><svg class=\"ds-mark\" viewBox=\"-12 -12 24 24\" aria-hidden=\"true\"><g transform=\"rotate(-18)\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.3\"><ellipse rx=\"10.8\" ry=\"4.7\"/><ellipse rx=\"6.4\" ry=\"2.8\" opacity=\"0.7\"/></g><circle r=\"2.7\" fill=\"var(--home-star)\"/><circle cx=\"-5\" cy=\"3.1\" r=\"2\" fill=\"var(--home-accent)\" stroke=\"var(--home-bg)\" stroke-width=\"1.2\"/></svg>Puncoz Verse</a><nav><a href=\"#\">Projects</a><a href=\"#\">llms.txt</a></nav><span style=\"flex:1\"></span></header>",
+      "css": ".ds-header{display:flex;align-items:center;gap:28px;height:60px;padding:0 24px;background:color-mix(in srgb,var(--home-bg) 80%,transparent);backdrop-filter:saturate(1.4) blur(12px);border-bottom:1px solid var(--home-line)}.ds-brand{display:flex;align-items:center;gap:10px;font:600 17px var(--home-font-display);letter-spacing:-.01em;color:var(--home-ink);text-decoration:none}.ds-mark{width:24px;height:24px;flex:none}.ds-header nav{display:flex;gap:22px;font:14px var(--home-font-text)}.ds-header nav a{color:var(--home-muted);text-decoration:none}.ds-header nav a:hover{color:var(--home-ink)}.ds-header a:focus-visible{outline:2px solid var(--home-accent);outline-offset:2px;border-radius:6px}"
+    },
+    {
+      "name": "Scale strip",
+      "kind": "nav",
+      "description": "Above every docs page in place of the breadcrumb (ADR-0029): each level of the ladder from the Verse to the page with its 14px mark, muted links divided by faint chevrons, the current level in Frost Ink 500. On phones only the parent level, with a back chevron, and the page.",
+      "html": "<nav class=\"ds-strip\" aria-label=\"Scale\"><ol><li><a href=\"#\"><svg viewBox=\"-8 -8 16 16\" aria-hidden=\"true\"><circle r=\"3.4\" fill=\"var(--home-star)\"/></svg>System</a></li><li><a href=\"#\"><svg viewBox=\"-8 -8 16 16\" aria-hidden=\"true\"><circle r=\"4.5\" fill=\"var(--home-npm)\"/></svg>lodestar</a></li><li><a href=\"#\"><svg viewBox=\"-8 -8 16 16\" aria-hidden=\"true\"><circle r=\"3\" fill=\"var(--home-star)\"/></svg>Use <span class=\"ds-line\">v0.1</span></a></li><li><span aria-current=\"page\">Forms</span></li></ol></nav>",
+      "css": ".ds-strip ol{display:flex;flex-wrap:wrap;align-items:center;gap:4px 6px;margin:0;padding:0;list-style:none;font:400 13px/1.4 var(--home-font-text);color:var(--home-muted)}.ds-strip li{display:flex;align-items:center;gap:6px}.ds-strip li+li::before{content:'\\203A';color:var(--home-faint)}.ds-strip a{display:inline-flex;align-items:center;gap:6px;padding:2px 4px;border-radius:6px;color:inherit;text-decoration:none}.ds-strip a:hover{color:var(--home-ink)}.ds-strip svg{width:14px;height:14px}.ds-line{font:400 12px var(--home-font-data);color:var(--home-faint)}.ds-strip [aria-current]{font-weight:500;color:var(--home-ink)}"
+    },
+    {
+      "name": "Verse control",
+      "kind": "button",
+      "description": "The home page system's one control (ADR-0029): a ghost button, Zoom out to the Verse / Back to the system, with the caption The Verse · one system so far fading in beside it in the Verse view.",
+      "html": "<div class=\"ds-verse\"><p>The Verse · one system so far</p><button type=\"button\">Back to the system</button></div>",
+      "css": ".ds-verse{display:flex;align-items:center;gap:14px}.ds-verse p{margin:0;font:400 12.5px var(--home-font-data);color:var(--home-faint)}.ds-verse button{padding:6px 10px;font:400 13.5px var(--home-font-text);color:var(--home-muted);background:color-mix(in srgb,var(--home-bg) 72%,transparent);border:1px solid var(--home-line);border-radius:8px;cursor:pointer}.ds-verse button:hover{color:var(--home-ink);border-color:var(--home-line-2)}"
     },
     {
       "name": "Orbit (the one open card)",
@@ -776,6 +790,11 @@
       {
         "name": "The Tight Display Rule",
         "body": "Display and headline faces track negative (-0.04em to -0.01em, never tighter than -0.04em) and balance their lines; text faces keep default tracking.",
+        "section": "typography"
+      },
+      {
+        "name": "The Places, Not Controls Rule",
+        "body": "Space words name places, never controls (ADR-0029). Search, Overview, Use, Maintain, On this page, version names, Back to top and the search button's text keep their plain names. The solar system speaks only where the site describes itself: empty states, hints, the scale strip's Verse and System, the Verse view, the 404 and the footer, and always beside a plain sentence that says what is true.",
         "section": "typography"
       },
       {

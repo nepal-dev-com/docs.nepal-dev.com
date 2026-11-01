@@ -72,8 +72,8 @@ installed version) without leaving for the source code.
 
 - Owner and author: Puncoz Nepal.
 - Name: **Puncoz Verse**, as in universe (owner's decision, 2026-11-01; ADR-0028). The site's own
-  documentation, the project `docs`, is **Puncoz Verse Docs**. No logo, voice guide or identity
-  assets exist yet.
+  documentation, the project `docs`, is **Puncoz Verse Docs**. Its one identity asset is the
+  Verse mark (ADR-0029); there is no voice guide beyond the vocabulary rule below.
 - Craft bar: the documentation of **Stripe, Linear and Resend** (owner's choice, 2026-10-31).
 - Look: cool, modern and technical, with motion and graphics; search is the first thing a reader
   uses (owner's steer, 2026-10-31). Not wanted: a warm, earthy palette, or a hero that makes the
@@ -82,6 +82,10 @@ installed version) without leaving for the source code.
 - The whole site is one solar system (owner's steer, 2026-11-01; ADR-0017): the star is the
   maker, packages and projects are planets, version lines are moons, Use and Maintain are a
   planet's day and night sides, on every page.
+- The Verse is the sky around that one system (owner's choice, 2026-11-01; ADR-0029): a still
+  sky on every page, a mark of its own, and a scale ladder readers zoom through, from the Verse
+  down to the page. Space words name places, never controls: controls keep their plain names,
+  and a space word always stands beside a plain sentence.
 
 ## Evidence on Hand
 

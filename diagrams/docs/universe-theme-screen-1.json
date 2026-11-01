@@ -1,0 +1,223 @@
+{
+  "schema_version": 1,
+  "diagram_type": "architecture",
+  "meta": {
+    "title": "Screen 1 — Docs page",
+    "subtitle": "Wireframe at phone width, drawn from its Mermaid version · universe theme",
+    "output": "universe-theme-screen-1.html",
+    "animation": "trace",
+    "quality_profile": "showcase",
+    "legend": {
+      "entries": {
+        "backend": {
+          "label": "Control or link"
+        },
+        "database": {
+          "label": "Code or Markdown"
+        },
+        "external": {
+          "label": "Content"
+        },
+        "frontend": {
+          "label": "Site chrome"
+        }
+      }
+    }
+  },
+  "components": [
+    {
+      "id": "mark",
+      "type": "frontend",
+      "label": "Verse mark",
+      "pos": [
+        40,
+        60
+      ],
+      "size": [
+        212,
+        70
+      ],
+      "sublabel": "Puncoz Verse"
+    },
+    {
+      "id": "search",
+      "type": "frontend",
+      "label": "⌕",
+      "pos": [
+        264,
+        60
+      ],
+      "size": [
+        100,
+        58
+      ]
+    },
+    {
+      "id": "menu",
+      "type": "frontend",
+      "label": "☰",
+      "pos": [
+        376,
+        60
+      ],
+      "size": [
+        100,
+        58
+      ]
+    },
+    {
+      "id": "skyl",
+      "type": "external",
+      "label": "· sky ·",
+      "pos": [
+        40,
+        142
+      ],
+      "size": [
+        100,
+        58
+      ]
+    },
+    {
+      "id": "title",
+      "type": "frontend",
+      "label": "Forms",
+      "pos": [
+        152,
+        142
+      ],
+      "size": [
+        212,
+        58
+      ]
+    },
+    {
+      "id": "skyr",
+      "type": "external",
+      "label": "· sky ·",
+      "pos": [
+        376,
+        142
+      ],
+      "size": [
+        100,
+        58
+      ]
+    },
+    {
+      "id": "skyl2",
+      "type": "backend",
+      "label": "·",
+      "pos": [
+        40,
+        212
+      ],
+      "size": [
+        100,
+        58
+      ]
+    },
+    {
+      "id": "body",
+      "type": "external",
+      "label": "Reading column",
+      "pos": [
+        152,
+        212
+      ],
+      "size": [
+        212,
+        70
+      ],
+      "sublabel": "plain ground, no stars…"
+    },
+    {
+      "id": "skyr2",
+      "type": "external",
+      "label": "·",
+      "pos": [
+        376,
+        212
+      ],
+      "size": [
+        100,
+        58
+      ]
+    },
+    {
+      "id": "skyl3",
+      "type": "backend",
+      "label": "· ·",
+      "pos": [
+        40,
+        294
+      ],
+      "size": [
+        100,
+        58
+      ]
+    },
+    {
+      "id": "code",
+      "type": "database",
+      "label": "npm install lodestar",
+      "pos": [
+        152,
+        294
+      ],
+      "size": [
+        212,
+        58
+      ]
+    },
+    {
+      "id": "skyr3",
+      "type": "external",
+      "label": "· ·",
+      "pos": [
+        376,
+        294
+      ],
+      "size": [
+        100,
+        58
+      ]
+    },
+    {
+      "id": "foot",
+      "type": "frontend",
+      "label": "Footer",
+      "pos": [
+        40,
+        364
+      ],
+      "size": [
+        436,
+        70
+      ],
+      "sublabel": "Back to top"
+    }
+  ],
+  "boundaries": [
+    {
+      "kind": "region",
+      "label": "Phone screen · the sky and the mark, on /lodestar/use/v0.1/guides/forms (stage 1)",
+      "wraps": [
+        "mark",
+        "search",
+        "menu",
+        "skyl",
+        "title",
+        "skyr",
+        "skyl2",
+        "body",
+        "skyr2",
+        "skyl3",
+        "code",
+        "skyr3",
+        "foot"
+      ],
+      "pad": 22
+    }
+  ]
+}

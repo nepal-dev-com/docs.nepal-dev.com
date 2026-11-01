@@ -3,6 +3,8 @@ import Link from 'next/link';
 import { useEffect, useState, type ReactNode } from 'react';
 import { Search } from 'lucide-react';
 import { ThemeSwitch } from '@/components/theme-switch';
+import { HeaderSky } from '@/components/sky';
+import { VerseMark } from '@/components/verse-mark';
 import { cn } from '@/lib/cn';
 
 export interface SiteLink {
@@ -35,13 +37,10 @@ export function SiteHeader({ appName, githubUrl, links, onSearch, menu, docs = f
 
   return (
     <header className={cn('site-header', scrolled && 'scrolled')} data-docs={docs ? '' : undefined}>
+      <HeaderSky />
       <div className="site-header-row">
         <Link href="/" className="site-brand">
-          <svg className="site-mark" viewBox="-12 -12 24 24" aria-hidden>
-            <ellipse rx="11" ry="4" transform="rotate(-18)" fill="none" stroke="currentColor" strokeWidth="1.5" />
-            <circle r="4.6" fill="var(--home-accent)" />
-            <circle cx="-8.6" cy="5.4" r="1.7" fill="var(--home-star)" />
-          </svg>
+          <VerseMark className="site-mark" />
           {appName}
         </Link>
         <nav aria-label="Site" className="site-nav">

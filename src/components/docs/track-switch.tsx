@@ -1,5 +1,6 @@
 'use client';
 import Link from 'next/link';
+import { zoomOut } from '@/lib/zoom';
 import { usePathname } from 'next/navigation';
 import type { Ring } from '@/lib/rings';
 import { PlanetMark } from '@/components/planet';
@@ -63,7 +64,7 @@ export function TrackSwitch({ entries, docsRoute }: { entries: TrackSwitchEntry[
 
   return (
     <div className="planet-banner" data-ring={entry.ring}>
-      <Link href={entry.url} className="planet-chip">
+      <Link href={entry.url} className="planet-chip" transitionTypes={[zoomOut]}>
         <PlanetMark ring={entry.ring} kind={entry.kind} />
         <span>
           <b>{entry.title}</b>

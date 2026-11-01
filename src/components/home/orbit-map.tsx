@@ -1,8 +1,12 @@
 'use client';
 import { useEffect, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { ZoomIn, ZoomOut } from 'lucide-react';
 import type { CatalogEntry } from '@/lib/catalog';
 import { kindName, presentRings, ringOf, type Ring } from '@/lib/rings';
+import { starField, type Star } from '@/lib/sky';
+import { easeZoom, farPlanets, systemScale, tilt, verseFragment } from '@/lib/verse-view';
+import { privateProjects } from './private-projects';
 
 interface Body {
   entry: CatalogEntry;
@@ -20,13 +24,14 @@ interface Hover {
   y: number;
 }
 
-const tilt = 0.36;
 // Below this width the system sits above the hero text instead of beside it (home.css).
 const stacked = 860;
+const farNames = privateProjects.map((project) => project.slug);
 
 /**
  * The system (ADR-0017 decision 2): the star, an orbit per ecosystem, every planet labelled with
- * its moons, its night side turned away from the star.
+ * its moons, its night side turned away from the star. Zoomed out, it is the Verse: the system small
+ * and still turning, the belt and the private planets far beyond it (ADR-0029 decision 5).
  */
 export function OrbitMap({ entries, star }: { entries: CatalogEntry[]; star: string }) {
   const router = useRouter();
@@ -34,6 +39,8 @@ export function OrbitMap({ entries, star }: { entries: CatalogEntry[]; star: str
   const [hover, setHover] = useState<Hover | null>(null);
   const hoverRef = useRef<CatalogEntry | null>(null);
   const bodiesRef = useRef<Body[]>([]);
+  const [verse, setVerse] = useState(false);
+  const verseRef = useRef(false);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -54,6 +61,10 @@ export function OrbitMap({ entries, star }: { entries: CatalogEntry[]; star: str
     let last = performance.now();
     let frame = 0;
     let visible = true;
+    // Opening `/#verse` eases out from the system too (ADR-0029 decision 5).
+    let zoom = 0;
+    let sky: Star[] = [];
+    let belt: { angle: number; spread: number; size: number }[] = [];
 
     function readColors() {
       return {
@@ -61,6 +72,7 @@ export function OrbitMap({ entries, star }: { entries: CatalogEntry[]; star: str
         ink: token('--home-ink'),
         faint: token('--home-faint'),
         bg: token('--home-bg'),
+        night: token('--home-night'),
         star: token('--home-star'),
         glow: token('--home-star-glow'),
         data: token('--home-font-data'),
@@ -89,6 +101,10 @@ export function OrbitMap({ entries, star }: { entries: CatalogEntry[]; star: str
           depth: 0,
         };
       });
+      sky = starField({ seed: 11, count: Math.round((width * height) / 7000), width, height, clear: 0, even: true });
+      let seed = 7;
+      const next = () => (seed = (seed * 16807) % 2147483647) / 2147483647;
+      belt = Array.from({ length: 150 }, () => ({ angle: next() * Math.PI * 2, spread: (next() - 0.5) * 0.14, size: 0.5 + next() }));
     }
 
     const radius = (ring: number) =>
@@ -108,11 +124,57 @@ export function OrbitMap({ entries, star }: { entries: CatalogEntry[]; star: str
       context!.beginPath();
       context!.arc(cx(), cy(), 9, 0, Math.PI * 2);
       context!.fill();
+    }
+
+    function drawStarLabel(scale: number) {
       context!.font = `500 11px ${colors.data}`;
       context!.fillStyle = colors.faint;
       context!.textAlign = 'center';
-      context!.fillText(star, cx(), cy() + 28);
+      context!.fillText(star, cx(), cy() + 9 * scale + 19);
       context!.textAlign = 'left';
+    }
+
+    function drawVerse(outer: number) {
+      context!.globalAlpha = zoom;
+      for (const point of sky) {
+        context!.globalAlpha = zoom * point.o;
+        context!.fillStyle = point.bright ? colors.ink : colors.faint;
+        context!.beginPath();
+        context!.arc(point.x, point.y, point.r, 0, Math.PI * 2);
+        context!.fill();
+      }
+      const beltRadius = Math.max(outer * systemScale(1) * 1.7, base * 0.5);
+      context!.fillStyle = colors.faint;
+      for (const rock of belt) {
+        const reach = beltRadius * (1 + rock.spread);
+        context!.globalAlpha = zoom * 0.6;
+        context!.beginPath();
+        context!.arc(cx() + Math.cos(rock.angle) * reach, cy() + Math.sin(rock.angle) * reach * tilt, rock.size, 0, Math.PI * 2);
+        context!.fill();
+      }
+      const far = farPlanets(farNames, { cx: cx(), cy: cy(), reach: beltRadius * 1.6, width, height });
+      context!.font = `500 11px ${colors.data}`;
+      for (const planet of far) {
+        context!.globalAlpha = zoom * 0.85;
+        context!.beginPath();
+        context!.arc(planet.x, planet.y, 5, 0, Math.PI * 2);
+        context!.fillStyle = colors.night;
+        context!.fill();
+        context!.strokeStyle = colors.line;
+        context!.lineWidth = 1;
+        context!.stroke();
+        // A thin crescent of light on the side that faces the star.
+        const toward = Math.atan2(cy() - planet.y, cx() - planet.x);
+        context!.beginPath();
+        context!.arc(planet.x, planet.y, 5, toward - 1.1, toward + 1.1);
+        context!.strokeStyle = colors.faint;
+        context!.lineWidth = 1.5;
+        context!.stroke();
+        context!.lineWidth = 1;
+        context!.fillStyle = colors.faint;
+        context!.fillText(planet.name, planet.x + 10, planet.y + 4);
+      }
+      context!.globalAlpha = 1;
     }
 
     function draw(now: number) {
@@ -121,7 +183,16 @@ export function OrbitMap({ entries, star }: { entries: CatalogEntry[]; star: str
       if (!reduce.matches) {
         time += delta * (hoverRef.current ? 0.15 : 1);
       }
+      zoom = easeZoom(zoom, verseRef.current ? 1 : 0, delta, reduce.matches);
+      const scale = systemScale(zoom);
       context!.clearRect(0, 0, width, height);
+      if (zoom > 0) {
+        drawVerse(radius(Math.max(0, rings.length - 1)));
+      }
+      context!.save();
+      context!.translate(cx(), cy());
+      context!.scale(scale, scale);
+      context!.translate(-cx(), -cy());
       drawStar();
 
       rings.forEach((_, index) => {
@@ -203,11 +274,13 @@ export function OrbitMap({ entries, star }: { entries: CatalogEntry[]; star: str
 
         context!.font = `500 12px ${colors.data}`;
         context!.fillStyle = colors.ink;
-        context!.globalAlpha = Math.min(1, 0.55 + (body.depth + 1) * 0.22 + body.lit);
+        context!.globalAlpha = Math.min(1, 0.55 + (body.depth + 1) * 0.22 + body.lit) * (1 - zoom);
         const offset = body.entry.kind === 'project' ? size * 2 + 6 : size + 9;
         context!.fillText(body.entry.title, body.x + offset, body.y + 4);
         context!.globalAlpha = 1;
       }
+      context!.restore();
+      drawStarLabel(scale);
 
       if (visible && !reduce.matches) {
         frame = requestAnimationFrame(draw);
@@ -268,6 +341,27 @@ export function OrbitMap({ entries, star }: { entries: CatalogEntry[]; star: str
     canvasRef.current?.dispatchEvent(new Event('redraw'));
   }, [hover]);
 
+  useEffect(() => {
+    const sync = () => setVerse(location.hash === verseFragment);
+    sync();
+    addEventListener('hashchange', sync);
+    return () => removeEventListener('hashchange', sync);
+  }, []);
+
+  useEffect(() => {
+    verseRef.current = verse;
+    canvasRef.current?.dispatchEvent(new Event('redraw'));
+  }, [verse]);
+
+  function toggleVerse() {
+    const next = !verseRef.current;
+    hoverRef.current = null;
+    setHover(null);
+    // Keeps Next.js' own history state and adds no history entry; `/#verse` stays shareable.
+    history.replaceState(history.state, '', next ? verseFragment : location.pathname + location.search);
+    setVerse(next);
+  }
+
   function hit(event: React.MouseEvent<HTMLCanvasElement>) {
     const rect = event.currentTarget.getBoundingClientRect();
     const x = event.clientX - rect.left;
@@ -289,9 +383,17 @@ export function OrbitMap({ entries, star }: { entries: CatalogEntry[]; star: str
       <canvas
         ref={canvasRef}
         className="orbit"
+        data-verse={verse ? '' : undefined}
         role="img"
-        aria-label={`The system: the star is ${star}; each orbit is an ecosystem, each planet a package or project, each moon a documented version, dashed when unreleased. The cards below list the same planets.`}
+        aria-label={
+          verse
+            ? `The Verse: the one system around ${star}, small, with the asteroid belt and the private projects far beyond it.`
+            : `The system: the star is ${star}; each orbit is an ecosystem, each planet a package or project, each moon a documented version, dashed when unreleased. The cards below list the same planets.`
+        }
         onPointerMove={(event) => {
+          if (verseRef.current) {
+            return;
+          }
           const { best, x, y, width } = hit(event);
           hoverRef.current = best?.entry ?? null;
           setHover(best ? { entry: best.entry, x: Math.min(x + 16, width - 230), y: y + 16 } : null);
@@ -301,6 +403,10 @@ export function OrbitMap({ entries, star }: { entries: CatalogEntry[]; star: str
           setHover(null);
         }}
         onClick={(event) => {
+          if (verseRef.current) {
+            toggleVerse();
+            return;
+          }
           const { best } = hit(event);
           if (best) {
             router.push(best.entry.url);
@@ -322,6 +428,15 @@ export function OrbitMap({ entries, star }: { entries: CatalogEntry[]; star: str
             </small>
           </>
         )}
+      </div>
+      <div className="orbit-zoom-row">
+        <p className="orbit-caption" aria-live="polite">
+          {verse ? 'The Verse · one system so far' : ''}
+        </p>
+        <button type="button" className="orbit-zoom" onClick={toggleVerse}>
+          {verse ? <ZoomIn aria-hidden /> : <ZoomOut aria-hidden />}
+          {verse ? 'Back to the system' : 'Zoom out to the Verse'}
+        </button>
       </div>
     </>
   );

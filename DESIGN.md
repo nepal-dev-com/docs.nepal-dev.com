@@ -214,7 +214,7 @@ components:
 
 # Design System: Puncoz Verse
 
-**Scope.** The whole site: the home page, every documentation page and the 404. The tokens live on `:root` (light) and `.dark` (dark) in `src/app/global.css`, which also maps Fumadocs' own `--color-fd-*` colours onto them; the fonts are loaded once in `src/app/layout.tsx`; the shared header, theme switch, planet header, notices, the sidebar's planet row and orbit stations, the trajectory and the Horizon footer are styled in `src/app/site.css`; the home page's sections and the 404 in `src/app/(home)/home.css`. The planet and moon marks are drawn by `src/components/planet.tsx`. Docs pages use the Fumadocs notebook layout under that header. The reasons are in ADR-0014 to ADR-0019 (`content/docs/maintain/adr/`); this file only records how the built site looks.
+**Scope.** The whole site: the home page, every documentation page and the 404. The tokens live on `:root` (light) and `.dark` (dark) in `src/app/global.css`, which also maps Fumadocs' own `--color-fd-*` colours onto them; the fonts are loaded once in `src/app/layout.tsx`; the shared header, theme switch, planet header, notices, the sidebar's planet row and orbit stations, the trajectory and the Horizon footer are styled in `src/app/site.css`; the home page's sections and the 404 in `src/app/(home)/home.css`. The planet and moon marks are drawn by `src/components/planet.tsx`, the Verse mark by `src/components/verse-mark.tsx` (also the site icon, `src/app/icon.svg`), and the still sky by `src/components/sky.tsx` from the seeded fields in `src/lib/sky.ts`. Docs pages use the Fumadocs notebook layout under that header. The reasons are in ADR-0014 to ADR-0019 and ADR-0027 to ADR-0029 (`content/docs/maintain/adr/`); this file only records how the built site looks.
 
 ## Overview
 
@@ -222,12 +222,15 @@ components:
 
 The site is one small solar system, calm graphite space with one moving part. The star is the maker, Puncoz Nepal. Each ecosystem is an orbit; a package is a solid planet in its ecosystem's colour, its night side shaded away from the star; a project is a ringed planet. Each documented version line is a moon: full for the latest release, a crescent for an older one, a dashed new moon for `dev`. A planet's day side is Use, its night side Maintain. The home page's hero is the system itself, turning slowly beside the headline and the large search button; every later surface (cards, the planet header, the sidebar, the notices, the footer, the 404) reuses the same marks without explaining them again.
 
+The system sits in a wider sky, the Verse. One still star field lies behind every page, thickest at the page's edges and in the header, and never behind text; it never moves, so the turning system stays the only thing in motion.
+
 The surface is cool, technical and quiet: near-black graphite (dark is the default theme) or cool paper in light, hairline borders, one teal accent, a warm star, and colour reserved for the ecosystems. Density is moderate: generous section gaps, tight facts inside a card. Depth is soft and rare; only things that float (the search button, windows, the tooltip) lift off the ground.
 
 **Key Characteristics:**
 - Graphite neutrals with a single signal-teal accent and a warm star; ecosystem hues mark shapes, never text.
 - Three faces with fixed jobs: Bricolage Grotesque for display, Onest for reading and controls, JetBrains Mono for data only.
 - One metaphor carrying real data: planets are entries, moons are version lines, sides are tracks.
+- One still sky behind every page, kept clear of every line of text.
 - One authored motion moment, the turning system; everything else is a short, single response.
 - Every state readable without scripts and without motion.
 
@@ -240,7 +243,7 @@ Cool graphite neutrals in a nine-step stack, one teal signal, a warm star, an un
 - **Teal Wash** (`signal-teal-soft` / `signal-teal-soft-light`): the focus halo around the search button.
 
 ### Secondary
-- **Star** (`star` / `star-light`, `--home-star`): the star in the hero, the footer's horizon and the 404, its glow (`--home-star-glow`), the sun in the theme switch, the day side's sun, the brand mark's light and the closing line's underline. Never text.
+- **Star** (`star` / `star-light`, `--home-star`): the star in the hero, the footer's horizon and the 404, its glow (`--home-star-glow`), the sun in the theme switch, the day side's sun, the Verse mark's centre and the closing line's underline. Never text.
 - **Night** (`night` / `night-light`, `--home-night`): a planet's unlit face: the theme switch's planet, private planets, older-release crescents, the terminator planet.
 - **Ecosystem set** (`eco-npm`, `eco-composer`, `eco-pypi`, `eco-go`, `eco-cargo` and their `-light` pairs): one hue per ecosystem, for planets, their moons on the hero and the ring of a card's sky wash. The "other" ecosystem reuses Steel Muted; projects reuse Frost Ink and are ringed. Against the page ground each hue measures 4.2:1 or more.
 
@@ -291,6 +294,8 @@ Measured: every text colour is 4.5:1 or more against Graphite Ground and Graphit
 
 **The Tight Display Rule.** Display and headline faces track negative (-0.04em to -0.01em, never tighter than -0.04em) and balance their lines; text faces keep default tracking.
 
+**The Places, Not Controls Rule.** Space words name places, never controls (ADR-0029). Search, Overview, Use, Maintain, On this page, version names, Back to top and the search button's text keep their plain names. The solar system speaks only where the site describes itself: empty states, hints, the scale strip's *Verse* and *System*, the Verse view, the 404 and the footer, and always beside a plain sentence that says what is true ("No planets in the Verse yet. Packages and projects appear here once they are documented.").
+
 ## Layout
 
 A single centred column: 1180px maximum, 24px side padding. The hero fills most of the first screen (up to 860px, 94% of the small viewport) with the system as a full-bleed canvas: on desktop the text column (headline, subline, a 520px search button and the legend) sits on the left and the star at 70% of the width; at 860px and below the system takes the top 310px and the text follows below it. A hairline closes the hero.
@@ -312,16 +317,23 @@ Flat by default, with soft drop shadows only on surfaces that float over the sys
 - **Glow** (`0 0 0 3px` teal at 22%): the probe, the current page's dot in the sidebar; the trajectory's probe carries the same glow drawn in SVG.
 - **Side tip** (`0 4px 12px shadow`): the sun and moon buttons' tooltip.
 
+### The still sky
+- **Page sky:** a 2560 × 1600px field of 220 stars fixed behind every page, drawn on the server from a fixed seed: 0.6px (most), 1px and 1.6px dots at 25 to 60% opacity, in Steel Faint, the larger ones sometimes Frost Ink. The field is empty within 600px of the centre and thickens toward the edges; a mask clears the content column and fades in over 100px beyond it (the home page's 1180px column; the docs layout's 97rem). On screens no wider than the content, the page sky is out of sight.
+- **Header sky:** a 60px band of 70 evenly spread stars inside the header, masked to the gap between the brand and links and the buttons: on the home page beside the 1180px row, on docs pages between 520px from the left and 580px from the right; under 860px only between the wordmark and the icon buttons, so the narrowest phones show none.
+- **Light theme:** the same fields at 60% opacity, graphite specks like a printed star chart. **Print:** no sky.
+
 ### Named Rules
+**The Clear Text Rule.** No star sits behind text or inside a control. A new surface that holds text either is opaque or widens the sky's cleared band.
+
 **The Float-Only Rule.** A surface gets a shadow only if it sits over something or frames a window. Cards lift 2px on hover by transform, not by shadow.
 
 ## Shapes
 
-Gently rounded rectangles in a short ladder: 6px for keys, terminal tabs and focus outlines; 7px for the selected side inside the 10px sidebar track and for its tooltip; 8px for small buttons, links and sidebar rows; 10px for the tooltip, the planet chip, notices and an orbit's row; 12px for the no-script link and the sidebar's one open orbit; 14px for the search button, cards, private cards, the planet header, Two sides, windows and the assistant panel. Circles are reserved for meaning: planets, moons, the star, a page's satellite dot, an orbit's ring, the trajectory's dots and probe, the brand mark and the window chrome's three dots.
+Gently rounded rectangles in a short ladder: 6px for keys, terminal tabs and focus outlines; 7px for the selected side inside the 10px sidebar track and for its tooltip; 8px for small buttons, links and sidebar rows; 10px for the tooltip, the planet chip, notices and an orbit's row; 12px for the no-script link and the sidebar's one open orbit; 14px for the search button, cards, private cards, the planet header, Two sides, windows and the assistant panel. Circles are reserved for meaning: planets, moons, the star, a page's satellite dot, an orbit's ring, the trajectory's dots and probe, the Verse mark, the sky's stars and the window chrome's three dots.
 
 Borders are 1px hairlines. Line style carries meaning: **dashed** marks the unreleased `dev` line (its orbit and its new moon), on cards and orbits private projects, and the unread stretch of the trajectory; a **ring** marks a project; a **crescent** marks an older release.
 
-The brand mark is a ringed planet in Frost Ink with a teal body and a small star-coloured light: the system in miniature.
+The brand mark is the **Verse mark**: the one system seen from outside, a star-coloured centre inside two nested orbits tilted -18° (1.3px Frost Ink strokes, the inner one at 70%), with a teal planet on the inner orbit, cut out of the orbit by a ring of the page ground. It has no ring of its own, so it never reads as a project. It is 24px beside the wordmark; on Open Graph images and as the site icon (a 32px Graphite Ground tile with 7px corners) it takes the dark theme's colours.
 
 ### Named Rules
 **The Mark Means Rule.** A ring means project, a full moon the latest release, a crescent an older release, a dashed new moon `dev`, a lock private. Never use any of them for decoration.
@@ -332,17 +344,19 @@ The brand mark is a ringed planet in Frost Ink with a teal body and a small star
 - **Character:** the one large, confident control, shaped like a field. It is a button: click, Enter or Space opens the site's Fumadocs search dialog, as `⌘K` does on every page. It also opens the 404.
 - **Shape and fill:** Graphite Panel, 14px corners, Line 2 border, Search lift shadow, 60px tall (56px under 860px), a muted search icon, "Search packages, projects and pages" in Steel Faint, and a `⌘K` key (hidden under 860px).
 - **Hover:** the border warms toward teal and the button rises 1px. **Focus:** teal border and the Teal Wash halo.
-- **Search dialog:** Fumadocs' own, coloured by the site tokens.
+- **Search dialog:** Fumadocs' own, coloured by the site tokens; with no results it reads "Nothing in orbit matches. Try another word."
 
 ### The system (hero canvas)
 - The star: a 9px star-coloured disc with a soft glow, "Puncoz Nepal" in data under it. Orbits are 1px ellipses tilted to 0.36 of their width in Line 2.
 - Packages are 7px discs in their ecosystem colour with the half facing away from the star shaded; projects are 6px Graphite Ground discs with an ecosystem stroke and a tilted ring. Every planet is labelled in 12px data, brighter in front. Moons circle each planet on faint orbits: solid for released lines (older ones dimmer), dashed and hollow for `dev`.
 - Pointing at a planet slows the system to 15% and shows the tooltip (Graphite Panel, Line 2 border, 10px corners: name, description, kind · latest · "click to open"); clicking opens the overview.
 - The legend under the search button: package, project, moon = version, dashed = unreleased, each with its drawn mark.
+- **The Verse view** (ADR-0029). A ghost button at the system's lower right, *Zoom out to the Verse* in 13.5px Text with a 15px zoom icon, on 72% Graphite Ground. Pressing it, or opening `/#verse`, eases the camera out over about 1.2s: the system shrinks to two fifths, still turning, and its planet labels fade while *Puncoz Nepal* stays; a seeded field of canvas stars, an asteroid belt of Steel Faint rocks and the private planets (dim Night discs with a crescent, labelled in data) fade in around it. The caption *The Verse · one system so far* in 12.5px Data, Steel Faint, fades in beside the button, which becomes *Back to the system*; it or a click on the canvas eases back in. The fragment changes without a history entry. Under 860px the control sits under the system at the right, the caption under the button.
 
 ### Planet card
 - Graphite Panel, hairline border, 14px corners. A 168px sky on Graphite Ground 2 with a wash of the ecosystem colour from the top right, drawing the planet with one tilted orbit per line and its labelled moon. Below, 20px by 22px: the name in Data (the whole card is its link), the kind with its planet mark, the description, a fact sheet (Latest, In development, Older; labels in Steel Faint, values in data small) and the links: Use → in teal, Maintain and Demo as hairline buttons.
 - Hover: the border tints with the ecosystem colour, the card rises 2px and the moons turn 8°.
+- Opening the overview from the name or the Use or Maintain links morphs the card's planet into the planet header's drawing (ADR-0029).
 
 ### Private projects
 - An asteroid belt (a seeded scatter of Steel Faint dots around a hairline) divides them from the cards. Each private card is Graphite Ground 2 with a dashed Line 2 border: a 56px night planet on a dashed orbit, a crescent of light; the name in data with a 13px lock (read as "private"); a description; a data-small meta line (client or internal · tracks).
@@ -367,6 +381,7 @@ The brand mark is a ringed planet in Frost Ink with a teal body and a small star
 
 ### Docs pages
 - The Fumadocs notebook layout below the shared header, coloured by the site tokens. Headings h1 to h3 use the Display face at -0.02em; body, sidebar and contents keep the Text face, code the Data face. The sidebar sits on Graphite Panel.
+- **The scale strip** (ADR-0029) replaces Fumadocs' breadcrumb above every page: a `nav` named *Scale*, 13px Text in Steel Muted, each level with its 14px mark, divided by 12px Steel Faint chevrons. *Verse* (the Verse mark) links to `/#verse`, *System* (a star-coloured dot) home, the planet (its mark in the ecosystem colour) its overview, the side (a star-coloured sun or moon, with the line's moon and name in 12px Data, Steel Faint) its first page, each orbit (a Steel Faint ring) its index when it has one, plain otherwise. The current level is plain Frost Ink 500 with `aria-current`. Under 720px only the parent level, with a back chevron, and the current page show, the page's name cut with an ellipsis.
 - The sidebar opens with the **planet row**: the **planet chip** (planet mark, name in data, kind) linking to the overview, then two 32px icon buttons in a 10px Graphite Ground 2 track, a drawn **sun** for Use and a **moon** for Maintain (the selected one raised on Graphite Panel, its sun star-coloured; a small tooltip names each). On Use, the **moon picker** follows: Fumadocs' version menu with each line's phase mark as its icon.
 - **The scale ladder** (ADR-0027). Below the planet row each level is a smaller body than the one above it. **Landmarks**, a track's top-level pages (the *Overview* item first), are 36px rows in 14.5px Text 500, Frost Ink, each with an 8px Steel Faint dot. **Belts** are separators: an 11px Text 600 uppercase label at 0.08em tracking in Steel Faint, on a dotted Line 2 rule to the edge, 18px above. **Orbits** are folders: a closed orbit is a plain 34px row with no fill or border, a 12px ring (1.5px Steel Faint stroke, the ecosystem colour when it holds the current page), the name in 14px Text 500, the page count in 11.5px Data, Steel Faint, at the right, and a Steel Faint chevron. **The one card**: only the open orbit is a Graphite Panel card with a hairline border and 12px corners, its border at 45% of the ecosystem colour when it holds the current page, a planet appearing inside its ring; at each level only one orbit is open at a time (ADR-0023), so opening one lifts it and drops the card back to a row. **Satellites** are the pages inside: 13.5px Text rows, 30px in from the left, each with a 6px hollow dot on one hairline arc that bows outward. **The probe**, the current page, is a 9px teal dot with its glow, its row tinted with 10% of the ecosystem colour, in Frost Ink 500. A nested folder is a smaller orbit (10px ring, 13.5px) inside its parent's card, never a card of its own; a folder holding only its index page is an orbit link with no count or chevron. Moons stay version lines only.
 - **The ADR constellation.** A folder named `adr` shows, inside its open station, a grid of 24px cells, one per ADR, each holding a 12px moon phased by status: full teal approved, dashed new moon proposed, crescent superseded, a faint ring rejected or unknown. The current ADR is a 12px teal planet ringed in the panel colour and then the ecosystem colour. Under it: a two-line readout (the number in 12.5px Data, Frost Ink; the title in 12.5px Text, muted), previous and next in 12.5px Data with 13px arrows, "All N decisions" in teal, and an 11px legend with 10px moons.
@@ -376,7 +391,7 @@ The brand mark is a ringed planet in Frost Ink with a teal body and a small star
 - **Version line:** on the latest line, a 14px full moon and "Documents ‹name› ‹version›" in muted 14px. **Notice:** on `dev` and older lines, a Graphite Ground 2 box with a Line 2 border and 10px corners, the line's 22px moon, a bold lead ("In development." or "Older version."), the version and a teal link to the latest line.
 
 ### Navigation
-- **Header:** one header on every page. Sticky, 60px, translucent; the brand mark and wordmark left, 14px muted nav links, a spacer, then on docs pages a 240px search button with a ⌘K key, a ghost GitHub button and the theme switch. Under 860px the nav, labels and key hide, search and GitHub become 36px icon buttons, and docs pages add a menu button.
+- **Header:** one header on every page. Sticky, 60px, translucent; the Verse mark and wordmark left, 14px muted nav links, a spacer, then on docs pages a 240px search button with a ⌘K key, a ghost GitHub button and the theme switch. Under 860px the nav, labels and key hide, search and GitHub become 36px icon buttons, and docs pages add a menu button.
 - **Horizon footer:** on the home page and the 404, the closing line ("Everything here orbits one maker: Puncoz Nepal.", the name underlined in the star colour, linking to puncoz.com), then a 170 to 260px scene: faint stars, the star rising with its glow behind the curved edge of a planet whose ground fades from Graphite Panel to Graphite Ground 2, with a thin teal atmosphere rim. Then the surface, on Graphite Ground 2: one link per public planet (its mark and name in data, teal on hover), a row of Search ⌘K, `llms.txt`, `llms-full.txt`, GitHub and "Back to orbit ↑" in muted 14px, and the credit in Steel Faint. Docs pages show only the surface, below a hairline, across the full width, with "Back to top".
 
 ### The 404
@@ -385,7 +400,9 @@ The brand mark is a ringed planet in Frost Ink with a teal body and a small star
 ### Motion
 - **The system** is the one authored moment: the inner orbit turns once in about 90s, outer ones slower; moons circle their planets; it slows to 15% under the pointer and pauses when off-screen or in a hidden tab.
 - Supporting motion is short and single: the terminal and assistant panel rise 18px and un-blur over 0.8s once, each terminal tab types once, cards rise 2px and turn their moons on hover, the theme switch's sun and shadow move. One ease throughout, an exponential ease-out (`cubic-bezier(0.16, 1, 0.3, 1)`), animating transform, opacity, blur or canvas only.
-- Under reduced motion the system is drawn once and redraws only on change, the terminal does not type, the cursor does not blink, the theme switch changes instantly, Back to orbit jumps, and nothing enters or turns.
+- The sky never moves, twinkles or drifts.
+- **Zoom** (ADR-0029). Going down the ladder (a card, its Use or Maintain, the planet header's) the new page settles in from 98% and the old one grows to 102% as it fades; going up (the scale strip, the planet chip) the reverse; 0.35s with the site's ease, through view transitions. The card's planet morphs into the planet header's in 0.35s. Browser back and forward, and any other navigation, change pages without a zoom. The Verse view is a response to input, so the One Orbit Rule holds.
+- Under reduced motion the system is drawn once and redraws only on change, the terminal does not type, the cursor does not blink, the theme switch changes instantly, Back to orbit jumps, the Verse view changes at once, no page zooms or morphs, and nothing enters or turns.
 - Without scripts every section is visible, the canvas is absent, and the search button is replaced by a link to the cards on a Graphite Panel with 12px corners.
 
 ### Named Rules

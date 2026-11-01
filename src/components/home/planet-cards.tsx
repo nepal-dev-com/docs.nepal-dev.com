@@ -4,6 +4,8 @@ import { ArrowRight } from 'lucide-react';
 import type { CatalogEntry } from '@/lib/catalog';
 import { kindName, ringOf } from '@/lib/rings';
 import { PlanetMark, PlanetSystem } from '@/components/planet';
+import { PlanetMorph } from '@/components/zoom-page';
+import { zoomIn } from '@/lib/zoom';
 
 /** The card's kind line: the kind, and a project's number of repositories (ADR-0024). */
 export function kindLine(entry: CatalogEntry): string {
@@ -18,11 +20,15 @@ function PlanetCard({ entry, id }: { entry: CatalogEntry; id?: string }) {
   return (
     <article className="planet" id={id} style={{ '--eco': `var(--home-${ring})` } as CSSProperties}>
       <div className="planet-sky">
-        <PlanetSystem ring={ring} kind={entry.kind} lines={entry.lines} width={330} height={168} />
+        <PlanetMorph slug={entry.slug}>
+          <PlanetSystem ring={ring} kind={entry.kind} lines={entry.lines} width={330} height={168} />
+        </PlanetMorph>
       </div>
       <div className="planet-facts">
         <h3>
-          <Link href={entry.url}>{entry.title}</Link>
+          <Link href={entry.url} transitionTypes={[zoomIn]}>
+            {entry.title}
+          </Link>
         </h3>
         <p className="planet-kind">
           <PlanetMark ring={ring} kind={entry.kind} />
@@ -49,12 +55,16 @@ function PlanetCard({ entry, id }: { entry: CatalogEntry; id?: string }) {
         )}
         <div className="planet-links">
           {entry.useUrl && (
-            <Link href={entry.useUrl} data-primary="">
+            <Link href={entry.useUrl} data-primary="" transitionTypes={[zoomIn]}>
               Use
               <ArrowRight aria-hidden />
             </Link>
           )}
-          {entry.maintainUrl && <Link href={entry.maintainUrl}>Maintain</Link>}
+          {entry.maintainUrl && (
+            <Link href={entry.maintainUrl} transitionTypes={[zoomIn]}>
+              Maintain
+            </Link>
+          )}
           {entry.demoUrl && <Link href={entry.demoUrl}>Demo</Link>}
         </div>
       </div>
@@ -68,7 +78,11 @@ function PlanetCard({ entry, id }: { entry: CatalogEntry; id?: string }) {
  */
 export function PlanetCards({ entries }: { entries: CatalogEntry[] }) {
   if (entries.length === 0) {
-    return <p className="planets-empty">No packages or projects yet.</p>;
+    return (
+      <p className="planets-empty">
+        No planets in the Verse yet. Packages and projects appear here once they are documented.
+      </p>
+    );
   }
   const firstPackage = entries.find((entry) => entry.kind === 'package');
   const firstProject = entries.find((entry) => entry.kind === 'project');

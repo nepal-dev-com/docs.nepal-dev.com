@@ -4,6 +4,8 @@ import { ArrowRight, ArrowUpRight } from 'lucide-react';
 import type { CatalogEntry } from '@/lib/catalog';
 import { kindName, ringOf } from '@/lib/rings';
 import { PlanetMark, PlanetSystem } from '@/components/planet';
+import { PlanetMorph } from '@/components/zoom-page';
+import { zoomIn } from '@/lib/zoom';
 
 /**
  * The planet header above a package or project overview: what it is, its facts and links, and
@@ -56,12 +58,16 @@ export function PackageHero({ entry }: { entry: CatalogEntry }) {
         )}
         <nav className="pkg-links" aria-label={`${entry.title} links`}>
           {entry.useUrl && (
-            <Link href={entry.useUrl} data-primary="">
+            <Link href={entry.useUrl} data-primary="" transitionTypes={[zoomIn]}>
               Use
               <ArrowRight aria-hidden />
             </Link>
           )}
-          {entry.maintainUrl && <Link href={entry.maintainUrl}>Maintain</Link>}
+          {entry.maintainUrl && (
+            <Link href={entry.maintainUrl} transitionTypes={[zoomIn]}>
+              Maintain
+            </Link>
+          )}
           {entry.registry && (
             <a href={entry.registry} rel="noreferrer noopener">
               Registry
@@ -88,15 +94,17 @@ export function PackageHero({ entry }: { entry: CatalogEntry }) {
           )}
         </nav>
       </div>
-      <PlanetSystem
-        ring={ring}
-        kind={entry.kind}
-        lines={entry.lines}
-        width={300}
-        height={210}
-        scale={1.3}
-        className="pkg-system"
-      />
+      <PlanetMorph slug={entry.slug}>
+        <PlanetSystem
+          ring={ring}
+          kind={entry.kind}
+          lines={entry.lines}
+          width={300}
+          height={210}
+          scale={1.3}
+          className="pkg-system"
+        />
+      </PlanetMorph>
     </section>
   );
 }

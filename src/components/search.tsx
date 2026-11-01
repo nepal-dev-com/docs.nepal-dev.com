@@ -14,6 +14,7 @@ import {
 import { useI18n } from 'fumadocs-ui/contexts/i18n';
 import { useAlgoliaSearch } from 'fumadocs-core/search/client';
 import { searchClient, searchIndexName } from '@/lib/algolia';
+import { SearchEmpty } from './search-empty';
 
 export default function CustomSearchDialog(props: SharedProps) {
   const { locale } = useI18n();
@@ -32,7 +33,7 @@ export default function CustomSearchDialog(props: SharedProps) {
           <SearchDialogInput />
           <SearchDialogClose />
         </SearchDialogHeader>
-        <SearchDialogList />
+        <SearchDialogList Empty={SearchEmpty} />
         <SearchDialogFooter>
           <a
             href="https://algolia.com"
