@@ -41,7 +41,8 @@ and night sides. The home page
 is that system beside the site's search, then a planet card for every package and project, and
 private projects beyond an asteroid belt. On docs pages
 ([ADR-0018](content/docs/maintain/adr/ADR-0018-docs-pages-get-orbit-stations-a-trajectory-and-the-full-horizon.mdx))
-each sidebar section is an orbit station with its pages as moons, one open at a time (ADR-0023), and "On this page" is a curved
+each sidebar section is an orbit station with its pages as moons, one open at a time (ADR-0023); an overview has the
+same sidebar as its Use pages (or Maintain pages), with *Overview* first in every track (ADR-0025); and "On this page" is a curved
 trajectory with a probe at your reading position and the minutes left.
 
 How private project documentation is kept away from the public site is still open, and demos
@@ -248,3 +249,5 @@ threat model, data classification, secrets inventory and audit checklist live in
 | [0022](content/docs/maintain/adr/ADR-0022-diagrams-show-archify-on-the-page-and-mermaid-in-markdown.mdx) | Diagrams show their Archify view on the page and their Mermaid in Markdown | Approved |
 | [0023](content/docs/maintain/adr/ADR-0023-sidebar-stations-open-one-at-a-time.mdx) | Sidebar stations open one at a time | Approved |
 | [0024](content/docs/maintain/adr/ADR-0024-a-project-can-span-several-repositories.mdx) | A project can span several repositories | Approved |
+| [0025](content/docs/maintain/adr/ADR-0025-the-overview-has-the-same-sidebar-as-its-tracks.mdx) | The overview has the same sidebar as its tracks | Approved |
+| [0026](content/docs/maintain/adr/ADR-0026-the-moon-picker-on-an-overview-opens-a-lines-first-page.mdx) | The moon picker on an overview opens a line's first page | Approved |

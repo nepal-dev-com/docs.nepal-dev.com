@@ -254,7 +254,103 @@ export function catalogPlugin(): LoaderPlugin {
         }
         return node;
       },
+      root(node) {
+        return overviewInTracks(node);
+      },
     },
+  };
+}
+
+const overviewMark = '#overview:';
+
+/** An *Overview* item that `overviewInTracks` put first in a track or line (ADR-0025). */
+export function isOverviewItem(node: PageTree.Node | undefined): boolean {
+  return node?.type === 'page' && (node.$id?.includes(overviewMark) ?? false);
+}
+
+function trackRank(node: PageTree.Node): number {
+  const track = node.type === 'folder' && node.root === 'track' ? node.$ref?.folder.split('/').pop() : undefined;
+  return track === 'use' ? 0 : track === 'maintain' ? 1 : 2;
+}
+
+/**
+ * Moves each entry's overview into its tracks: an *Overview* item first in every Use line (or an
+ * unversioned Use) and in Maintain, with Use first, so Fumadocs resolves the overview into its
+ * default track and shows that track's sidebar (ADR-0025).
+ */
+export function overviewInTracks(root: PageTree.Root): PageTree.Root {
+  for (const entry of root.children) {
+    if (entry.type !== 'folder' || entry.root !== true) {
+      continue;
+    }
+    // A `meta.json` that lists "index" in `pages` makes the overview a child page, not the index.
+    const file = `${entry.$ref?.folder}/index.mdx`;
+    const isOverview = (node: PageTree.Node) => node === entry.index || (node.type === 'page' && node.$ref === file);
+    const overview = entry.index ?? entry.children.find((node): node is PageTree.Item => isOverview(node));
+    if (!overview) {
+      continue;
+    }
+    delete entry.index;
+    entry.children = entry.children.filter((node) => !isOverview(node)).sort((a, b) => trackRank(a) - trackRank(b));
+
+    for (const track of entry.children) {
+      if (track.type !== 'folder' || track.root !== 'track') {
+        continue;
+      }
+      const lines = track.children.filter(
+        (child): child is PageTree.Folder => child.type === 'folder' && child.root === 'line',
+      );
+      for (const folder of lines.length > 0 ? lines : [track]) {
+        const item: PageTree.Item = {
+          ...overview,
+          name: 'Overview',
+          $id: `${overview.$id ?? overview.url}${overviewMark}${folder.$id ?? folder.$ref?.folder ?? ''}`,
+        };
+        folder.children = [item, ...folder.children];
+      }
+    }
+  }
+  return root;
+}
+
+/**
+ * The tree as written, without the *Overview* items: each entry's overview back as its folder's
+ * index, for readers of the whole tree such as `llms.txt` (ADR-0025 decision 5).
+ */
+export function withoutOverviewItems(root: PageTree.Root): PageTree.Root {
+  const strip = (nodes: PageTree.Node[]): PageTree.Node[] =>
+    nodes
+      .filter((node) => !isOverviewItem(node))
+      .map((node) => (node.type === 'folder' ? { ...node, children: strip(node.children) } : node));
+
+  const findOverview = (nodes: PageTree.Node[]): PageTree.Item | undefined => {
+    for (const node of nodes) {
+      if (node.type === 'page' && isOverviewItem(node)) {
+        return node;
+      }
+      if (node.type === 'folder') {
+        const found = findOverview(node.children);
+        if (found) {
+          return found;
+        }
+      }
+    }
+    return undefined;
+  };
+
+  return {
+    ...root,
+    children: root.children.map((node) => {
+      if (node.type !== 'folder' || node.root !== true || node.index) {
+        return node;
+      }
+      const overview = findOverview(node.children);
+      const children = strip(node.children);
+      if (!overview) {
+        return { ...node, children };
+      }
+      return { ...node, index: { ...overview, $id: overview.$id?.split(overviewMark)[0] }, children };
+    }),
   };
 }
 

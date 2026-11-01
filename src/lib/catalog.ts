@@ -1,6 +1,14 @@
 import type * as PageTree from 'fumadocs-core/page-tree';
 import { getMeta, source } from './source';
-import { compareLines, lineInfo, pageVersion, type LineInfo, type PageVersion, type TrackName } from './catalog-plugin';
+import {
+  compareLines,
+  isOverviewItem,
+  lineInfo,
+  pageVersion,
+  type LineInfo,
+  type PageVersion,
+  type TrackName,
+} from './catalog-plugin';
 import { ecosystems, type Ecosystem, type Repository } from './catalog-schema';
 
 export interface CatalogLine extends LineInfo {
@@ -29,12 +37,13 @@ export interface CatalogEntry {
 
 type Page = ReturnType<typeof source.getPages>[number];
 
+// The *Overview* item heads every track's sidebar; a track's own first page is the one after it (ADR-0025).
 function firstUrl(node: PageTree.Folder): string | undefined {
   if (node.index) {
     return node.index.url;
   }
   for (const child of node.children) {
-    if (child.type === 'page') {
+    if (child.type === 'page' && !isOverviewItem(child)) {
       return child.url;
     }
     if (child.type === 'folder') {
@@ -45,6 +54,22 @@ function firstUrl(node: PageTree.Folder): string | undefined {
     }
   }
   return undefined;
+}
+
+function overviewUrl(entry: PageTree.Folder): string | undefined {
+  const find = (nodes: PageTree.Node[]): string | undefined => {
+    for (const node of nodes) {
+      if (node.type === 'page' && isOverviewItem(node)) {
+        return node.url;
+      }
+      const url = node.type === 'folder' ? find(node.children) : undefined;
+      if (url) {
+        return url;
+      }
+    }
+    return undefined;
+  };
+  return entry.index?.url ?? find(entry.children) ?? firstUrl(entry);
 }
 
 function folderName(node: PageTree.Folder): string | undefined {
@@ -64,7 +89,7 @@ function readEntry(folder: PageTree.Folder): CatalogEntry | undefined {
   }
   const meta = getMeta(`${slug}/meta.json`);
   const catalog = meta?.catalog;
-  const url = firstUrl(folder);
+  const url = overviewUrl(folder);
   if (!catalog || !url) {
     return undefined;
   }
@@ -173,7 +198,7 @@ function previewOf(folder: PageTree.Folder | undefined, label: string): TrackPre
     return undefined;
   }
   const items = [folder.index, ...folder.children].filter(
-    (node): node is PageTree.Item => node?.type === 'page',
+    (node): node is PageTree.Item => node?.type === 'page' && !isOverviewItem(node),
   );
   const pages = items.slice(0, 6).map((item) => ({
     title: source.getNodePage(item)?.data.title ?? String(item.name),

@@ -62,12 +62,26 @@
       ]
     },
     {
+      "id": "ver",
+      "type": "backend",
+      "label": "v0.1",
+      "pos": [
+        54,
+        160
+      ],
+      "size": [
+        408,
+        70
+      ],
+      "sublabel": "0.1.4 · Latest ▾"
+    },
+    {
       "id": "name",
       "type": "external",
       "label": "lodestar",
       "pos": [
         54,
-        160
+        242
       ],
       "size": [
         408,
@@ -77,10 +91,10 @@
     {
       "id": "track",
       "type": "backend",
-      "label": "Use | Maintain",
+      "label": "Use (current) | Maintain",
       "pos": [
         54,
-        230
+        312
       ],
       "size": [
         408,
@@ -88,12 +102,12 @@
       ]
     },
     {
-      "id": "t1",
-      "type": "backend",
-      "label": "Use ▸",
+      "id": "ov",
+      "type": "external",
+      "label": "Overview (current)",
       "pos": [
         54,
-        300
+        382
       ],
       "size": [
         408,
@@ -101,12 +115,12 @@
       ]
     },
     {
-      "id": "t2",
+      "id": "l1",
       "type": "backend",
-      "label": "Maintain ▸",
+      "label": "Install",
       "pos": [
         54,
-        370
+        452
       ],
       "size": [
         408,
@@ -119,7 +133,7 @@
       "label": "package hero: lodestar",
       "pos": [
         40,
-        454
+        536
       ],
       "size": [
         436,
@@ -133,7 +147,7 @@
       "label": "lodestar",
       "pos": [
         40,
-        536
+        618
       ],
       "size": [
         436,
@@ -146,7 +160,7 @@
       "label": "the package's overview page",
       "pos": [
         40,
-        606
+        688
       ],
       "size": [
         436,
@@ -162,10 +176,11 @@
         "title",
         "search",
         "menu",
+        "ver",
         "name",
         "track",
-        "t1",
-        "t2",
+        "ov",
+        "l1",
         "hero",
         "h1",
         "body"
@@ -176,10 +191,11 @@
       "kind": "region",
       "label": "drawer",
       "wraps": [
+        "ver",
         "name",
         "track",
-        "t1",
-        "t2"
+        "ov",
+        "l1"
       ],
       "pad": 10
     }

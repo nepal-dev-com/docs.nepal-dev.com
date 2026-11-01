@@ -1,0 +1,80 @@
+---
+title: "ADR-0026 — The moon picker on an overview opens a line's first page"
+---
+
+- **Status:** Approved
+- **Date:** 2026-11-01
+- **Deciders:** [@puncoz](https://github.com/puncoz)
+- **Approved by:** [@puncoz](https://github.com/puncoz)
+- **Approved on:** 2026-11-01
+- **Supersedes:** [ADR-0025](./ADR-0025-the-overview-has-the-same-sidebar-as-its-tracks.mdx)
+  decision 4 only (the moon picker on the overview)
+- **Superseded by:** —
+- **Design documents:** [`../app-flow/overview-sidebar.mdx`](../app-flow/overview-sidebar.mdx)
+
+## Context
+
+ADR-0025 decision 4 says that on an entry's overview, choosing another line in the moon picker
+keeps the reader on the overview with that line's sidebar. Implementing ADR-0025 showed that
+this cannot work with one overview URL:
+
+- Fumadocs shows the sidebar of the deepest root folder on the current page's path, and finds
+  that path depth first (`TreeContextProvider` in `fumadocs-ui/contexts/tree`). The overview is
+  one URL, `/<slug>`, held by every line's *Overview* item, so its path always ends in the first
+  line: the latest, or `dev` before the first release.
+- The picker keeps the reader on the same page by matching the page's file path inside the line
+  (`findProjection` in `fumadocs-core`). The overview's file, `<slug>/index.mdx`, is in no line,
+  so the picker uses each line's own link.
+- As built, that link is the line's first page after the *Overview* item (`lineLink()` in
+  `src/lib/overview-sidebar.ts`). From any other page the picker behaves as before.
+
+The owner chose on 2026-11-01 to keep what is built.
+
+## Decision
+
+1. **On an overview, the moon picker opens the chosen line's first page.** It lists every line,
+   with the line the overview's sidebar shows (the latest, or `dev` before the first release)
+   checked. Choosing another line opens that line's first page (its index when it has one), with
+   that line's sidebar. This is what the picker already does on any page a line does not have.
+2. **Everything else in ADR-0025 stands.** On every other page the picker keeps the reader on the
+   same page when the chosen line has it, otherwise that line's first page, as before.
+
+## Options considered
+
+| Option | Pros | Cons | Verdict |
+|---|---|---|---|
+| A — open the line's first page | Built and checked; one rule for a page a line does not hold | Choosing a line leaves the overview | Chosen (owner) |
+| B — no moon picker on overviews | Nothing on the overview leads away from it | The overview's sidebar no longer matches a Use page's; a code change | Rejected (owner) |
+| C — an overview per line (`/<slug>/use/<line>` shows the overview) | The reader stays on an overview | New routes, redirects and tests; one page at several URLs | Rejected (owner) |
+
+## Consequences
+
+**Positive**
+
+- No code changes: the site already behaves this way.
+- One rule for the picker: the same page when the line holds it, otherwise its first page.
+
+**Negative / accepted trade-offs**
+
+- A reader on the overview who chooses another line leaves the overview; *Overview* is first in
+  that line's sidebar to return.
+
+## Content invariants
+
+None touched.
+
+## Security considerations
+
+None — this change touches no data, no endpoint and no secret.
+
+## Implementation notes
+
+- [x] No code changes: `lineLink()` and the layout's tab transform already do this (ADR-0025).
+- [x] [`ADR-0025`](./ADR-0025-the-overview-has-the-same-sidebar-as-its-tracks.mdx): *Superseded
+      by:* this ADR for decision 4, and its open implementation note closed.
+
+## Docs to update on implementation
+
+- [x] [`../app-flow/overview-sidebar.mdx`](../app-flow/overview-sidebar.mdx): already describes
+      this; add this ADR to its related ADRs.
+- [x] [`./index.mdx`](./index.mdx): status.

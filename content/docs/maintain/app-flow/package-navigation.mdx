@@ -6,7 +6,8 @@ title: "App flow — package and project navigation"
 - **Last updated:** 2026-11-01
 - **Related ADRs:** [ADR-0013](../adr/ADR-0013-packages-and-projects-share-one-catalogue-shape.mdx),
   [ADR-0015](../adr/ADR-0015-every-entry-lives-at-the-root-in-one-shape-and-one-look.mdx),
-  [ADR-0010](../adr/ADR-0010-projects-document-themselves-through-a-submodule.mdx)
+  [ADR-0010](../adr/ADR-0010-projects-document-themselves-through-a-submodule.mdx),
+  [ADR-0025](../adr/ADR-0025-the-overview-has-the-same-sidebar-as-its-tracks.mdx)
 
 > Snapshot of the system as it stands today. Edit in place; never record what changed.
 
@@ -66,8 +67,9 @@ flowchart LR
 ### 1. `Overview` — `/<slug>`
 
 The package hero, then the package's own `index.mdx`, as its repository writes it. The sidebar
-shows the package name, the track switch, and both tracks as folders. The hero is drawn in
-[site pages](./site-pages.mdx).
+is the latest Use line's, as on screen 2, with *Overview* first and current; an entry without
+Use shows Maintain's (ADR-0025, drawn in [the overview's sidebar](./overview-sidebar.mdx)). The
+hero is drawn in [site pages](./site-pages.mdx).
 
 <Diagram src="/diagrams/docs/package-navigation-screen-1.html" title="Screen 1 — Overview">
 
@@ -77,10 +79,11 @@ block-beta
   title["◎ Puncoz Docs"]:2 search["⌕"] menu["☰"]
   block:drawer:4
     columns 4
+    ver["v0.1 · 0.1.4 · Latest ▾"]:4
     name["lodestar"]:4
-    track["Use | Maintain"]:4
-    t1["Use ▸"]:4
-    t2["Maintain ▸"]:4
+    track["Use (current) | Maintain"]:4
+    ov["Overview (current)"]:4
+    l1["Install"]:4
   end
   hero["package hero: lodestar · v0.1 · 0.1.4 · latest · Use · Maintain"]:4
   h1["lodestar"]:4
@@ -99,7 +102,8 @@ Desktop: the same, with the sidebar always visible.
 - Refused: not applicable until private documentation exists (see Entry points).
 - Error: a malformed catalogue field fails the build, so it never reaches readers.
 - Degraded: search unavailable shows the dialog's error notice; everything else works.
-- Success: the overview, with both tracks one click away.
+- Success: the overview, with the Use sidebar the reader keeps on every Use page and Maintain
+  one click away.
 
 ### 2. `Use page` — `/<slug>/use/<line>/<page>`
 

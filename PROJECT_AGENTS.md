@@ -81,6 +81,12 @@ content/<project-slug>/
     └── ...            # architecture, local setup, tests, releasing, contributing
 ```
 
+**Your `index.mdx` is the overview, and every track's sidebar starts with it.** The sidebar lists
+it as *Overview*, first in each Use line (or in `use/` when it has no lines) and in `maintain/`,
+and the overview itself shows the sidebar of your Use track, or of Maintain when there is no Use
+([ADR-0025](content/docs/maintain/adr/ADR-0025-the-overview-has-the-same-sidebar-as-its-tracks.mdx)).
+Don't add a page of your own to lead back to it.
+
 **Keep ADRs in a folder named `adr`.** The sidebar shows such a folder as a constellation, one
 moon per ADR phased by its status
 ([ADR-0019](content/docs/maintain/adr/ADR-0019-adr-folders-show-as-a-constellation-in-the-sidebar.mdx)).

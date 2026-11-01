@@ -3,6 +3,7 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import type { Ring } from '@/lib/rings';
 import { PlanetMark } from '@/components/planet';
+import { currentSide } from '@/lib/overview-sidebar';
 
 export interface TrackSwitchEntry {
   slug: string;
@@ -56,6 +57,7 @@ export function TrackSwitch({ entries, docsRoute }: { entries: TrackSwitchEntry[
     return null;
   }
 
+  const current = currentSide(track, entry);
   const urls = { use: entry.useUrl, maintain: entry.maintainUrl };
   const available = sides.filter((item) => urls[item.key]);
 
@@ -75,7 +77,7 @@ export function TrackSwitch({ entries, docsRoute }: { entries: TrackSwitchEntry[
               key={key}
               href={urls[key] as string}
               aria-label={label}
-              aria-current={track === key ? 'page' : undefined}
+              aria-current={current === key ? 'page' : undefined}
             >
               <Icon />
               <span className="planet-side-tip" aria-hidden>

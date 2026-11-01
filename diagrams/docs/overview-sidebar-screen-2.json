@@ -1,0 +1,135 @@
+{
+  "schema_version": 1,
+  "diagram_type": "architecture",
+  "meta": {
+    "title": "Screen 2 — Maintain page",
+    "subtitle": "Wireframe at phone width, drawn from its Mermaid version · overview sidebar",
+    "output": "overview-sidebar-screen-2.html",
+    "animation": "trace",
+    "quality_profile": "showcase",
+    "legend": {
+      "entries": {
+        "backend": {
+          "label": "Control or link"
+        },
+        "external": {
+          "label": "Content"
+        }
+      }
+    }
+  },
+  "components": [
+    {
+      "id": "chip",
+      "type": "backend",
+      "label": "● lodestar",
+      "pos": [
+        40,
+        60
+      ],
+      "size": [
+        324,
+        58
+      ]
+    },
+    {
+      "id": "sw",
+      "type": "external",
+      "label": "☀ | ☾ curr",
+      "pos": [
+        376,
+        60
+      ],
+      "size": [
+        100,
+        70
+      ],
+      "sublabel": "ent"
+    },
+    {
+      "id": "ov",
+      "type": "external",
+      "label": "○ Overview",
+      "pos": [
+        40,
+        142
+      ],
+      "size": [
+        436,
+        58
+      ]
+    },
+    {
+      "id": "p1",
+      "type": "external",
+      "label": "◉ Releasing (current, tinted)",
+      "pos": [
+        40,
+        212
+      ],
+      "size": [
+        436,
+        58
+      ]
+    },
+    {
+      "id": "h1",
+      "type": "external",
+      "label": "○ Architecture",
+      "pos": [
+        54,
+        312
+      ],
+      "size": [
+        408,
+        70
+      ],
+      "sublabel": "2 ▸ (closed)"
+    },
+    {
+      "id": "h2",
+      "type": "external",
+      "label": "○ Decisions",
+      "pos": [
+        54,
+        438
+      ],
+      "size": [
+        408,
+        70
+      ],
+      "sublabel": "5 ▸ (closed)"
+    }
+  ],
+  "boundaries": [
+    {
+      "kind": "region",
+      "label": "Phone screen · the sidebar on /lodestar/maintain/releasing",
+      "wraps": [
+        "chip",
+        "sw",
+        "ov",
+        "p1",
+        "h1",
+        "h2"
+      ],
+      "pad": 22
+    },
+    {
+      "kind": "region",
+      "label": "station 1",
+      "wraps": [
+        "h1"
+      ],
+      "pad": 10
+    },
+    {
+      "kind": "region",
+      "label": "station 2",
+      "wraps": [
+        "h2"
+      ],
+      "pad": 10
+    }
+  ]
+}

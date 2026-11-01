@@ -61,7 +61,7 @@ with a route (`api`, `og`, `static`, …). Contracts for the machine-readable ro
 |---|---|---|
 | `content/` | The published pages and `meta.json` files, one folder per catalogue entry | — |
 | `src/lib/catalog-schema.ts` | `catalogMetaSchema`: Fumadocs' `metaSchema` plus `catalog`, `name`, `version` and `channel` (`latest`, `dev`, `legacy`), as a Standard Schema; rejects any `visibility` but `public`; a project's `repositories` (`id`, `name`, `url`, one `primary`), primary first — ADR-0024 | `fumadocs-core` |
-| `src/lib/catalog-plugin.ts` | Loader plugin: the build checks of ADR-0015 decision 5, typed roots (`root: true` on an entry, `'track'` on `use/` and `maintain/`, `'line'` on a version line), line names and descriptions (`version · channel`) and line order (latest, `dev`, then older lines in `use/meta.json` `pages` order or newest first); a project's lines (`dev` and one released line) and repository folders named from the catalogue (ADR-0024); `lineInfo()`, `lineSegment()`, `pageVersion()`, `repositoryName()` | `fumadocs-core` |
+| `src/lib/catalog-plugin.ts` | Loader plugin: the build checks of ADR-0015 decision 5, typed roots (`root: true` on an entry, `'track'` on `use/` and `maintain/`, `'line'` on a version line), line names and descriptions (`version · channel`) and line order (latest, `dev`, then older lines in `use/meta.json` `pages` order or newest first); a project's lines (`dev` and one released line) and repository folders named from the catalogue (ADR-0024); the `root` hook `overviewInTracks()`, which moves each overview into its tracks as an *Overview* item, and `withoutOverviewItems()` for `llms.txt` (ADR-0025); `lineInfo()`, `lineSegment()`, `pageVersion()`, `repositoryName()` | `fumadocs-core` |
 | `src/lib/source.ts` | Loads `content/` with `defineDocs` at base URL `/`, swapping each line folder's URL segment for its name (`slugs`), with the diagram shape check first among the remark plugins and the Markdown filter for `<Diagram>` (ADR-0022); exposes `source`, `getMeta` and `docsLlms` (version line in each page's Markdown and in `llms.txt`) | `fumadocs-mdx`, the two above |
 | `src/lib/catalog.ts` | Reads the page tree into typed catalogue entries (lines, tracks, demo, repositories), the page context for banners, and the home page's previews | `source.ts` |
 | `src/lib/catalog-routes.ts` | Meta files only (no compiled pages), for the proxy: the catalogued slugs, each package's line segments, `latest` and `dev`; `isEntryPath()`, `resolveLineRedirect()` | `fumadocs-mdx` |
@@ -101,7 +101,14 @@ folders of the same type into one switcher whose options keep the reader on the 
   (`v4.0` / `4.0.1 · Latest`, `dev` / `5.0.0-dev · In development`, older lines) that keeps the
   reader on the same page when it exists, matched by file path, not URL;
 - on a Maintain page the sidebar holds only the Maintain pages;
-- `TrackSwitch` switches between the two tracks;
+- on an overview the sidebar is its default track's: the plugin's `root` hook takes the overview
+  off the entry folder and puts an *Overview* item for it first in each Use line (or an
+  unversioned Use) and in Maintain, with Use first, so the path search finds the overview in the
+  latest Use line, or in Maintain when there is no Use (ADR-0025). The catalogue's links
+  (`src/lib/catalog.ts`) and the version menu's (`lineLink()` in `src/lib/overview-sidebar.ts`)
+  skip the item, and `llms.txt` reads the tree without it;
+- `TrackSwitch` switches between the two tracks, and on an overview marks the default track as
+  current;
 - the site-wide switcher of root folders is not shown: the layout passes only `line` roots as
   tabs. Entries are reached from the home page and the header.
 

@@ -7,7 +7,14 @@ import { catalogMetaSchema, type CatalogMeta } from './catalog-schema';
 import { diagramsPlugin } from './diagrams-plugin';
 import { markdownFilter, remarkDiagrams } from './remark-diagrams';
 import { applyMdxPreset } from 'fumadocs-mdx/config';
-import { catalogPlugin, channelLabel, describeVersion, lineInfo, pageVersion } from './catalog-plugin';
+import {
+  catalogPlugin,
+  channelLabel,
+  describeVersion,
+  lineInfo,
+  pageVersion,
+  withoutOverviewItems,
+} from './catalog-plugin';
 
 const docs = defineDocs({
   dir: 'content',
@@ -48,7 +55,10 @@ export const source = loader({
   },
 });
 
-export const docsLlms = llms(source, {
+// llms.txt lists the tree as written: each overview under its entry, once (ADR-0025 decision 5).
+const llmsSource: typeof source = { ...source, getPageTree: () => withoutOverviewItems(source.getPageTree()) };
+
+export const docsLlms = llms(llmsSource, {
   renderName(node, ctx) {
     const meta = node.type === 'folder' ? source.getNodeMeta(node, ctx.lang) : undefined;
     const data = meta?.data as CatalogMeta | undefined;

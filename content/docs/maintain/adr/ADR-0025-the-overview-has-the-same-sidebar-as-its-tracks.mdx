@@ -1,0 +1,147 @@
+---
+title: "ADR-0025 — The overview has the same sidebar as its tracks"
+---
+
+- **Status:** Approved
+- **Date:** 2026-11-01
+- **Deciders:** [@puncoz](https://github.com/puncoz)
+- **Approved by:** [@puncoz](https://github.com/puncoz)
+- **Approved on:** 2026-11-01
+- **Supersedes:** — (changes what [`../app-flow/package-navigation.mdx`](../app-flow/package-navigation.mdx)
+  screen 1 describes; [ADR-0013](./ADR-0013-packages-and-projects-share-one-catalogue-shape.mdx)
+  decision 6's scoped navigation now covers the overview too)
+- **Superseded by:** [ADR-0026](./ADR-0026-the-moon-picker-on-an-overview-opens-a-lines-first-page.mdx)
+  for decision 4 only (the moon picker on the overview)
+- **Design documents:** [`../app-flow/overview-sidebar.mdx`](../app-flow/overview-sidebar.mdx),
+  [`../app-flow/package-navigation.mdx`](../app-flow/package-navigation.mdx),
+  [`../architecture/system.mdx`](../architecture/system.mdx)
+
+## Context
+
+The owner reported on 2026-11-01 that the sidebar changes shape between an entry's overview and
+its pages. On the overview, Maintain opens as a folder in the sidebar; clicking one of its pages
+shows a different sidebar, which is confusing.
+
+What the code does today:
+
+- Fumadocs shows the sidebar of the deepest root folder on the current page's path
+  (`TreeContextProvider` in `fumadocs-ui/contexts/tree`). Its path search checks a folder's
+  `index` before its children.
+- The catalogue plugin marks the entry folder `root: true`, each track `root: 'track'` and each
+  version line `root: 'line'` (`src/lib/catalog-plugin.ts`). The overview is the entry folder's
+  `index`, so its path ends at the entry folder: the sidebar shows the whole entry, with Use and
+  Maintain as stations that open in place.
+- A track page's path reaches its track or line, so its sidebar shows only that track's
+  stations, as top-level cards. The same sections are nested on the overview and top-level on a
+  page.
+- The planet row (`src/components/docs/track-switch.tsx`) marks the current side from the URL;
+  on the overview it marks neither.
+
+The owner chose that the overview shows exactly the sidebar of a track page.
+
+## Decision
+
+1. **The overview shows its default track's sidebar.** The default track is Use when the entry
+   has one (its latest line, or `dev` when nothing is released), otherwise Maintain. The sidebar
+   on the overview is that track's: its stations as top-level cards, one open at a time
+   (ADR-0023). When the entry has both tracks, the planet row marks the default track's side as
+   current: the sun for Use, the moon for Maintain. The other side's button opens that track, as
+   today.
+2. **Every track's sidebar starts with the overview.** An *Overview* item, linking to
+   `/<slug>`, is the first item of each Use line, of an unversioned Use and of Maintain, on the
+   top-level arc above the stations. On the overview it is the current page. From any page the
+   reader returns to the overview from the same place.
+3. **Built in the page tree.** The catalogue plugin's `root` hook detaches the entry folder's
+   `index` and puts an *Overview* item for the same page first in each line, unversioned Use and
+   Maintain, with Use before Maintain among the entry's children, so Fumadocs resolves the
+   overview into the default track. The catalogue's own reads (an entry's URL, the Use,
+   Maintain and line links) skip the *Overview* item. No change to Fumadocs, no new dependency.
+4. **The moon picker on the overview** lists the lines as on any Use page. Choosing another
+   line keeps the reader on the overview with that line's sidebar, as Fumadocs does for a page
+   that every line holds.
+5. **Unchanged:** the overview page itself (the planet header and the entry's `index.mdx`), its
+   URL, its Markdown, search records and `llms.txt`. This site's overview, `/docs`, has only
+   Maintain, so it shows Maintain's stations under *Overview*.
+
+## Options considered
+
+| Concern | Option | Pros | Cons | Verdict |
+|---|---|---|---|---|
+| Overview sidebar | A — the default track's sidebar | One sidebar everywhere; nothing changes shape when the reader clicks into a page | The overview looks like part of Use (or Maintain) | Chosen (owner) |
+| Overview sidebar | B — the planet row and two links, Use → and Maintain → | Simple; nothing expands | A third sidebar shape, shown only on the overview | Rejected (owner) |
+| Overview sidebar | C — the whole entry on every page | One shape everywhere | Long sidebars; undoes ADR-0013's scoped navigation | Rejected (owner) |
+| Build | A — the page tree's `root` hook | One place; Fumadocs resolves it like any page | The overview item appears in several places of the tree, so tree readers skip it | Chosen |
+| Build | B — a separate tree passed for the overview | No duplicate items | `DocsLayout` is in the shared layout and takes one tree; a second layout for overviews only | Rejected |
+| Back to the overview | A — an *Overview* item first in every track | Same place on every page; the reader sees where they are | One more row in each sidebar | Chosen |
+| Back to the overview | B — only the planet chip | No extra row | The chip is easy to miss as a link | Rejected |
+
+## Consequences
+
+**Positive**
+
+- The sidebar keeps its shape from the overview into any page of the default track, and the
+  sun and moon switch between the two tracks' sidebars everywhere.
+- The overview is one click away from every page, in the same place.
+
+**Negative / accepted trade-offs**
+
+- On the overview, the sidebar shows Use's stations (or Maintain's), not both tracks; Maintain
+  is the moon button away.
+- Each track's sidebar gains one row.
+- Fumadocs' previous and next links on the first page of a track now point back to the
+  overview.
+
+## Content invariants
+
+None touched: pages, URLs, Markdown, search records and `llms.txt` stay as they are.
+
+## Security considerations
+
+None — this change touches no data, no endpoint and no secret. It rearranges the sidebar's
+page tree, which holds only public pages.
+
+## Implementation notes
+
+- [x] `src/lib/catalog-plugin.ts`: the `root` hook (decision 3), as `overviewInTracks()`, tested
+      on its own. The overview is the entry folder's `index`, or a child page when the entry's
+      `meta.json` lists `"index"` in `pages` (this site's does); both move the same way.
+      `withoutOverviewItems()` gives `llms.txt` the tree as written (`src/lib/source.ts`).
+- [x] `src/lib/catalog.ts`: an entry's URL is its overview page's; the Use, Maintain and line
+      links, and the home page's track previews, skip the *Overview* item.
+- [x] `src/components/docs/track-switch.tsx`: on the overview, the default track's side is
+      current (decision 1), through `currentSide()` in `src/lib/overview-sidebar.ts`.
+- [x] The moon picker: Fumadocs links each line to its folder's first page, which is now the
+      *Overview* item, so the layout's tab transform (`src/app/(site)/layout.tsx`) links each line
+      to its first page after it (`folderUrls()` and `lineLink()`).
+- [x] **Decision 4 is not met as written.** From the overview, choosing another line cannot keep
+      the reader on the overview with that line's sidebar: the overview is one URL, and Fumadocs
+      resolves it to the first line on its path, the latest. Choosing another line from the
+      overview opens that line's first page. From any other page the picker keeps the reader on
+      the same page, as before. Superseded by
+      [ADR-0026](./ADR-0026-the-moon-picker-on-an-overview-opens-a-lines-first-page.mdx), which
+      keeps this behaviour.
+- [x] Tests (ADR-0007): the tree (Overview first in each line, unversioned Use and Maintain; Use
+      before Maintain; the entry folder without its index; an overview listed in `pages`; an
+      entry without an overview; folders outside the catalogue; this site's Maintain-only entry;
+      the tree restored for `llms.txt`), the current side and the line links as pure functions
+      (`src/lib/overview-tree.test.ts`, `src/lib/overview-sidebar.test.ts`). The catalogue links
+      are read from the built site, not unit-tested: `catalog.ts` reads the loaded source.
+- [x] Checked in Chrome on localhost at desktop width, with a temporary invented package
+      (`content/lodestar/`, a latest and a `dev` line, two Maintain pages; deleted afterwards)
+      and `/docs`: the overview shows the v0.1 sidebar with *Overview* current and the sun
+      current; a Use page and a Maintain page start with *Overview*; the moon picker links each
+      line to its own first page; the hero and planet row link to the first Use and Maintain
+      pages; `/docs` shows Maintain's stations under *Overview*; `use/latest` and a removed line
+      still redirect; `llms.txt` lists each overview once, under its entry. Phone width (the
+      drawer) was not seen.
+- [x] `bun run test`, `bun run types:check` and `bunx next build` pass; `bun run lint` is
+      reported while it stays blocked.
+
+## Docs to update on implementation
+
+- [x] [`../app-flow/overview-sidebar.mdx`](../app-flow/overview-sidebar.mdx): Current;
+      [`../app-flow/package-navigation.mdx`](../app-flow/package-navigation.mdx) screen 1, its
+      Mermaid and its Archify view.
+- [x] [`../architecture/system.mdx`](../architecture/system.mdx): the plugin's `root` hook.
+- [x] `AGENTS.md` §1 and `PROJECT_AGENTS.md`, where they describe the sidebar; `README.md`.
+- [x] [`./index.mdx`](./index.mdx): status.

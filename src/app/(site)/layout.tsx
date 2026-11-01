@@ -11,6 +11,7 @@ import { HorizonFooter } from '@/components/horizon-footer';
 import { OrbitItem, OrbitSeparator, OrbitStation, StationGroup } from '@/components/docs/orbit-station';
 import { AdrStatusProvider } from '@/components/docs/adr-constellation';
 import { adrStatus, isAdrFolder, type AdrStatus } from '@/lib/adr-status';
+import { folderUrls, lineLink } from '@/lib/overview-sidebar';
 
 // Statuses for the sidebar's ADR constellations, read from each ADR's status line (ADR-0019).
 function adrStatuses(): Record<string, AdrStatus> {
@@ -27,6 +28,7 @@ function adrStatuses(): Record<string, AdrStatus> {
 export default function Layout({ children }: LayoutProps<'/'>) {
   const catalog = getCatalog();
   const githubUrl = `https://github.com/${gitConfig.user}/${gitConfig.repo}`;
+  const overviews = new Set(catalog.map((entry) => entry.url));
   const entries = catalog.map((entry) => ({
     slug: entry.slug,
     title: entry.title,
@@ -64,7 +66,8 @@ export default function Layout({ children }: LayoutProps<'/'>) {
                 return null;
               }
               const channel = node.$ref ? getMeta(`${node.$ref.folder}/meta.json`)?.channel : undefined;
-              return channel ? { ...tab, icon: <MoonPhase channel={channel} /> } : tab;
+              const url = lineLink(folderUrls(node), overviews, tab.url);
+              return channel ? { ...tab, url, icon: <MoonPhase channel={channel} /> } : { ...tab, url };
             },
           }}
           tabMode="sidebar"
