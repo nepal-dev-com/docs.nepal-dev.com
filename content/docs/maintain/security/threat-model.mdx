@@ -3,8 +3,9 @@ title: "Threat model — puncoz-packages-docs"
 ---
 
 - **Status:** Current
-- **Last updated:** 2026-10-31
-- **Related ADRs:** ADR-0005
+- **Last updated:** 2026-11-01
+- **Related ADRs:** ADR-0005, [ADR-0016](../adr/ADR-0016-home-search-is-the-fumadocs-dialog-and-private-projects-render-server-side.mdx),
+  [ADR-0017](../adr/ADR-0017-the-whole-site-is-one-solar-system.mdx)
 
 > Snapshot of the system as it stands today. Edit in place; never record what changed.
 
@@ -12,8 +13,11 @@ title: "Threat model — puncoz-packages-docs"
 
 The site is static pages built from `content/`, one folder per package or project at
 `/<slug>/…`, served with their Markdown, `llms.txt` / `llms-full.txt`, OG images and `static.json`, plus Algolia
-search ([`../architecture/system.mdx`](../architecture/system.mdx)). There is no sign-in, no
-database and no user input beyond the search box.
+search ([`../architecture/system.mdx`](../architecture/system.mdx)). Every page is prerendered
+(Cache Components, ADR-0016); none reads cookies or headers. There is no sign-in, no database
+and no user input beyond the search box. The home page's Private projects group is public
+static markup listing three invented projects from `src/components/home/private-projects.ts`
+(ADR-0017 decision 4); it holds no private data.
 
 | Surface | Present | Detail |
 |---|---|---|
@@ -23,7 +27,7 @@ database and no user input beyond the search box.
 | Database or persistence | No | Content is files; the search index is a build output |
 | Files / uploads | No | — |
 | Secrets / environment variables | Yes | Three Algolia variables, listed in [`secrets.mdx`](./secrets.mdx) |
-| Third-party integrations | Yes | Algolia (search). Inter is fetched by `next/font` at build time and served from the site's own origin |
+| Third-party integrations | Yes | Algolia (search). The page actions' Open in ChatGPT, Claude, Cursor and Scira links, on docs pages and the home page, send a public page's URL to that service when the reader clicks one. The fonts are fetched by `next/font` at build time and served from the site's own origin |
 | Logging / audit trail | No | The sync script prints a record count |
 
 Each ADR that adds a surface updates this table in the same change.
@@ -67,7 +71,10 @@ Anticipated, each documented by the ADR that introduces it:
 
 ## Accepted risks
 
-None recorded.
+| Risk | Why accepted | Guard |
+|---|---|---|
+| The private projects list (`src/components/home/private-projects.ts`) is the one place in code where a private project's name is typed. Someone may later replace an invented name with a real client's, publishing it on the home page and to crawlers (A1). | The owner chose to show invented private projects on the live site (ADR-0017). | The file's comment says only invented names belong there until the private-documentation ADR; a real name there breaks invariant 1. The list is never sent to search, `llms.txt` or `static.json`. |
+| Visitors take the invented private projects as real, and their links return the 404 (A5). | The owner's decision, ADR-0017. | Replacing the list is a one-file change. |
 
 ## Incidents
 

@@ -11,7 +11,7 @@ html > body[data-scroll-locked] {
   --removed-body-scroll-bar-size: 0px !important;
 }
 
-/* Site tokens on every page (ADR-0015 decision 7). Light first, then dark. */
+/* Site tokens on every page (ADR-0015 decision 7; star and night, ADR-0017 decision 13). Light first, then dark. */
 :root {
   color-scheme: light;
   --home-bg: #f6f7f9;
@@ -33,6 +33,9 @@ html > body[data-scroll-locked] {
   --home-cargo: #a8541c;
   --home-other: #4f586b;
   --home-project: #0d1016;
+  --home-star: #e08a00;
+  --home-star-glow: rgb(224 138 0 / 0.22);
+  --home-night: #dfe3ea;
   --home-shadow: rgb(13 16 22 / 0.12);
   --home-shadow-near: rgb(13 16 22 / 0.08);
   --home-font-display: var(--font-home-display), var(--font-home-text), ui-sans-serif, system-ui, sans-serif;
@@ -62,6 +65,9 @@ html > body[data-scroll-locked] {
   --home-cargo: #f0a86a;
   --home-other: #9ba4b6;
   --home-project: #e9ecf2;
+  --home-star: #ffe2a8;
+  --home-star-glow: rgb(255 214 140 / 0.2);
+  --home-night: #1b2130;
   --home-shadow: rgb(0 0 0 / 0.6);
   --home-shadow-near: rgb(0 0 0 / 0.12);
 }

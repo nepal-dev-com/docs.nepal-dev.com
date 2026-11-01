@@ -1,0 +1,203 @@
+---
+title: "App flow — the solar system"
+---
+
+- **Status:** Current
+- **Last updated:** 2026-11-01
+- **Related ADRs:** [ADR-0017](../adr/ADR-0017-the-whole-site-is-one-solar-system.mdx),
+  [ADR-0016](../adr/ADR-0016-home-search-is-the-fumadocs-dialog-and-private-projects-render-server-side.mdx),
+  [ADR-0015](../adr/ADR-0015-every-entry-lives-at-the-root-in-one-shape-and-one-look.mdx),
+  [ADR-0013](../adr/ADR-0013-packages-and-projects-share-one-catalogue-shape.mdx)
+
+> Snapshot of the system as it stands today. Edit in place; never record what changed.
+
+The look every page shares (ADR-0017). The home page's own screens are in
+[Home page](./home-page.mdx); the routes, header and docs page layout are in
+[Site pages](./site-pages.mdx). Sample values are invented (ADR-0008): `lodestar`, `ledgerly`
+and `orbit-board` are not real packages or projects. Phone width first; desktop differences are
+noted under each screen.
+
+## The marks
+
+One metaphor, stated once and used everywhere:
+
+| Mark | Means | Where |
+|---|---|---|
+| The star, labelled "Puncoz Nepal" | the maker | the home page's system, the footer's horizon, the 404 |
+| An orbit | an ecosystem | the home page's system |
+| A solid planet in an ecosystem colour, its night side shaded | a package | the system, cards, planet header, sidebar chip, footer |
+| A ringed planet | a project | the same places |
+| A full moon | the latest release | cards, planet header, moon picker, version line, Every moon |
+| A crescent | an older release | the same places |
+| A dashed new moon | `dev`, in development | the same places |
+| The day side, a drawn sun | Use | Two sides, the sidebar's switch |
+| The night side, a drawn moon | Maintain | the same places |
+
+The hero's legend teaches these once. Every mark is drawn SVG (`src/components/planet.tsx`):
+`PlanetMark`, `MoonPhase` and `PlanetSystem`. The star uses `--home-star`, an unlit face
+`--home-night`.
+
+The flow is made with Archify. Its source is `.archify/solar-system-20261101/candidate.json`.
+The HTML prototype is `.prototypes/solar-system/index.html`. Until ADR-0011 is approved, both
+stay in those folders and are not published.
+
+## Entry points
+
+- The theme switch and the footer are on every page. The planet header opens every package and
+  project overview; the sidebar's planet chip, day/night switch and moon picker are on every page
+  inside a package or project; the notices are on `dev` and older lines; the 404 is at every
+  unknown path.
+- Everyone sees the same pages.
+
+## Flow
+
+```mermaid
+flowchart TB
+  Any["Any page"] -->|theme switch| Any
+  Any -->|footer planet link| O["Planet header<br/>/lodestar"]
+  O -->|Use →| P["Docs page<br/>/lodestar/use/v0.1/install"]
+  P -->|day/night switch| M["Maintain page"]
+  P -->|moon picker: dev| D["Docs page · dev<br/>new-moon notice"]
+  D -->|notice link| P
+  Any -->|unknown URL| L["Out of orbit<br/>404"]
+  L -->|search| S["Search dialog"]
+  L -->|Back to the system| H["Home /"]
+  Any -->|footer: Back to orbit / Back to top| Any
+```
+
+## Screens
+
+### 1. `Theme switch` — the header, every page
+
+```mermaid
+block-beta
+  columns 2
+  dark["Dark, the night side: sun behind the planet, small; planet a thin crescent · name: Switch to day side (light theme)"]:1
+  light["Light, the day side: sun in front; planet fully lit · name: Switch to night side (dark theme)"]:1
+```
+
+A 40 × 36px button (`src/components/theme-switch.tsx`): a tilted orbit, a sun on it, a planet
+with a terminator. A click switches the theme; the sun moves along its orbit and the shadow
+sweeps across the planet over half a second. A tooltip under the button repeats its accessible
+name in short ("Night side · switch to day").
+
+**States**
+
+- Before hydration: the drawing follows the `dark` class next-themes sets before paint, so it
+  never flashes; the accessible name starts as the dark one.
+- Hover or focus: the tooltip shows (not on touch screens).
+- Degraded: with reduced motion the drawing switches instantly. Without scripts the button does
+  nothing and the site stays dark.
+- Success: the theme and the drawing change together, and the choice holds across pages and
+  visits in that browser.
+
+### 2. `Planet header` — `/lodestar`
+
+```mermaid
+block-beta
+  columns 4
+  kind["● npm package"]:4
+  name["lodestar"]:4
+  desc["A command palette for React apps."]:4
+  facts["Latest 0.1.4 · v0.1 · In development 0.2.0-dev.3"]:4
+  links["[Use →] Maintain · Registry ↗ · Repository ↗"]:4
+  draw["planet with labelled moons v0.1 and dev"]:4
+```
+
+Above every overview (`src/components/docs/package-hero.tsx`), on the panel colour with a wash of
+the ecosystem colour from the right. Desktop: the text on the left, the planet and its moons on
+the right.
+
+**States**
+
+- A project: a ringed planet; without lines, no fact sheet and no moons.
+- No released line: Latest reads "unreleased"; only the dashed `dev` moon.
+- Not found: an unknown slug gets the 404.
+- Loading, Refused, Error: not applicable; prerendered.
+- Success: Use → opens the current line's first page.
+
+### 3. `Sidebar top` — inside a package or project
+
+```mermaid
+block-beta
+  columns 4
+  chip["● lodestar · npm package"]:4
+  sw["[☀ Use | ☾ Maintain]"]:4
+  moon["full moon · v0.1 · 0.1.4 · Latest ▾"]:4
+  l1["Install  ●"]:4
+  l2["Commands"]:4
+```
+
+The planet chip links to the overview. The day/night switch shows when both tracks exist; the
+current side is raised and, on the day side, its sun takes the star's colour. The moon picker is
+Fumadocs' version menu with each line's moon as its icon. The current page is a planet dot: on
+its folder's orbit line when nested, at the end of its row at the top level. The table of
+contents on desktop marks the current heading with a dot on its line too.
+
+**States**
+
+- One track: no switch.
+- Maintain: no moon picker (Maintain is not versioned).
+- Success: the switch and the picker open the same page on the other side or line, when it
+  exists.
+
+### 4. `Version notice` — on `dev` and older lines
+
+```mermaid
+block-beta
+  columns 4
+  notice["dashed new moon · In development. This page documents lodestar 0.2.0-dev.3, work in progress on the default branch. Read this page for 0.1.4, the latest release."]:4
+```
+
+An older line shows a crescent and "Older version." The latest line shows a single quiet line
+instead: a full moon and "Documents lodestar 0.1.4".
+
+**States**
+
+- No released line: the `dev` notice has no link.
+- Success: the link opens the same page in the latest line, or its first page.
+
+### 5. `Horizon footer` — every page
+
+```mermaid
+block-beta
+  columns 4
+  close["Everything here orbits one maker: Puncoz Nepal."]:4
+  scene["star rising behind a curved planet horizon, accent atmosphere rim, faint stars"]:4
+  planets["● lodestar  ● ledgerly  ● pykettle  ○ orbit-board  ○ Puncoz Docs"]:4
+  links["Search ⌘K · llms.txt · llms-full.txt · GitHub · Back to orbit"]:4
+  credit["Packages and projects by Puncoz Nepal"]:4
+```
+
+`src/components/horizon-footer.tsx`. On the home page and the 404: the closing line (the name
+links to `https://puncoz.com`), the scene, then the surface rows. On docs pages: the surface rows
+only, across the full width below the sidebar and the page, and "Back to top" instead of "Back
+to orbit". The links wrap on phones.
+
+**States**
+
+- Empty: with no public entries, the planet row is left out.
+- Degraded: with reduced motion, Back to orbit jumps instead of scrolling. Without scripts,
+  Search and Back to orbit do nothing; the links work.
+- Success: a planet link opens its overview; Search opens the dialog; Back to orbit returns to
+  the top.
+
+### 6. `Out of orbit` — any unknown path
+
+```mermaid
+block-beta
+  columns 4
+  draw["a planet that has left its dashed orbit around the star"]:4
+  h1["This page drifted out of orbit."]:4
+  help["It may have moved to another version or been renamed. Search for it, or start again from the system."]:4
+  field["⌕  Search packages, projects and pages"]:4
+  back["Back to the system →"]:4
+```
+
+`src/app/not-found.tsx`, with the home page's header (its anchors lead to `/#packages` and
+`/#projects`) and the full footer.
+
+**States**
+
+- Degraded: without scripts the search button does nothing; "Back to the system" still works.
+- Success: the reader searches or returns home. The page shows no part of the requested path.

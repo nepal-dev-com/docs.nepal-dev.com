@@ -189,7 +189,7 @@ function previewOf(folder: PageTree.Folder | undefined, label: string): TrackPre
 }
 
 /**
- * A real page from each track of one package, for the home page's "Two tracks" preview.
+ * A real page from each track of one package, for the home page's "Two sides of every planet".
  */
 export function getTracksPreview():
   | { entry: CatalogEntry; use: TrackPreview; maintain: TrackPreview }
@@ -213,10 +213,11 @@ export function getTracksPreview():
 }
 
 /**
- * A page to show as the per-page Markdown example: a package's first Use page when there is one,
- * otherwise this site's own overview.
+ * The page the home page's "Read it anywhere" uses as its example: a package's first Use page when
+ * there is one, otherwise this site's own overview.
  */
-export function getMarkdownExample(): string | undefined {
+export function getExamplePage(): Page | undefined {
   const entry = getCatalog().find((item) => item.useUrl);
-  return entry?.useUrl ?? source.getPage(['docs'])?.url ?? source.getPages()[0]?.url;
+  const slugs = (url: string) => url.split('/').filter(Boolean);
+  return (entry?.useUrl && source.getPage(slugs(entry.useUrl))) || source.getPage(['docs']) || source.getPages()[0];
 }

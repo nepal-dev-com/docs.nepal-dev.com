@@ -1,16 +1,21 @@
 ---
-title: "App flow — site pages: root URLs, header, package hero, theme"
+title: "App flow — site pages: root URLs, header and docs pages"
 ---
 
 - **Status:** Current
 - **Last updated:** 2026-11-01
-- **Related ADRs:** [ADR-0015](../adr/ADR-0015-every-entry-lives-at-the-root-in-one-shape-and-one-look.mdx),
+- **Related ADRs:** [ADR-0017](../adr/ADR-0017-the-whole-site-is-one-solar-system.mdx),
+  [ADR-0016](../adr/ADR-0016-home-search-is-the-fumadocs-dialog-and-private-projects-render-server-side.mdx),
+  [ADR-0015](../adr/ADR-0015-every-entry-lives-at-the-root-in-one-shape-and-one-look.mdx),
   [ADR-0013](../adr/ADR-0013-packages-and-projects-share-one-catalogue-shape.mdx),
   [ADR-0014](../adr/ADR-0014-home-page-is-a-search-first-release-map.mdx)
 
 > Snapshot of the system as it stands today. Edit in place; never record what changed.
 
-What a person sees and how they move through it, as built for ADR-0015. Sample values are
+What a person sees and how they move through it: the root URLs, the header and the docs pages
+(ADR-0015), drawn in the site's solar-system look (ADR-0017). The look's shared pieces, the
+theme switch, the planet header, the sidebar's planet chip and moon picker, the notices, the
+footer and the 404, are drawn in [The solar system](./solar-system.mdx). Sample values are
 invented (ADR-0008): `lodestar`, `ledgerly` and `orbit-board` are not real packages or projects.
 Phone width first; desktop differences are noted under each screen.
 
@@ -19,19 +24,19 @@ per release, each named by the package, plus `dev` for work in progress, and **M
 holds the maintainer docs. This
 site is the project `docs`: its overview is `/docs` and its ADRs and design documents are its
 Maintain track, `/docs/maintain/…`. Every page, the home page included, shares one header with
-search and a light/dark switch, and docs pages use the home page's colours and type without its
-motion.
+the orrery theme switch; docs pages add a search button, and use the home page's colours and
+type without its motion.
 
 The flow is made with Archify. Its source is `.archify/site-pages-20261031/candidate.json`.
 Until ADR-0011 is approved, the HTML stays in that folder and is not published.
 
 ## Entry points
 
-- The home page: a catalogue row, a map body or a search result opens `/<slug>` or one of its
+- The home page: a planet card, a planet on the system or a search result opens `/<slug>` or one of its
   pages.
-- The header on every page: the wordmark (home), Packages and Projects (the home catalogue,
-  filtered), the search button and `⌘K` (the search dialog; on the home page they focus the
-  hero's field instead), `llms.txt`, GitHub.
+- The header on every page: the wordmark (home), Packages and Projects (their groups on the home
+  page, `/#packages` and `/#projects`), `llms.txt`, GitHub. On docs pages, the search button; on
+  every page, `⌘K` opens the search dialog (on the home page, the hero's button opens it too).
 - A README or registry badge: `/<slug>` or the stable `/<slug>/use/latest/<page>`.
 - A direct URL: `/<slug>/use/v1.4/install`, `/<slug>/use/dev/install`, `/<slug>/maintain/releasing`,
   or the Markdown version with `.md`.
@@ -44,21 +49,20 @@ Until ADR-0011 is approved, the HTML stays in that folder and is not published.
 flowchart TB
   V[Visitor] --> H["Home /"]
   V -->|badge or link| O
-  H -->|row, body or result| O["Package overview<br/>/lodestar · hero"]
-  H -->|header: search or ⌘K| HS["Hero search"]
-  HS -->|result| O
+  H -->|card, planet or result| O["Package overview<br/>/lodestar · planet header"]
+  H -->|hero button or ⌘K| S
   P -->|header: search or ⌘K| S["Search dialog"]
   S -->|result| P
-  O -->|hero: Use| U["Use page · latest line<br/>/lodestar/use/v1.4/install"]
-  O -->|hero: Maintain| M["Maintain page<br/>/lodestar/maintain/releasing"]
+  O -->|planet header: Use| U["Use page · latest line<br/>/lodestar/use/v1.4/install"]
+  O -->|planet header: Maintain| M["Maintain page<br/>/lodestar/maintain/releasing"]
   A["/lodestar/use/latest/… or /lodestar/use"] -->|redirect| U
-  U -->|version menu: dev| N["Use page · dev<br/>banner: In development"]
-  U -->|version menu: older line| G["Use page · legacy line<br/>banner: Older version"]
-  N -->|banner link| U
-  G -->|banner link| U
-  U <-->|track switch| M
+  U -->|moon picker: dev| N["Use page · dev<br/>notice: new moon"]
+  U -->|moon picker: older line| G["Use page · legacy line<br/>notice: crescent"]
+  N -->|notice link| U
+  G -->|notice link| U
+  U <-->|day/night switch| M
   P["Any page"] -->|header: theme switch| P
-  H -->|catalogue row: Puncoz Docs| D["Site overview /docs"]
+  H -->|card: Puncoz Docs| D["Site overview /docs"]
   D -->|Maintain| DM["/docs/maintain/adr/…"]
 ```
 
@@ -69,20 +73,20 @@ flowchart TB
 ```mermaid
 block-beta
   columns 6
-  mark["◎ Puncoz Docs"]:3 search["⌕"] theme["◐"] menu["☰"]
+  mark["◎ Puncoz Docs"]:2 search["⌕"] gh["GitHub"] theme["orrery"] menu["☰"]
 ```
 
-Phone width: the wordmark, then icon buttons for search and GitHub, the theme switch and, on
-docs pages, a menu button that opens the sidebar. The nav links are hidden; on the home page
-its own sections carry them.
+Phone width: the wordmark (a ringed planet with the star's light on it), then 36px icon buttons:
+search (docs pages only), GitHub, the theme switch (40px wide) and, on docs pages, a menu button that opens the sidebar. The nav links are hidden; on
+the home page its own sections carry them.
 
-Desktop: wordmark · Packages · Projects · `llms.txt` · a search button showing `⌘K` · GitHub ·
-the theme switch. Sticky. On docs pages it carries a hairline border; on the home page it gains
-one once the page scrolls.
+Desktop: wordmark · Packages · Projects · `llms.txt` · a search button showing `⌘K` (docs pages
+only; the home page's hero holds its search) · GitHub · the theme switch. Sticky. On docs pages
+it carries a hairline border; on the home page it gains one once the page scrolls.
 
 **States**
 
-- Empty: with no project, Projects is not shown.
+- Empty: with no package, Packages is not shown; with no project, Projects is not shown.
 - Loading: none; prerendered. The theme switch shows the current theme from first paint.
 - Not found, Refused: not applicable.
 - Error: none at runtime.
@@ -96,28 +100,29 @@ one once the page scrolls.
 ```mermaid
 block-beta
   columns 4
-  hdr["◎ Puncoz Docs   ⌕ ◐ ☰"]:4
+  hdr["◎ Puncoz Docs   ⌕ orrery ☰"]:4
   block:hero:4
     columns 4
-    dot["● npm package"] name["lodestar"]:3
+    kind["● npm package"]:4
+    name["lodestar"]:4
     desc["Keyboard-first command palette for React."]:4
-    ver["v1.4 · 1.4.2 · latest"]:2 dev["dev · 2.0.0-dev.4"]:2
-    rail["●2024 LTS ── ◉v1.4 latest ┄┄ ○dev"]:4
-    use["Use"] maint["Maintain"] reg["Registry ↗"] repo["Repository ↗"]
+    facts["Latest 1.4.2 · v1.4 · In development 2.0.0-dev.4 · Older 2024 LTS"]:4
+    use["Use →"] maint["Maintain"] reg["Registry ↗"] repo["Repository ↗"]
+    draw["planet with labelled moons v1.4 · dev · 2024 LTS"]:4
   end
   body["the package's own overview page"]:4
 ```
 
-The hero's dot and a faint wash take the ecosystem colour; a project's dot is outlined. Desktop:
-the hero spans the content column above the overview, with the links in one row and the rail
-under the versions; the sidebar shows the package's tracks and the contents panel the
-overview's headings.
+The planet header ([The solar system](./solar-system.mdx), screen 2): the planet mark and a
+faint wash take the ecosystem colour; a project is a ringed planet. Desktop: the text on the
+left, the planet and its labelled moons on the right; the sidebar shows the planet chip and its
+tracks, the contents panel the overview's headings.
 
 **States**
 
-- Empty: an unreleased package shows only the dashed `dev · <version>` tag and no rail (a rail
-  needs two lines); a project without lines shows no versions or rail; a missing track, registry
-  or repository has no link.
+- Empty: an unreleased package reads Latest "unreleased" and draws only its dashed `dev` moon;
+  a project without lines has no fact sheet and no moons; a missing track, registry or
+  repository has no link.
 - Loading: none; prerendered.
 - Not found: an unknown slug shows the site's 404.
 - Refused: not applicable until private documentation exists.
@@ -131,22 +136,25 @@ overview's headings.
 ```mermaid
 block-beta
   columns 4
-  hdr["◎ Puncoz Docs   ⌕ ◐ ☰"]:4
+  hdr["◎ Puncoz Docs   ⌕ orrery ☰"]:4
   block:drawer:4
     columns 4
-    ver["v1.4 · 1.4.2 · Latest ▾"]:4
-    name["lodestar"]:4
-    track["Use | Maintain"]:4
+    chip["● lodestar · npm package"]:4
+    track["☀ Use | ☾ Maintain"]:4
+    ver["● v1.4 · 1.4.2 · Latest ▾"]:4
     l1["Install"]:4
     l2["Commands"]:4
   end
   h1["Install"]:4
-  stated["Documents lodestar 1.4.2"]:4
+  stated["● Documents lodestar 1.4.2"]:4
   body["page content · code in JetBrains Mono"]:4
 ```
 
-The drawer is the sidebar, opened from the header's menu button. Desktop: sidebar on the left
-with the version menu and track switch at its top, the page in the middle, the contents panel on
+The drawer is the sidebar, opened from the header's menu button. Its top holds the planet chip
+(links to the overview), the day/night switch (Use with a drawn sun, Maintain with a drawn moon)
+and the moon picker; the current page is a planet dot on its folder's orbit line, or at the end
+of its row at the top level. The sun, moon and dot characters in the wireframes stand for drawn
+SVG marks. Desktop: sidebar on the left with those three at its top, the page in the middle, the contents panel on
 the right. Headings in Bricolage Grotesque, text in Onest, code on the panel colour.
 
 **States**
@@ -160,23 +168,23 @@ the right. Headings in Bricolage Grotesque, text in Onest, code on the panel col
 - Degraded: as the header.
 - Success: the page, with its line selected and Use highlighted.
 
-### 3. `Version menu` — opened from the sidebar
+### 3. `Moon picker` — opened from the sidebar
 
 ```mermaid
 block-beta
   columns 4
-  cur["v1.4 · 1.4.2 · Latest ▾"]:4
+  cur["full moon · v1.4 · 1.4.2 · Latest ▾"]:4
   block:opts:4
     columns 4
-    o1["v1.4 · 1.4.2 · Latest ✓"]:4
-    o2["dev · 2.0.0-dev.4 · In development"]:4
-    o3["2024 LTS · 0.9.3 · Older version"]:4
+    o1["full moon · v1.4 · 1.4.2 · Latest ✓"]:4
+    o2["dashed new moon · dev · 2.0.0-dev.4 · In development"]:4
+    o3["crescent · 2024 LTS · 0.9.3 · Older version"]:4
   end
 ```
 
 Latest first, then `dev`, then older lines in the order `use/meta.json` gives, or newest
-version first. Each option shows the line's name as the package set it, its version, and its
-channel in words.
+version first. Each option shows its line's moon, the line's name as the package set it, its
+version, and its channel in words.
 
 **States**
 
@@ -190,17 +198,17 @@ channel in words.
 block-beta
   columns 4
   h1["Install"]:4
-  banner["In development — This page documents lodestar 2.0.0-dev.4, work in progress on the default branch. Read this page for 1.4.2, the latest release."]:4
+  banner["dashed new moon · In development. This page documents lodestar 2.0.0-dev.4, work in progress on the default branch. Read this page for 1.4.2, the latest release."]:4
   body["page content"]:4
 ```
 
-An older line reads "Older version — This page documents lodestar 0.9.3. Read this page for
-1.4.2, the latest release."
+An older line shows a crescent and reads "Older version. This page documents lodestar 0.9.3.
+Read this page for 1.4.2, the latest release."
 
 **States**
 
-- Success: the banner links to the same page in `latest`, or that line's first page. An
-  unreleased package's `dev` banner has no link.
+- Success: the notice links to the same page in `latest`, or that line's first page. An
+  unreleased package's `dev` notice has no link.
 - Other states: as the Use page.
 
 ### 5. `Maintain page` — `/<slug>/maintain/<page>`
@@ -208,14 +216,14 @@ An older line reads "Older version — This page documents lodestar 0.9.3. Read 
 ```mermaid
 block-beta
   columns 4
-  hdr["◎ Puncoz Docs   ⌕ ◐ ☰"]:4
-  name["lodestar"]:4
-  track["Use | Maintain"]:4
+  hdr["◎ Puncoz Docs   ⌕ orrery ☰"]:4
+  chip["● lodestar · npm package"]:4
+  track["☀ Use | ☾ Maintain"]:4
   h1["Releasing"]:4
   body["How a release is cut from the default branch"]:4
 ```
 
-Not versioned: no version menu and no version line.
+Not versioned: no moon picker and no version line.
 
 **States**
 
@@ -227,17 +235,19 @@ Not versioned: no version menu and no version line.
 ```mermaid
 block-beta
   columns 4
-  hdr["◎ Puncoz Docs   ⌕ ◐ ☰"]:4
+  hdr["◎ Puncoz Docs   ⌕ orrery ☰"]:4
   block:hero:4
     columns 4
-    dot["○ Project"] name["Puncoz Docs"]:3
+    kind["ringed planet · Project"]:4
+    name["Puncoz Docs"]:4
     desc["This documentation site: how it is organised, built and decided."]:4
     maint["Maintain"]:2 repo["Repository ↗"]:2
+    draw["ringed planet, no moons"]:4
   end
   body["what the site is · where decisions and design documents live"]:4
 ```
 
-The site's own entry has the project hero with a Maintain link and its repository. Its Maintain
+The site's own entry has the project's planet header with a Maintain link and its repository. Its Maintain
 track holds
 the ADRs, architecture, app flows, PRDs, API, data flow, sequence, state, ERD, RBAC, security
 and templates, in today's order.
@@ -247,20 +257,7 @@ and templates, in today's order.
 - Empty: not applicable; the site always has its Maintain track.
 - Other states: as the package overview.
 
-### 7. `Theme switch` — in the header
+### 7. `Theme switch` and `Footer`
 
-```mermaid
-block-beta
-  columns 2
-  light["☼"] dark["☾ (current)"]
-```
-
-One round button holding a sun and a moon; the current theme's icon is highlighted, and a click
-switches to the other. Dark is the default. The whole page, the home page's map, rails and
-terminal included, redraws in the chosen theme.
-
-**States**
-
-- Loading: the stored choice applies before first paint, so the page doesn't flash.
-- Degraded: without scripts or storage, the page stays dark and the switch does nothing.
-- Success: the choice holds across pages and visits in that browser.
+Drawn in [The solar system](./solar-system.mdx): the orrery theme switch (screen 1) and, below
+every docs page, the Horizon footer's surface rows without its scene (screen 5).

@@ -6,7 +6,8 @@ title: "Architecture — puncoz-packages-docs"
 - **Last updated:** 2026-11-01
 - **Related ADRs:** [ADR-0013](../adr/ADR-0013-packages-and-projects-share-one-catalogue-shape.mdx),
   [ADR-0014](../adr/ADR-0014-home-page-is-a-search-first-release-map.mdx),
-  [ADR-0015](../adr/ADR-0015-every-entry-lives-at-the-root-in-one-shape-and-one-look.mdx)
+  [ADR-0015](../adr/ADR-0015-every-entry-lives-at-the-root-in-one-shape-and-one-look.mdx),
+  [ADR-0017](../adr/ADR-0017-the-whole-site-is-one-solar-system.mdx)
 
 > Snapshot of the system as it stands today. Edit in place; never record what changed.
 
@@ -15,7 +16,10 @@ title: "Architecture — puncoz-packages-docs"
 A Next.js 16 App Router site built on Fumadocs. It renders the MDX pages in `content/`
 as a documentation site, and serves every page again as Markdown, as an Open Graph image, and
 as a search record. Search runs on Algolia. There is no database, no sign-in and no
-server-side state: every route is generated at build time (`revalidate = false`).
+server-side state. Cache Components is on (`cacheComponents` and `partialPrefetching` in
+`next.config.mjs`, ADR-0016), and every page and route handler is prerendered at build time: none
+reads request data yet. The sign-in ADR adds the first request-time part, the home page's
+private group, inside a `<Suspense>` boundary, so the rest of `/` stays in the static shell.
 
 Every top-level folder in `content/` is a **catalogue entry**, published at `/<slug>`: a
 package or project whose root `meta.json` carries a `catalog` field (ADR-0013, ADR-0015). Inside
@@ -30,8 +34,8 @@ documents; no package is documented yet, so the home page shows its empty states
 
 | URL | File | What it is |
 |---|---|---|
-| `/` | `src/app/(home)/page.tsx` | Home page: release map, hero search, catalogue and the sections of ADR-0014 |
-| `/<slug>/…` | `src/app/(site)/[...slug]/page.tsx` | A documentation page in the notebook layout; an overview opens with the package hero, a line page adds the version notice or banner |
+| `/` | `src/app/(home)/page.tsx` | Home page: the system, the search button opening the search dialog, planet cards, private projects beyond the belt and the sections of ADR-0017 |
+| `/<slug>/…` | `src/app/(site)/[...slug]/page.tsx` | A documentation page in the notebook layout; an overview opens with the planet header, a line page adds the version line or its moon notice |
 | `/<slug>/use` and a line root without its own page | `src/app/(site)/[...slug]/page.tsx` | 307 redirect to the first page (the latest line, else `dev`) |
 | `/<slug>/use/latest/…` | `src/proxy.ts` | 307 redirect to the line marked `latest`, or `dev` when nothing is released |
 | `/<slug>/use/<segment>/…` for a line that does not exist | `src/proxy.ts` | 307 redirect to the same path in `latest` (or `dev`) |
@@ -59,15 +63,18 @@ with a route (`api`, `og`, `static`, …). Contracts for the machine-readable ro
 | `src/lib/catalog.ts` | Reads the page tree into typed catalogue entries (lines, tracks, demo), the page context for banners, and the home page's previews | `source.ts` |
 | `src/lib/catalog-routes.ts` | Meta files only (no compiled pages), for the proxy: the catalogued slugs, each package's line segments, `latest` and `dev`; `isEntryPath()`, `resolveLineRedirect()` | `fumadocs-mdx` |
 | `src/lib/search-scope.ts` | The scope tag of a page (`<slug>`, `<slug>:maintain`, `<slug>:use:<segment>`) | — |
-| `src/lib/algolia.ts` | The search-only Algolia client, shared by the dialog and the hero search | `algoliasearch/lite` |
+| `src/lib/algolia.ts` | The search-only Algolia client used by the search dialog | `algoliasearch/lite` |
 | `src/lib/shared.ts` | Site name (`Puncoz Docs`), route prefixes (pages at the root, `/og`, `/llms.mdx`), GitHub repository (`puncoz-official/docs`), URL builders | — |
-| `src/app/layout.tsx`, `global.css`, `site.css` | Root layout: the three fonts, the RootProvider (dark by default, light/dark through next-themes) and the search dialog; the tokens on `:root` / `.dark` mapped onto Fumadocs' colours; the site header, docs typography and package hero | `fumadocs-ui` |
-| `src/components/site-header.tsx` | The one header: brand, nav, search button, GitHub, light/dark switch, optional menu button | `fumadocs-ui` (`ThemeSwitch`) |
-| `src/app/(site)/layout.tsx` | Fumadocs notebook `DocsLayout` with the site header as its `nav.component`, the version-line switcher only, and the track switch as sidebar banner | `catalog.ts` |
-| `src/components/docs/` | `DocsHeader` (site header opening the search dialog and the sidebar), `PackageHero`, `TrackSwitch` (package name, Use / Maintain) and `VersionNotice` (the version stated, In development and Older version banners) | `fumadocs-ui` |
+| `src/app/layout.tsx`, `global.css`, `site.css` | Root layout: the three fonts, the RootProvider (dark by default, light/dark through next-themes) and the search dialog; the tokens on `:root` / `.dark` mapped onto Fumadocs' colours; the site header, theme switch, docs typography, planet header, notices, sidebar marks and footer | `fumadocs-ui` |
+| `src/components/site-header.tsx`, `theme-switch.tsx` | The one header: brand, nav, optional search button (left out on the home page), GitHub, the orrery theme switch (`useTheme`), optional menu button | `fumadocs-ui/provider/base` |
+| `src/components/planet.tsx` | The shared marks, plain SVG with no client state: `PlanetMark`, `MoonPhase`, `PlanetSystem` (ADR-0017) | `rings.ts` |
+| `src/components/horizon-footer.tsx`, `footer-actions.tsx` | The Horizon footer on every page; its Search and Back to top buttons are client components | `catalog.ts`, `fumadocs-ui` |
+| `src/app/not-found.tsx` | The out-of-orbit 404 for every unknown path and `notFound()` | `catalog.ts` |
+| `src/app/(site)/layout.tsx` | Fumadocs notebook `DocsLayout` with the site header as its `nav.component`, the version-line switcher only (each line with its moon icon), the track switch as sidebar banner, and the compact footer | `catalog.ts`, `source.ts` |
+| `src/components/docs/` | `DocsHeader` (site header opening the search dialog and the sidebar), `PackageHero` (the planet header), `TrackSwitch` (planet chip, Use / Maintain as day and night) and `VersionNotice` (the version stated with its moon; In development and Older version notices) | `fumadocs-ui` |
 | `src/app/(home)/` | Home layout (`.home` wrapper, `home.css`) and page | `catalog.ts`, `source.ts` |
-| `src/components/home/` | Shared search state, orbit map (canvas), hero search, catalogue, tracks preview, version rails, terminal, home header, reveal | `algolia.ts`, `lucide-react` |
-| `src/components/search.tsx` | The site-wide search dialog | `algolia.ts` |
+| `src/components/home/` | Server: hero, home header, planet cards, beyond the belt (private projects from `private-projects.ts`), two sides, moon rows. Client: orbit map (canvas; a planet opens its overview), search button (opens the search dialog), terminal (tabs), assistant actions (Fumadocs' Copy Markdown and Open menu for the example page), reveal | `catalog.ts`, `rings.ts`, `fumadocs-ui`, `lucide-react` |
+| `src/components/search.tsx` | The site-wide search dialog, opened by `⌘K`, the docs header's search button and the home page's hero button | `algolia.ts` |
 | `src/proxy.ts` | On catalogued paths only: line redirects, then the Markdown rewrites | `catalog-routes.ts`, `fumadocs-core/negotiation` |
 | `scripts/sync-content.ts` | After `next build`, reads the built `static.json` and replaces the Algolia index `document` with it | `algoliasearch`, `ALGOLIA_WRITE_KEY` |
 

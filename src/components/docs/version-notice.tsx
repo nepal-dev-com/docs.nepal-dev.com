@@ -1,6 +1,6 @@
 import Link from 'next/link';
-import { Callout } from 'fumadocs-ui/components/callout';
 import type { PageVersion } from '@/lib/catalog-plugin';
+import { MoonPhase } from '@/components/planet';
 
 interface VersionNoticeProps {
   version: PageVersion;
@@ -8,35 +8,42 @@ interface VersionNoticeProps {
 }
 
 /**
- * States the version a page documents (invariant 3), with a banner on the `dev` line and older lines.
+ * States the version a page documents (invariant 3), with its line's moon: a notice on the `dev`
+ * line and older lines (ADR-0017 decision 10).
  */
 export function VersionNotice({ version, latest }: VersionNoticeProps) {
   const toLatest = latest && (
-    <Link href={latest.url} className="font-medium underline underline-offset-4">
-      Read this page for {latest.version}, the latest release
-    </Link>
+    <Link href={latest.url}>Read this page for {latest.version}, the latest release</Link>
   );
 
-  if (version.channel === 'dev') {
+  if (version.channel === 'latest') {
     return (
-      <Callout type="warn" title="In development">
-        This page documents {version.title} <code>{version.version}</code>, work in progress on the default
-        branch. {toLatest && <>{toLatest}.</>}
-      </Callout>
-    );
-  }
-
-  if (version.channel === 'legacy') {
-    return (
-      <Callout type="info" title="Older version">
-        This page documents {version.title} <code>{version.version}</code>.{toLatest && <> {toLatest}.</>}
-      </Callout>
+      <p className="version-line">
+        <MoonPhase channel="latest" />
+        <span>
+          Documents {version.title} <code>{version.version}</code>
+        </span>
+      </p>
     );
   }
 
   return (
-    <p className="text-sm text-fd-muted-foreground">
-      Documents {version.title} <code>{version.version}</code>
-    </p>
+    <div className="version-notice not-prose" role="note">
+      <MoonPhase channel={version.channel} />
+      <p>
+        <b>{version.channel === 'dev' ? 'In development.' : 'Older version.'}</b>{' '}
+        {version.channel === 'dev' ? (
+          <>
+            This page documents {version.title} <code>{version.version}</code>, work in progress on the default
+            branch.
+          </>
+        ) : (
+          <>
+            This page documents {version.title} <code>{version.version}</code>.
+          </>
+        )}
+        {toLatest && <> {toLatest}.</>}
+      </p>
+    </div>
   );
 }

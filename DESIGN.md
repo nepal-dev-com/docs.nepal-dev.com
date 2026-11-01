@@ -1,6 +1,6 @@
 ---
 name: Puncoz Docs
-description: Home page visual system. Graphite and teal, search first, a turning map of every release.
+description: Site visual system. Graphite and teal, a turning map of every release, one search everywhere.
 colors:
   graphite-ground: "#0a0c10"
   graphite-ground-2: "#0f1218"
@@ -19,6 +19,8 @@ colors:
   eco-pypi: "#ffd166"
   eco-go: "#56cdf2"
   eco-cargo: "#f0a86a"
+  star: "#ffe2a8"
+  night: "#1b2130"
   shadow: "rgb(0 0 0 / 0.6)"
   shadow-near: "rgb(0 0 0 / 0.12)"
   graphite-ground-light: "#f6f7f9"
@@ -38,12 +40,14 @@ colors:
   eco-pypi-light: "#9a6d00"
   eco-go-light: "#0a7fa6"
   eco-cargo-light: "#a8541c"
+  star-light: "#e08a00"
+  night-light: "#dfe3ea"
   shadow-light: "rgb(13 16 22 / 0.12)"
   shadow-near-light: "rgb(13 16 22 / 0.08)"
 typography:
   display:
     fontFamily: "Bricolage Grotesque, Onest, ui-sans-serif, system-ui, sans-serif"
-    fontSize: "clamp(2.4rem, 1.3rem + 4.2vw, 4.8rem)"
+    fontSize: "clamp(2.4rem, 1.4rem + 3.4vw, 4.4rem)"
     fontWeight: 700
     lineHeight: 1
     letterSpacing: "-0.04em"
@@ -126,37 +130,8 @@ components:
     textColor: "{colors.frost-ink}"
     typography: "{typography.search-input}"
     rounded: "{rounded.xl}"
-    padding: "8px 14px 8px 20px"
-    height: "64px"
-  search-chip:
-    backgroundColor: "{colors.signal-teal-soft}"
-    textColor: "{colors.frost-ink}"
-    typography: "{typography.data-sm}"
-    rounded: "{rounded.sm}"
-    padding: "4px 4px 4px 9px"
-  try-suggestion:
-    backgroundColor: "{colors.graphite-ground-2}"
-    textColor: "{colors.steel-muted}"
-    typography: "{typography.data-sm}"
-    rounded: "{rounded.sm}"
-    padding: "5px 10px"
-  try-suggestion-hover:
-    textColor: "{colors.frost-ink}"
-  results-panel:
-    backgroundColor: "{colors.graphite-panel}"
-    rounded: "{rounded.xl}"
-    padding: "8px"
-  result-row:
-    textColor: "{colors.frost-ink}"
-    rounded: "9px"
-    padding: "10px 12px"
-  result-row-selected:
-    backgroundColor: "{colors.graphite-panel-2}"
-  tag:
-    textColor: "{colors.steel-muted}"
-    typography: "{typography.data-sm}"
-    rounded: "{rounded.xs}"
-    padding: "2px 6px"
+    padding: "8px 14px 8px 18px"
+    height: "60px"
   kbd:
     backgroundColor: "{colors.graphite-ground-2}"
     textColor: "{colors.steel-muted}"
@@ -169,28 +144,45 @@ components:
     padding: "6px 10px"
   button-ghost-hover:
     textColor: "{colors.frost-ink}"
-  segmented-control:
-    backgroundColor: "{colors.graphite-ground-2}"
-    textColor: "{colors.steel-muted}"
-    rounded: "{rounded.lg}"
-    padding: "4px"
-  segmented-knob:
-    backgroundColor: "{colors.graphite-panel}"
-    textColor: "{colors.frost-ink}"
-    rounded: "9px"
-  catalogue-item:
-    textColor: "{colors.frost-ink}"
-    typography: "{typography.data}"
-    padding: "18px 4px"
   window:
     backgroundColor: "{colors.graphite-panel}"
     textColor: "{colors.steel-muted}"
     rounded: "{rounded.xl}"
-  card-row:
+  assist-panel:
     backgroundColor: "{colors.graphite-ground-2}"
     textColor: "{colors.frost-ink}"
     rounded: "{rounded.xl}"
-    padding: "20px"
+    padding: "28px"
+  planet-card:
+    backgroundColor: "{colors.graphite-panel}"
+    textColor: "{colors.frost-ink}"
+    typography: "{typography.data}"
+    rounded: "{rounded.xl}"
+    padding: "20px 22px 22px"
+  private-card:
+    backgroundColor: "{colors.graphite-ground-2}"
+    textColor: "{colors.frost-ink}"
+    rounded: "{rounded.xl}"
+    padding: "18px"
+  planet-header:
+    backgroundColor: "{colors.graphite-panel}"
+    textColor: "{colors.frost-ink}"
+    rounded: "{rounded.xl}"
+    padding: "24px 26px"
+  version-notice:
+    backgroundColor: "{colors.graphite-ground-2}"
+    textColor: "{colors.frost-ink}"
+    rounded: "{rounded.md}"
+    padding: "12px 14px"
+  horizon-surface:
+    backgroundColor: "{colors.graphite-ground-2}"
+    textColor: "{colors.steel-muted}"
+    padding: "10px 16px 40px"
+  theme-switch:
+    textColor: "{colors.signal-teal}"
+    rounded: "{rounded.sm}"
+    width: "40px"
+    height: "36px"
   orbit-tooltip:
     backgroundColor: "{colors.graphite-panel}"
     textColor: "{colors.frost-ink}"
@@ -201,54 +193,55 @@ components:
 
 # Design System: Puncoz Docs
 
-**Scope.** The whole site: the home page and every documentation page. The tokens live on `:root` (light) and `.dark` (dark) in `src/app/global.css`, which also maps Fumadocs' own `--color-fd-*` colours onto them; the fonts are loaded once in `src/app/layout.tsx`; the shared header, docs typography and package hero are styled in `src/app/site.css`; the home page's sections in `src/app/(home)/home.css`. Docs pages use the Fumadocs notebook layout under that header. The reasons are in ADR-0014 (`content/docs/maintain/adr/ADR-0014-home-page-is-a-search-first-release-map.mdx`) and ADR-0015 (`content/docs/maintain/adr/ADR-0015-every-entry-lives-at-the-root-in-one-shape-and-one-look.mdx`); this file only records how the built site looks.
+**Scope.** The whole site: the home page, every documentation page and the 404. The tokens live on `:root` (light) and `.dark` (dark) in `src/app/global.css`, which also maps Fumadocs' own `--color-fd-*` colours onto them; the fonts are loaded once in `src/app/layout.tsx`; the shared header, theme switch, planet header, notices, sidebar marks and Horizon footer are styled in `src/app/site.css`; the home page's sections and the 404 in `src/app/(home)/home.css`. The planet and moon marks are drawn by `src/components/planet.tsx`. Docs pages use the Fumadocs notebook layout under that header. The reasons are in ADR-0014, ADR-0015, ADR-0016 and ADR-0017 (`content/docs/maintain/adr/`); this file only records how the built site looks.
 
 ## Overview
 
-**Creative North Star: "The Release Map"**
+**Creative North Star: "One Solar System"**
 
-The home page is a calm graphite instrument with one moving part: a slowly turning orbital map of every documented release, and a search field held in front of it. Each ecosystem is an elliptical ring, each package or project a body on it, each documented version a small moon. The search field is the page's one control, and when a reader types, the map answers: matching bodies light up and the rest dim. Everything below the hero restates the map as plain, ruled text a reader can scan and a screen reader can read.
+The site is one small solar system, calm graphite space with one moving part. The star is the maker, Puncoz Nepal. Each ecosystem is an orbit; a package is a solid planet in its ecosystem's colour, its night side shaded away from the star; a project is a ringed planet. Each documented version line is a moon: full for the latest release, a crescent for an older one, a dashed new moon for `dev`. A planet's day side is Use, its night side Maintain. The home page's hero is the system itself, turning slowly beside the headline and the large search button; every later surface (cards, the planet header, the sidebar, the notices, the footer, the 404) reuses the same marks without explaining them again.
 
-The surface is cool, technical and quiet: near-black graphite (dark is the default theme) or cool paper in light, hairline rules instead of boxes, one teal accent, and colour reserved for the ecosystems the map is about. Density is moderate: generous section gaps, tight rows inside a list. Depth is soft and rare; only things that float (the search field, its results, preview windows, the tooltip) lift off the ground.
+The surface is cool, technical and quiet: near-black graphite (dark is the default theme) or cool paper in light, hairline borders, one teal accent, a warm star, and colour reserved for the ecosystems. Density is moderate: generous section gaps, tight facts inside a card. Depth is soft and rare; only things that float (the search button, windows, the tooltip) lift off the ground.
 
 **Key Characteristics:**
-- Graphite neutrals with a single signal-teal accent; ecosystem hues mark shapes, never text.
+- Graphite neutrals with a single signal-teal accent and a warm star; ecosystem hues mark shapes, never text.
 - Three faces with fixed jobs: Bricolage Grotesque for display, Onest for reading and controls, JetBrains Mono for data only.
-- Ruled lists over cards; panels only for things that float or frame a preview.
-- One authored motion moment, the orbit; everything else is a short, single entrance.
+- One metaphor carrying real data: planets are entries, moons are version lines, sides are tracks.
+- One authored motion moment, the turning system; everything else is a short, single response.
 - Every state readable without scripts and without motion.
 
 ## Colors
 
-Cool graphite neutrals in a nine-step stack, one teal signal, and a five-hue ecosystem set that only ever fills dots, bodies and ring strokes. Dark values are the frontmatter's plain keys; light values carry the `-light` suffix.
+Cool graphite neutrals in a nine-step stack, one teal signal, a warm star, an unlit night face, and a five-hue ecosystem set that only ever fills planets, moons and strokes. Dark values are the frontmatter's plain keys; light values carry the `-light` suffix.
 
 ### Primary
-- **Signal Teal** (`signal-teal` / `signal-teal-light`): the one accent. Focus outlines, the caret, text selection (with `signal-teal-ink` on top), the search field's focus border and halo, matched characters in results, the latest-version node and the drawn line on the version rails, the terminal prompt and cursor, list-point markers, card icons, and the "open" links in results and previews.
-- **Teal Wash** (`signal-teal-soft` / `signal-teal-soft-light`): the translucent fill behind search chips and the focus halo around the search field.
+- **Signal Teal** (`signal-teal` / `signal-teal-light`): the one accent. Focus outlines, the caret, text selection (with `signal-teal-ink` on top), the search button's focus border and halo, the latest release's full moon, the current page's planet dot in the sidebar and contents, the theme switch's lit face, the Use buttons, the footer horizon's atmosphere rim, the terminal prompt and cursor, and forward links.
+- **Teal Wash** (`signal-teal-soft` / `signal-teal-soft-light`): the focus halo around the search button.
 
 ### Secondary
-- **Ecosystem set** (`eco-npm`, `eco-composer`, `eco-pypi`, `eco-go`, `eco-cargo` and their `-light` pairs): one hue per ecosystem, used for map bodies, moons, a lit ring's stroke, and the dots in the catalogue and legend. The "other" ecosystem reuses Steel Muted; projects reuse Frost Ink and are drawn hollow. Against the page ground each hue measures 4.2:1 or more.
+- **Star** (`star` / `star-light`, `--home-star`): the star in the hero, the footer's horizon and the 404, its glow (`--home-star-glow`), the sun in the theme switch, the day side's sun, the brand mark's light and the closing line's underline. Never text.
+- **Night** (`night` / `night-light`, `--home-night`): a planet's unlit face: the theme switch's planet, private planets, older-release crescents, the terminator planet.
+- **Ecosystem set** (`eco-npm`, `eco-composer`, `eco-pypi`, `eco-go`, `eco-cargo` and their `-light` pairs): one hue per ecosystem, for planets, their moons on the hero and the ring of a card's sky wash. The "other" ecosystem reuses Steel Muted; projects reuse Frost Ink and are ringed. Against the page ground each hue measures 4.2:1 or more.
 
 ### Neutral
 - **Graphite Ground** (`graphite-ground`): the page.
-- **Graphite Ground 2** (`graphite-ground-2`): recessed fills: keyboard keys, suggestion buttons, the segmented control's track, link cards, and the catalogue row's hover wash.
-- **Graphite Panel** (`graphite-panel`): raised surfaces: the search field, the results list, preview windows, the tooltip, the segmented control's knob.
-- **Graphite Panel 2** (`graphite-panel-2`): the selected result row and the active link in a preview's sidebar.
-- **Graphite Line / Line 2** (`graphite-line`, `graphite-line-2`): hairline rules and resting borders; Line 2 is the stronger border on floating panels, the hover border, the unlit orbit rings and the version-rail baseline.
+- **Graphite Ground 2** (`graphite-ground-2`): recessed fills: a card's sky, private cards, keyboard keys, the selected terminal tab, the assistant panel, the night side, the sidebar's planet chip and day/night track, version notices, the footer's surface.
+- **Graphite Panel** (`graphite-panel`): raised surfaces: the search button, cards, the planet header, windows, the tooltip, the day side, the selected side in the sidebar switch.
+- **Graphite Panel 2** (`graphite-panel-2`): hover fills on links in lists.
+- **Graphite Line / Line 2** (`graphite-line`, `graphite-line-2`): hairline borders; Line 2 is the stronger border on floating panels and dashed private cards, the hover border, orbits and the moon track.
 - **Frost Ink** (`frost-ink`): primary text.
-- **Steel Muted** (`steel-muted`): secondary text, descriptions, nav links at rest, tags.
-- **Steel Faint** (`steel-faint`): hints, placeholder text, result group labels, the window chrome caption.
-- **Shadow** (`shadow`): the colour of every far shadow; see Elevation & Depth.
-- **Shadow near** (`shadow-near`): the tight contact shadow under the search field.
+- **Steel Muted** (`steel-muted`): secondary text, descriptions, nav links at rest, older moons, unreleased moon strokes.
+- **Steel Faint** (`steel-faint`): hints, placeholder text, fact-sheet labels, moon labels' versions, terminal tabs at rest, asteroids and stars.
+- **Shadow** (`shadow`) and **Shadow near** (`shadow-near`): see Elevation & Depth.
 
-Measured: every text colour is 4.5:1 or more against Graphite Ground and Graphite Panel in both themes; the tightest pair, Steel Faint on Graphite Panel, is 5.0:1 in dark and 5.6:1 in light.
+Measured: every text colour is 4.5:1 or more against Graphite Ground and Graphite Panel in both themes; the tightest pair, Steel Faint on Graphite Panel, is 5.0:1 in dark and 5.6:1 in light. The star and night tokens are never used for text.
 
 ### Named Rules
-**The One Signal Rule.** Teal is the only accent on the page. If something needs to stand out and it is not focus, a match, the latest release or a forward link, it gets weight or size, not colour.
+**The One Signal Rule.** Teal is the only accent. If something needs to stand out and it is not focus, the latest release, the current page, the lit face or a forward link, it gets weight or size, not colour. The star is light, not an accent: it lights things and is never a control's colour.
 
-**The Shapes, Not Words Rule.** Ecosystem hues fill dots, bodies, moons and ring strokes. Text beside them is always Frost Ink or Steel Muted, and every coloured mark has a text equivalent (a legend label, or a screen-reader-only ecosystem name in the catalogue).
+**The Shapes, Not Words Rule.** Ecosystem hues fill planets, moons and strokes. Text beside them is always Frost Ink, Steel Muted or Steel Faint, and every coloured mark has a text equivalent (the planet's name and kind, a legend label, or the card that restates the system).
 
-**The Token-Only Surface Rule.** The browser's own surfaces (selection, caret, scrollbar, focus ring) and the canvas read their colours from the tokens; the map re-reads them when the theme changes.
+**The Token-Only Surface Rule.** The browser's own surfaces (selection, caret, scrollbar, focus ring), the SVG marks and the canvas read their colours from the tokens; the canvas re-reads them when the theme changes.
 
 ## Typography
 
@@ -259,18 +252,18 @@ Measured: every text colour is 4.5:1 or more against Graphite Ground and Graphit
 **Character:** a characterful grotesque with tight tracking for headings, a plain, open sans for reading, and a coding mono that appears only where the content is literally data.
 
 ### Hierarchy
-- **Display** (700, fluid 2.4rem to 4.8rem, line-height 1, -0.04em): the hero headline only, balanced, at most 13 characters wide; its second half is set in Steel Muted for emphasis by tone, not style.
-- **Headline** (650, fluid 1.8rem to 2.6rem, 1.08, -0.03em): section headings, at most 18 characters wide, balanced.
-- **Title** (650, 24px, -0.02em): the page title inside a preview window.
+- **Display** (700, fluid 2.4rem to 4.4rem, line-height 1, -0.04em): the hero headline, at most 12 characters wide, its second half in Steel Muted; the 404 heading (2rem to 3.2rem).
+- **Closing** (650, fluid 1.7rem to 3rem, 1.08, -0.035em): the footer's closing line, centred, 22 characters wide at most.
+- **Headline** (650, fluid 1.8rem to 2.6rem, 1.08, -0.03em): section headings, at most 18 characters wide; Private projects at 1.6rem to 2.2rem.
+- **Side title** (650, 1.3rem, -0.02em): Use and Maintain in Two sides; the assistant panel's heading at 1.35rem.
 - **Wordmark** (600, 17px, -0.01em): the brand name in the header.
-- **Lead** (400, fluid 1rem to 1.15rem): the hero subline, at most 52 characters wide.
-- **Body** (400, 16px, 1.6): base text; section ledes cap at 44 to 46 characters.
-- **Body small** (400, 14px): descriptions in catalogue rows, preview bodies, link-card text, header nav.
-- **Search input** (400, 18px; 16px under 860px so phones do not zoom).
-- **Caption** (400, 13px): the Try row, the package name beside a result, the results footer link, catalogue row links, the rail legend.
-- **Label** (400, 12px): legend, result group labels, result footer hints. Sentence case, no tracking.
-- **Data** (500, 16px, -0.01em): package names in the catalogue; 15px on version-rail names; 14px in the tooltip and the count.
-- **Data small** (400 to 500, 12 to 13px): tags, chips, suggestion buttons, keyboard keys, version labels on the rails, the window chrome caption, the preview's version picker.
+- **Lead** (400, fluid 1rem to 1.15rem): the hero subline, at most 44 characters wide.
+- **Body** (400, 16px, 1.6): base text; section paragraphs cap at 46 characters.
+- **Body small** (400, 14 to 14.5px): card and private descriptions, side lists, version notices, header nav.
+- **Search placeholder** (400, 17px; 16px under 860px): the search button's text.
+- **Caption** (400, 13 to 13.5px): kinds, fact-sheet labels, card links, legends, footer links.
+- **Data** (500, 20px, -0.02em): a card's name; 16px on private names; 15px in moon rows; 14.5px in the sidebar chip; 14px in the footer and tooltip; 1.6 to 2.3rem in the planet header.
+- **Data small** (400 to 500, 10.5 to 12.5px): fact-sheet values, moon labels in drawings, moon names and versions, terminal tabs, keyboard keys, the window chrome caption, the private meta line.
 
 ### Named Rules
 **The Data Voice Rule.** JetBrains Mono is for package names, versions, URLs, commands, code and counts, nothing else. Headings, buttons with words on them and prose stay in Onest or Bricolage.
@@ -279,121 +272,114 @@ Measured: every text colour is 4.5:1 or more against Graphite Ground and Graphit
 
 ## Layout
 
-A single centred column: 1180px maximum, 24px side padding. The hero fills most of the first screen (up to 900px, 96% of the small viewport; 88% under 860px) with the orbit map as a full-bleed canvas behind a centred stack: headline, subline, search field (720px wide at most), the "Try" suggestion row, and the ecosystem legend. A hairline closes the hero.
+A single centred column: 1180px maximum, 24px side padding. The hero fills most of the first screen (up to 860px, 94% of the small viewport) with the system as a full-bleed canvas: on desktop the text column (headline, subline, a 520px search button and the legend) sits on the left and the star at 70% of the width; at 860px and below the system takes the top 310px and the text follows below it. A hairline closes the hero.
 
-Sections below sit 112px apart (88px under 860px); the footer sits 128px below the last section. Each section opens with a head row: the heading left, a short paragraph or a count right, wrapping on narrow screens, 32px above the content. Inside sections the composition varies with the content: a two-column ruled catalogue (40px gutter), a 5:7 split of copy and preview window (48px gap), stacked version rails (150px name column), and a 1:1 split of terminal and link cards (24px gap).
+The cards follow 96px below (64px on phones), in a grid of 330px minimum columns with 20px gaps, with no heading on screen. The asteroid belt sits 96px below the cards, then the Private projects head and its 260px-minimum grid. Sections below sit 112px apart (88px under 860px), each opening with a head row: the heading left, a short paragraph right, 32px above the content. Two sides is a 1fr · 120px · 1fr band; Every moon is rows with a 150px name column; Read it anywhere is a 1:1 split. The Horizon footer sits 140px below the last section.
 
-At 860px and below every multi-column block becomes one column, the header nav, keyboard hints and map legend are hidden, the preview window's sidebar becomes a wrapping row above its body, and version-rail names stack above their rails.
-
-The spacing rhythm is tight inside groups (4 to 14px) and generous between them (24 to 48px), with the section step (112px) well above everything else.
+At 860px and below every multi-column block becomes one column, the header nav, the search key hint and the legend are hidden, the terminator column drops out and moon-row names stack above their moons.
 
 ## Elevation & Depth
 
-Flat by default, with soft drop shadows only on surfaces that float above the map or frame a preview. Every far shadow uses the Shadow token, a large blur and a negative spread, so it reads as distance rather than an outline. The sticky header is the one translucent surface: the page ground at 80% with a saturating 12px backdrop blur, gaining a hairline bottom border once the page scrolls.
+Flat by default, with soft drop shadows only on surfaces that float over the system or frame a window. Every far shadow uses the Shadow token, a large blur and a negative spread. The sticky header is the one translucent surface: the page ground at 80% with a saturating 12px backdrop blur, gaining a hairline once the page scrolls.
 
 ### Shadow Vocabulary
-- **Search lift** (`0 22px 60px -22px shadow, 0 2px 6px shadow-near`): the search field at rest.
-- **Search focus** (`0 24px 70px -20px shadow, 0 0 0 4px teal wash`): the search field while focused, with its border turned teal.
-- **Dropdown** (`0 30px 80px -20px shadow`): the results list.
-- **Window** (`0 30px 80px -30px shadow`): preview and terminal windows.
-- **Tooltip** (`0 18px 40px -16px shadow`): the orbit tooltip.
-- **Knob** (`0 2px 8px shadow`): the segmented control's sliding knob.
+- **Search lift** (`0 22px 60px -22px shadow, 0 2px 6px shadow-near`): the search button at rest.
+- **Search focus** (`0 24px 70px -20px shadow, 0 0 0 4px teal wash`): the search button on keyboard focus.
+- **Window** (`0 30px 80px -30px shadow`): the terminal window.
+- **Tooltip** (`0 18px 40px -16px shadow`): the system's tooltip.
+- **Raised side** (`0 1px 4px shadow-near`): the selected side in the sidebar's day/night switch.
+- **Halo** (`0 0 0 3px` page or panel colour): a gap ring around the current-page planet dot, so it sits on its orbit line.
 
 ### Named Rules
-**The Float-Only Rule.** A surface gets a shadow only if it sits over something (the map, the page) or frames a preview. Rows, tags, chips and link cards stay flat and separate by border or tone.
+**The Float-Only Rule.** A surface gets a shadow only if it sits over something or frames a window. Cards lift 2px on hover by transform, not by shadow.
 
 ## Shapes
 
-Gently rounded rectangles in a short ladder: 6px for tags, keys and focus outlines; 8px for chips, small buttons and suggestions; 10px for the tooltip and card icons; 12px for the segmented track and the no-script link; 14px for the search field, results list, windows and link cards. Nested surfaces step their radius down from their container: a 9px knob and 9px result rows inside 12px and 14px parents, the 7px version box in the preview sidebar, and the 5px remove button inside a chip. The 2px square marks the tracks preview's list points. Circles are reserved for meaning: ecosystem dots (8px, 10px in the catalogue), map bodies and moons, the brand mark, and the window chrome's three dots.
+Gently rounded rectangles in a short ladder: 6px for keys, terminal tabs and focus outlines; 7px for the selected side inside the 10px sidebar track; 8px for small buttons and links; 10px for the tooltip, the planet chip and notices; 12px for the no-script link; 14px for the search button, cards, private cards, the planet header, Two sides, windows and the assistant panel. Circles are reserved for meaning: planets, moons, the star, the current-page dot, the brand mark and the window chrome's three dots.
 
-Borders are 1px hairlines throughout. Line style carries meaning: a **dashed** stroke marks the unreleased `dev` line, on tags, rail segments, rail nodes and orbit moons alike; a **hollow** shape marks a project (an outlined dot in the catalogue, an outlined body in the map; its ring is solid like the others, because a broken stroke means unreleased). The brand mark is a tilted ellipse in Frost Ink with a teal dot at its centre, the map in miniature.
+Borders are 1px hairlines. Line style carries meaning: **dashed** marks the unreleased `dev` line (its orbit and its new moon) and, on cards and orbits, private projects; a **ring** marks a project; a **crescent** marks an older release.
+
+The brand mark is a ringed planet in Frost Ink with a teal body and a small star-coloured light: the system in miniature.
 
 ### Named Rules
-**The Hollow and Dashed Rule.** Hollow means project; dashed means not released yet. Never use either for decoration.
+**The Mark Means Rule.** A ring means project, a full moon the latest release, a crescent an older release, a dashed new moon `dev`, a lock private. Never use any of them for decoration.
 
 ## Components
 
-### Search field (signature control)
-- **Character:** the one large, confident control on the page.
-- **Shape and fill:** Graphite Panel, 14px corners, Line 2 border, Search lift shadow, 64px tall (56px under 860px), a muted search icon on the left and keyboard hints on the right.
-- **Focus:** the border turns teal and the Teal Wash halo appears, eased over 0.3s.
-- **Chips:** an ecosystem chosen in the field becomes a chip inside it: Teal Wash fill, teal border at 45%, data-small text, a 20px muted remove button that darkens on hover. Chips pop in (scale from 0.8 over 0.35s).
-- **Placeholder:** Steel Faint. While idle, it types real queries as a demonstration until the reader takes the field; not under reduced motion.
-- **Try row:** centred suggestion buttons below the field in data-small on Graphite Ground 2 with a hairline border; on hover the text turns Frost Ink, the border strengthens and the button rises 1px.
+### Search button (signature control)
+- **Character:** the one large, confident control, shaped like a field. It is a button: click, Enter or Space opens the site's Fumadocs search dialog, as `⌘K` does on every page. It also opens the 404.
+- **Shape and fill:** Graphite Panel, 14px corners, Line 2 border, Search lift shadow, 60px tall (56px under 860px), a muted search icon, "Search packages, projects and pages" in Steel Faint, and a `⌘K` key (hidden under 860px).
+- **Hover:** the border warms toward teal and the button rises 1px. **Focus:** teal border and the Teal Wash halo.
+- **Search dialog:** Fumadocs' own, coloured by the site tokens.
 
-### Results list
-- A Graphite Panel dropdown 8px below the field, 14px corners, Line 2 border, Dropdown shadow, 440px maximum height. It fades and settles 6px into place when opened.
-- Group labels in Label/Steel Faint; rows are a three-column grid (marker, title and package, trailing meta), 9px corners, the selected row on Graphite Panel 2. Matched characters are teal, unhighlighted.
-- A footer under a hairline carries keyboard hints and a teal "see all" link pushed right. Empty and loading states use a muted note.
+### The system (hero canvas)
+- The star: a 9px star-coloured disc with a soft glow, "Puncoz Nepal" in data under it. Orbits are 1px ellipses tilted to 0.36 of their width in Line 2.
+- Packages are 7px discs in their ecosystem colour with the half facing away from the star shaded; projects are 6px Graphite Ground discs with an ecosystem stroke and a tilted ring. Every planet is labelled in 12px data, brighter in front. Moons circle each planet on faint orbits: solid for released lines (older ones dimmer), dashed and hollow for `dev`.
+- Pointing at a planet slows the system to 15% and shows the tooltip (Graphite Panel, Line 2 border, 10px corners: name, description, kind · latest · "click to open"); clicking opens the overview.
+- The legend under the search button: package, project, moon = version, dashed = unreleased, each with its drawn mark.
 
-### Orbit map
-- Full-bleed canvas behind the hero content, crosshair cursor. Rings are 1px ellipses tilted to 0.34 of their width, in Line 2 at half opacity; a ring with a matching body takes its ecosystem colour while searching.
-- Bodies are 5px dots in their ecosystem colour (projects hollow), scaled and brightened by depth; moons orbit them on faint ellipses, dashed and hollow for unreleased lines. A lit body grows and shows its name in data-small Frost Ink.
-- Hovering slows the orbit and shows the tooltip: Graphite Panel, Line 2 border, 10px corners, data name, muted description and version tags; it fades and rises 4px into place.
-- With nothing documented, a faint set of rings keeps the hero's shape.
+### Planet card
+- Graphite Panel, hairline border, 14px corners. A 168px sky on Graphite Ground 2 with a wash of the ecosystem colour from the top right, drawing the planet with one tilted orbit per line and its labelled moon. Below, 20px by 22px: the name in Data (the whole card is its link), the kind with its planet mark, the description, a fact sheet (Latest, In development, Older; labels in Steel Faint, values in data small) and the links: Use → in teal, Maintain and Demo as hairline buttons.
+- Hover: the border tints with the ecosystem colour, the card rises 2px and the moons turn 8°.
 
-### Tags
-- Data-small, Steel Muted, 1px Line border, 6px corners. Variants: dashed border for the unreleased `dev` line; teal text and a 40% teal border for the accent variant.
+### Private projects
+- An asteroid belt (a seeded scatter of Steel Faint dots around a hairline) divides them from the cards. Each private card is Graphite Ground 2 with a dashed Line 2 border: a 56px night planet on a dashed orbit, a crescent of light; the name in data with a 13px lock (read as "private"); a description; a data-small meta line (client or internal · tracks).
+- Empty: a dashed empty orbit with a dot, then "No private projects in orbit yet." and one muted line, in a dashed box.
+
+### Two sides of every planet
+- A band with a hairline border and 14px corners: the day side on Graphite Panel (title with a star-coloured sun), the night side on Graphite Ground 2 (title with a muted moon), each listing real pages; between them a 96px planet split by its terminator, half in the entry's ecosystem colour, half Night, on a ground split the same way.
+
+### Every moon, released or not
+- Rows separated by hairlines: the entry's name in data, then its moons on a Line 2 track, oldest first, each a 28px phase mark with its name (teal for the latest) and version in data small, linking to that line. A legend names the three phases.
+
+### Windows and the assistant panel
+- **Terminal:** Graphite Panel, Line 2 border, 14px corners, Window shadow; chrome with three dots and tabs (`page.md`, `llms.txt`, `Accept`); 13.5px data, teal prompt, a blinking teal block cursor; a tab types its command once.
+- **Assistant panel:** flat on Graphite Ground 2, hairline border, 14px corners, 28px padding, with Fumadocs' own Copy Markdown button and Open menu and a teal "See it on a page" link.
 
 ### Buttons
-- **Ghost:** 14px Onest, Steel Muted, hairline border, 8px corners, 6px by 10px, with an optional 16px stroked icon (1.75 stroke). Hover: Frost Ink text and Line 2 border.
-- **Count button:** the same treatment at 13px, beside the catalogue count.
-- **Segmented control:** a two-option track on Graphite Ground 2 with 12px corners and 4px inset; options in 15px Onest, muted, with 16px icons; the selected option is Frost Ink over a Graphite Panel knob that slides across in 0.45s.
+- **Ghost:** 14px Onest, Steel Muted, hairline border, 8px corners, 6px by 10px, with an optional 16px stroked icon. Hover: Frost Ink and Line 2.
+- **Theme switch (orrery):** a 40 by 36px ghost holding a 32px drawing: a tilted orbit in Line 2, a star-coloured sun with rays on it, and a planet whose lit face is teal over a Night disc. In light the sun stands front-left and the face is fully lit; in dark the sun moves behind, top-right, at 85% size, and a mask leaves a teal crescent. Both move over 0.5s with the site's ease, instantly under reduced motion. Its tooltip, Graphite Panel with a Line 2 border, repeats its name in short ("Night side · switch to day").
 
-### Catalogue (ruled list)
-- Two columns of rows separated by hairlines, opened by a hairline on top; no boxes. Each row: a 10px ecosystem dot, the package name in Data with a teal hover, a muted description, small icon links, and right-aligned version tags (latest, then `next`).
-- Hover washes the row from Graphite Ground 2 to transparent, left to right.
-- Empty and no-match states are a single muted sentence across both columns.
-
-### Windows
-- Graphite Panel, Line 2 border, 14px corners, Window shadow, clipped. A chrome bar in data-small Steel Faint carries three 10px Line 2 dots and a caption.
-- **Track preview:** a 210px sidebar (version picker in a hairline box, page links that fill Graphite Panel 2 when active) beside a body with a Title and a teal "open" link. Switching tracks cross-fades the body with a 6px blur and an 8px rise.
-- **Terminal:** 13.5px data at 1.75 line-height, muted output, Frost Ink command, teal prompt and an 8 by 16px teal block cursor that blinks. It types its command once when it enters view.
-
-### Version rails
-- One row per package: the name in Data at 15px, then an SVG rail: a Line 2 baseline, the released span drawn in teal from left to right once (1.6s), hollow Line 2 nodes with the latest filled teal, and the unreleased segment and node dashed in Steel Muted. Version labels in data-small, the latest in Frost Ink. A legend below repeats the three line styles.
-
-### Link cards
-- Flat rows on Graphite Ground 2 with a hairline border and 14px corners, 20px padding: a 38px Graphite Panel icon tile with a teal 18px stroked icon, a 16px semibold title and a muted body-small line. Hover strengthens the border.
-
-### Package hero
-- Opens every package or project overview, above the title. A Graphite Panel band with a hairline border and 14px corners, 22px by 24px padding, and a 10% wash of the entry's ecosystem or project colour fading out by the middle.
-- Inside, stacked 14px apart: the kind ("npm package", "Project") in 13px muted text after a 10px ecosystem dot, hollow for a project; the name in Data at 1.6 to 2.2rem; the description in muted text, 60ch at most; version tags (the latest line as name · version · latest on a Line 2 border, the `dev` line dashed); a rail of documented lines, oldest first, with `dev` last and dashed and the latest node filled teal; and link buttons: Use in teal, then Maintain, Registry ↗ and Repository ↗ as hairline buttons with 8px corners.
+### Planet header
+- Opens every overview: Graphite Panel, hairline border, 14px corners, a wash of the ecosystem colour from the right. Text on the left (kind with its mark, the name in Data at 1.6 to 2.3rem, the description, the fact sheet, Use → in teal and hairline Maintain, Registry ↗, Repository ↗); on the right a 280px drawing of the planet and its labelled moons. One column under 720px.
 
 ### Docs pages
-- The Fumadocs notebook layout below the shared header, coloured by the site tokens in both themes. Headings h1 to h3 use the Display face at -0.02em; body, sidebar and table of contents keep the Text face, code the Data face. The sidebar sits on Graphite Panel, as a column on desktop and a drawer at phone width, so its active link (teal on a 10% teal wash) stays above 4.5:1 in both themes.
-- The sidebar opens with the Use | Maintain switch; a versioned Use track adds the version menu, each line described as version · channel. A page in an older line shows a version banner linking to the same page in the latest line; a page in `dev` shows a warning banner that it is work in progress.
+- The Fumadocs notebook layout below the shared header, coloured by the site tokens. Headings h1 to h3 use the Display face at -0.02em; body, sidebar and contents keep the Text face, code the Data face. The sidebar sits on Graphite Panel.
+- The sidebar opens with the **planet chip** (planet mark, name in data, kind) linking to the overview, the **day/night switch** (Use with a drawn sun, Maintain with a drawn moon; the selected side raised on Graphite Panel, its sun star-coloured) and, on Use, the **moon picker**: Fumadocs' version menu with each line's phase mark as its icon.
+- The current page is a 9px teal planet with a halo on its folder's orbit line, or a 7px teal dot at the end of its row at the top level. The contents' marker is an 8px teal planet on its line.
+- **Version line:** on the latest line, a 14px full moon and "Documents ‹name› ‹version›" in muted 14px. **Notice:** on `dev` and older lines, a Graphite Ground 2 box with a Line 2 border and 10px corners, the line's 22px moon, a bold lead ("In development." or "Older version."), the version and a teal link to the latest line.
 
 ### Navigation
-- **Header:** one header on every page. Sticky, 60px tall, translucent with backdrop blur; wordmark and brand mark left, 14px muted nav links (Frost Ink on hover), a spacer, a 240px search button on Graphite Panel with a hairline border, 8px corners and a ⌘K key, a ghost GitHub button and the light/dark switch. On the home page the search button points at the hero's field; on docs pages it opens the search dialog, and the header carries a hairline below it. Under 860px the nav, labels and key hide, search and GitHub become 36px icon buttons, and docs pages add a 36px menu button that opens the sidebar.
-- **Theme switch:** Fumadocs' light/dark switch, in the header on every page. Dark is the default; the choice is kept by next-themes and every token, including the map's canvas colours, follows it.
-- **Footer:** 14px muted text and links under a hairline, wrapping.
+- **Header:** one header on every page. Sticky, 60px, translucent; the brand mark and wordmark left, 14px muted nav links, a spacer, then on docs pages a 240px search button with a ⌘K key, a ghost GitHub button and the theme switch. Under 860px the nav, labels and key hide, search and GitHub become 36px icon buttons, and docs pages add a menu button.
+- **Horizon footer:** on the home page and the 404, the closing line ("Everything here orbits one maker: Puncoz Nepal.", the name underlined in the star colour, linking to puncoz.com), then a 170 to 260px scene: faint stars, the star rising with its glow behind the curved edge of a planet whose ground fades from Graphite Panel to Graphite Ground 2, with a thin teal atmosphere rim. Then the surface, on Graphite Ground 2: one link per public planet (its mark and name in data, teal on hover), a row of Search ⌘K, `llms.txt`, `llms-full.txt`, GitHub and "Back to orbit ↑" in muted 14px, and the credit in Steel Faint. Docs pages show only the surface, below a hairline, across the full width, with "Back to top".
+
+### The 404
+- "This page drifted out of orbit.": a 420px drawing of a planet that has left its dashed orbit around the star, the Display heading, one muted line, the search button and a teal "Back to the system →", under the home page's header and above the full footer.
 
 ### Motion
-- **The orbit** is the one authored moment: the inner ring turns once in about 100s, outer rings slower; it slows to 15% under the pointer and pauses when off-screen or in a hidden tab. Search highlights ease in and out over about 300ms.
-- Supporting motion is short and single: section parts rise 18px and un-blur over 0.8s once, the rails draw once, the terminal types once, chips pop, the track preview cross-fades. All of it uses one ease, an exponential ease-out (`cubic-bezier(0.16, 1, 0.3, 1)`), and animates transform, opacity, blur, stroke offset or canvas only.
-- Under reduced motion the orbit is drawn once and redraws only on change, the placeholder and terminal do not type, the cursor and chips do not animate, and nothing enters, draws or slides.
-- Without scripts every section is visible, the map is absent, and the search field is replaced by a "Browse everything" link to the catalogue on a Graphite Panel with 12px corners.
+- **The system** is the one authored moment: the inner orbit turns once in about 90s, outer ones slower; moons circle their planets; it slows to 15% under the pointer and pauses when off-screen or in a hidden tab.
+- Supporting motion is short and single: the terminal and assistant panel rise 18px and un-blur over 0.8s once, each terminal tab types once, cards rise 2px and turn their moons on hover, the theme switch's sun and shadow move. One ease throughout, an exponential ease-out (`cubic-bezier(0.16, 1, 0.3, 1)`), animating transform, opacity, blur or canvas only.
+- Under reduced motion the system is drawn once and redraws only on change, the terminal does not type, the cursor does not blink, the theme switch changes instantly, Back to orbit jumps, and nothing enters or turns.
+- Without scripts every section is visible, the canvas is absent, and the search button is replaced by a link to the cards on a Graphite Panel with 12px corners.
 
 ### Named Rules
-**The One Orbit Rule.** The map is the only continuous motion on the page. New motion is a single, short response to arrival or input, never a second loop.
+**The One Orbit Rule.** The system is the only continuous motion. New motion is a single, short response to arrival or input, never a second loop.
 
 **The Visible-By-Default Rule.** Content is hidden for an entrance only after scripts run; with no scripts or with reduced motion, everything is already in place.
 
 ## Do's and Don'ts
 
 ### Do:
-- **Do** take every colour from the `--home-*` tokens, in both themes, including canvas strokes, selection, caret, scrollbar and focus.
+- **Do** take every colour from the `--home-*` tokens, in both themes, including canvas strokes, SVG marks, selection, caret, scrollbar and focus.
 - **Do** keep text on Frost Ink, Steel Muted or Steel Faint; check new pairs against Graphite Ground and Graphite Panel at 4.5:1 or more.
-- **Do** give every coloured or drawn mark a text equivalent: a legend label, a screen-reader name, or the catalogue row that restates the map.
-- **Do** mark unreleased lines dashed and projects hollow wherever versions or entries are drawn.
+- **Do** draw planets, moons, suns, locks and phases from `src/components/planet.tsx` or as inline SVG; give each a text equivalent.
+- **Do** use the marks with their one meaning on every page: ring for project, full moon for latest, crescent for older, dashed new moon for `dev`, sun for Use, moon for Maintain.
 - **Do** use JetBrains Mono for package names, versions, URLs, commands, code and counts, with tabular numerals.
 - **Do** ship a reduced-motion state and a no-script state with every new animation.
 
 ### Don't:
-- **Don't** set text in an ecosystem colour, or let colour alone distinguish an ecosystem.
+- **Don't** set text in an ecosystem colour or the star colour, or let colour alone distinguish an ecosystem.
 - **Don't** add a second accent or a second continuous animation.
-- **Don't** turn the catalogue into a grid of boxed cards; rows are separated by hairlines.
-- **Don't** put a shadow on a surface that does not float or frame a preview.
+- **Don't** use emoji or text glyphs as icons; draw the mark.
+- **Don't** put a shadow on a surface that does not float or frame a window.
 - **Don't** use monospace for headings, prose or button labels.
-- **Don't** apply these tokens or faces to the documentation pages; they keep Fumadocs' neutral theme and Inter until their own ADR.

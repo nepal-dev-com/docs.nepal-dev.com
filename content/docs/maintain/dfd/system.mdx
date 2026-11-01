@@ -3,8 +3,8 @@ title: "DFD — System (Level 0)"
 ---
 
 - **Status:** Current
-- **Last updated:** 2026-10-31
-- **Related ADRs:** ADR-0005, ADR-0013, ADR-0014
+- **Last updated:** 2026-11-01
+- **Related ADRs:** ADR-0005, ADR-0013, ADR-0014, ADR-0016
 
 > Snapshot of the system as it stands today. Edit in place; never record what changed.
 > Conventions: `content/docs/maintain/dfd/index.mdx`. Levels balance — a child's flows match its parent's.
@@ -41,7 +41,7 @@ flowchart LR
   P2 -->|"every record, replaces index"| ALG
   P3 -->|"pages"| Reader
   P3 -->|"Markdown, llms.txt, llms-full.txt"| Bot
-  Reader -->|"search query + search-only key<br/>(dialog or home hero, with scope filters)"| ALG
+  Reader -->|"search query + search-only key<br/>(the search dialog, on every page)"| ALG
   ALG -->|"matching records"| Reader
 ```
 
@@ -74,7 +74,7 @@ flowchart LR
 | Flow | Direction | Authorisation | Private content? |
 |---|---|---|---|
 | Records → Algolia | Build → Algolia | `ALGOLIA_WRITE_KEY` | Would carry any page in `content/`. Each record also carries its scope `tag` and, for catalogue pages, `package`, `kind`, `ecosystem`, `track`, `line`, `channel` (ADR-0013) — public metadata about public pages |
-| Search query → Algolia | Browser → Algolia | Search-only key, public by design | Can read every record in the index. The hero adds a filter on the records' `tag` (scope tags of public catalogue entries only) |
+| Search query → Algolia | Browser → Algolia | Search-only key, public by design | Can read every record in the index. The query is the reader's text only; the dialog adds no filter |
 | Pages and machine-readable routes → readers and tools | Site → public | None | Would carry any page in `content/` |
 | "View on GitHub" link | Site → GitHub | GitHub's own access rules | Points at the page's source in the repository named in `gitConfig` |
 

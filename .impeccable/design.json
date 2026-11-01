@@ -1,9 +1,9 @@
 {
   "schemaVersion": 2,
-  "generatedAt": "2026-10-31T14:04:34+00:00",
+  "generatedAt": "2026-11-01T00:00:00Z",
   "title": "Design System: Puncoz Docs",
   "extensions": {
-    "scope": "Home page only: tokens on .home (light) and .dark .home (dark) in src/app/global.css as --home-*; component styles in src/app/(home)/home.css. Documentation pages use Fumadocs' neutral theme with Inter. CSS variables in component snippets resolve only inside the .home scope.",
+    "scope": "The whole site: tokens on :root (light) and .dark (dark) in src/app/global.css as --home-*, mapped onto Fumadocs colours; header, theme switch, planet header, notices, sidebar marks and Horizon footer in src/app/site.css; home sections and the 404 in src/app/(home)/home.css; planet and moon marks drawn by src/components/planet.tsx. Docs pages use the Fumadocs notebook layout under the shared header.",
     "colorMeta": {
       "signal-teal": {
         "role": "primary",
@@ -508,6 +508,22 @@
           "oklch(84% 0.000 265)",
           "oklch(95% 0.000 265)"
         ]
+      },
+      "star": {
+        "role": "secondary",
+        "displayName": "Star (dark)"
+      },
+      "star-light": {
+        "role": "secondary",
+        "displayName": "Star (light)"
+      },
+      "night": {
+        "role": "neutral",
+        "displayName": "Night (dark)"
+      },
+      "night-light": {
+        "role": "neutral",
+        "displayName": "Night (light)"
       }
     },
     "typographyMeta": {
@@ -541,11 +557,11 @@
       },
       "label": {
         "displayName": "Label",
-        "purpose": "Legend, result group labels, footer hints."
+        "purpose": "Legend."
       },
       "search-input": {
         "displayName": "Search input",
-        "purpose": "The hero search field; 16px under 860px."
+        "purpose": "The hero search button text; 16px under 860px."
       },
       "data": {
         "displayName": "Data",
@@ -553,24 +569,19 @@
       },
       "data-sm": {
         "displayName": "Data small",
-        "purpose": "Tags, chips, suggestions, keys, version labels."
+        "purpose": "Tags, terminal tabs, keys, version labels."
       }
     },
     "shadows": [
       {
         "name": "search-lift",
         "value": "0 22px 60px -22px var(--home-shadow), 0 2px 6px var(--home-shadow-near)",
-        "purpose": "Search field at rest."
+        "purpose": "Search button at rest."
       },
       {
         "name": "search-focus",
         "value": "0 24px 70px -20px var(--home-shadow), 0 0 0 4px var(--home-accent-soft)",
-        "purpose": "Search field while focused."
-      },
-      {
-        "name": "dropdown",
-        "value": "0 30px 80px -20px var(--home-shadow)",
-        "purpose": "Results list."
+        "purpose": "Search button on keyboard focus."
       },
       {
         "name": "window",
@@ -620,14 +631,10 @@
         "purpose": "Segmented control knob."
       },
       {
-        "name": "chip-pop",
-        "value": "0.35s scale 0.8 to 1",
-        "purpose": "Search chip arrival."
-      },
-      {
-        "name": "dropdown",
-        "value": "0.2s opacity, 0.3s 6px settle",
-        "purpose": "Results list opening."
+        "name": "theme-phase",
+        "duration": "0.4s",
+        "easing": "home-ease",
+        "purpose": "The theme switch planet: shadow sweep and ring tilt; instant under reduced motion."
       }
     ],
     "breakpoints": [
@@ -640,28 +647,12 @@
   },
   "components": [
     {
-      "name": "Search field",
-      "kind": "input",
+      "name": "Search button",
+      "kind": "button",
       "refersTo": "search-bar",
-      "description": "The hero's one control: a large raised field with chips, focus halo and keyboard hints.",
-      "html": "<label class=\"ds-bar\"><svg class=\"ds-bar-icon\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\"><circle cx=\"11\" cy=\"11\" r=\"7\"/><path d=\"m20 20-3.5-3.5\"/></svg><span class=\"ds-chip\">npm<button aria-label=\"Remove npm\"><svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\"><path d=\"M18 6 6 18M6 6l12 12\"/></svg></button></span><input type=\"search\" placeholder=\"Search packages, projects and pages\"><kbd class=\"ds-kbd\">/</kbd></label>",
-      "css": ".ds-bar{display:flex;align-items:center;gap:10px;min-height:64px;padding:8px 14px 8px 20px;background:var(--home-panel);border:1px solid var(--home-line-2);border-radius:14px;box-shadow:0 22px 60px -22px var(--home-shadow),0 2px 6px rgb(0 0 0 / .12);cursor:text;transition:border-color .2s,box-shadow .3s var(--home-ease)}.ds-bar:focus-within{border-color:var(--home-accent);box-shadow:0 24px 70px -20px var(--home-shadow),0 0 0 4px var(--home-accent-soft)}.ds-bar-icon{width:18px;height:18px;color:var(--home-muted)}.ds-bar input{flex:1;min-width:140px;height:44px;font:400 18px var(--home-font-text);color:var(--home-ink);background:none;border:0;outline:0}.ds-bar input::placeholder{color:var(--home-faint)}.ds-chip{display:inline-flex;align-items:center;gap:6px;padding:4px 4px 4px 9px;font:500 13px var(--home-font-data);color:var(--home-ink);background:var(--home-accent-soft);border:1px solid color-mix(in srgb,var(--home-accent) 45%,transparent);border-radius:8px}.ds-chip button{display:grid;place-items:center;width:20px;height:20px;padding:0;color:var(--home-muted);background:none;border:0;border-radius:5px;cursor:pointer}.ds-chip button:hover{color:var(--home-ink)}.ds-chip svg{width:13px;height:13px}.ds-kbd{padding:2px 7px;font:12px var(--home-font-data);color:var(--home-muted);background:var(--home-bg-2);border:1px solid var(--home-line-2);border-bottom-width:2px;border-radius:6px}"
-    },
-    {
-      "name": "Try suggestion",
-      "kind": "chip",
-      "refersTo": "try-suggestion",
-      "description": "A real query offered under the search field.",
-      "html": "<button class=\"ds-try\">install</button>",
-      "css": ".ds-try{padding:5px 10px;font:500 13px var(--home-font-data);color:var(--home-muted);background:var(--home-bg-2);border:1px solid var(--home-line);border-radius:8px;cursor:pointer;transition:color .2s,border-color .2s,transform .2s var(--home-ease)}.ds-try:hover{color:var(--home-ink);border-color:var(--home-line-2);transform:translateY(-1px)}.ds-try:focus-visible{outline:2px solid var(--home-accent);outline-offset:2px}"
-    },
-    {
-      "name": "Tag",
-      "kind": "chip",
-      "refersTo": "tag",
-      "description": "Version and kind labels; dashed for the unreleased dev line.",
-      "html": "<span class=\"ds-tag\">v2.4.1</span> <span class=\"ds-tag ds-next\">dev 3.0.0-dev.2</span> <span class=\"ds-tag ds-accent\">latest</span>",
-      "css": ".ds-tag{font:12px var(--home-font-data);color:var(--home-muted);border:1px solid var(--home-line);border-radius:6px;padding:2px 6px;white-space:nowrap}.ds-next{border-style:dashed}.ds-accent{color:var(--home-accent);border-color:color-mix(in srgb,var(--home-accent) 40%,transparent)}"
+      "description": "The hero's one large control: a button shaped like a field that opens the site's Fumadocs search dialog.",
+      "html": "<button type=\"button\" class=\"ds-bar\"><svg class=\"ds-bar-icon\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\"><circle cx=\"11\" cy=\"11\" r=\"7\"/><path d=\"m20 20-3.5-3.5\"/></svg><span class=\"ds-ph\">Search packages, projects and pages</span><kbd class=\"ds-kbd\">⌘K</kbd></button>",
+      "css": ".ds-bar{display:flex;align-items:center;gap:12px;width:min(720px,100%);min-height:64px;padding:8px 14px 8px 20px;font:inherit;color:inherit;text-align:left;background:var(--home-panel);border:1px solid var(--home-line-2);border-radius:14px;box-shadow:0 22px 60px -22px var(--home-shadow),0 2px 6px var(--home-shadow-near);cursor:pointer;transition:border-color .2s,box-shadow .3s var(--home-ease),transform .3s var(--home-ease)}.ds-bar:hover{border-color:color-mix(in srgb,var(--home-accent) 55%,var(--home-line-2));transform:translateY(-1px)}.ds-bar:focus-visible{outline:0;border-color:var(--home-accent);box-shadow:0 24px 70px -20px var(--home-shadow),0 0 0 4px var(--home-accent-soft)}.ds-bar-icon{width:18px;height:18px;flex:none;color:var(--home-muted)}.ds-ph{flex:1;font:400 18px var(--home-font-text);color:var(--home-faint)}.ds-kbd{padding:2px 7px;font:12px var(--home-font-data);color:var(--home-muted);background:var(--home-bg-2);border:1px solid var(--home-line-2);border-bottom-width:2px;border-radius:6px}"
     },
     {
       "name": "Ghost button",
@@ -670,30 +661,6 @@
       "description": "Quiet bordered button, used for GitHub in the header.",
       "html": "<a class=\"ds-ghost\" href=\"#\"><svg viewBox=\"0 0 24 24\"><path d=\"M15 22v-4a4.8 4.8 0 0 0-1-3.5c3 0 6-2 6-5.5.08-1.25-.27-2.48-1-3.5.28-1.15.28-2.35 0-3.5 0 0-1 0-3 1.5-2.64-.5-5.36-.5-8 0C6 2 5 2 5 2c-.3 1.15-.3 2.35 0 3.5A5.4 5.4 0 0 0 4 9c0 3.5 3 5.5 6 5.5-.39.49-.68 1.05-.85 1.65-.17.6-.22 1.23-.15 1.85v4\"/></svg>GitHub</a>",
       "css": ".ds-ghost{display:inline-flex;align-items:center;gap:8px;font:14px var(--home-font-text);color:var(--home-muted);padding:6px 10px;border:1px solid var(--home-line);border-radius:8px;text-decoration:none;transition:color .2s,border-color .2s}.ds-ghost:hover{color:var(--home-ink);border-color:var(--home-line-2)}.ds-ghost:focus-visible{outline:2px solid var(--home-accent);outline-offset:2px}.ds-ghost svg{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:1.75;stroke-linecap:round;stroke-linejoin:round}"
-    },
-    {
-      "name": "Segmented control",
-      "kind": "custom",
-      "refersTo": "segmented-control",
-      "description": "Two-option track switch with a sliding knob (Use / Maintain).",
-      "html": "<div class=\"ds-seg\" role=\"tablist\"><button role=\"tab\" aria-selected=\"true\">Use</button><button role=\"tab\" aria-selected=\"false\">Maintain</button><span class=\"ds-knob\"></span></div>",
-      "css": ".ds-seg{position:relative;display:inline-grid;grid-template-columns:1fr 1fr;padding:4px;background:var(--home-bg-2);border:1px solid var(--home-line);border-radius:12px}.ds-seg button{position:relative;z-index:1;padding:10px 22px;font:500 15px var(--home-font-text);color:var(--home-muted);background:none;border:0;cursor:pointer}.ds-seg button[aria-selected=true]{color:var(--home-ink)}.ds-seg button:hover{color:var(--home-ink)}.ds-seg button:focus-visible{outline:2px solid var(--home-accent);outline-offset:2px;border-radius:6px}.ds-knob{position:absolute;top:4px;bottom:4px;left:4px;width:calc(50% - 4px);background:var(--home-panel);border-radius:9px;box-shadow:0 2px 8px var(--home-shadow);transition:transform .45s var(--home-ease)}"
-    },
-    {
-      "name": "Catalogue row",
-      "kind": "custom",
-      "refersTo": "catalogue-item",
-      "description": "Ruled list row: ecosystem dot, mono package name, description, version tags.",
-      "html": "<div class=\"ds-item\"><span class=\"ds-dot\"></span><div><h3><a href=\"#\">fetch-retry</a></h3><p>Retries failed fetch requests with backoff.</p></div><div class=\"ds-versions\"><span class=\"ds-tag\">v2.4.1</span><span class=\"ds-tag ds-next\">dev 3.0.0-dev</span></div></div>",
-      "css": ".ds-item{display:grid;grid-template-columns:auto 1fr auto;align-items:start;gap:14px;padding:18px 4px;border-top:1px solid var(--home-line);border-bottom:1px solid var(--home-line);transition:background .25s}.ds-item:hover{background:linear-gradient(90deg,var(--home-bg-2),transparent)}.ds-dot{width:10px;height:10px;margin-top:8px;border-radius:50%;background:var(--home-npm)}.ds-item h3{margin:0;font:500 16px var(--home-font-data);letter-spacing:-.01em;color:var(--home-ink)}.ds-item a{color:inherit;text-decoration:none}.ds-item a:hover{color:var(--home-accent)}.ds-item a:focus-visible{outline:2px solid var(--home-accent);outline-offset:2px}.ds-item p{margin:2px 0 0;font:14px var(--home-font-text);color:var(--home-muted)}.ds-versions{display:flex;flex-direction:column;align-items:end;gap:6px}.ds-tag{font:12px var(--home-font-data);color:var(--home-muted);border:1px solid var(--home-line);border-radius:6px;padding:2px 6px}.ds-next{border-style:dashed}"
-    },
-    {
-      "name": "Result row",
-      "kind": "custom",
-      "refersTo": "result-row",
-      "description": "A search result in the dropdown; selected row on panel-2, matches in teal.",
-      "html": "<div class=\"ds-results\"><p class=\"ds-group\">Pages</p><div class=\"ds-result\" aria-selected=\"true\"><span class=\"ds-dot\"></span><span><span class=\"ds-title\"><mark>Install</mark>ation</span><br><span class=\"ds-pkg\">fetch-retry</span></span><span class=\"ds-tag\">v2.4.1</span></div><div class=\"ds-result\"><span class=\"ds-dot\"></span><span><span class=\"ds-title\">Configuration</span><br><span class=\"ds-pkg\">fetch-retry</span></span><span class=\"ds-tag\">v2.4.1</span></div></div>",
-      "css": ".ds-results{padding:8px;background:var(--home-panel);border:1px solid var(--home-line-2);border-radius:14px;box-shadow:0 30px 80px -20px var(--home-shadow)}.ds-group{margin:0;padding:10px 12px 4px;font:12px var(--home-font-text);color:var(--home-faint)}.ds-result{display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:12px;padding:10px 12px;border-radius:9px;cursor:pointer;color:var(--home-ink);font-family:var(--home-font-text)}.ds-result:hover,.ds-result[aria-selected=true]{background:var(--home-panel-2)}.ds-title{font-weight:500}.ds-pkg{font-size:13px;color:var(--home-muted)}.ds-result mark{color:var(--home-accent);background:none}.ds-dot{width:8px;height:8px;border-radius:50%;background:var(--home-composer)}.ds-tag{font:12px var(--home-font-data);color:var(--home-muted);border:1px solid var(--home-line);border-radius:6px;padding:2px 6px}"
     },
     {
       "name": "Window",
@@ -709,32 +676,56 @@
       "description": "Sticky translucent header: brand mark and wordmark, muted links, ghost GitHub button.",
       "html": "<header class=\"ds-header\"><a class=\"ds-brand\" href=\"#\"><span class=\"ds-mark\"></span>Puncoz Docs</a><nav><a href=\"#\">Packages</a><a href=\"#\">Projects</a><a href=\"#\">llms.txt</a></nav><span style=\"flex:1\"></span></header>",
       "css": ".ds-header{display:flex;align-items:center;gap:28px;height:60px;padding:0 24px;background:color-mix(in srgb,var(--home-bg) 80%,transparent);backdrop-filter:saturate(1.4) blur(12px);border-bottom:1px solid var(--home-line)}.ds-brand{display:flex;align-items:center;gap:10px;font:600 17px var(--home-font-display);letter-spacing:-.01em;color:var(--home-ink);text-decoration:none}.ds-mark{position:relative;width:22px;height:22px}.ds-mark::before{content:'';position:absolute;inset:0;border:1.5px solid var(--home-ink);border-radius:50%;transform:scaleY(.45) rotate(-18deg)}.ds-mark::after{content:'';position:absolute;left:7px;top:7px;width:8px;height:8px;border-radius:50%;background:var(--home-accent)}.ds-header nav{display:flex;gap:22px;font:14px var(--home-font-text)}.ds-header nav a{color:var(--home-muted);text-decoration:none}.ds-header nav a:hover{color:var(--home-ink)}.ds-header a:focus-visible{outline:2px solid var(--home-accent);outline-offset:2px;border-radius:6px}"
+    },
+    {
+      "name": "Theme switch",
+      "kind": "button",
+      "refersTo": "theme-switch",
+      "description": "A small orrery: a tilted orbit, a star-coloured sun and a planet with a teal lit face. In light the sun is in front and the face fully lit; in dark the sun moves behind and a crescent remains.",
+      "html": "<button type=\"button\" class=\"ds-theme\" aria-label=\"Switch to day side (light theme)\"><svg viewBox=\"-16 -16 32 32\" aria-hidden=\"true\"><defs><mask id=\"ds-shade\" maskUnits=\"userSpaceOnUse\" x=\"-10\" y=\"-10\" width=\"20\" height=\"20\"><rect x=\"-10\" y=\"-10\" width=\"20\" height=\"20\" fill=\"#fff\"/><circle class=\"ds-shade\" r=\"6.9\" fill=\"#000\"/></mask></defs><ellipse class=\"ds-orbit\" rx=\"13\" ry=\"5\" transform=\"rotate(-18)\"/><g class=\"ds-sun\"><circle r=\"2.4\"/></g><circle class=\"ds-night\" r=\"6.6\"/><circle class=\"ds-day\" r=\"6.6\" mask=\"url(#ds-shade)\"/></svg></button>",
+      "css": ".ds-theme{display:inline-flex;align-items:center;justify-content:center;width:40px;height:36px;padding:0;background:none;border:1px solid var(--home-line);border-radius:8px;cursor:pointer}.ds-theme svg{width:32px;height:32px;overflow:visible}.ds-orbit{fill:none;stroke:var(--home-line-2)}.ds-sun{transform:translate(-10.2px,5px);transition:transform .5s var(--home-ease)}.ds-sun circle{fill:var(--home-star)}.ds-night{fill:var(--home-night);stroke:var(--home-muted);stroke-width:.9}.ds-day{fill:var(--home-accent)}.ds-shade{transform:translate(16px,-4px);transition:transform .5s var(--home-ease)}.dark .ds-sun{transform:translate(4.5px,-5.6px) scale(.85)}.dark .ds-shade{transform:translate(-2.4px,2.4px)}"
+    },
+    {
+      "name": "Planet card",
+      "kind": "card",
+      "refersTo": "planet-card",
+      "description": "One per package or project: a sky drawing the planet with a labelled moon per version line, then the name, kind, description, fact sheet and Use / Maintain links.",
+      "html": "<article class=\"ds-planet\"><div class=\"ds-sky\"><svg viewBox=\"0 0 330 168\" aria-hidden=\"true\"><ellipse cx=\"165\" cy=\"90.7\" rx=\"44\" ry=\"15\" transform=\"rotate(-12 165 90.7)\" fill=\"none\" stroke=\"var(--home-line-2)\"/><circle cx=\"165\" cy=\"90.7\" r=\"17\" fill=\"var(--home-npm)\"/><circle cx=\"199\" cy=\"72\" r=\"4.2\" fill=\"var(--home-accent)\"/><text x=\"208\" y=\"75.6\" font-size=\"10.5\" font-family=\"JetBrains Mono, monospace\" fill=\"var(--home-muted)\">v0.1</text></svg></div><div class=\"ds-facts\"><h3>lodestar</h3><p>npm package</p><dl><dt>Latest</dt><dd>0.1.4</dd></dl><a class=\"ds-go\" href=\"#\">Use</a></div></article>",
+      "css": ".ds-planet{display:grid;max-width:340px;background:var(--home-panel);border:1px solid var(--home-line);border-radius:14px;overflow:hidden}.ds-sky{height:168px;background:var(--home-bg-2);border-bottom:1px solid var(--home-line)}.ds-sky svg{width:100%;height:100%}.ds-facts{display:flex;flex-direction:column;gap:8px;padding:20px 22px 22px}.ds-facts h3{margin:0;font:500 20px var(--home-font-data);color:var(--home-ink)}.ds-facts p{margin:0;font-size:13px;color:var(--home-muted)}.ds-facts dl{display:grid;grid-template-columns:auto 1fr;gap:4px 16px;margin:0;font-size:13px}.ds-facts dt{color:var(--home-faint)}.ds-facts dd{margin:0;font:12.5px var(--home-font-data);color:var(--home-ink)}.ds-go{align-self:flex-start;padding:6px 11px;font-size:13.5px;color:var(--home-accent-ink);background:var(--home-accent);border-radius:8px;text-decoration:none}"
+    },
+    {
+      "name": "Private card",
+      "kind": "card",
+      "refersTo": "private-card",
+      "description": "A private project beyond the belt: a night planet on a dashed orbit, the name with a lock, a description and who it is for, in a dashed card.",
+      "html": "<article class=\"ds-priv\"><svg viewBox=\"-28 -28 56 56\" aria-hidden=\"true\"><ellipse rx=\"25\" ry=\"8\" transform=\"rotate(-18)\" fill=\"none\" stroke=\"var(--home-line-2)\" stroke-dasharray=\"2 3\"/><circle r=\"13\" fill=\"var(--home-night)\" stroke=\"var(--home-line-2)\"/></svg><div><h3>harbor-ops</h3><p>Operations dashboard for a shipping client.</p><small>client · Use, Maintain</small></div></article>",
+      "css": ".ds-priv{display:grid;grid-template-columns:56px 1fr;gap:14px;max-width:320px;padding:18px;background:var(--home-bg-2);border:1px dashed var(--home-line-2);border-radius:14px}.ds-priv svg{width:56px;height:56px}.ds-priv h3{margin:0;font:500 16px var(--home-font-data);color:var(--home-ink)}.ds-priv p{margin:2px 0 0;font-size:14px;color:var(--home-muted)}.ds-priv small{display:block;margin-top:8px;font:12px var(--home-font-data);color:var(--home-faint)}"
     }
   ],
   "narrative": {
-    "northStar": "The Release Map",
-    "overview": "The home page is a calm graphite instrument with one moving part: a slowly turning orbital map of every documented release, and a search field held in front of it. Each ecosystem is an elliptical ring, each package or project a body on it, each documented version a small moon. The search field is the page's one control, and when a reader types, the map answers: matching bodies light up and the rest dim. Everything below the hero restates the map as plain, ruled text a reader can scan and a screen reader can read.\n\nThe surface is cool, technical and quiet: near-black graphite (dark is the default theme) or cool paper in light, hairline rules instead of boxes, one teal accent, and colour reserved for the ecosystems the map is about. Density is moderate: generous section gaps, tight rows inside a list. Depth is soft and rare; only things that float (the search field, its results, preview windows, the tooltip) lift off the ground.",
+    "northStar": "One Solar System",
+    "overview": "The site is one small solar system, calm graphite space with one moving part. The star is the maker, Puncoz Nepal. Each ecosystem is an orbit; a package is a solid planet in its ecosystem's colour, its night side shaded away from the star; a project is a ringed planet. Each documented version line is a moon: full for the latest release, a crescent for an older one, a dashed new moon for `dev`. A planet's day side is Use, its night side Maintain. The home page's hero is the system itself, turning slowly beside the headline and the large search button; every later surface (cards, the planet header, the sidebar, the notices, the footer, the 404) reuses the same marks without explaining them again.\n\nThe surface is cool, technical and quiet: near-black graphite (dark is the default theme) or cool paper in light, hairline borders, one teal accent, a warm star, and colour reserved for the ecosystems. Density is moderate: generous section gaps, tight facts inside a card. Depth is soft and rare; only things that float (the search button, windows, the tooltip) lift off the ground.",
     "keyCharacteristics": [
-      "Graphite neutrals with a single signal-teal accent; ecosystem hues mark shapes, never text.",
+      "Graphite neutrals with a single signal-teal accent and a warm star; ecosystem hues mark shapes, never text.",
       "Three faces with fixed jobs: Bricolage Grotesque for display, Onest for reading and controls, JetBrains Mono for data only.",
-      "Ruled lists over cards; panels only for things that float or frame a preview.",
-      "One authored motion moment, the orbit; everything else is a short, single entrance.",
+      "One metaphor carrying real data: planets are entries, moons are version lines, sides are tracks.",
+      "One authored motion moment, the turning system; everything else is a short, single response.",
       "Every state readable without scripts and without motion."
     ],
     "rules": [
       {
         "name": "The One Signal Rule",
-        "body": "Teal is the only accent on the page. If something needs to stand out and it is not focus, a match, the latest release or a forward link, it gets weight or size, not colour.",
+        "body": "Teal is the only accent. If something needs to stand out and it is not focus, the latest release, the current page, the lit face or a forward link, it gets weight or size, not colour. The star is light, not an accent: it lights things and is never a control's colour.",
         "section": "colors"
       },
       {
         "name": "The Shapes, Not Words Rule",
-        "body": "Ecosystem hues fill dots, bodies, moons and ring strokes. Text beside them is always Frost Ink or Steel Muted, and every coloured mark has a text equivalent (a legend label, or a screen-reader-only ecosystem name in the catalogue).",
+        "body": "Ecosystem hues fill planets, moons and strokes. Text beside them is always Frost Ink, Steel Muted or Steel Faint, and every coloured mark has a text equivalent (the planet's name and kind, a legend label, or the card that restates the system).",
         "section": "colors"
       },
       {
         "name": "The Token-Only Surface Rule",
-        "body": "The browser's own surfaces (selection, caret, scrollbar, focus ring) and the canvas read their colours from the tokens; the map re-reads them when the theme changes.",
+        "body": "The browser's own surfaces (selection, caret, scrollbar, focus ring), the SVG marks and the canvas read their colours from the tokens; the canvas re-reads them when the theme changes.",
         "section": "colors"
       },
       {
@@ -749,17 +740,17 @@
       },
       {
         "name": "The Float-Only Rule",
-        "body": "A surface gets a shadow only if it sits over something (the map, the page) or frames a preview. Rows, tags, chips and link cards stay flat and separate by border or tone.",
+        "body": "A surface gets a shadow only if it sits over something or frames a window. Cards lift 2px on hover by transform, not by shadow.",
         "section": "elevation"
       },
       {
-        "name": "The Hollow and Dashed Rule",
-        "body": "Hollow means project; dashed means not released yet. Never use either for decoration.",
+        "name": "The Mark Means Rule",
+        "body": "A ring means project, a full moon the latest release, a crescent an older release, a dashed new moon `dev`, a lock private. Never use any of them for decoration.",
         "section": "shapes"
       },
       {
         "name": "The One Orbit Rule",
-        "body": "The map is the only continuous motion on the page. New motion is a single, short response to arrival or input, never a second loop.",
+        "body": "The system is the only continuous motion. New motion is a single, short response to arrival or input, never a second loop.",
         "section": "components"
       },
       {
@@ -769,20 +760,19 @@
       }
     ],
     "dos": [
-      "Do take every colour from the `--home-*` tokens, in both themes, including canvas strokes, selection, caret, scrollbar and focus.",
+      "Do take every colour from the `--home-*` tokens, in both themes, including canvas strokes, SVG marks, selection, caret, scrollbar and focus.",
       "Do keep text on Frost Ink, Steel Muted or Steel Faint; check new pairs against Graphite Ground and Graphite Panel at 4.5:1 or more.",
-      "Do give every coloured or drawn mark a text equivalent: a legend label, a screen-reader name, or the catalogue row that restates the map.",
-      "Do mark unreleased lines dashed and projects hollow wherever versions or entries are drawn.",
+      "Do draw planets, moons, suns, locks and phases from `src/components/planet.tsx` or as inline SVG; give each a text equivalent.",
+      "Do use the marks with their one meaning on every page: ring for project, full moon for latest, crescent for older, dashed new moon for `dev`, sun for Use, moon for Maintain.",
       "Do use JetBrains Mono for package names, versions, URLs, commands, code and counts, with tabular numerals.",
       "Do ship a reduced-motion state and a no-script state with every new animation."
     ],
     "donts": [
-      "Don't set text in an ecosystem colour, or let colour alone distinguish an ecosystem.",
+      "Don't set text in an ecosystem colour or the star colour, or let colour alone distinguish an ecosystem.",
       "Don't add a second accent or a second continuous animation.",
-      "Don't turn the catalogue into a grid of boxed cards; rows are separated by hairlines.",
-      "Don't put a shadow on a surface that does not float or frame a preview.",
-      "Don't use monospace for headings, prose or button labels.",
-      "Don't apply these tokens or faces to the documentation pages; they keep Fumadocs' neutral theme and Inter until their own ADR."
+      "Don't use emoji or text glyphs as icons; draw the mark.",
+      "Don't put a shadow on a surface that does not float or frame a window.",
+      "Don't use monospace for headings, prose or button labels."
     ]
   }
 }

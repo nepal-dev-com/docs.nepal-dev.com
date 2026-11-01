@@ -9,7 +9,8 @@ title: "API — Machine-readable content routes"
 
 > Snapshot of the system as it stands today. Edit in place; never record what changed.
 
-All of these are generated at build time (`revalidate = false`), need no authentication, and
+All of these are prerendered at build time (they read no request data, ADR-0016), need no
+authentication, and
 return **every page in `content/`**. None filters anything out. Pages live at the root,
 `/<slug>/…` (ADR-0015); `src/proxy.ts` acts only on paths whose first segment is a catalogued
 slug.

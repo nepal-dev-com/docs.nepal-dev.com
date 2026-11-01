@@ -1,61 +1,65 @@
-'use client';
-import { HeroSearch } from './hero-search';
-import { OrbitMap, presentRings } from './orbit-map';
-import { useHomeSearch } from './search-state';
+import type { CatalogEntry } from '@/lib/catalog';
+import { owner } from '@/lib/shared';
+import { OrbitMap } from './orbit-map';
+import { SearchButton } from './search-button';
 
-const ringName: Record<string, string> = {
-  npm: 'npm',
-  composer: 'Composer',
-  pypi: 'PyPI',
-  go: 'Go',
-  cargo: 'Cargo',
-  other: 'Other',
-  project: 'Projects',
-};
+function Legend() {
+  return (
+    <div className="legend" aria-hidden>
+      <span>
+        <svg viewBox="-7 -7 14 14">
+          <circle r="4.5" fill="var(--home-npm)" />
+        </svg>
+        package
+      </span>
+      <span>
+        <svg viewBox="-7 -7 14 14">
+          <ellipse rx="6.8" ry="2.4" transform="rotate(-18)" fill="none" stroke="var(--home-project)" strokeWidth="1.2" />
+          <circle r="3.6" fill="var(--home-bg)" stroke="var(--home-project)" strokeWidth="1.4" />
+        </svg>
+        project
+      </span>
+      <span>
+        <svg viewBox="-7 -7 14 14">
+          <circle r="2.6" fill="var(--home-muted)" />
+        </svg>
+        moon = version
+      </span>
+      <span>
+        <svg viewBox="-7 -7 14 14">
+          <circle r="5" fill="none" stroke="var(--home-muted)" strokeDasharray="2 2" />
+        </svg>
+        dashed = unreleased
+      </span>
+    </div>
+  );
+}
 
 export function Hero({
+  entries,
   title,
   subtitle,
-  docsRoute,
-  suggestions,
 }: {
+  entries: CatalogEntry[];
   title: { lead: string; rest: string };
   subtitle: string;
-  docsRoute: string;
-  suggestions: string[];
 }) {
-  const { entries, setText } = useHomeSearch();
-  const rings = presentRings(entries);
-
   return (
     <section className="hero" aria-labelledby="hero-heading">
-      <OrbitMap
-        onPick={(entry) => {
-          setText(entry.title);
-          document.querySelector<HTMLInputElement>('.hero-search input')?.focus();
-        }}
-      />
+      <OrbitMap entries={entries} star={owner.name} />
       <div className="wrap hero-content">
         <h1 id="hero-heading">
           {title.lead} <em>{title.rest}</em>
         </h1>
         <p className="hero-sub">{subtitle}</p>
-        <HeroSearch docsRoute={docsRoute} suggestions={suggestions} />
+        <SearchButton />
         <noscript>
           <style>{'.hero-search{display:none}'}</style>
-          <a className="noscript-link" href="#browse">
-            Browse everything
+          <a className="noscript-link" href="#planets">
+            See every package and project
           </a>
         </noscript>
-        <div className="legend" aria-hidden>
-          {rings.map((ring) => (
-            <span key={ring}>
-              <span className={`dot dot-${ring}`} />
-              {ringName[ring]}
-            </span>
-          ))}
-          <span>· moons are versions</span>
-        </div>
+        <Legend />
       </div>
     </section>
   );

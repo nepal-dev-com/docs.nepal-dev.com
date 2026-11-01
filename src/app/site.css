@@ -57,30 +57,9 @@
 }
 
 .site-mark {
-  position: relative;
-  width: 22px;
-  height: 22px;
+  width: 24px;
+  height: 24px;
   flex: none;
-}
-
-.site-mark::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  border: 1.5px solid var(--home-ink);
-  border-radius: 50%;
-  transform: scaleY(0.45) rotate(-18deg);
-}
-
-.site-mark::after {
-  content: '';
-  position: absolute;
-  left: 7px;
-  top: 7px;
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  background: var(--home-accent);
 }
 
 .site-nav {
@@ -157,6 +136,121 @@
   stroke-linejoin: round;
 }
 
+/* Theme switch: a small orrery, the day side and night side of a planet (ADR-0017 decision 9) */
+
+.site-theme {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 36px;
+  flex: none;
+  padding: 0;
+  background: none;
+  border: 1px solid var(--home-line);
+  border-radius: 8px;
+  cursor: pointer;
+  transition: border-color 0.2s;
+}
+
+.site-theme:hover {
+  border-color: var(--home-line-2);
+}
+
+.site-header .site-theme svg {
+  width: 32px;
+  height: 32px;
+  overflow: visible;
+}
+
+.site-theme-orbit {
+  fill: none;
+  stroke: var(--home-line-2);
+  stroke-width: 1.1;
+  transition: stroke 0.2s;
+}
+
+.site-theme:hover .site-theme-orbit {
+  stroke: var(--home-muted);
+}
+
+.site-theme-sun {
+  transform: translate(-10.2px, 5px);
+  transition: transform 0.5s var(--home-ease), opacity 0.5s var(--home-ease);
+}
+
+.site-theme-sun circle {
+  fill: var(--home-star);
+}
+
+.site-theme-sun path {
+  stroke: var(--home-star);
+  stroke-width: 1.2;
+  stroke-linecap: round;
+}
+
+.site-theme-night {
+  fill: var(--home-night);
+  stroke: var(--home-muted);
+  stroke-width: 0.9;
+}
+
+.site-theme-day {
+  fill: var(--home-accent);
+}
+
+.site-theme-shade {
+  transform: translate(16px, -4px);
+  transition: transform 0.5s var(--home-ease);
+}
+
+.dark .site-theme-sun {
+  transform: translate(4.5px, -5.6px) scale(0.85);
+  opacity: 0.9;
+}
+
+.dark .site-theme-shade {
+  transform: translate(-2.4px, 2.4px);
+}
+
+.site-theme-tip {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  padding: 4px 8px;
+  font: 12px var(--home-font-text);
+  color: var(--home-ink);
+  white-space: nowrap;
+  background: var(--home-panel);
+  border: 1px solid var(--home-line-2);
+  border-radius: 6px;
+  opacity: 0;
+  transform: translateY(-3px);
+  pointer-events: none;
+  transition: opacity 0.15s, transform 0.2s var(--home-ease);
+}
+
+.site-theme:hover .site-theme-tip,
+.site-theme:focus-visible .site-theme-tip {
+  opacity: 1;
+  transform: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .site-theme-sun,
+  .site-theme-shade,
+  .site-theme-tip {
+    transition: none;
+  }
+}
+
+@media (hover: none) {
+  .site-theme-tip {
+    display: none;
+  }
+}
+
 .site-menu {
   display: none;
   width: 36px;
@@ -217,139 +311,100 @@
   line-height: 1.1;
 }
 
-/* Package hero on each overview (ADR-0015 decision 7). */
+
+/* Shared marks: planets and moon phases (ADR-0017 decision 1) */
+
+.planet-mark,
+.moon-phase {
+  flex: none;
+  overflow: visible;
+}
+
+.planet-label {
+  font-family: var(--home-font-data);
+  fill: var(--home-muted);
+}
+
+/* Planet header on each overview (ADR-0017 decision 10) */
 
 .pkg-hero {
   --eco: var(--home-faint);
-  display: flex;
-  flex-direction: column;
-  gap: 14px;
-  padding: 22px 24px 20px;
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 280px;
+  align-items: center;
+  gap: 20px;
+  padding: 24px 26px;
+  overflow: hidden;
   border: 1px solid var(--home-line);
   border-radius: 14px;
   background:
-    linear-gradient(90deg, color-mix(in srgb, var(--eco) 10%, transparent), transparent 55%),
+    radial-gradient(60% 120% at 100% 50%, color-mix(in srgb, var(--eco) 12%, transparent), transparent 70%),
     var(--home-panel);
 }
 
-.pkg-hero[data-eco='npm'] { --eco: var(--home-npm); }
-.pkg-hero[data-eco='composer'] { --eco: var(--home-composer); }
-.pkg-hero[data-eco='pypi'] { --eco: var(--home-pypi); }
-.pkg-hero[data-eco='go'] { --eco: var(--home-go); }
-.pkg-hero[data-eco='cargo'] { --eco: var(--home-cargo); }
-.pkg-hero[data-eco='other'] { --eco: var(--home-other); }
-.pkg-hero[data-eco='project'] { --eco: var(--home-project); }
+.pkg-text {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  min-width: 0;
+}
 
 .pkg-kind {
   display: flex;
   align-items: center;
   gap: 8px;
+  margin: 0;
   font: 13px var(--home-font-text);
   color: var(--home-muted);
 }
 
-.pkg-dot {
-  width: 10px;
-  height: 10px;
-  border-radius: 50%;
-  background: var(--eco);
-}
-
-.pkg-hero[data-eco='project'] .pkg-dot {
-  background: transparent;
-  box-shadow: inset 0 0 0 1.5px var(--eco);
+.pkg-kind .planet-mark {
+  width: 18px;
+  height: 18px;
 }
 
 .pkg-name {
   margin: 0;
-  font: 500 clamp(1.6rem, 1.2rem + 1.4vw, 2.2rem) / 1.1 var(--home-font-data);
+  font: 500 clamp(1.6rem, 1.2rem + 1.4vw, 2.3rem) / 1.1 var(--home-font-data);
   letter-spacing: -0.03em;
   color: var(--home-ink);
+  overflow-wrap: anywhere;
 }
 
 .pkg-desc {
   margin: 0;
-  max-width: 60ch;
+  max-width: 56ch;
   color: var(--home-muted);
 }
 
-.pkg-versions {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
+.fact-sheet {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 4px 16px;
+  margin: 2px 0 0;
+  font-size: 13px;
 }
 
-.pkg-tag {
-  font: 12px var(--home-font-data);
-  color: var(--home-muted);
-  border: 1px solid var(--home-line);
-  border-radius: 6px;
-  padding: 2px 6px;
-  white-space: nowrap;
-}
-
-.pkg-tag[data-dev] {
-  border-style: dashed;
-}
-
-.pkg-tag[data-latest] {
-  color: var(--home-ink);
-  border-color: var(--home-line-2);
-}
-
-.pkg-rail {
-  display: flex;
-  align-items: center;
-  gap: 0;
-  font: 12px var(--home-font-data);
+.fact-sheet dt {
   color: var(--home-faint);
-  overflow-x: auto;
 }
 
-.pkg-rail li {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  white-space: nowrap;
-}
-
-.pkg-rail li + li::before {
-  content: '';
-  width: 28px;
-  height: 0;
-  margin: 0 8px;
-  border-top: 1px solid var(--home-line-2);
-}
-
-.pkg-rail li[data-dev]::before {
-  border-top-style: dashed;
-}
-
-.pkg-node {
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  border: 1.5px solid var(--home-line-2);
-}
-
-.pkg-rail li[data-latest] .pkg-node {
-  background: var(--home-accent);
-  border-color: var(--home-accent);
-}
-
-.pkg-rail li[data-latest] {
+.fact-sheet dd {
+  margin: 0;
+  font: 12.5px var(--home-font-data);
   color: var(--home-ink);
 }
 
-.pkg-rail li[data-dev] .pkg-node {
-  border-style: dashed;
+.fact-sheet dd.dim {
+  color: var(--home-muted);
 }
 
 .pkg-links {
   display: flex;
   flex-wrap: wrap;
   gap: 8px;
-  margin-top: 2px;
+  margin-top: 4px;
 }
 
 .pkg-links a {
@@ -383,4 +438,345 @@
 .pkg-links svg {
   width: 15px;
   height: 15px;
+}
+
+.pkg-system {
+  width: 100%;
+  height: auto;
+}
+
+@media (max-width: 720px) {
+  .pkg-hero {
+    grid-template-columns: 1fr;
+    padding: 20px;
+  }
+
+  .pkg-system {
+    max-height: 190px;
+  }
+}
+
+/* Version line and notices: the line's moon (ADR-0017 decision 10) */
+
+.version-line {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0;
+  font-size: 14px;
+  color: var(--home-muted);
+}
+
+.version-line .moon-phase {
+  width: 14px;
+  height: 14px;
+}
+
+.version-notice {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 12px 14px;
+  font-size: 14px;
+  color: var(--home-ink);
+  background: var(--home-bg-2);
+  border: 1px solid var(--home-line-2);
+  border-radius: 10px;
+}
+
+.version-notice .moon-phase {
+  width: 22px;
+  height: 22px;
+  margin-top: 1px;
+}
+
+.version-notice p {
+  margin: 0;
+}
+
+.version-notice b {
+  font-weight: 600;
+}
+
+.version-notice a {
+  font-weight: 500;
+  color: var(--home-accent);
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+
+/* Sidebar: planet chip, day/night switch, moon picker icons, the current page on its orbit */
+
+.planet-banner {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.planet-chip {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 9px 11px;
+  color: var(--home-ink);
+  background: var(--home-bg-2);
+  border: 1px solid var(--home-line);
+  border-radius: 10px;
+  transition: border-color 0.2s;
+}
+
+.planet-chip:hover {
+  border-color: var(--home-line-2);
+}
+
+.planet-chip .planet-mark {
+  width: 26px;
+  height: 26px;
+}
+
+.planet-chip b {
+  display: block;
+  font: 500 14.5px var(--home-font-data);
+}
+
+.planet-chip small {
+  display: block;
+  font-size: 12px;
+  color: var(--home-faint);
+}
+
+.planet-sides {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 4px;
+  padding: 4px;
+  background: var(--home-bg-2);
+  border: 1px solid var(--home-line);
+  border-radius: 10px;
+}
+
+.planet-sides a {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  padding: 6px;
+  font-size: 13.5px;
+  color: var(--home-muted);
+  border-radius: 7px;
+  transition: color 0.2s, background-color 0.2s;
+}
+
+.planet-sides a:hover {
+  color: var(--home-ink);
+}
+
+.planet-sides a[aria-current] {
+  color: var(--home-ink);
+  background: var(--home-panel);
+  box-shadow: 0 1px 4px var(--home-shadow-near);
+}
+
+.planet-sides svg {
+  width: 15px;
+  height: 15px;
+}
+
+.planet-sides a[aria-current] .side-sun {
+  color: var(--home-star);
+}
+
+#nd-sidebar .moon-phase,
+#nd-sidebar-mobile .moon-phase {
+  width: 100%;
+  height: 100%;
+  padding: 2px;
+}
+
+/* The current page is a planet on the folder's orbit line (Fumadocs draws the line at 10px). */
+#nd-sidebar a[data-active='true']::before,
+#nd-sidebar-mobile a[data-active='true']::before {
+  inset-block: auto;
+  top: calc(50% - 4px);
+  inset-inline-start: 6px;
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  box-shadow: 0 0 0 3px var(--home-panel);
+}
+
+/* A top-level page has no line to sit on, so its planet sits at the end of the row. */
+#nd-sidebar a[data-active='true'][style*='calc(2 ']::after,
+#nd-sidebar-mobile a[data-active='true'][style*='calc(2 ']::after {
+  content: '';
+  width: 7px;
+  height: 7px;
+  margin-inline-start: auto;
+  flex: none;
+  border-radius: 50%;
+  background: var(--home-accent);
+}
+
+#nd-toc .rounded-full.bg-fd-primary {
+  width: 8px;
+  height: 8px;
+  box-shadow: 0 0 0 3px var(--home-bg);
+}
+
+/* The Horizon footer (ADR-0017 decision 8) */
+
+.horizon {
+  position: relative;
+  margin-top: 140px;
+  overflow: hidden;
+  color: var(--home-ink);
+  font: 400 15px/1.6 var(--home-font-text);
+  isolation: isolate;
+}
+
+.horizon a,
+.horizon button {
+  color: inherit;
+  text-decoration: none;
+}
+
+.horizon :focus-visible {
+  outline: 2px solid var(--home-accent);
+  outline-offset: 3px;
+  border-radius: 6px;
+}
+
+.horizon-closing {
+  position: relative;
+  z-index: 2;
+  max-width: 22ch;
+  margin: 0 auto;
+  padding: 0 16px;
+  text-align: center;
+  font: 650 clamp(1.7rem, 1.2rem + 2vw, 3rem) / 1.08 var(--home-font-display);
+  letter-spacing: -0.035em;
+  text-wrap: balance;
+}
+
+.horizon-closing a {
+  padding-bottom: 2px;
+  background: linear-gradient(var(--home-star), var(--home-star)) 0 100% / 100% 2px no-repeat;
+}
+
+.horizon-scene {
+  position: relative;
+  height: clamp(170px, 22vw, 260px);
+  margin-top: -6px;
+}
+
+.horizon-scene svg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.horizon-surface {
+  position: relative;
+  z-index: 2;
+  display: grid;
+  justify-items: center;
+  gap: 22px;
+  margin-top: -1px;
+  padding: 10px 16px 40px;
+  text-align: center;
+  background: var(--home-bg-2);
+}
+
+.horizon[data-compact] {
+  margin-top: 0;
+  border-top: 1px solid var(--home-line);
+}
+
+.horizon[data-compact] .horizon-surface {
+  padding-top: 32px;
+}
+
+.horizon-planets {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 10px 26px;
+}
+
+.horizon-planets a {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font: 500 14px var(--home-font-data);
+  transition: color 0.2s;
+}
+
+.horizon-planets a:hover {
+  color: var(--home-accent);
+}
+
+.horizon-planets .planet-mark {
+  width: 18px;
+  height: 18px;
+}
+
+.horizon-links {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  gap: 8px 22px;
+  font-size: 14px;
+  color: var(--home-muted);
+}
+
+.horizon-links a,
+.horizon-links button {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 0;
+  font: inherit;
+  background: none;
+  border: 0;
+  cursor: pointer;
+  transition: color 0.2s;
+}
+
+.horizon-links a:hover,
+.horizon-links button:hover {
+  color: var(--home-ink);
+}
+
+.horizon-links svg {
+  width: 14px;
+  height: 14px;
+}
+
+.horizon-links kbd {
+  padding: 1px 6px;
+  font: 11.5px var(--home-font-data);
+  color: var(--home-muted);
+  background: var(--home-bg);
+  border: 1px solid var(--home-line-2);
+  border-radius: 6px;
+}
+
+.horizon small {
+  font-size: 13px;
+  color: var(--home-faint);
+}
+
+.horizon small a {
+  color: var(--home-muted);
+  text-decoration: underline;
+  text-decoration-color: var(--home-line-2);
+  text-underline-offset: 3px;
+}
+
+/* Below the sidebar, the page and its table of contents in the notebook layout's grid. */
+#nd-notebook-layout > .horizon {
+  grid-column: 1 / -1;
+  grid-row: 4;
 }

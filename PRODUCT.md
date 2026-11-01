@@ -62,8 +62,10 @@ installed version) without leaving for the source code.
   (`AGENTS.md`).
 - Packages carry released and unreleased versions, and npm packages in particular can have
   live demos. How they are laid out (tracks, version lines, demos) is proposed in ADR-0013.
-- Signed-out visitors see nothing of private projects: no name, no count, no placeholder
-  (owner's decision, 2026-10-31). Sign-in will use WorkOS, in a later ADR.
+- The home page lists three invented private projects (harbor-ops, fieldnote, tessera), shown
+  to everyone as if real, by the owner's decision (ADR-0017, 2026-11-01). They are names in
+  code, not private content. Who sees the private group is decided with sign-in, which will use
+  WorkOS, in a later ADR.
 - Undecided: the site's final name, and the GitHub link in the header (today the scaffold's).
 
 ## Brand Commitments
@@ -76,13 +78,17 @@ installed version) without leaving for the source code.
   uses (owner's steer, 2026-10-31). Not wanted: a warm, earthy palette, or a hero that makes the
   reader choose between options before they can search. The design decisions inside that steer
   are delegated to the builder and recorded in ADR-0014.
+- The whole site is one solar system (owner's steer, 2026-11-01; ADR-0017): the star is the
+  maker, packages and projects are planets, version lines are moons, Use and Maintain are a
+  planet's day and night sides, on every page.
 
 ## Evidence on Hand
 
 - No package or project is documented yet besides this site itself (`/docs`), so the home page
-  shows its empty states.
+  shows one project planet and no Two sides or Every moon section.
 - No testimonials, usage figures, download counts or case studies are on hand. Don't
   fabricate any; a package's registry figures may be cited only once read from the registry.
+  The invented private projects are the one exception, by the owner's decision (ADR-0017).
 
 ## Product Principles
 

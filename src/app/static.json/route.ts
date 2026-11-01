@@ -3,8 +3,6 @@ import { toDocuments } from 'fumadocs-core/search/algolia';
 import { getPageContext } from '@/lib/catalog';
 import { scopeTag } from '@/lib/search-scope';
 
-export const revalidate = false;
-
 function describe(page: ReturnType<typeof source.getPages>[number]) {
   const context = getPageContext(page);
   if (!context) {

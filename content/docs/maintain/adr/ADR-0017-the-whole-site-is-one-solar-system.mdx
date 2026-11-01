@@ -1,0 +1,263 @@
+---
+title: "ADR-0017 — The whole site is one solar system"
+---
+
+- **Status:** Approved
+- **Date:** 2026-11-01
+- **Deciders:** Puncoz Nepal
+- **Approved by:** Puncoz Nepal
+- **Approved on:** 2026-11-01
+- **Supersedes:** [ADR-0014](./ADR-0014-home-page-is-a-search-first-release-map.mdx) decision 4
+  (in part: the "Browse everything" heading and its ruled rows) and the footer;
+  [ADR-0016](./ADR-0016-home-search-is-the-fumadocs-dialog-and-private-projects-render-server-side.mdx)
+  decisions 3 (the catalogue as grouped rows), 5 (in part: what the private group shows) and 8
+  (the orbit-phase theme switch CSS);
+  [ADR-0015](./ADR-0015-every-entry-lives-at-the-root-in-one-shape-and-one-look.mdx) decision 9
+  (in part: the package hero, the version notices and the docs chrome's look)
+- **Superseded by:** —
+- **Design documents:** [`../app-flow/solar-system.mdx`](../app-flow/solar-system.mdx),
+  [`../app-flow/site-pages.mdx`](../app-flow/site-pages.mdx),
+  [`../prd/home-page.mdx`](../prd/home-page.mdx), `DESIGN.md`, `.impeccable/design.json`
+
+## Context
+
+The owner reviewed the home page built for ADR-0016 on 2026-11-01. In their words: the idea of
+orbits and planets is good, but the site does not justify it. They asked for:
+
+1. A footer that is more useful and different from a single credit line.
+2. A different approach to Browse everything, and no "Browse everything" heading: there will be
+   at most four or five packages and projects.
+3. A redesigned private projects section, with sample projects and an empty state.
+4. A clearer theme switch. The orbit-phase concept stays; the drawing is unclear.
+5. The whole site reworked around the star, orbits and planets.
+
+They then chose (2026-11-01):
+
+- **Scope:** everything, docs pages included: home, header, theme switch, footer, package hero,
+  version notices, 404, sidebar and table of contents.
+- **Entries:** planet cards. Each package or project gets a card with its planet drawn in its
+  ecosystem colour, its version lines as moons, a fact sheet and Use / Maintain links.
+- **Private projects:** shown on the live site as real-looking projects, not marked as samples;
+  their links may lead nowhere. The empty state is still designed.
+- **Footer:** Horizon. A closing band where the star rises over a planet's curved horizon.
+
+What the code and the installed packages settle:
+
+- The metaphor already runs through the data: ecosystems are rings (`src/components/home/rings.ts`),
+  entries are bodies, version lines are moons (ADR-0014). Only the home hero draws it; the cards,
+  docs pages, footer and switch do not.
+- **A custom theme switch needs no new dependency.** `fumadocs-ui/provider/base` exports
+  `useTheme` (re-exported from next-themes; `package.json` `exports` lists `./provider/base`).
+  Today's switch is Fumadocs' `ThemeSwitch` with its two icons hidden by CSS, so its drawing
+  cannot show a sun and a terminator.
+- **Fumadocs' notebook layout takes replacements for its slots.** The sidebar, TOC and page
+  header are styled today through `src/app/site.css`; the version and track switches are this
+  site's own components in `src/components/docs/`.
+- **Cache Components stays as decided** (ADR-0016 decision 6). Nothing here reads runtime data.
+
+## Decision
+
+1. **One metaphor, stated once and used everywhere.** The star is the maker, Puncoz Nepal, at the
+   centre of the system. Each ecosystem is an orbit. A package is a solid planet in its
+   ecosystem's colour; a project is a ringed planet. Each version line is a moon: the latest
+   release full, older releases crescents, `dev` a new moon drawn dashed. Use is a planet's day
+   side; Maintain its night side. The hero's legend teaches this once; every later surface uses
+   the same marks without explaining them again.
+
+2. **The hero is the system.** Text on the left and the system on the right on desktop; the
+   system above the text on phones. The star is labelled "Puncoz Nepal". Every planet is always
+   labelled (the catalogue stays small), its moons circle it, and its night side faces away from
+   the star. Pointing at a planet slows the system and shows its card; clicking opens its
+   overview. The hero search button and legend stay (ADR-0016 decision 1).
+
+3. **Planet cards replace Browse everything.** No section heading on screen (a visually hidden
+   h2, "Packages and projects", keeps the outline). One card per public entry, in catalogue
+   order, in a grid that fits two or three across on desktop and one on phones. A card has:
+   - a sky panel drawing the planet with one orbit per version line and its moons, each labelled
+     with the line's name (`v0.1`, `dev`); unreleased orbits dashed; a project shows its ring
+     and no moons;
+   - the name, linked to the overview (the whole card is the link target);
+   - kind and ecosystem, the description;
+   - a fact sheet: Latest, In development, Older lines, from the catalogue fields;
+   - Use →, Maintain and Demo links, each only when that track or page exists.
+   `#packages` and `#projects` keep working as header anchors: the first package card carries
+   `id="packages"`, the first project card `id="projects"`.
+
+4. **Private projects sit beyond an asteroid belt.** A scattered belt divides the public
+   planets from an h2 "Private projects" and one line of copy. Private projects are drawn as
+   night-side planets on dashed orbits with a lock mark, in a lighter, dashed card: name,
+   description and a short meta line (client or internal, which tracks). Their names link to
+   their future URL, which returns the site's 404 today. The data lives in code, in
+   `src/components/home/private-projects.ts`, never in `content/`. With no private projects,
+   the group shows an empty dashed orbit and "No private projects in orbit yet. They'll appear
+   here once private documentation is set up." Everyone sees the group until the sign-in ADR
+   (ADR-0016 decision 5 stands for who sees it).
+
+   The private projects shown are **harbor-ops** ("Operations dashboard for a shipping
+   client."), **fieldnote** ("Offline survey app for field teams.") and **tessera** ("Internal
+   billing and invoicing service."). They are invented names chosen by the owner's instruction;
+   they are not marked as samples on the page.
+
+5. **Two sides of every planet** replaces "Two tracks, one place": Use as the day side and
+   Maintain as the night side, split by a terminator drawn through a planet. Each side lists
+   real pages of one featured entry with their line, as today's preview does.
+
+6. **Every moon, released or not** replaces the version rails: one row per entry with two or
+   more lines, its moons in order (older crescents, the latest full, `dev` new and dashed), each
+   with its name and version. A three-item legend names the phases.
+
+7. **Read it anywhere stays** (ADR-0016 decision 7) with the new card and panel styling.
+
+8. **The Horizon footer, on every page.** A closing line, "Everything here orbits one maker:
+   Puncoz Nepal" (linked to `https://puncoz.com`); below it the star rising behind a planet's
+   curved horizon with a thin atmosphere rim in the accent colour; then, on the planet's surface,
+   one link per public planet (its mark and name), and a row with Search `⌘K`, `llms.txt`,
+   `llms-full.txt`, GitHub and "Back to orbit ↑". On docs pages the footer drops the scene and
+   keeps the surface rows, so reading pages stay calm. The links wrap on phones.
+
+9. **The theme switch is a small orrery** (supersedes ADR-0016 decision 8). A client component,
+   `src/components/theme-switch.tsx`, using `useTheme` from `fumadocs-ui/provider/base`, draws
+   an inline SVG in the 36px header button: a tilted orbit, a sun on it and a planet with a
+   terminator. In light the sun stands in front of the planet and its face is fully lit (day
+   side); in dark the sun moves behind the planet, smaller, and the planet shows a thin crescent
+   (night side). The change animates for about half a second, and instantly under reduced motion.
+   Its accessible name says what it does: "Switch to night side (dark theme)" or "Switch to day
+   side (light theme)", and a tooltip says the same. Before hydration it renders the dark
+   drawing (the site's default) with no layout shift.
+
+10. **Docs pages keep the planet in view.** In the Fumadocs notebook layout:
+    - the sidebar opens with a **planet chip** (mark, name, kind), a **day/night switch** for Use
+      and Maintain (sun and moon marks drawn as SVG), and on Use a **moon picker** whose items
+      show each line's phase mark;
+    - the sidebar's link list and the TOC hang on a thin **orbit line**; the current page is a
+      filled planet dot on that line;
+    - an entry's overview opens with a **planet header**: kind, name, description, fact sheet and
+      links on the left, its planet and labelled moons drawn on the right (below on phones);
+    - **version notices** carry the moon of their line: crescent for an older release, a dashed
+      new moon for `dev`;
+    - page headings and body text are unchanged; the reading column stays calm.
+
+11. **The 404 is "drifted out of orbit".** A planet that has left its dashed orbit, the heading
+    "This page drifted out of orbit.", one line of help, the search button and "Back to the
+    system →". It replaces Fumadocs' default not-found page for every path.
+
+12. **The search dialog stays Fumadocs' own**, coloured by the existing tokens.
+
+13. **Tokens.** One token is added, `--star` (light `#e08a00`, dark `#ffe2a8`) with
+    `--star-glow`, and `--night` for a planet's unlit face. Everything else uses the existing
+    tokens and fonts (ADR-0015). Every planet, moon, sun, lock and phase mark is drawn SVG; no
+    emoji or text glyphs as icons.
+
+## Options considered
+
+| Option | Pros | Cons | Verdict |
+|---|---|---|---|
+| Scope A — everything, docs pages too | One world from home to the last docs page; the owner's ask | Largest change; touches the notebook layout's chrome | **Chosen** by the owner |
+| Scope B — home page, header, switch and footer only | Smaller | Docs pages keep the old look; the metaphor stops at the home page | Rejected |
+| Entries A — planet cards with moons and fact sheet | Uses the metaphor to carry real data (versions); suits 4–5 entries | Taller than rows; needs care to stay readable at one column | **Chosen** by the owner |
+| Entries B — the hero system as the only index, no cards | Most striking | Hides facts behind hover; poor for keyboard and screen readers | Rejected |
+| Entries C — keep ruled rows, no heading | Least work | Does not answer "the site does not justify the concept" | Rejected |
+| Private A — invented projects on the live site, unmarked | What the owner asked for; shows the section's intended shape | Visitors read invented projects as real; dead links (see trade-offs) | **Chosen** by the owner |
+| Private B — invented projects only in prototypes; empty state live | Nothing invented reaches the public site | The live section stays an empty state until the sign-in ADR | Rejected by the owner |
+| Footer A — Horizon | A real ending; carries useful links (planets, llms, search, top) | A large decorative band | **Chosen** by the owner |
+| Footer B — a compact link grid | Familiar, small | Generic; no part of the world | Rejected |
+| Switch A — custom SVG orrery with `useTheme` | Can draw a sun and a terminator; no new dependency | A component to own instead of Fumadocs' | **Chosen** (recommended) |
+| Switch B — restyle Fumadocs' `ThemeSwitch` with CSS only | No new component | CSS pseudo-elements cannot draw the terminator clearly; that is today's problem | Rejected |
+
+## Consequences
+
+**Positive**
+
+- One idea explains the whole site: a reader who learns the legend on the home page can read
+  versions and tracks on every docs page from the marks alone.
+- The cards carry the facts the rows carried, plus the version lines, without a heading or a
+  filter.
+- The footer is useful: it links every planet, the Markdown routes, search and the top.
+- The switch states its result in words and in the drawing.
+
+**Negative / accepted trade-offs**
+
+- **Invented private projects on the live site.** harbor-ops, fieldnote and tessera are not real
+  projects, but the page presents them as real. Visitors may ask about them, and their links
+  return the 404. This departs from `PRODUCT.md`'s "no invented data" stance and from ADR-0016's
+  "no private project, name or count exists on the site". The owner accepts it; replacing the
+  list is a code change in one file.
+- More SVG on every page. The drawings are small, inline and static except the hero canvas.
+- A custom theme switch to maintain, and the notebook sidebar's chrome to keep working across
+  Fumadocs upgrades.
+- The 404 becomes this site's own page.
+
+## Content invariants
+
+- **1, Private stays private.** Kept in substance: no private documentation exists, and the
+  invented private projects are names and one-line descriptions in a component file, never in
+  `content/`, the search index, `static.json`, `llms.txt`, `llms-full.txt`, per-page Markdown or
+  Open Graph images. They are not real projects, so nothing private is disclosed. Real private
+  project names must never be put in that file: that waits for the private-documentation ADR.
+- **3, version on every page.** Strengthened: the moon picker and notices show the line and its
+  version.
+- **5, readable as Markdown.** Unchanged: the redesign changes HTML chrome only.
+- **2 and 4** are untouched.
+
+## Security considerations
+
+- **Data handled:** public catalogue fields (unchanged) and three invented private project
+  entries, classified public. No secret, environment variable or endpoint is added.
+- **Private to public:** the invented list is the one place a private project name could ever be
+  typed into code. The risk is that someone later replaces an invented name with a real client
+  name. Mitigation: the file states that only invented entries belong there until the
+  private-documentation ADR, and `security/threat-model.mdx` records the risk.
+- **Authorization:** none; everyone sees the same page (ADR-0016 decision 5).
+- **What leaves the system:** nothing new. The invented entries are not sent to Algolia.
+- **Input:** none new. The 404 renders no part of the requested path.
+- **Residual risk accepted:** visitors may take the invented private projects as real.
+
+## Implementation notes
+
+- [x] `src/app/global.css`: the star and night tokens in light and dark, named in the site's
+      `--home-*` set: `--home-star`, `--home-star-glow`, `--home-night`.
+- [x] `src/components/theme-switch.tsx`: the orrery switch; `site-header.tsx` uses it instead of
+      `ThemeSwitch`; the orbit-phase CSS in `site.css` is removed.
+- [x] `src/components/planet.tsx`: `PlanetSystem` (the planet-with-moons drawing: `ring`, `kind`,
+      `lines`, size and scale), shared by the cards and the planet header; `PlanetMark` for the
+      sidebar chip, kinds and footer; and `MoonPhase` for the phase marks, in the same file.
+      Ring helpers and kind names moved to `src/lib/rings.ts`.
+- [x] `src/components/home/orbit-map.tsx`: the star, its label, always-on planet labels, moons,
+      night sides; layout split left/right on desktop.
+- [x] `src/components/home/planet-cards.tsx` replaces `catalogue.tsx`; `page.tsx` drops the
+      "Browse everything" heading; anchors move onto the first cards.
+- [x] `src/components/home/private-projects.ts` (the invented list, with its warning comment)
+      and the belt with both states in `src/components/home/beyond-the-belt.tsx` (named apart
+      from the data file, so the two modules don't share a name).
+- [x] Two sides (`two-sides.tsx`, replacing `tracks-preview.tsx`), Every moon (`moon-rows.tsx`,
+      replacing `version-rails.tsx`) and Read it anywhere restyled in `home.css`.
+- [x] `src/components/horizon-footer.tsx`, used by the home page, the 404 and, without the
+      scene, by the docs layout.
+- [x] Docs chrome: planet chip and day/night switch in `src/components/docs/track-switch.tsx`;
+      moon icons on Fumadocs' version menu from the layout's `tabs.transform`; the current page's
+      planet dot on the sidebar's and the contents' lines, planet header and notices in
+      `site.css`.
+- [x] `src/app/not-found.tsx`: the out-of-orbit page.
+- [ ] Tests — the happy path **and** the obvious failure paths (ADR-0007). No test runner is
+      installed yet (its own ADR). Verified instead: the build prerenders every page, and the
+      built HTML of `/`, `/docs`, `/docs/maintain` and the 404 holds the new parts. Browser
+      checks (layout at phone width, the canvas, the switch's animation, contrast of the star
+      and night tokens) are not run.
+- [ ] `bun run lint` is blocked (typescript-eslint does not support TypeScript 7);
+      `bun run types:check` and `bunx next build` pass.
+
+## Docs to update on implementation
+
+- [x] `content/docs/maintain/app-flow/solar-system.mdx` is current for the shared look (marks,
+      theme switch, planet header, sidebar, notices, footer, 404); `home-page.mdx` keeps the home
+      page's screens, matching its PRD's slug; `site-pages.mdx` keeps routes, header and docs
+      pages and points to both
+- [x] `content/docs/maintain/prd/home-page.mdx` — planet cards, private states, footer, switch
+- [x] `content/docs/maintain/security/threat-model.mdx` — the invented private list
+- [x] `DESIGN.md` and `.impeccable/design.json` — the metaphor, new tokens and components
+- [x] `PRODUCT.md` — the invented-data exception for the private list
+- [x] `AGENTS.md` §1 and §5 and the repository map; `PROJECT_AGENTS.md` does not describe the
+      look, so it is unchanged
+- [x] `README.md` — the home page summary
+- [x] `content/docs/maintain/adr/index.mdx` — status
+- [x] ADR-0014, ADR-0015 and ADR-0016 — "Superseded by" in their headers

@@ -58,11 +58,23 @@ yet** besides the site itself, so the home page shows its empty states.
   versioned.
 - **The build checks the shape.** Line redirects, version banners, scoped sidebars, search
   fields and `llms.txt` labels all come from it.
-- **One look across the site** (ADR-0015). Every page shares the site header (brand, nav,
-  search, GitHub, light/dark switch) and the home page's tokens and fonts. Docs pages use the
-  Fumadocs notebook layout; a package or project overview opens with a package hero.
-- **The home page is a search-first release map** (ADR-0014): an orbit map, a hero search with
-  filter chips, the catalogue, a tracks preview, version rails and "Read it anywhere".
+- **The whole site is one solar system** (ADR-0015, ADR-0017). The star is the maker; a package
+  is a solid planet, a project a ringed one; each version line is a moon (full = latest,
+  crescent = older, dashed new moon = `dev`); Use and Maintain are a planet's day and night
+  sides. The marks are drawn by `src/components/planet.tsx` and mean the same on every page.
+  Every page shares the site header (brand, nav, GitHub, the orrery theme switch; a search
+  button on docs pages), the tokens and fonts, and the Horizon footer (without its scene on docs
+  pages). Docs pages use the Fumadocs notebook layout: a planet header on each overview, the
+  planet chip, day/night switch and moon picker in the sidebar, moon notices on `dev` and older
+  lines. Unknown paths get the out-of-orbit 404 (`src/app/not-found.tsx`).
+- **The home page is the system** (ADR-0014, ADR-0016, ADR-0017): the turning system beside
+  the hero search button (it opens the site's Fumadocs search dialog), one planet card per entry
+  with no section heading, private projects beyond an asteroid belt (three invented names from
+  `src/components/home/private-projects.ts`, shown to everyone by the owner's decision; never a
+  real private name there), Two sides of every planet, Every moon and "Read it anywhere"
+  (terminal tabs and the live page actions).
+- **Cache Components is on** (ADR-0016). Every page and route handler is prerendered; use
+  `use cache` and `<Suspense>`, not route segment configs such as `revalidate`.
 - **Also here:** Algolia search, `llms.txt` / `llms-full.txt`, per-page Markdown and Open Graph
   images.
 - **Not published:** demos and private projects. Demos wait for ADR-0011; private projects wait
@@ -215,18 +227,18 @@ What is installed **today** (verified from `package.json`, `node_modules` and th
 
 | Concern | In the repo |
 |---|---|
-| Framework | Next.js **16.4.2**, App Router, `src/app/` |
+| Framework | Next.js **16.4.2**, App Router, `src/app/`; `cacheComponents` and `partialPrefetching` on in `next.config.mjs` (ADR-0016) |
 | Docs framework | Fumadocs: `fumadocs-core` 16.17.9, `fumadocs-mdx` 15.4.10, `fumadocs-ui` 16.17.9 (installed as `@fumadocs/base-ui`) |
 | Content source | `defineDocs` from `fumadocs-mdx/macro` in `src/lib/source.ts`, reading `content/`; no `source.config.ts`; generated files in `.source/` (gitignored) |
 | Catalogue | `src/lib/catalog-schema.ts` (meta schema with `catalog`, `name`, `version`, `channel`), `src/lib/catalog-plugin.ts` (build checks, line names and URL segments, typed roots), `src/lib/catalog.ts` (entries for pages and the home page), `src/lib/catalog-routes.ts` (line redirects in the proxy) — ADR-0013, ADR-0015 |
 | Routes | `/` is `src/app/(home)/`; every page is `src/app/(site)/[...slug]/` at `/<slug>/…` (`docsRoute` is `''` in `src/lib/shared.ts`); `src/proxy.ts` acts only on catalogued paths — ADR-0015 |
-| Look | Tokens on `:root` and `.dark` in `src/app/global.css`, mapped onto Fumadocs' `--color-fd-*`; site header, docs typography and package hero in `src/app/site.css`; fonts Bricolage Grotesque, Onest and JetBrains Mono through `next/font/google` in `src/app/layout.tsx`; light/dark through next-themes (dark by default); visual system in `DESIGN.md` — ADR-0015 |
-| Home page | `src/app/(home)/` and `src/components/home/`; styles in `src/app/(home)/home.css` — ADR-0014 |
-| Docs pages | Fumadocs notebook layout in `src/app/(site)/layout.tsx`, header `src/components/site-header.tsx` (shared with the home page), `src/components/docs/` (docs header, package hero, track switch, version notice) — ADR-0015 |
+| Look | Tokens on `:root` and `.dark` in `src/app/global.css`, mapped onto Fumadocs' `--color-fd-*`; site header, orrery theme switch (`src/components/theme-switch.tsx`, `useTheme` from `fumadocs-ui/provider/base`), docs typography, planet header, notices, sidebar marks and Horizon footer in `src/app/site.css`; planet and moon marks in `src/components/planet.tsx`; fonts Bricolage Grotesque, Onest and JetBrains Mono through `next/font/google` in `src/app/layout.tsx`; light/dark through next-themes (dark by default); visual system in `DESIGN.md` — ADR-0015, ADR-0017 |
+| Home page | `src/app/(home)/` and `src/components/home/`; styles in `src/app/(home)/home.css` (also the 404's) — ADR-0014, ADR-0016, ADR-0017 |
+| Docs pages | Fumadocs notebook layout in `src/app/(site)/layout.tsx`, header `src/components/site-header.tsx` (shared with the home page), `src/components/docs/` (docs header, planet header, planet chip and day/night switch, version notice), moon icons on the version menu, `src/components/horizon-footer.tsx` below every page — ADR-0015, ADR-0017 |
 | UI runtime | React 19.3 |
 | Language | TypeScript 7, `strict`; `@/*` → `./src/*` |
 | Styling | Tailwind CSS 4 through `@tailwindcss/postcss`; global styles in `src/app/global.css` |
-| Search | Algolia: `src/app/static.json/route.ts` emits the records (scope `tag` plus catalogue fields), `scripts/sync-content.ts` pushes them after `next build`; `src/lib/algolia.ts` is the search-only client used by `src/components/search.tsx` and the home page's hero search |
+| Search | Algolia: `src/app/static.json/route.ts` emits the records (scope `tag` plus catalogue fields), `scripts/sync-content.ts` pushes them after `next build`; `src/lib/algolia.ts` is the search-only client used by `src/components/search.tsx`, the one search dialog (the home page's hero button opens it) |
 | Linting | ESLint 9 + `eslint-config-next` (core-web-vitals); ignores `.claude/**` (agent skills, ADR-0009). **`bun run lint` does not run today:** `typescript-eslint` does not support TypeScript 7; fixing it needs its own ADR |
 | Testing | None installed — chosen by its own ADR (ADR-0007) |
 | Package manager | Bun (`bun.lock`; 1.4.4 on the owner's machine). `scripts/sync-content.ts` runs on Node (v24) |
@@ -501,17 +513,23 @@ adopts a host, analytics, CI or an authentication provider adds its own checks**
 │           └── security/    # threat model, data classification, secrets, audit checklist
 ├── src/
 │   ├── proxy.ts         # catalogued paths only: line redirects (use/latest, unknown lines), then /<page>.md and Markdown negotiation
-│   ├── app/             # App Router: layout.tsx (fonts, theme), global.css (tokens), site.css (header, hero),
+│   ├── app/             # App Router: layout.tsx (fonts, theme), global.css (tokens), site.css (header, theme switch,
+│   │                    #   planet header, notices, sidebar marks, footer), not-found.tsx (the 404),
 │   │                    #   (home)/ (home page, home.css), (site)/[...slug]/ (every page, notebook layout),
 │   │                    #   llms.txt, llms-full.txt, llms.mdx/[...slug]/, og/[...slug]/, static.json
-│   ├── components/      # site-header.tsx, mdx.tsx, search.tsx (search dialog),
-│   │                    #   docs/ (docs header, package hero, track switch, version notice),
-│   │                    #   home/ (home header, orbit map, hero search, catalogue, previews, terminal)
+│   ├── components/      # site-header.tsx, theme-switch.tsx, planet.tsx (planet and moon marks),
+│   │                    #   horizon-footer.tsx, footer-actions.tsx, mdx.tsx, search.tsx (search dialog),
+│   │                    #   docs/ (docs header, planet header, track switch, version notice),
+│   │                    #   home/ (home header, hero, orbit map, search button, planet cards,
+│   │                    #   beyond-the-belt + private-projects.ts, two sides, moon rows, terminal,
+│   │                    #   assistant actions)
 │   └── lib/             # source.ts (content loader), catalog*.ts (catalogue schema, checks, entries, redirects),
-│                        #   search-scope.ts, algolia.ts, shared.ts (site name, routes, GitHub)
+│                        #   rings.ts (ecosystem rings and kind names), search-scope.ts, algolia.ts,
+│                        #   shared.ts (site name, routes, GitHub)
 ├── scripts/
 │   └── sync-content.ts  # after next build: pushes static.json records to Algolia
-├── next.config.mjs      # Fumadocs MDX plugin
+├── .env.example         # every variable the site reads, names only (§9)
+├── next.config.mjs      # Fumadocs MDX plugin, Cache Components
 ├── postcss.config.mjs   # Tailwind CSS 4
 ├── eslint.config.mjs    # eslint-config-next (core-web-vitals)
 └── tsconfig.json        # strict; @/* → ./src/*

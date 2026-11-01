@@ -2,6 +2,8 @@ import { createGetUrl } from 'fumadocs-core/source';
 
 // A working name until the final one is chosen (ADR-0014 open question).
 export const appName = 'Puncoz Docs';
+
+export const owner = { name: 'Puncoz Nepal', url: 'https://puncoz.com' };
 // Packages and projects live at the root, `/<slug>` (ADR-0015 decision 1).
 export const docsRoute = '';
 export const docsImageRoute = '/og';

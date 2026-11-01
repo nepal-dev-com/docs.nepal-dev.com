@@ -4,7 +4,17 @@ import { useSearchContext } from 'fumadocs-ui/contexts/search';
 import { SidebarTrigger } from 'fumadocs-ui/layouts/notebook/slots/sidebar';
 import { SiteHeader } from '@/components/site-header';
 
-export function DocsHeader({ appName, githubUrl, hasProjects }: { appName: string; githubUrl: string; hasProjects: boolean }) {
+export function DocsHeader({
+  appName,
+  githubUrl,
+  hasPackages,
+  hasProjects,
+}: {
+  appName: string;
+  githubUrl: string;
+  hasPackages: boolean;
+  hasProjects: boolean;
+}) {
   const { setOpenSearch } = useSearchContext();
 
   return (
@@ -13,8 +23,8 @@ export function DocsHeader({ appName, githubUrl, hasProjects }: { appName: strin
       appName={appName}
       githubUrl={githubUrl}
       links={[
-        { label: 'Packages', href: '/#browse' },
-        ...(hasProjects ? [{ label: 'Projects', href: '/?filter=projects#browse' }] : []),
+        ...(hasPackages ? [{ label: 'Packages', href: '/#packages' }] : []),
+        ...(hasProjects ? [{ label: 'Projects', href: '/#projects' }] : []),
         { label: 'llms.txt', href: '/llms.txt' },
       ]}
       onSearch={() => setOpenSearch(true)}

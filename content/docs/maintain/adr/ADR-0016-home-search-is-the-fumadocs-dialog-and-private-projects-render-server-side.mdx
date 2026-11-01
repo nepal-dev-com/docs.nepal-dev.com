@@ -1,0 +1,237 @@
+---
+title: "ADR-0016 — Home search is the Fumadocs dialog, and private projects render server-side"
+---
+
+- **Status:** Approved
+- **Date:** 2026-11-01
+- **Deciders:** Puncoz Nepal
+- **Approved by:** Puncoz Nepal
+- **Approved on:** 2026-11-01
+- **Supersedes:** [ADR-0014](./ADR-0014-home-page-is-a-search-first-release-map.mdx) decisions 3
+  (search steers the page), 4 (in part: Browse everything filtered by search; the Read it
+  anywhere cards), 8 (in part: chips and filters from catalogue data) and 10 (in part: the "Try"
+  row); [ADR-0015](./ADR-0015-every-entry-lives-at-the-root-in-one-shape-and-one-look.mdx)
+  decisions 8 (in part: the search trigger in the home page's header) and 9 (in part: how the
+  theme switch looks)
+- **Superseded by:** [ADR-0017](./ADR-0017-the-whole-site-is-one-solar-system.mdx) in part
+  (decisions 3, 5 in part and 8)
+- **Design documents:** [`../app-flow/home-page.mdx`](../app-flow/home-page.mdx),
+  [`../prd/home-page.mdx`](../prd/home-page.mdx),
+  [`../app-flow/site-pages.mdx`](../app-flow/site-pages.mdx)
+
+## Context
+
+The owner reviewed the built home page on 2026-11-01 and asked for six changes:
+
+1. The header search on the home page is not needed; the hero already has one.
+2. The hero search should be Fumadocs' search, with no custom search.
+3. The hero text cannot be selected: the cursor shows the map's crosshair.
+4. The theme switch is too small next to the header's 36px buttons; make it balanced, with
+   some creativity.
+5. Browse everything should gain a private projects section, visible only to signed-in
+   readers. For now it shows an empty state; the sign-in session comes later.
+6. The "Private stays private" card goes: the public needn't know anything about private work.
+
+Item 3 was a bug (the hero's text had `pointer-events: none`, so the pointer reached the canvas).
+It is fixed without an ADR, with the owner's link from the footer's "Puncoz Nepal" to
+`https://puncoz.com`. The rest change approved decisions.
+
+What the code and the installed packages settle:
+
+- **Fumadocs' search UI is a dialog.** `fumadocs-ui/components/dialog/search` exports
+  `SearchDialog` and its parts (`SearchDialogInput`, `SearchDialogList`, …), which work inside
+  the dialog's context. The site already uses them with Algolia in `src/components/search.tsx`,
+  opened by `⌘K` / `Ctrl K` (Fumadocs' hotkeys) and by `useSearchContext().setOpenSearch`.
+  There is no inline results component, so "Fumadocs' search in the hero" means the hero opens
+  this dialog.
+- **Without the custom search, nothing filters.** The chips, the results list, the map lighting,
+  the catalogue's live filter and count, and the "Try" row all hang on
+  `src/components/home/search-state.tsx`. The owner chose **dialog only, no filters**.
+- **Every docs page already has** Fumadocs' Copy Markdown button and "Open" menu
+  (`MarkdownCopyButton`, `ViewOptionsPopover`), whose options are Open in GitHub, ChatGPT,
+  Claude, Cursor and Scira (`fumadocs-ui/dist/layouts/shared/page-actions.js`).
+- **Rendering.** Without Cache Components, reading a request-time API such as `cookies()`
+  makes the whole route render per request
+  (`node_modules/next/dist/docs/01-app/02-guides/caching-without-cache-components.md`). With
+  `cacheComponents: true`, Next.js prerenders a static shell and streams only the parts behind a
+  `<Suspense>` boundary that read request data; a session read belongs inside such a boundary
+  (`…/02-guides/authentication-with-cache-components.md`). Under Cache Components the
+  `revalidate` route segment config errors, and a `GET` route handler that reads no runtime data
+  is prerendered without it (`…/02-guides/migrating-to-cache-components.md`). Five route handlers
+  export `revalidate = false` today. The docs ask for `partialPrefetching` to be set explicitly
+  with `cacheComponents` (`…/05-config/01-next-config-js/cacheComponents.md`). The owner asked
+  for the private section to be "Next.js server side" and chose **Cache Components**.
+- **No sign-in exists.** WorkOS is named in the home PRD for a later ADR. There is no session to
+  verify. The owner decided the private group's empty state **shows to every reader for now**;
+  hiding it from signed-out readers is the sign-in ADR's work.
+- **`.env.example` does not exist**, although `AGENTS.md` §9 asks for one.
+
+## Decision
+
+1. **The hero's search is a button that opens the Fumadocs dialog.** It keeps the field's look:
+   64px high (56px on phones), Graphite Panel, 14px corners, the search icon, the placeholder
+   "Search packages, projects and pages" and a `⌘K` key hint. It is a `<button>`: click, Enter
+   or Space opens the site's existing search dialog (`src/components/search.tsx`). `⌘K` /
+   `Ctrl K` open the same dialog, as on every other page; the home page no longer captures them,
+   and `/` is no longer bound. **Removed:** the inline results list, the filter chips, the "Try"
+   row, the idle typing demonstration, the map lighting while searching, the catalogue's live
+   filter, count and "Clear search", and the code behind them (`hero-search.tsx`,
+   `search-state.tsx`).
+2. **The home header has no search button.** On docs pages the header keeps it. Its links
+   become anchors: Packages → `/#packages` (shown when a package exists), Projects →
+   `/#projects` (shown when a project exists), replacing the chip actions and
+   `?filter=projects`.
+3. **Browse everything is grouped.** Under its heading, a **Packages** group and a **Projects**
+   group, each with its own id and count, in the same ruled two-column rows. A group with no
+   entries is left out. The catalogue is a Server Component: it no longer has client state.
+4. **The orbit map stays, quieter.** It turns, slows under the pointer and shows its card on
+   hover as now. Clicking a body opens that entry's overview, instead of putting its name in the
+   field. It no longer reacts to search. The hero's text stays selectable above it.
+5. **Private projects: a server-rendered group, shown to everyone for now.**
+   - A **Private projects** group (`#private`) follows Packages and Projects. It is a Server
+     Component with no client code.
+   - It shows its empty state to **every reader**, by the owner's decision: "No private projects
+     yet. They'll appear here once private documentation is set up." It lists nothing: there is
+     no private content until the private-documentation ADR (invariant 1).
+   - **The sign-in ADR hides it from signed-out readers.** It adds the session read inside a
+     `<Suspense>` boundary around this group, so the rest of `/` stays in the static shell. No
+     viewer check, cookie read or preview variable is added before then.
+6. **The site adopts Cache Components.**
+   - `next.config.mjs` sets `cacheComponents: true` and `partialPrefetching: true`.
+   - The `revalidate = false` exports go from the five route handlers (`llms.txt`,
+     `llms-full.txt`, `llms.mdx/[...slug]`, `og/[...slug]`, `static.json`): they read no
+     runtime data, so they are prerendered without it.
+   - Every page stays prerendered, `/` included, until the sign-in ADR adds the first
+     request-time part.
+7. **Read it anywhere is redesigned around doing, not telling.** The three cards go, "Private
+   stays private" among them.
+   - **The terminal gets three tabs** in its title bar: `page.md`, `llms.txt` and `Accept`. Each
+     shows a real command and the real first lines of its output, taken from the build:
+     - `curl -s <origin><page>.md | head -6`;
+     - `curl -s <origin>/llms.txt | head -6`;
+     - `curl -s -H "Accept: text/markdown" <origin><page> | head -6`.
+
+     The chosen tab types its command once (not under reduced motion). Under the terminal, one
+     line: "Everything in one file: `/llms-full.txt`".
+   - **Beside it, "Hand any page to your assistant":** the same two Fumadocs controls every docs
+     page has, `MarkdownCopyButton` and `ViewOptionsPopover`, live, for the example page, with
+     one line of text and a "See it on a page" link. They are the real components, not a picture
+     of them.
+8. **The theme switch is an orbit in phase.** The header keeps Fumadocs' `ThemeSwitch` (same
+   button, next-themes behaviour, view transition and accessible name). CSS in `site.css`
+   reshapes it:
+   - a 36px square with a hairline border and 8px corners, like the header's other buttons, with
+     the border strengthening on hover;
+   - Fumadocs' sun and moon icons hidden; inside, a 14px planet on a tilted ring (the brand
+     mark's ellipse), drawn with CSS;
+   - a shadow disc that sweeps across the planet: a full disc in light, a crescent in dark. It
+     eases over 0.4s and switches instantly under reduced motion;
+   - keyed to the `.dark` class next-themes sets before first paint, so it is right on load.
+
+   No new dependency.
+9. **`.env.example` is added**, listing the variables the site reads today, names and comments
+   only.
+
+## Options considered
+
+| Concern | Option | Pros | Cons | Verdict |
+|---|---|---|---|---|
+| Hero search | A — opens the Fumadocs dialog, no filters | One search on every page; least code; what the owner asked for | No chips, no map lighting, no catalogue filter | Chosen by the owner |
+| Hero search | B — opens the dialog; chips move to the catalogue | Keeps filtering | Custom filter UI stays | Rejected by the owner |
+| Hero search | C — inline results on Fumadocs' search hook | Keeps every behaviour | Still a custom search UI | Rejected by the owner |
+| Private rendering | A — route-level dynamic: `/` reads `cookies()` | Smallest change today | The whole home page renders per request once sign-in exists | Rejected by the owner |
+| Private rendering | B — Cache Components: static shell, private group streamed | The rest of `/` stays static when sign-in arrives; the documented pattern for authenticated UI | Site-wide config change; the five `revalidate = false` exports go | Chosen by the owner |
+| Private rendering | C — client-side fetch after load | `/` stays static | Needs an API route and a loading state | Rejected |
+| Private now | A — empty state for everyone until sign-in | The owner can see and review it now; no preview switch | Tells the public a private projects group exists | Chosen by the owner |
+| Private now | B — hidden until sign-in; development-only preview | Nothing about private work on a public surface | A preview variable; the empty state only in `bun run dev` | Rejected by the owner |
+| Private now | C — hidden, no preview | Least code | The empty state cannot be seen until sign-in exists | Rejected |
+| Read it anywhere | A — terminal with three tabs, and the live page actions | Shows instead of tells; every claim runs on the page; nothing about private | More interaction in the terminal | Chosen |
+| Read it anywhere | B — keep two cards | Least change | The terminal and cards no longer balance | Rejected |
+| Read it anywhere | C — a third card about `Accept: text/markdown` | True and on theme | Still three cards telling, not showing | Rejected |
+| Theme switch | A — orbit phase, CSS over Fumadocs' `ThemeSwitch` | On theme; same behaviour; no dependency | Depends on the markup of Fumadocs' switch | Chosen by the owner |
+| Theme switch | B — a sliding sun / moon pill | Very clear | Wider than the other header buttons | Rejected by the owner |
+| Theme switch | C — a larger icon button | Lowest risk | Least distinctive | Rejected by the owner |
+
+## Consequences
+
+**Positive**
+
+- One search, the same everywhere. The home page sheds its largest custom component and the
+  filter code; the catalogue becomes server-rendered.
+- Private projects have a place on the home page, and the sign-in ADR only has to add a
+  boundary and a session read around it.
+- "Read it anywhere" proves its claims with real commands and the real page controls.
+
+**Negative / accepted trade-offs**
+
+- No filtering on the home page. Readers browse grouped lists or use the dialog.
+- Every reader sees that a Private projects group exists, with its empty state, until the
+  sign-in ADR. No private name, count or content is shown.
+- Cache Components is now on for the whole site. Later changes follow its model: `use cache`
+  and `<Suspense>`, not route segment configs. Once a request-time part exists, `/` needs a
+  Node.js server for it; hosting is not decided.
+- The theme switch's look relies on Fumadocs' markup (`[data-theme-toggle]` and its two icons).
+  An upgrade that changes it shows up in review.
+- The Fumadocs dialog has no ecosystem, project or `dev` filters.
+
+## Content invariants
+
+- **Invariant 1** is why the private group lists nothing: no private content exists until the
+  private-documentation ADR.
+- **Invariant 5** is what the Read it anywhere tabs demonstrate. They only read existing
+  routes.
+
+## Security considerations
+
+- **No access control yet.** The private group's empty state is public by the owner's decision;
+  it carries no private data. Hiding it from signed-out readers is decided and enforced on the
+  server by the sign-in ADR, inside the `<Suspense>` boundary this design leaves room for. A
+  hidden element is never the control.
+- **No new variable, no new input.** `.env.example` lists the existing Algolia variables, names
+  only.
+- **Third parties.** The "Open in ChatGPT / Claude / Cursor / Scira" links on the home page send
+  a public page's URL to that service when the reader clicks one, exactly as on every docs page
+  today.
+- **RBAC:** none yet. Visibility does not depend on the reader until the sign-in ADR, which
+  writes the first matrix.
+
+## Implementation notes
+
+- [x] Hero: the search button opening the dialog; results, chips, "Try" row, demo, `/` and
+      `⌘K` capture removed; map, legend and noscript link kept.
+- [x] `search-state.tsx` and `hero-search.tsx` removed.
+- [x] Header: no search on the home page (`SiteHeader`'s search is optional); anchors for
+      Packages and Projects on home and docs headers.
+- [x] Catalogue grouped into Packages and Projects, with ids `packages` and `projects`.
+- [x] Orbit map: click opens the overview; no search lighting.
+- [x] The Private projects group with its empty state, a Server Component.
+- [x] Cache Components on; `revalidate` exports removed.
+- [x] Read it anywhere: terminal tabs with build-time outputs; the live page actions for the
+      example page; the `llms-full.txt` line.
+- [x] Theme switch restyled in `site.css`.
+- [x] `.env.example` with every variable, names only.
+- [x] Tests — manual until ADR-0007 picks a runner (results in the report to the owner):
+      - `next build` prerenders every page, `/` included;
+      - the built `/` holds the Packages and Private projects groups, no "Private stays
+        private", no chips and no results list;
+      - each tab's output matches the route;
+      - the switch's phase CSS keys to `.dark`.
+- [x] `bun run types:check` and `bunx next build` pass; `bun run lint` blocked by TypeScript 7.
+
+## Docs to update on implementation
+
+- [x] [`../app-flow/home-page.mdx`](../app-flow/home-page.mdx) and
+      [`../prd/home-page.mdx`](../prd/home-page.mdx) — to match the build; the draft
+      `home-search-and-private` app flow and PRD folded in and removed
+- [x] [`../app-flow/site-pages.mdx`](../app-flow/site-pages.mdx) — the header on the home page,
+      the theme switch
+- [x] [`../architecture/system.mdx`](../architecture/system.mdx) — Cache Components
+- [x] [`../rbac/index.mdx`](../rbac/index.mdx) — still no matrix; the draft removed
+- [x] [`../security/threat-model.mdx`](../security/threat-model.mdx),
+      [`../security/secrets.mdx`](../security/secrets.mdx)
+- [x] `DESIGN.md`, `AGENTS.md` §1 and §5, `README.md`
+- [x] [`./index.mdx`](./index.mdx) — index row, status
+
+## Open questions
+
+None open.

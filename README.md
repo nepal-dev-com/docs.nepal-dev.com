@@ -4,9 +4,9 @@
 > libraries across ecosystems, and public and private projects.
 
 **Status:** **Puncoz Docs** (a working name). The catalogue shape, root addresses, one site-wide
-look with a light/dark switch and the search-first home page are built; no package or project
+look with a light/dark switch and the home page's release map are built; no package or project
 is documented yet besides this site itself, so the home page shows its empty states.
-· **Owner:** Puncoz Nepal
+· **Owner:** [Puncoz Nepal](https://puncoz.com)
 
 ---
 
@@ -19,7 +19,7 @@ is documented yet besides this site itself, so the home page shows its empty sta
 Every package and project is a folder `content/<slug>/`, published at `/<slug>`, with the same
 shape ([ADR-0013](content/docs/maintain/adr/ADR-0013-packages-and-projects-share-one-catalogue-shape.mdx),
 [ADR-0015](content/docs/maintain/adr/ADR-0015-every-entry-lives-at-the-root-in-one-shape-and-one-look.mdx)):
-- an overview, opening with a package hero;
+- an overview, opening with a planet header;
 - a **Use** track for people using it, with one folder per documented version: `dev/` for the
   unreleased work in progress, and released lines named in their `meta.json` (`v1.0`,
   `2024 LTS`, any string);
@@ -27,9 +27,14 @@ shape ([ADR-0013](content/docs/maintain/adr/ADR-0013-packages-and-projects-share
 
 This site is one of them: project `docs`, whose Maintain track holds its own decisions and
 design documents at `/docs/maintain`. The build checks the shape.
-`/<slug>/use/latest/…` always redirects to the current release. The home page
-([ADR-0014](content/docs/maintain/adr/ADR-0014-home-page-is-a-search-first-release-map.mdx))
-is a map of every release with one search field in front of it.
+`/<slug>/use/latest/…` always redirects to the current release. The whole site is one solar
+system ([ADR-0017](content/docs/maintain/adr/ADR-0017-the-whole-site-is-one-solar-system.mdx)):
+packages and projects are planets, version lines are moons, Use and Maintain are a planet's day
+and night sides. The home page
+([ADR-0014](content/docs/maintain/adr/ADR-0014-home-page-is-a-search-first-release-map.mdx),
+[ADR-0016](content/docs/maintain/adr/ADR-0016-home-search-is-the-fumadocs-dialog-and-private-projects-render-server-side.mdx))
+is that system beside the site's search, then a planet card for every package and project, and
+private projects beyond an asteroid belt.
 
 How private project documentation is kept away from the public site is still open, and demos
 wait for ADR-0011. Until the private-documentation ADR is approved, **no private project content
@@ -42,7 +47,7 @@ goes into `content/`**: everything there is published to the site, the search in
 
 | | |
 |---|---|
-| Framework | [Next.js](https://nextjs.org) 16.4.2 (App Router) |
+| Framework | [Next.js](https://nextjs.org) 16.4.2 (App Router, Cache Components) |
 | Docs framework | [Fumadocs](https://fumadocs.dev) — `fumadocs-core` / `fumadocs-ui` 16.17.9, `fumadocs-mdx` 15.4.10 |
 | Content | MDX in `content/<slug>/` |
 | UI | React 19.3 |
@@ -66,9 +71,9 @@ sync script runs on Node; the owner's machine has v24).
    bun install
    ```
 
-2. **Configure search.** Create `.env.local` with the three Algolia variables listed in
-   [`content/docs/maintain/security/secrets.mdx`](content/docs/maintain/security/secrets.mdx). `.env.local` is gitignored; never
-   commit it.
+2. **Configure search.** Copy `.env.example` to `.env.local` and fill in the three Algolia
+   variables, described in [`content/docs/maintain/security/secrets.mdx`](content/docs/maintain/security/secrets.mdx).
+   `.env.local` is gitignored; never commit it.
 
 3. **Run.**
 
@@ -124,7 +129,8 @@ Open [http://localhost:3000](http://localhost:3000). The docs are at `/docs`.
 │   └── lib/             # content loader, catalogue schema and checks, search client, site settings
 ├── scripts/
 │   └── sync-content.ts  # pushes search records to Algolia after a build
-├── next.config.mjs
+├── .env.example         # every variable the site reads, names only
+├── next.config.mjs      # Fumadocs MDX plugin, Cache Components
 ├── eslint.config.mjs
 └── tsconfig.json
 ```
@@ -216,3 +222,4 @@ threat model, data classification, secrets inventory and audit checklist live in
 | [0013](content/docs/maintain/adr/ADR-0013-packages-and-projects-share-one-catalogue-shape.mdx) | Packages and projects share one catalogue shape: two tracks, version lines and demos | Approved |
 | [0014](content/docs/maintain/adr/ADR-0014-home-page-is-a-search-first-release-map.mdx) | The home page is a search-first map of every release | Approved |
 | [0015](content/docs/maintain/adr/ADR-0015-every-entry-lives-at-the-root-in-one-shape-and-one-look.mdx) | Every package and project lives at the root, in one shape and one look | Approved |
+| [0016](content/docs/maintain/adr/ADR-0016-home-search-is-the-fumadocs-dialog-and-private-projects-render-server-side.mdx) | Home search is the Fumadocs dialog, and private projects render server-side | Proposed |
