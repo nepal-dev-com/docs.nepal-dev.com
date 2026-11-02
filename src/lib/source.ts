@@ -11,7 +11,7 @@ import {
   catalogPlugin,
   channelLabel,
   describeVersion,
-  lineInfo,
+  lineSlugs,
   pageVersion,
   withoutOverviewItems,
 } from './catalog-plugin';
@@ -42,16 +42,7 @@ export const source = loader({
   plugins: [lucideIconsPlugin(), catalogPlugin(), diagramsPlugin()],
   // A line's URL segment is its configured name, not its folder name (ADR-0015 decision 4).
   slugs(file, next) {
-    const [slug, track, folder, ...rest] = file.path.split('/');
-    if (track !== 'use' || !folder || rest.length === 0) {
-      return undefined;
-    }
-    const info = lineInfo(folder, docs.getMeta(`${slug}/use/${folder}/meta.json`));
-    if (!info) {
-      return undefined;
-    }
-    const slugs = next();
-    return [...slugs.slice(0, 2), info.segment, ...slugs.slice(3)];
+    return lineSlugs(file.path, next(), docs.getMeta);
   },
 });
 

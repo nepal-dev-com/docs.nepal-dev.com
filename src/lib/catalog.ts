@@ -1,4 +1,5 @@
 import type * as PageTree from 'fumadocs-core/page-tree';
+import { assertKnownPaths } from './catalog-routes';
 import { getMeta, source } from './source';
 import {
   compareLines,
@@ -156,6 +157,15 @@ export function getCatalog(): CatalogEntry[] {
         a.title.localeCompare(b.title, 'en'),
     );
   return cached;
+}
+
+/** ADR-0034 decision 5: a page the proxy did not know would be a real page gone. */
+export function checkKnownPaths(): void {
+  const landings = getCatalog().flatMap((entry) => [
+    ...(entry.useUrl ? [`/${entry.slug}/use`] : []),
+    ...entry.lines.map((line) => `/${entry.slug}/use/${line.segment}`),
+  ]);
+  assertKnownPaths([...source.getPages().map((page) => page.url), ...landings]);
 }
 
 export function getEntry(slug: string | undefined): CatalogEntry | undefined {

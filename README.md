@@ -181,8 +181,9 @@ working agreement for this repository.
 ### Documenting a project from its own repository
 
 Project and package repositories include this repository as a **git submodule** and write
-their pages into their own folder, `content/<project-slug>/`. Their agents follow
-[`PROJECT_AGENTS.md`](PROJECT_AGENTS.md): edit only that folder, never commit inside the submodule,
+their pages into their own folders, `content/<project-slug>/` and `diagrams/<project-slug>/`, keeping
+both a Use track for users and a Maintain track for maintainers. Their agents follow
+[`PROJECT_AGENTS.md`](PROJECT_AGENTS.md): edit only those folders, never commit inside the submodule,
 public projects only for now
 ([ADR-0010](content/docs/maintain/adr/ADR-0010-projects-document-themselves-through-a-submodule.mdx)).
 In a project of several repositories each repository edits its own folders, and the primary one

@@ -1,13 +1,19 @@
 import { defineDocs } from 'fumadocs-mdx/macro';
 import { catalogMetaSchema } from './catalog-schema';
 import { devLine, lineInfo } from './catalog-plugin';
+import { knownPathProblems, knownPaths } from './known-paths';
 
-// Meta files only, so the proxy never bundles compiled pages. Not `defineCollections({ type:
-// 'meta' })`: in fumadocs-mdx 15.4.10 its generated call passes `meta` where the runtime reads
-// `entries`, so it always fails; a docs collection whose page pattern matches nothing works.
-const metaOnly = defineDocs({
+// `async` still compiles a lazy chunk per page, which the proxy never loads; emptied, they carry no page text.
+function emptyBody() {
+  return (tree: { children: unknown[] }) => {
+    tree.children = [];
+  };
+}
+
+// The proxy needs only the pages' paths and the meta files, never a page's content (ADR-0034).
+const pathsOnly = defineDocs({
   dir: 'content',
-  docs: { files: ['.no-pages/*.mdx'] },
+  docs: { async: true, mdxOptions: { remarkPlugins: [emptyBody] } },
   meta: { schema: catalogMetaSchema },
 });
 
@@ -20,7 +26,7 @@ export interface LineRoutes {
 function buildRoutes() {
   const catalogued = new Set<string>();
   const lines = new Map<string, LineRoutes>();
-  for (const entry of metaOnly.meta) {
+  for (const entry of pathsOnly.meta) {
     const parts = entry.info.path.split('/');
     if (parts.length === 2 && entry.catalog) {
       catalogued.add(parts[0]);
@@ -46,6 +52,23 @@ function buildRoutes() {
 }
 
 const routes = buildRoutes();
+const known = knownPaths(
+  pathsOnly.docs.map((doc) => doc.info.path),
+  pathsOnly.getMeta,
+);
+
+/** Whether a path has a page behind it (ADR-0034 decision 3). */
+export function isKnownPath(pathname: string): boolean {
+  return known.has(pathname);
+}
+
+/** Fails the build when the proxy's list and the site's pages differ (ADR-0034 decision 5). */
+export function assertKnownPaths(expected: string[]): void {
+  const problems = knownPathProblems(expected, known);
+  if (problems.length > 0) {
+    throw new Error(`Known paths check failed (ADR-0034):\n- ${problems.join('\n- ')}`);
+  }
+}
 
 /**
  * Whether a path belongs to a package or project, so the proxy leaves the site's own routes alone.

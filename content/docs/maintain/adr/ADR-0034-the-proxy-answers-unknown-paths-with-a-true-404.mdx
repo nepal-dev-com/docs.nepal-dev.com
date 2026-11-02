@@ -2,11 +2,11 @@
 title: "ADR-0034 — The proxy answers unknown paths with a true 404"
 ---
 
-- **Status:** Proposed
+- **Status:** Approved
 - **Date:** 2026-11-03
 - **Deciders:** [@puncoz](https://github.com/puncoz)
-- **Approved by:** —
-- **Approved on:** —
+- **Approved by:** [@puncoz](https://github.com/puncoz)
+- **Approved on:** 2026-11-03
 - **Supersedes:** [ADR-0015](./ADR-0015-every-entry-lives-at-the-root-in-one-shape-and-one-look.mdx)
   (in part: its implementation's "the proxy acts only on catalogued paths")
 - **Superseded by:** —
@@ -104,28 +104,58 @@ costs less than a render. The threat model is checked on implementation.
 
 ## Implementation notes
 
-- [ ] First, verify what this ADR could not: a proxy rewrite to `/_not-found` with status 404
-  serves the whole page, for document and client-side (`_rsc`) requests alike. If it does not,
-  **stop and ask**: the alternative, a dedicated route, gives the 404 a public address of its own.
-- [ ] Measure the proxy's bundle with the `async` collection. If compiled pages run in it, or it
-  grows out of proportion, **stop and ask**.
-- [ ] `src/lib/catalog-routes.ts`: the page URLs and `isKnownPath`; `src/proxy.ts`: the check,
-  after the existing steps.
-- [ ] `src/lib/source.ts` or a loader plugin: the build check of decision 5.
-- [ ] Tests (ADR-0007): known pages, landings, retired lines, `.md`, unknown paths at each depth,
-  the wrong case and trailing slashes; each pass-through; the pass-through list against `src/app/`;
-  the build check failing on a difference. The proxy's rewrite is checked with `curl` against
-  `bunx next build`: the Context table's paths give 404 and full HTML on the first request, every
-  page in `llms.txt` gives 200, and the site's routes and files are unchanged. In Chrome: the tab's
-  title, a client-side link to an unknown path, and the page with scripts off.
-- [ ] `bun run test`, `bun run types:check` and `bunx next build` pass; `bun run lint` is reported
+- [x] First, verified with a spike on `bunx next build`: a proxy rewrite to `/_not-found` with
+  status 404 serves the whole page on the first request, for document and `_rsc` requests alike.
+  The ADR's other route was not needed.
+- [x] Measured the proxy's traced chunks: 512 KB before; 2.9 MB with a plain `async` collection,
+  because it compiles a lazy chunk with the text of every page, which the proxy never loads. That
+  was out of proportion, so the collection in `catalog-routes.ts` compiles each body empty, with a
+  one-line remark plugin of its own. The result is 585 KB, with no page text in any proxy chunk,
+  and the site's own collection keeps its bodies. The chunk loaded at start grows by about 20 KB,
+  the frontmatter. A request took 1.5ms at the median through the proxy.
+- [x] `src/lib/known-paths.ts`: the site routes, `knownPaths` and `knownPathProblems`, without the
+  macro so they can be tested. `src/lib/catalog-routes.ts`: the collection, `isKnownPath` and
+  `assertKnownPaths`. `src/proxy.ts`: the check, after the existing steps.
+- [x] `lineSlugs` in `src/lib/catalog-plugin.ts`, used by `source.ts` and `known-paths.ts`, so both
+  work out a line's URL the same way.
+- [x] The build check of decision 5: `checkKnownPaths` in `src/lib/catalog.ts`, called from the
+  page's `generateStaticParams`, comparing the list with `source.getPages()` and the catalogue's
+  landings. Dropping one page from the list fails `bunx next build` and names that page.
+- [x] Tests (ADR-0007), in `src/lib/known-paths.test.ts`: known pages, landings, line segments,
+  unknown paths at each depth, the wrong case and trailing slashes; each pass-through; the
+  pass-through list against `src/app/` and `public/`; the check failing on each kind of difference.
+  Checked with `curl` against `bunx next build`:
+  - the Context table's paths give 404 with the page in the HTML on the first request, and no part
+    of the path in it;
+  - the 93 pages in `llms.txt` and in `static.json` give 200;
+  - the site's routes and files are unchanged, `/<entry>/<unknown>.md` still gets the Markdown
+    route's 404, and `/docs/` still redirects to `/docs`.
+
+  In Chrome: the tab's title on a first hit; the page with scripts off, in a frame sandboxed without
+  `allow-scripts`, whole and with its links; a client-side push to an unknown path; seven real
+  prefetches, all 200; *Back to the system* and an ordinary link staying client-side.
+
+  In development, against `next dev`: a page added to `content/` answered 200 within four seconds,
+  and 404 again within four seconds of being removed, so the proxy's list does not go stale there.
+- [x] Found while checking:
+  - A client-side link to an unknown path now loads the whole page rather than swapping it in,
+    because Next.js does that for any RSC response that is not OK
+    (`fetch-server-response.js`). The reader lands on the same page.
+  - The 404 is served with `Cache-Control: s-maxage=31536000`, as a static page is. A shared cache
+    that keeps it across a deploy would hide a page added later. No host is adopted yet; the ADR
+    that adopts one must check this.
+  - Decision 2 leaves everything below a site route alone, so a path such as `/api/nope` or
+    `/diagrams/nope`, which only `[...slug]` matches, is still a blank 200. `/og/nope` is a 404 from
+    its own route.
+- [x] `bun run test`, `bun run types:check` and `bunx next build` pass; `bun run lint` is reported
   while it stays blocked.
 
 ## Docs to update on implementation
 
-- [ ] [`../app-flow/unknown-paths.mdx`](../app-flow/unknown-paths.mdx): Current.
-- [ ] [`../api/content-routes.mdx`](../api/content-routes.mdx): the 404 response.
-- [ ] [`../architecture/system.mdx`](../architecture/system.mdx): the routes table and what the
-  proxy acts on; `content/docs/maintain/security/threat-model.mdx` if it stops being accurate.
-- [ ] `AGENTS.md` §1, §5 and §10, and `PROJECT_AGENTS.md` if a consuming repository is affected.
-- [ ] ADR-0015's "Superseded by" line, and [`./index.mdx`](./index.mdx): index row and status.
+- [x] [`../app-flow/unknown-paths.mdx`](../app-flow/unknown-paths.mdx): Current.
+- [x] [`../api/content-routes.mdx`](../api/content-routes.mdx): the 404 response.
+- [x] [`../architecture/system.mdx`](../architecture/system.mdx): the routes table and what the
+  proxy acts on, with the diagram's Archify pair; `content/docs/maintain/security/threat-model.mdx`.
+- [x] `AGENTS.md` §1, §5 and §10. `PROJECT_AGENTS.md`: no change; a consuming repository's pages
+  are listed from the content.
+- [x] ADR-0015's "Superseded by" line, and [`./index.mdx`](./index.mdx): index row and status.

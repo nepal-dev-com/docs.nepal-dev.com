@@ -15,7 +15,7 @@
     { "id": "content", "type": "database", "label": "content/", "sublabel": "MDX + catalogue", "row": 2, "col": 0 },
     { "id": "next", "type": "backend", "label": "next build", "sublabel": "checks, static output", "row": 2, "col": 1 },
     { "id": "sync", "type": "backend", "label": "sync-content.ts", "sublabel": "after the build", "row": 4, "col": 1 },
-    { "id": "proxy", "type": "security", "label": "proxy", "sublabel": "redirects, Markdown", "row": 1, "col": 2 },
+    { "id": "proxy", "type": "security", "label": "proxy", "sublabel": "redirects, Markdown, 404", "row": 1, "col": 2 },
     { "id": "home", "type": "frontend", "label": "/ home page", "row": 1, "col": 3 },
     { "id": "pages", "type": "frontend", "label": "/slug pages", "row": 2, "col": 3 },
     { "id": "diagram", "type": "frontend", "label": "/diagrams/", "sublabel": "Archify, shell", "row": 3, "col": 3 },

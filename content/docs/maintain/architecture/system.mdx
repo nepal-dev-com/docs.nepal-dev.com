@@ -44,15 +44,18 @@ documents; no package is documented yet, so the home page shows its empty states
 | `/<slug>/use/<segment>/…` for a line that does not exist | `src/proxy.ts` | 307 redirect to the same path in `latest` (or `dev`) |
 | `/<slug>….md` | `src/proxy.ts` → `/llms.mdx/<slug>…/content.md` | The page as Markdown |
 | `/<slug>…` with `Accept` preferring Markdown | `src/proxy.ts` → `/llms.mdx/<slug>…/content.md` | The page as Markdown, `Vary: Accept` |
+| Any other path that is not a page or a site route | `src/proxy.ts` → `src/app/not-found.tsx` | The out-of-orbit page, 404 from the first request, the address unchanged (ADR-0034) |
 | `/llms.mdx/…/content.md` | `src/app/llms.mdx/[...slug]/route.ts` | Processed Markdown of one page, `text/markdown` |
 | `/llms.txt` | `src/app/llms.txt/route.ts` | Index of every page, version lines labelled |
 | `/llms-full.txt` | `src/app/llms-full.txt/route.ts` | Every page's full Markdown in one file |
 | `/og/…/image.png` | `src/app/og/[...slug]/route.tsx` | Open Graph image: title, description, site name |
 | `/static.json` | `src/app/static.json/route.ts` | Every page as an Algolia search record |
 
-Pages share the root with the site's own routes. The proxy acts only on paths whose first
-segment is a catalogued slug (`isEntryPath`), and the build refuses a slug that would collide
-with a route (`api`, `og`, `static`, …). Contracts for the machine-readable routes are in
+Pages share the root with the site's own routes. The proxy leaves those routes and everything
+below them alone (`isSiteRoute`), handles line redirects and Markdown on paths whose first segment
+is a catalogued slug (`isEntryPath`), and answers any remaining path that is not a page with a 404
+(`isKnownPath`). The build fails if its list of pages differs from the site's, and refuses a slug
+that would collide with a route (`api`, `og`, `static`, …). Contracts for the machine-readable routes are in
 [`../api/`](../api/index.mdx).
 
 ## Components
@@ -64,7 +67,8 @@ with a route (`api`, `og`, `static`, …). Contracts for the machine-readable ro
 | `src/lib/catalog-plugin.ts` | Loader plugin: the build checks of ADR-0015 decision 5, typed roots (`root: true` on an entry, `'track'` on `use/` and `maintain/`, `'line'` on a version line), line names and descriptions (`version · channel`) and line order (latest, `dev`, then older lines in `use/meta.json` `pages` order or newest first); a project's lines (`dev` and one released line) and repository folders named from the catalogue (ADR-0024); the `root` hook `overviewInTracks()`, which moves each overview into its tracks as an *Overview* item, and `withoutOverviewItems()` for `llms.txt` (ADR-0025); `lineInfo()`, `lineSegment()`, `pageVersion()`, `repositoryName()` | `fumadocs-core` |
 | `src/lib/source.ts` | Loads `content/` with `defineDocs` at base URL `/`, swapping each line folder's URL segment for its name (`slugs`), with the diagram shape check first among the remark plugins and the Markdown filter for `<Diagram>` (ADR-0022); exposes `source`, `getMeta` and `docsLlms` (version line in each page's Markdown and in `llms.txt`) | `fumadocs-mdx`, the two above |
 | `src/lib/catalog.ts` | Reads the page tree into typed catalogue entries (lines, tracks, demo, repositories), the page context for banners, and the home page's previews | `source.ts` |
-| `src/lib/catalog-routes.ts` | Meta files only (no compiled pages), for the proxy: the catalogued slugs, each package's line segments, `latest` and `dev`; `isEntryPath()`, `resolveLineRedirect()` | `fumadocs-mdx` |
+| `src/lib/catalog-routes.ts` | Meta files and pages' paths, with every body compiled empty, for the proxy: the catalogued slugs, each package's line segments, `latest` and `dev`, the known paths; `isEntryPath()`, `resolveLineRedirect()`, `isKnownPath()`, `assertKnownPaths()` | `fumadocs-mdx`, `known-paths.ts` |
+| `src/lib/known-paths.ts` | The site's top-level routes, every path with a page behind it, and where two such lists differ (ADR-0034) | `catalog-plugin.ts` |
 | `diagrams/` | Archify diagrams, one pair per diagram: the candidate JSON (not published) and the HTML exactly as `deliver` wrote it (ADR-0022) | — |
 | `src/app/diagrams/[project]/[file]/route.ts`, `src/lib/diagram-files.ts` | Prerenders every HTML in `diagrams/` at `/diagrams/<project-slug>/<slug>.html` with the site shell; the CSP `sandbox` header comes from `next.config.mjs` | `diagram-shell.ts` |
 | `src/lib/diagram-shell.ts` | The site shell added as a diagram is served: in a frame (`?frame=1`) it hides Archify's title, notes rail, theme and style buttons and credit; it sets the page colours to the site's tokens, starts motion Live (unless reduced motion) and reports the content height to the page | — |
@@ -92,7 +96,7 @@ with a route (`api`, `og`, `static`, …). Contracts for the machine-readable ro
 | `src/app/(home)/` | Home layout (`.home` wrapper, `home.css`) and page | `catalog.ts`, `source.ts` |
 | `src/components/home/` | Server: hero, home header, planet cards, beyond the belt (private projects from `private-projects.ts`), two sides, moon rows. Client: orbit map (canvas; a planet opens its overview; the Verse view at `#verse`, its easing and far planets from `src/lib/verse-view.ts`, ADR-0029; every ecosystem's orbit, the living star, trails, pointer depth, the arrival, the comet and the telemetry line from `src/lib/hero-sky.ts`, with the nebula behind it in `home.css`, ADR-0032), search button (opens the search dialog), terminal (tabs), assistant actions (Fumadocs' Copy Markdown and Open menu for the example page), reveal | `catalog.ts`, `rings.ts`, `fumadocs-ui`, `lucide-react` |
 | `src/components/search.tsx`, `search-empty.tsx` | The site-wide search dialog, opened by `⌘K`, the docs header's search button and the home page's hero button; its no-results line is the site's own (ADR-0029) | `algolia.ts` |
-| `src/proxy.ts` | On catalogued paths only: line redirects, then the Markdown rewrites | `catalog-routes.ts`, `fumadocs-core/negotiation` |
+| `src/proxy.ts` | Leaves site routes alone; on catalogued paths, line redirects and the Markdown rewrites; any other unknown path, the 404 | `catalog-routes.ts`, `known-paths.ts`, `fumadocs-core/negotiation` |
 | `scripts/sync-content.ts` | After `next build`, reads the built `static.json` and replaces the Algolia index `document` with it | `algoliasearch`, `ALGOLIA_WRITE_KEY` |
 
 ## How navigation is scoped
@@ -130,7 +134,7 @@ flowchart TB
     SYNC["scripts/sync-content.ts"]
   end
   subgraph Site["Deployed site"]
-    PROXY["proxy: line redirects, Markdown rewrites"]
+    PROXY["proxy: line redirects, Markdown rewrites, 404 for unknown paths"]
     HOME["/ home page"]
     PAGES["/slug pages"]
     MD["Markdown · llms.txt · llms-full.txt"]

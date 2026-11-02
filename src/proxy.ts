@@ -1,18 +1,14 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { isMarkdownPreferred, rewritePath } from 'fumadocs-core/negotiation';
 import { docsContentRoute } from '@/lib/shared';
-import { isEntryPath, resolveLineRedirect } from '@/lib/catalog-routes';
+import { isEntryPath, isKnownPath, resolveLineRedirect } from '@/lib/catalog-routes';
+import { isSiteRoute } from '@/lib/known-paths';
 
 const { rewrite: rewriteDocs } = rewritePath('{/*path}', `${docsContentRoute}{/*path}/content.md`);
 const { rewrite: rewriteSuffix } = rewritePath('{/*path}.md', `${docsContentRoute}{/*path}/content.md`);
 
-export default function proxy(request: NextRequest) {
+function answerEntryPath(request: NextRequest): NextResponse | undefined {
   const { pathname } = request.nextUrl;
-  // Pages share the root with the site's own routes (ADR-0015); only entry paths are touched.
-  if (!isEntryPath(pathname)) {
-    return NextResponse.next();
-  }
-
   const redirect = resolveLineRedirect(pathname);
   if (redirect) {
     // Temporary: `latest` moves to a new line on every release.
@@ -35,5 +31,25 @@ export default function proxy(request: NextRequest) {
     }
   }
 
-  return NextResponse.next();
+  return undefined;
+}
+
+export default function proxy(request: NextRequest) {
+  const { pathname } = request.nextUrl;
+  // Pages share the root with the site's own routes (ADR-0015).
+  if (isSiteRoute(pathname)) {
+    return NextResponse.next();
+  }
+
+  const answer = isEntryPath(pathname) ? answerEntryPath(request) : undefined;
+  if (answer) {
+    return answer;
+  }
+
+  if (isKnownPath(pathname)) {
+    return NextResponse.next();
+  }
+
+  // A page learns this too late: its fallback shell has already gone out with a 200 (ADR-0034).
+  return NextResponse.rewrite(new URL('/_not-found', request.nextUrl), { status: 404 });
 }

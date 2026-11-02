@@ -13,7 +13,7 @@ import { withProfileChips } from '@/components/profile-link';
 import type { Metadata } from 'next';
 import { createRelativeLink } from 'fumadocs-ui/mdx';
 import { getPageImageUrl, getPageMarkdownUrl, gitConfig } from '@/lib/shared';
-import { getEntry, getPageContext, pageInLine } from '@/lib/catalog';
+import { checkKnownPaths, getEntry, getPageContext, pageInLine } from '@/lib/catalog';
 import { VersionNotice } from '@/components/docs/version-notice';
 import { PackageHero } from '@/components/docs/package-hero';
 import { ReadingTimeProvider, TrajectoryPopover, TrajectoryTOC } from '@/components/docs/trajectory-toc';
@@ -109,6 +109,7 @@ export default async function Page(props: PageProps<'/[...slug]'>) {
 }
 
 export async function generateStaticParams() {
+  checkKnownPaths();
   return source.generateParams();
 }
 

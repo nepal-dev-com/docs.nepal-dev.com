@@ -2,7 +2,7 @@
 title: "App flow — unknown paths"
 ---
 
-- **Status:** Proposed
+- **Status:** Current
 - **Last updated:** 2026-11-03
 - **Related ADRs:** [ADR-0034](../adr/ADR-0034-the-proxy-answers-unknown-paths-with-a-true-404.mdx),
   [ADR-0015](../adr/ADR-0015-every-entry-lives-at-the-root-in-one-shape-and-one-look.mdx),
@@ -10,9 +10,8 @@ title: "App flow — unknown paths"
 
 > Snapshot of the system as it stands today. Edit in place; never record what changed.
 
-What a reader gets at a path that is not a page under ADR-0034. The page looks as it always has;
-what changes is that it arrives whole, with a 404 status, on the first request. Sample values are
-invented (ADR-0008). Phone width first.
+What a reader gets at a path that is not a page (ADR-0034). The page arrives whole, with a 404
+status, on the first request. Sample values are invented (ADR-0008). Phone width first.
 
 The flow and the screen are drawn with Archify; the page shows them and its Markdown carries
 their Mermaid (ADR-0022). Their sources are in `diagrams/docs/`: `unknown-paths.json` for the
@@ -22,8 +21,9 @@ flow, `unknown-paths-screen-1.json` for the screen.
 
 - **Any path that is not a page:** a mistyped address, an old or shared link, a private project's
   name on the home page, or `/docs/nothing-here` inside an entry. Everyone gets the same page.
-- **Not here:** `/`, the site's own routes (`/llms.txt`, `/og/…`, `/diagrams/…`), files, and a
-  retired version line, which still redirects to the same path in the latest line.
+- **Not here:** `/`, the site's own routes and anything below them (`/llms.txt`, `/og/…`,
+  `/diagrams/…`), files, and a retired version line, which still redirects to the same path in the
+  latest line.
 
 ## Flow
 
@@ -70,4 +70,4 @@ The address stays as the reader typed it, and the page shows no part of it. The 
 - Degraded: without scripts the page and its links are all there, and *Back to the system* works;
   the search button does nothing.
 - Success: the reader searches, or goes back to the system. A link inside the site to an unknown
-  path shows the same page.
+  path shows the same page, with a full page load.

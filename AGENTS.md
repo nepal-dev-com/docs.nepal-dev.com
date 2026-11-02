@@ -38,8 +38,9 @@ decisions and design documents are its Maintain track, `content/docs/maintain/`,
 `/docs/maintain` (§8).
 
 - **Consumed as a git submodule.** The owner's project and package repositories include this
-  repository as a submodule and write their own pages into it, each in its own folder
-  `content/<project-slug>/`. Their guide is [`PROJECT_AGENTS.md`](PROJECT_AGENTS.md)
+  repository as a submodule and write their own pages into it, each in its own folders
+  `content/<project-slug>/` and `diagrams/<project-slug>/`, keeping both its Use and its Maintain
+  docs current. Their guide is [`PROJECT_AGENTS.md`](PROJECT_AGENTS.md)
   ([ADR-0010](content/docs/maintain/adr/ADR-0010-projects-document-themselves-through-a-submodule.mdx)).
   If you are working here from a consuming repository, read that first.
 - The overview and getting started are in [`README.md`](README.md). The map of this site's
@@ -80,7 +81,7 @@ yet** besides the site itself, so the home page shows its empty states.
   each level, ADR-0023; a folder named `adr` a constellation of moons phased by status,
   ADR-0019); the overview shows its default track's sidebar (ADR-0025); "On this page" as a trajectory
   with a probe riding at the reading position and the minutes left; moon notices on `dev` and
-  older lines. Unknown paths get the out-of-orbit 404 (`src/app/not-found.tsx`).
+  older lines. Unknown paths get the out-of-orbit 404 (`src/app/not-found.tsx`), from the proxy, with a 404 status and the whole page on the first request (ADR-0034).
 - **The home page is the system** (ADR-0014, ADR-0016, ADR-0017): the turning system (ADR-0032:
   the npm, Composer, PyPI, Go and Projects orbits always, the empty ones faint and named; a
   breathing star; planet trails; a lean toward the pointer; a spin-up once per session; a comet
@@ -258,8 +259,8 @@ What is installed **today** (verified from `package.json`, `node_modules` and th
 | Framework | Next.js **16.4.2**, App Router, `src/app/`; `cacheComponents` and `partialPrefetching` on in `next.config.mjs` (ADR-0016) |
 | Docs framework | Fumadocs: `fumadocs-core` 16.17.9, `fumadocs-mdx` 15.4.10, `fumadocs-ui` 16.17.9 (installed as `@fumadocs/base-ui`) |
 | Content source | `defineDocs` from `fumadocs-mdx/macro` in `src/lib/source.ts`, reading `content/`; no `source.config.ts`; generated files in `.source/` (gitignored) |
-| Catalogue | `src/lib/catalog-schema.ts` (meta schema with `catalog`, `name`, `version`, `channel`), `src/lib/catalog-plugin.ts` (build checks, line names and URL segments, typed roots), `src/lib/catalog.ts` (entries for pages and the home page), `src/lib/catalog-routes.ts` (line redirects in the proxy) — ADR-0013, ADR-0015 |
-| Routes | `/` is `src/app/(home)/`; every page is `src/app/(site)/(docs)/[...slug]/` at `/<slug>/…` (`docsRoute` is `''` in `src/lib/shared.ts`); `src/proxy.ts` acts only on catalogued paths — ADR-0015. **The docs layout stays below `(site)`, in `(docs)`:** Turbopack hangs the root `not-found.tsx` on the children of a first-layer route group, inside that group's layout, so a layout directly in `(site)` would stand around the 404 |
+| Catalogue | `src/lib/catalog-schema.ts` (meta schema with `catalog`, `name`, `version`, `channel`), `src/lib/catalog-plugin.ts` (build checks, line names and URL segments, typed roots), `src/lib/catalog.ts` (entries for pages and the home page), `src/lib/catalog-routes.ts` (line redirects and known paths in the proxy) — ADR-0013, ADR-0015, ADR-0034 |
+| Routes | `/` is `src/app/(home)/`; every page is `src/app/(site)/(docs)/[...slug]/` at `/<slug>/…` (`docsRoute` is `''` in `src/lib/shared.ts`); `src/proxy.ts` leaves the site's routes alone, handles line redirects and Markdown on catalogued paths, and rewrites any other unknown path to `/_not-found` with a 404; `src/lib/known-paths.ts` holds the routes and the list of paths, and a new top-level route or `public/` file must be added there (a test compares them); the build fails if the list differs from the pages — ADR-0015, ADR-0034. **The docs layout stays below `(site)`, in `(docs)`:** Turbopack hangs the root `not-found.tsx` on the children of a first-layer route group, inside that group's layout, so a layout directly in `(site)` would stand around the 404 |
 | Look | Tokens on `:root` and `.dark` in `src/app/global.css`, mapped onto Fumadocs' `--color-fd-*`; site header, orrery theme switch (`src/components/theme-switch.tsx`, `useTheme` from `fumadocs-ui/provider/base`), docs typography, planet header, notices, planet row, orbit stations, trajectory and Horizon footer in `src/app/site.css`; planet and moon marks in `src/components/planet.tsx`; the Verse mark in `src/components/verse-mark.tsx` and the site icon `src/app/icon.svg`; the still sky in `src/components/sky.tsx` from `src/lib/sky.ts`, styled in `global.css` and `site.css`; the zoom: `src/components/zoom-page.tsx` (`ZoomPage` in each page, `PlanetMorph` on the card's and the planet header's planet), the transition types in `src/lib/zoom.ts`, their CSS in `global.css` (ADR-0029); fonts Bricolage Grotesque, Onest and JetBrains Mono through `next/font/google` in `src/app/layout.tsx`; light/dark through next-themes (dark by default); visual system in `DESIGN.md` — ADR-0015, ADR-0017, ADR-0018, ADR-0029 |
 | Home page | `src/app/(home)/` and `src/components/home/`; the Verse view in `orbit-map.tsx` with `src/lib/verse-view.ts`, its hash target at the very top of `(home)/page.tsx` (ADR-0033); the living system's geometry, comet and telemetry in `src/lib/hero-sky.ts` (ADR-0032); styles in `src/app/(home)/home.css` (also the 404's) — ADR-0014, ADR-0016, ADR-0017, ADR-0029, ADR-0032 |
 | Docs pages | Fumadocs notebook layout in `src/app/(site)/(docs)/layout.tsx`, header `src/components/site-header.tsx` (shared with the home page), `src/components/docs/` (the scale strip in `scale-strip.tsx` with `src/lib/scale-strip.ts`, rendered first in the page with Fumadocs' breadcrumb off, docs header, planet header, the planet row in `track-switch.tsx` with `src/lib/overview-sidebar.ts`, orbit stations in `orbit-station.tsx` passed as `sidebar.components`, the ADR constellation in `adr-constellation.tsx` with `src/lib/adr-status.ts`, the trajectory in `trajectory-toc.tsx` passed as `slots.toc` from the page, version notice), moon icons on the version menu, `src/lib/trajectory.ts` and `src/lib/reading-time.ts` (geometry, time left, reading time), `src/components/horizon-footer.tsx` below every page, its scene from `src/lib/horizon-sky.ts` and its loops woken by `src/components/horizon-awake.tsx` (ADR-0030), — ADR-0015, ADR-0017, ADR-0018, ADR-0019, ADR-0029 |
@@ -568,7 +569,7 @@ adopts a host, analytics, CI or an authentication provider adds its own checks**
 │           ├── rbac/        # access matrices (public vs private documentation)
 │           └── security/    # threat model, data classification, secrets, audit checklist
 ├── src/
-│   ├── proxy.ts         # catalogued paths only: line redirects (use/latest, unknown lines), then /<page>.md and Markdown negotiation
+│   ├── proxy.ts         # catalogued paths: line redirects (use/latest, unknown lines), then /<page>.md and Markdown negotiation; any other unknown path: the true 404 (ADR-0034)
 │   ├── app/             # App Router: layout.tsx (fonts, theme), global.css (tokens), site.css (header, theme switch,
 │   │                    #   planet header, notices, planet row, stations, trajectory, footer), not-found.tsx (the 404),
 │   │                    #   (home)/ (home page, home.css), (site)/(docs)/[...slug]/ (every page, notebook layout),
@@ -585,7 +586,7 @@ adopts a host, analytics, CI or an authentication provider adds its own checks**
 │   └── lib/             # source.ts (content loader), catalog*.ts (catalogue schema, checks, entries, redirects),
 │                        #   rings.ts (ecosystem rings and kind names), sky.ts (seeded star fields), horizon-sky.ts (the Horizon's scene, ADR-0030), hero-sky.ts (the living hero, ADR-0032), scale-strip.ts, verse-view.ts and zoom.ts (ADR-0029), overview-sidebar.ts (ADR-0025), sidebar-ladder.ts (ADR-0027),
 │                        #   docs-layout.ts (DocsLayout options: Fumadocs' theme switch off), trajectory.ts, reading-time.ts, adr-status.ts,
-│                        #   search-scope.ts, algolia.ts, diagrams.ts + diagrams-plugin.ts (file checks), remark-diagrams.ts
+│                        #   known-paths.ts (site routes and every path with a page, ADR-0034), search-scope.ts, algolia.ts, diagrams.ts + diagrams-plugin.ts (file checks), remark-diagrams.ts
 │                        #   (shape check, Markdown filter), diagram-shell.ts, diagram-files.ts (ADR-0022),
 │                        #   github-profile.ts (ADR-0020); tests beside the code, *.test.ts(x) (ADR-0021)
 │                        #   shared.ts (site name, routes, GitHub)

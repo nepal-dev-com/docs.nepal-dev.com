@@ -13,8 +13,8 @@ title: "API — Machine-readable content routes"
 All of these are prerendered at build time (they read no request data, ADR-0016), need no
 authentication, and
 return **every page in `content/`**. None filters anything out. Pages live at the root,
-`/<slug>/…` (ADR-0015); `src/proxy.ts` acts only on paths whose first segment is a catalogued
-slug.
+`/<slug>/…` (ADR-0015). `src/proxy.ts` handles line redirects and Markdown on paths whose first
+segment is a catalogued slug, and answers any path that is not a page with a 404 (ADR-0034).
 
 ## Endpoints
 
@@ -22,6 +22,7 @@ slug.
 |---|---|---|---|
 | GET | `/<package>/use/latest/<path>` | 307 to the same path in the line marked `latest`, or in `dev` when nothing is released (also with `.md`) | None |
 | GET | `/<package>/use/<segment>/<path>` for a line that does not exist | 307 to the same path in `latest` (or `dev`); 404 there if the page doesn't exist | None |
+| GET | Any other path that is not a page or a site route | 404 with the whole out-of-orbit page (rewritten by `src/proxy.ts` to `/_not-found`; the address does not change) | None |
 | GET | `/<page>.md` | One page as Markdown (rewritten by `src/proxy.ts`) | None |
 | GET | `/<page>` with `Accept` preferring Markdown | One page as Markdown (rewritten by `src/proxy.ts`) | None |
 | GET | `/llms.mdx/<slug>/content.md` | One page as Markdown | None |

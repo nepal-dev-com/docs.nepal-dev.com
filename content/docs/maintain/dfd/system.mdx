@@ -84,7 +84,7 @@ flowchart LR
 
 | Flow | Direction | Authorisation | Private content? |
 |---|---|---|---|
-| Pages from a consuming repository → `content/` | Submodule → repository | The owner's review and commit; agents there never commit (`PROJECT_AGENTS.md` §5) | Could carry a private project's text if written into its folder; the owner's review is the control, and `PROJECT_AGENTS.md` §2 forbids it |
+| Pages from a consuming repository → `content/` | Submodule → repository | The owner's review and commit; agents there never commit (`PROJECT_AGENTS.md` §10) | Could carry a private project's text if written into its folder; the owner's review is the control, and `PROJECT_AGENTS.md` §2 forbids it |
 | Records → Algolia | Build → Algolia | `ALGOLIA_WRITE_KEY` | Would carry any page in `content/`. Each record also carries its scope `tag` and, for catalogue pages, `package`, `kind`, `ecosystem`, `track`, `line`, `channel` (ADR-0013) — public metadata about public pages |
 | Search query → Algolia | Browser → Algolia | Search-only key, public by design | Can read every record in the index. The query is the reader's text only; the dialog adds no filter |
 | Pages and machine-readable routes → readers and tools | Site → public | None | Would carry any page in `content/` |

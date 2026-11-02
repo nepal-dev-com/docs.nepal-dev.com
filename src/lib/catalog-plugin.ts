@@ -52,6 +52,18 @@ export interface LineInfo {
 }
 
 /**
+ * A page's slugs with its line's URL segment in place of the folder (ADR-0015 decision 4).
+ */
+export function lineSlugs(path: string, slugs: string[], getMeta: (path: string) => CatalogMeta | undefined): string[] {
+  const [slug, track, folder, ...rest] = path.split('/');
+  if (track !== 'use' || !folder || rest.length === 0) {
+    return slugs;
+  }
+  const info = lineInfo(folder, getMeta(`${slug}/use/${folder}/meta.json`));
+  return info ? [...slugs.slice(0, 2), info.segment, ...slugs.slice(3)] : slugs;
+}
+
+/**
  * The version line a Use folder holds, or undefined when its `meta.json` doesn't make it one.
  */
 export function lineInfo(folder: string, meta: CatalogMeta | undefined): LineInfo | undefined {
