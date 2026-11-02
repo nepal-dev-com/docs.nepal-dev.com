@@ -1,0 +1,131 @@
+---
+title: "ADR-0034 — The proxy answers unknown paths with a true 404"
+---
+
+- **Status:** Proposed
+- **Date:** 2026-11-03
+- **Deciders:** [@puncoz](https://github.com/puncoz)
+- **Approved by:** —
+- **Approved on:** —
+- **Supersedes:** [ADR-0015](./ADR-0015-every-entry-lives-at-the-root-in-one-shape-and-one-look.mdx)
+  (in part: its implementation's "the proxy acts only on catalogued paths")
+- **Superseded by:** —
+- **Design documents:** [`../app-flow/unknown-paths.mdx`](../app-flow/unknown-paths.mdx),
+  [`../api/content-routes.mdx`](../api/content-routes.mdx),
+  [`../architecture/system.mdx`](../architecture/system.mdx)
+
+## Context
+
+- Every path that is not a site route reaches `src/app/(site)/(docs)/[...slug]/page.tsx`, which
+  calls `notFound()` when it has no such page.
+- That call comes too late for a path `generateStaticParams` did not list. Measured on
+  `bunx next build`, for a path not requested before:
+
+  | Request | Status | HTML |
+  |---|---|---|
+  | First `/no-such-page` | 200 | Blank: `<html id="__next_error__">`, no page content |
+  | The same path again | 404 | Blank, the same shell |
+  | First `/x/y/z`, `/docs/nothing-here` | 200 | Blank, the same shell |
+
+  The route's prerendered fallback shell is empty, and the page learns the path is unknown only
+  when it resumes. Scripts then build the 404 in the browser, with a `noindex` tag.
+- So a reader without scripts sees a blank page, which contradicts the 404's documented state
+  (*Back to the system* still works). Monitoring counts these as successes, some crawlers report
+  soft 404s, and in Chrome the first hit's tab showed no title although the title is in the HTML.
+- The installed Next.js documents this. A streamed page keeps its 200, and for a 404 "you can
+  check the slug in Proxy, then rewrite it to a not-found route or return a 404 response"
+  (`file-conventions/loading.md`, *Status codes*).
+- `dynamicParams = false`, which would refuse unlisted paths, is not available with Cache
+  Components (ADR-0016; `route-segment-config/dynamicParams.md`).
+- The proxy has no `matcher`, so it runs on every request, including `_next` and files. It already
+  answers line redirects and Markdown, but only for catalogued slugs, and it knows only `meta.json`
+  files: `src/lib/catalog-routes.ts` keeps compiled pages out of its bundle.
+- `fumadocs-mdx/macro` has an `async` mode (`docs: { async: true }`): frontmatter is imported at
+  once and the compiled body only when asked for (`transform-*.js`, `only: "frontmatter"`).
+
+## Decision
+
+1. **The proxy answers every unknown path with a true 404, before any page renders.** The status
+   is 404 from the first request and the response is the whole out-of-orbit page, the existing
+   `src/app/not-found.tsx`, in the HTML. The address does not change, and the page still shows no
+   part of it.
+2. **What it judges.** Only paths `[...slug]` would otherwise render. These pass through untouched:
+   `/`, `/_next/…`, the site's own routes (`api`, `diagrams`, `llms-full.txt`, `llms.mdx`,
+   `llms.txt`, `og`, `static.json`), `icon.svg` and any file in `public/`.
+3. **What it knows.** Every page's URL, and each `/<slug>/use` and line root that redirects to a
+   first page (ADR-0015 decision 1). Comparison is exact, so `/DOCS` is unknown.
+4. **The existing order stays.** Line redirects and Markdown come first, so a retired line still
+   redirects and `/<unknown>.md` still gets its own 404 from the Markdown route.
+5. **The list comes from the content, and the build checks it.** `catalog-routes.ts` lists the
+   pages' paths through an `async` collection, so no compiled page runs in the proxy, and works out
+   each URL with the same line segments as `source.ts`. **The build fails if this list and
+   `source.getPages()` differ**, because a page wrongly refused would be a real page gone.
+6. **`notFound()` in the page stays**, as the safety net for anything that reaches it.
+
+## Options considered
+
+| Option | Pros | Cons | Verdict |
+|---|---|---|---|
+| Check every path in the proxy | True 404 with full HTML everywhere; what Next.js documents | The proxy must know the pages; a wrong list would hide a real page, so it needs a build check | Chosen (owner) |
+| Check only the first segment | Uses data the proxy already has | `/docs/nothing-here` stays a blank 200 | Rejected (owner) |
+| Leave it | No work; `noindex` already keeps these out of search | Blank without scripts, 200 in monitoring | Rejected (owner) |
+| `dynamicParams = false` | One line, no list | Not available with Cache Components | Not possible |
+| Generate the list in a script, or in `next.config.mjs` | No macro involved | A new build step, and it can go stale in development | Rejected |
+| Read `content/` from the proxy at request time | Always current | Slow, and the content need not be on the server | Rejected |
+| Fetch from a route in the proxy | Reuses `source` | A request per request; Next.js advises against it | Rejected |
+
+## Consequences
+
+**Positive**
+
+- Unknown paths are true 404s for readers, tools and monitoring, and readable without scripts.
+- The 404's documented degraded state becomes true.
+
+**Negative / accepted trade-offs**
+
+- The proxy gains a second view of the pages. The build check is what makes that safe.
+- It runs one set lookup on each request it judges.
+- The `async` collection adds lazily loaded chunks to the proxy's bundle. They are not run, but
+  their size is unmeasured until this is built.
+- A new top-level route must be added to the proxy's pass-through list, or it would answer 404. A
+  test compares that list with `src/app/`.
+
+## Content invariants
+
+§6.5 is kept: Markdown routes are not changed. No content is added or exposed. The URL list holds
+only pages that are already published.
+
+## Security considerations
+
+Low. The request's path is only compared with a fixed set, and it is never echoed, so the page
+still shows no part of it. Nothing leaves the system and no secret is touched. The proxy's bundle
+holds the same public URLs as `llms.txt`. An unknown path now gets a cached static page, which
+costs less than a render. The threat model is checked on implementation.
+
+## Implementation notes
+
+- [ ] First, verify what this ADR could not: a proxy rewrite to `/_not-found` with status 404
+  serves the whole page, for document and client-side (`_rsc`) requests alike. If it does not,
+  **stop and ask**: the alternative, a dedicated route, gives the 404 a public address of its own.
+- [ ] Measure the proxy's bundle with the `async` collection. If compiled pages run in it, or it
+  grows out of proportion, **stop and ask**.
+- [ ] `src/lib/catalog-routes.ts`: the page URLs and `isKnownPath`; `src/proxy.ts`: the check,
+  after the existing steps.
+- [ ] `src/lib/source.ts` or a loader plugin: the build check of decision 5.
+- [ ] Tests (ADR-0007): known pages, landings, retired lines, `.md`, unknown paths at each depth,
+  the wrong case and trailing slashes; each pass-through; the pass-through list against `src/app/`;
+  the build check failing on a difference. The proxy's rewrite is checked with `curl` against
+  `bunx next build`: the Context table's paths give 404 and full HTML on the first request, every
+  page in `llms.txt` gives 200, and the site's routes and files are unchanged. In Chrome: the tab's
+  title, a client-side link to an unknown path, and the page with scripts off.
+- [ ] `bun run test`, `bun run types:check` and `bunx next build` pass; `bun run lint` is reported
+  while it stays blocked.
+
+## Docs to update on implementation
+
+- [ ] [`../app-flow/unknown-paths.mdx`](../app-flow/unknown-paths.mdx): Current.
+- [ ] [`../api/content-routes.mdx`](../api/content-routes.mdx): the 404 response.
+- [ ] [`../architecture/system.mdx`](../architecture/system.mdx): the routes table and what the
+  proxy acts on; `content/docs/maintain/security/threat-model.mdx` if it stops being accurate.
+- [ ] `AGENTS.md` §1, §5 and §10, and `PROJECT_AGENTS.md` if a consuming repository is affected.
+- [ ] ADR-0015's "Superseded by" line, and [`./index.mdx`](./index.mdx): index row and status.
