@@ -1,0 +1,276 @@
+---
+title: "ADR-0035 — Every page is ready for search and sharing"
+description: "Canonical links, a sitemap, robots rules, structured data, descriptions and designed share images for every page, built from the content."
+---
+
+- **Status:** Approved
+- **Date:** 2026-11-03
+- **Deciders:** [@puncoz](https://github.com/puncoz)
+- **Approved by:** [@puncoz](https://github.com/puncoz)
+- **Approved on:** 2026-11-03
+- **Supersedes:** —
+- **Superseded by:** —
+- **Design documents:** [`../app-flow/search-and-sharing.mdx`](../app-flow/search-and-sharing.mdx),
+  [`../prd/search-and-sharing.mdx`](../prd/search-and-sharing.mdx),
+  [`../api/crawler-routes.mdx`](../api/crawler-routes.mdx),
+  [`../architecture/system.mdx`](../architecture/system.mdx)
+
+## Context
+
+- The owner wants proper search and sharing for every page: the home page, this site's pages and
+  every package's and project's, with Open Graph and share images, and consuming projects told how
+  it works.
+- What the site has today, read from the code and from a page's HTML:
+
+  | Concern | Today |
+  |---|---|
+  | The site's address | Unknown: no `metadataBase`, so `og:image` reads `http://localhost:3000/…` |
+  | Canonical links | None |
+  | `robots.txt`, `sitemap.xml`, web manifest | None |
+  | Structured data | None |
+  | Page title | The page's own title only, with no entry or site: `Architecture Decision Records` |
+  | Description | 92 pages have none, out of the 93 before this ADR's documents; `description` is optional in `pageSchema` |
+  | Share image | Fumadocs' default on every page: a pink rule on black, nothing of the site's look. The home page has none |
+  | Markdown copies, `llms.txt`, `static.json`, diagram frames | Open to indexing, so they can compete with the pages they copy |
+  | Version lines | Nothing stops an older line outranking the latest |
+
+- No host or domain is adopted (`architecture/system.mdx`). The owner has chosen the address
+  `https://docs.puncoz.com`, read from an environment variable at build.
+- What the installed versions provide, read from their docs and source:
+  - Next.js has `metadataBase`, `alternates`, `title.template`, `robots.ts`, `sitemap.ts`,
+    `manifest.ts` and generated `apple-icon`; JSON-LD is a `<script>` in the page, with `<` escaped
+    (`guides/json-ld.md`).
+  - `next/og`'s `ImageResponse` draws an image from JSX with no new dependency: flexbox only, `ttf`,
+    `otf` or `woff` fonts only, and a 500 KB bundle limit (`functions/image-response.md`).
+  - `fumadocs-mdx` has `lastModified`, from `git log`. A shallow clone would give every page the
+    date of the last commit.
+- Everything here is a public surface. Search rules are not access control (§6.1).
+
+## Decision
+
+### The address
+
+1. **`SITE_URL` holds the site's address**, read at build: `https://docs.puncoz.com`, set in
+   `.env.local` and on the host, and named without a value in `.env.example`. It is not secret and
+   not `NEXT_PUBLIC_`, because only the server reads it. It must be an `https` origin with no path,
+   or the build fails.
+2. **With no `SITE_URL` there is no public address, so nothing is indexed.** Every page says
+   `noindex`, `robots.txt` disallows everything and the sitemap is empty, so a preview or a local
+   build can never be indexed by accident. **`bun run build` refuses to publish without it**, naming
+   the variable, so production cannot lose its indexing silently.
+
+### What search engines are told
+
+3. **Each page's rule comes from where it sits**, in one tested function. No page sets its own.
+
+   | The page | Indexed | Canonical link | In the sitemap |
+   |---|---|---|---|
+   | The home page, an overview, a page with no lines | Yes | Itself | Yes |
+   | A page in the `latest` line | Yes | Itself | Yes |
+   | A page in Maintain | Yes | Itself | Yes |
+   | A page in an older line, with the same path in `latest` | Yes | **That page in `latest`** | No |
+   | A page in an older line, with no such page in `latest` | Yes | Itself | Yes |
+   | A page in the `dev` line | No, `noindex, follow` | None | No |
+   | A page in a folder named `_templates` | No, `noindex, follow` | None | No |
+   | The 404 | No, as today | None | No |
+
+   An unreleased package's Use pages are therefore out of search until its first release; its
+   overview and Maintain are in.
+4. **`robots.txt` allows everyone, AI crawlers included**, and names the sitemap. The site already
+   offers itself to tools through `llms.txt`, and only public pages are here (§6.1).
+5. **`sitemap.xml` lists the pages table 3 marks**, with `lastmod` from git. It has no `changefreq`
+   or `priority`, because nothing in the content could set them honestly. Redirecting addresses are
+   not in it.
+6. **Machine-readable copies stay readable but out of results.** `/llms.mdx/…` (so also `/<page>.md`
+   and Markdown negotiation), `/llms.txt`, `/llms-full.txt`, `/static.json`, `/diagrams/…` and
+   `/api/search` answer with `X-Robots-Tag: noindex`, and `robots.txt` does not block them.
+
+### What every page says
+
+7. **Titles name the page, its entry and the site**, built in one tested function:
+
+   | The page | Title |
+   |---|---|
+   | Home | `Puncoz Verse — every package and project, documented to the version` (as today, ADR-0028) |
+   | Overview | `lodestar — Puncoz Verse` |
+   | Latest line, no lines, Maintain | `Install — lodestar — Puncoz Verse` |
+   | Older line | `Install — lodestar 2.x LTS — Puncoz Verse` |
+   | `dev` line | `Install — lodestar dev — Puncoz Verse` |
+   | 404 | `Page not found — Puncoz Verse` (as today) |
+
+8. **`description` is required on every page.** The build fails and names any page without one, in
+   every entry. Written for a person reading a search result: one or two plain sentences, about 160
+   characters at most, saying what the page is for. This work writes the 92 missing ones; on an
+   approved ADR it changes only the frontmatter, never a Decision section. The templates carry a
+   placeholder.
+9. **Every page's head carries**, from the content: its description; `alternates` for its canonical
+   link and its Markdown (`text/markdown`); `robots` as table 3, with `max-image-preview:large` on
+   indexed pages; Open Graph `title`, `description`, `url`, `site_name`, `locale`, `type` (`website`
+   on the home page and overviews, `article` elsewhere, with `article:modified_time` and
+   `article:author`) and its image with `width`, `height`, `type` and `alt`; a Twitter
+   `summary_large_image` card; `authors`, `creator` and `publisher`, the owner; and `theme-color`
+   for each theme. No `twitter:site`, because no handle is known, and no `keywords`.
+10. **Structured data, as JSON-LD with `<` escaped:** on the home page `WebSite` and the owner's
+    `Person` (`sameAs` their GitHub profile), with no `SearchAction`, because search is a dialog with
+    no results address; on a docs page `TechArticle` and `BreadcrumbList`, in plain names (entry,
+    Use or Maintain, folders, page), not space words; on an overview also `SoftwareSourceCode`, with
+    the entry's repository and latest version. A page whose canonical link is another page, and a
+    `noindex` page, carry none. The invented private projects are never in it.
+
+### Share images and icons
+
+11. **Every page has its own designed share image, at 1200 by 630, and so does the home page**, drawn
+    by the site with `next/og` in place of Fumadocs' default, and made at build:
+    - in the dark theme's colours on the still star field, seeded from the page's address so each
+      image's sky is its own and stays the same;
+    - the Verse mark and *Puncoz Verse* (ADR-0028, ADR-0029);
+    - a docs page: the entry's planet mark, its name, the track and the line with its moon; then the
+      page's title and description; then the domain from `SITE_URL`;
+    - the home page: the system, drawn still, with one planet per entry, and its line; at
+      `/og/image.png`;
+    - a long title is set smaller rather than cut, and a description is shortened at a word boundary.
+12. **The images use the site's fonts**, Bricolage Grotesque and Onest, fetched as `ttf` from Google
+    Fonts at build, the source `next/font` already uses. A failed fetch fails the build. No font file
+    is committed.
+13. **Icons:** `src/app/icon.svg` stays; `src/app/apple-icon.tsx` draws the Verse mark at build, so
+    no binary is committed (§8); `src/app/manifest.ts` gives the name, short name, description,
+    theme colours and those icons. No `favicon.ico`: it would be a committed binary, and `/favicon.ico`
+    answers 404.
+
+### Out of scope
+
+14. Analytics, RSS, `hreflang` and a search-console verification tag. Verifying the domain is by DNS,
+    which is the owner's step after deployment. A frontmatter field to switch a page's indexing is
+    also left out: it would look like a way to keep something private, and it is not.
+
+## Options considered
+
+| Option | Pros | Cons | Verdict |
+|---|---|---|---|
+| Address: `SITE_URL` at build, `docs.puncoz.com` | The domain can move with no code change; previews stay unindexed | One more variable to set | Chosen (owner) |
+| Address: fixed in `shared.ts` | No variable | A preview would be crawlable; moving means a code change | Rejected (owner) |
+| Versions: latest wins, nothing vanishes | Readers land on current docs, and a page only in an older line stays findable | A search for an old version usually reaches latest first | Chosen (owner) |
+| Versions: only latest indexed | The simplest rule | A page only in an older line can't be found | Rejected (owner) |
+| Versions: every line indexed | A search for an old version lands on it | An old version can outrank the current one | Rejected (owner) |
+| Maintain: indexed, except templates | ADRs and architecture can be found | A maintainer page can appear above a user page | Chosen (owner) |
+| Maintain: not indexed | Search shows only user docs | One indexable page today; maintainer docs can't be found | Rejected (owner) |
+| Descriptions: required, the build fails | Every result and card has written words | One more line per page, and a project missing them can't build the site | Chosen (owner) |
+| Descriptions: optional, from the first paragraph | No writing | Weak snippets; an ADR's first paragraph is its status lines | Rejected (owner) |
+| Images: the site's own with `next/og` | On brand, no dependency | A component to keep; flexbox only | Proposed |
+| Images: Fumadocs' `generateOGImage` with new colours | Least code | Its layout has no entry, version or sky | Rejected |
+| Fonts: fetched at build | The site's own type, nothing committed | The build needs the network, as `next/font` already does | Proposed |
+| Fonts: committed `ttf` files | Works offline | Committed binaries, up to the 500 KB limit | Rejected |
+| Fonts: `next/og`'s default | No fetch | Not the site's type | Rejected |
+| Robots: block AI crawlers | Keeps pages out of training sets | Contradicts `llms.txt`; only public pages are here | Rejected |
+| `lastmod`: from git | True on a full clone, no field to maintain | A shallow clone dates everything to the last commit | Proposed; the hosting ADR must clone in full |
+| `lastmod`: none | Nothing can be wrong | Crawlers get no signal of change | Rejected |
+
+## Consequences
+
+**Positive**
+
+- Every page, in every entry, gets all of this from its folder and frontmatter, with nothing per page
+  beyond a description.
+- A shared link looks like this site, and a tab, a bookmark or a result names the page and its entry.
+- A preview cannot be indexed unless it sets `SITE_URL`.
+
+**Negative / accepted trade-offs**
+
+- A consuming project's build fails until each of its pages has a description.
+- A preview that does set `SITE_URL` is crawlable, with its canonical links pointing at production.
+- An image per page and the fonts make the build slower, and the build needs the network.
+- The 404 is served with a one-year `s-maxage` (ADR-0034), which is unchanged here.
+- Search engines decide what they do. Canonical links and sitemaps are hints, and no ranking is
+  promised.
+- Nothing is reachable until a host serves `docs.puncoz.com`; this ADR adopts no host.
+
+## Content invariants
+
+§6.1 is kept and its list grows: `sitemap.xml`, `robots.txt`, JSON-LD and share images become public
+surfaces, built only from pages already published. §6.5 is kept: `noindex` on a Markdown copy does not
+stop anyone reading it. §6.3 is kept: an older line's page says its version in its title too.
+
+## Security considerations
+
+- **`SITE_URL`:** public and not a secret; recorded in `security/secrets.mdx` and `.env.example`.
+- **JSON-LD:** titles and descriptions go into a `<script>`, so `<` is escaped, as the Next.js guide
+  says. They come from the repository, not from a reader.
+- **New third party at build:** Google Fonts, for font files. It is sent no content, and the page's
+  words are not in the request. Recorded as a DFD boundary crossing.
+- **`noindex` is not privacy:** a `noindex` page is still published and readable. The documents and
+  `PROJECT_AGENTS.md` say so. §6.1 still keeps private content out of `content/`.
+- **New routes:** `robots.txt`, `sitemap.xml`, the manifest, the Apple icon and the home image expose
+  only public data, take no input and are prerendered. Documented in `api/crawler-routes.mdx`.
+
+## Implementation notes
+
+- [x] `src/lib/seo.ts`, pure and tested: the address's validation, the rule of table 3, the title of
+  decision 7, the description's shortening and the title's size, and the JSON-LD objects.
+- [x] `src/app/layout.tsx`: `metadataBase`, the shared metadata, `theme-color`.
+- [x] `src/app/(site)/(docs)/[...slug]/page.tsx`: `generateMetadata` from `seo.ts`, the JSON-LD
+  script. `src/app/(home)/page.tsx`: the same for the home page.
+- [x] `src/app/robots.ts`, `src/app/sitemap.ts`, `src/app/manifest.ts`, `src/app/apple-icon.tsx`;
+  `lastModified: true` on the collection in `source.ts`.
+- [x] `src/components/share-image.tsx` and `src/app/og/[...slug]/route.tsx`: the two images, including
+  `/og/image.png`. Before relying on decision 12, verify a font can be fetched as `ttf` and stays
+  within the bundle limit, and if not, **stop and ask**.
+- [x] `X-Robots-Tag` on the routes of decision 6, checked on a prerendered response and through the
+  proxy's rewrite.
+- [x] `src/lib/source.ts`: a schema that requires `description`, with the page named in the failure.
+  The 92 descriptions, each read from its page, and the templates' placeholders.
+- [x] `src/lib/known-paths.ts` (ADR-0034): the new top-level routes in the pass-through list, with the
+  test mapping `robots.ts` to `robots.txt` and so on.
+- [x] `scripts/sync-content.ts`: refuse without `SITE_URL`. `.env.example`.
+- [x] Tests (ADR-0007): every row of tables 3 and 7, including an older page with and without a
+  counterpart and a project with no lines; `SITE_URL` unset, invalid and with a path; the sitemap's
+  contents; the escaped JSON-LD; the description check; the shortening and sizes on long titles.
+  With `curl` against `bunx next build`, with and without `SITE_URL` (given on the command line, never
+  by reading `.env.local`): the head of each kind of page, `robots.txt`, `sitemap.xml`, the headers of
+  decision 6. Looked at: the images for the home page, an overview, a long ADR title and a package
+  with a line, the last from a temporary folder removed afterwards.
+- [x] `bun run test`, `bun run types:check` and `bunx next build` pass; `bun run lint` is reported
+  while it stays blocked.
+
+What the implementation found, with the Decision above left as approved:
+
+- **Fonts (decision 12):** Google Fonts answers with `ttf` to a legacy user agent. Each file is 82 to
+  90 KB, well inside the 500 KB limit, so there was no need to stop and ask. `use cache` keeps the
+  routes prerendered.
+- **`/api/search` (decision 6) does not exist.** `src/app/api/search` and `src/app/api` were empty,
+  untracked folders, left over and now removed, so no header was added. `api` also left the site routes,
+  so `/api/search` and `/api/nope` are now true 404s. The old route-list test would have failed on a
+  fresh clone, where those empty folders don't exist.
+- **The description check** is `checkDescriptions` in `catalog-plugin.ts`, not the schema the note above
+  names: the check names every undescribed page in one failure, where a schema stops at the first.
+  Confirmed with a temporary page: `Description check failed (ADR-0035)` naming the file, exit 1.
+- **Descriptions show on the page.** Fumadocs prints a page's description under its title, so the 92
+  are visible there too. The app flow says so.
+- **`apple-icon` joined the reserved slugs**, because a folder of that name would have been shadowed by
+  the new route.
+- **The home image's first draft** had its orbits across the headline. They now share one span, clear of
+  the text at any number of rings, with a test.
+- **With `SITE_URL` set and a temporary package with all three kinds of line:** every row of tables 3
+  and 7 as decided, 90 URLs in the sitemap, 81 with `lastmod`. The other nine pages were uncommitted, and
+  so have no date yet. **With no `SITE_URL`:** `noindex` on every page, `Disallow: /`, an empty sitemap,
+  no domain on the images, and `og:image` on `http://localhost:3000`, Next.js's fallback, as the app flow's
+  degraded state says.
+- **Not fixed here:** `/diagrams/nope` and `/llms.txt/x` are still blank 200s, as ADR-0034 records. No
+  real host has been tested, so nothing has been seen in a search engine or a real sharing app's card.
+
+**For the owner after approval:** add `SITE_URL=https://docs.puncoz.com` to `.env.local`, which agents
+do not read or change, and to the host when one is adopted.
+
+## Docs to update on implementation
+
+- [x] `PROJECT_AGENTS.md`: the required description and how to write one (§7, §13); what search engines
+  are told for each kind of page, and that it is automatic (§4, §5); `noindex` is not privacy (§2); the
+  share image; the new build check (§9); the paste block.
+- [x] `AGENTS.md`: §1, §5, §6.1's list of surfaces, §8's *Format of a page* (`description` required),
+  §9's checks, §10's map. `README.md`.
+- [x] [`../app-flow/search-and-sharing.mdx`](../app-flow/search-and-sharing.mdx),
+  [`../prd/search-and-sharing.mdx`](../prd/search-and-sharing.mdx) and
+  [`../api/crawler-routes.mdx`](../api/crawler-routes.mdx): Current.
+- [x] [`../architecture/system.mdx`](../architecture/system.mdx), `../dfd/system.mdx`,
+  `../security/secrets.mdx`, `../security/threat-model.mdx`, `../security/checklist.mdx` (the hosting
+  ADR must clone in full and check the 404's cache), `../_templates/` (a `description` in each).
+- [x] `DESIGN.md`: the share images. [`./index.mdx`](./index.mdx): index row and status.

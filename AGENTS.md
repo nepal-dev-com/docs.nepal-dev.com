@@ -97,8 +97,11 @@ yet** besides the site itself, so the home page shows its empty states.
   `instant = false`, opting it out of the development-only instant-navigation check. Its whole
   body comes from the slug, so a `<Suspense>` boundary would put a skeleton in every page's
   static HTML and hide the content without scripts.
-- **Also here:** Algolia search, `llms.txt` / `llms-full.txt`, per-page Markdown and Open Graph
-  images.
+- **Also here:** Algolia search, `llms.txt` / `llms-full.txt` and per-page Markdown.
+- **Every page is ready for search and sharing** (ADR-0035), from where it sits and its frontmatter:
+  canonical link, `robots`, title, description, Open Graph, JSON-LD and its own share image, with
+  `robots.txt`, `sitemap.xml`, the manifest and the Apple icon. `SITE_URL` holds the address; without
+  it nothing is indexed and `bun run build` refuses to publish. `description` is required on every page.
 - **Every diagram is a `<Diagram>`** around its Mermaid fence (ADR-0022): the page shows its
   Archify view from `diagrams/`, in a sandboxed frame with the site shell; every Markdown surface
   carries the Mermaid. The build fails on a bare Mermaid fence outside the templates.
@@ -268,6 +271,7 @@ What is installed **today** (verified from `package.json`, `node_modules` and th
 | Language | TypeScript 7, `strict`; `@/*` → `./src/*` |
 | Styling | Tailwind CSS 4 through `@tailwindcss/postcss`; global styles in `src/app/global.css` |
 | Diagrams | Archify source and HTML side by side in `diagrams/<project-slug>/`; served by `src/app/diagrams/[project]/[file]/route.ts` with the site shell `src/lib/diagram-shell.ts`; `<Diagram>` in `src/components/diagram.tsx` and `diagram-frame.tsx` (registered in `src/components/mdx.tsx`); the shape check and Markdown filter in `src/lib/remark-diagrams.ts` (wired in `src/lib/source.ts`); file checks in `src/lib/diagrams.ts`, run by the loader plugin `src/lib/diagrams-plugin.ts`; the CSP `sandbox` header for `/diagrams/:path*` in `next.config.mjs` — ADR-0011, ADR-0022 |
+| Search engines and sharing | `src/lib/seo.ts` holds the address (`SITE_URL`), each page's rule, title, metadata and JSON-LD, all pure and tested; `generateMetadata` in the docs page and `metadata` in the home page read it; `src/components/json-ld.tsx`; `src/app/robots.ts`, `sitemap.ts` (`lastmod` from git, `lastModified: true` in `source.ts`), `manifest.ts`, `apple-icon.tsx`; share images in `src/app/og/[...slug]/route.tsx` with `src/components/share-image.tsx` and `src/lib/share-fonts.ts` (fetched from Google Fonts at build, in `use cache`); the description check in `catalog-plugin.ts`; `X-Robots-Tag: noindex` on the Markdown route and in `next.config.mjs` for the other machine-readable routes — ADR-0035 |
 | Search | Algolia: `src/app/static.json/route.ts` emits the records (scope `tag` plus catalogue fields), `scripts/sync-content.ts` pushes them after `next build`; `src/lib/algolia.ts` is the search-only client used by `src/components/search.tsx`, the one search dialog (its no-results line in `search-empty.tsx`) (the home page's hero button opens it) |
 | Linting | ESLint 9 + `eslint-config-next` (core-web-vitals); ignores `.claude/**` (agent skills, ADR-0009). **`bun run lint` does not run today:** `typescript-eslint` does not support TypeScript 7; fixing it needs its own ADR |
 | Testing | `bun test` (Bun's built-in runner), tests beside the code as `*.test.ts(x)`; `@types/bun` 1.4.4 through `tsconfig.test.json`, which `tsconfig.json` leaves out so the site's own check never sees Bun's types; server components rendered with `react-dom/server`; client components not unit-tested until a DOM is chosen — ADR-0007, ADR-0021 |
@@ -305,7 +309,8 @@ needs an ADR that says so.
 
 1. **Private stays private.** Documentation for a private project never reaches a public
    surface: the site, the search index, `llms.txt` / `llms-full.txt`, `static.json`, per-page
-   Markdown, Open Graph images, or a public repository. Until an ADR decides how private
+   Markdown, share images, `sitemap.xml`, `robots.txt`, structured data, or a public repository.
+   `noindex` is not privacy: a `noindex` page is still published and readable. Until an ADR decides how private
    documentation is kept and served, **no private project content goes into
    `content/`** — today every page there is published on all of those surfaces.
 2. **Documentation is checked against the code.** Install commands, signatures, options,
@@ -385,7 +390,10 @@ product truth and the visual system only: decisions still go in ADRs, and design
   (`<br />`), and use `{/* … */}` instead of an HTML comment. Code blocks and frontmatter need
   no escaping.
 - **Frontmatter `title`** (required by `pageSchema`) instead of an `#` heading; Fumadocs
-  renders the title. `description` is optional.
+  renders the title.
+- **Frontmatter `description` is required** (ADR-0035): the build fails and names any page without
+  one. One or two plain sentences, about 160 characters at most, for someone reading a search result,
+  saying what the page is for. It shows under the title, in results and on the share image.
 - A folder's overview is its `index.mdx`. Order is in each folder's `meta.json`
   (`content/docs/maintain/meta.json` here).
 - Links between pages are relative file paths that **start with `./` or `../`**
@@ -506,7 +514,7 @@ provider, what a published example may contain — **the owner decides, and it i
 | If the change… | Check |
 |---|---|
 | Introduces or reads a secret / env var | Not a literal in source · **`NEXT_PUBLIC_` publishes to the world** · added to `content/docs/maintain/security/secrets.mdx` **and** `.env.example` |
-| Adds a page to `content/` | Belongs to a public package or project (§6.1) · no secret, token, internal hostname, client name or personal data in text, examples or screenshots |
+| Adds a page to `content/` | Belongs to a public package or project (§6.1) · has a `description` · no secret, token, internal hostname, client name or personal data in text, examples or screenshots |
 | Adds a route handler or endpoint | Says what it exposes, to whom · documented in `content/docs/maintain/api/` · private content excluded or authorization enforced server-side |
 | Sends anything to a third party (search, analytics, hosting) | Exactly what is sent, minimised · recorded as a DFD boundary crossing · never private content without an approved ADR |
 | Accepts input (search queries, URLs, MDX components that take props) | Validated · output encoded · no user-controlled HTML |
@@ -573,9 +581,11 @@ adopts a host, analytics, CI or an authentication provider adds its own checks**
 │   ├── app/             # App Router: layout.tsx (fonts, theme), global.css (tokens), site.css (header, theme switch,
 │   │                    #   planet header, notices, planet row, stations, trajectory, footer), not-found.tsx (the 404),
 │   │                    #   (home)/ (home page, home.css), (site)/(docs)/[...slug]/ (every page, notebook layout),
-│   │                    #   llms.txt, llms-full.txt, llms.mdx/[...slug]/, og/[...slug]/, static.json,
+│   │                    #   llms.txt, llms-full.txt, llms.mdx/[...slug]/, og/[...slug]/ (share images), static.json,
+│   │                    #   robots.ts, sitemap.ts, manifest.ts, apple-icon.tsx (ADR-0035),
 │   │                    #   diagrams/[project]/[file]/ (each Archify diagram with the site shell), icon.svg (the Verse mark)
 │   ├── components/      # site-header.tsx, theme-switch.tsx, planet.tsx (planet and moon marks),
+│   │                    #   share-image.tsx (the share images), json-ld.tsx (ADR-0035),
 │   │                    #   verse-mark.tsx (the brand mark), sky.tsx (the still sky), zoom-page.tsx (zoom and morph, ADR-0029),
 │   │                    #   horizon-footer.tsx + horizon-awake.tsx (the living horizon, ADR-0030), footer-actions.tsx, mdx.tsx, diagram.tsx + diagram-frame.tsx, profile-link.tsx, search.tsx + search-empty.tsx (search dialog),
 │   │                    #   docs/ (scale strip, docs header, planet header, track switch, orbit stations,
@@ -589,13 +599,14 @@ adopts a host, analytics, CI or an authentication provider adds its own checks**
 │                        #   known-paths.ts (site routes and every path with a page, ADR-0034), search-scope.ts, algolia.ts, diagrams.ts + diagrams-plugin.ts (file checks), remark-diagrams.ts
 │                        #   (shape check, Markdown filter), diagram-shell.ts, diagram-files.ts (ADR-0022),
 │                        #   github-profile.ts (ADR-0020); tests beside the code, *.test.ts(x) (ADR-0021)
-│                        #   shared.ts (site name, routes, GitHub)
+│                        #   shared.ts (site name, routes, GitHub),
+│                        #   seo.ts (address, each page's rule, titles, metadata, JSON-LD) and share-fonts.ts (ADR-0035)
 ├── diagrams/            # Archify diagrams, one pair each (ADR-0022)
 │   └── <project-slug>/  # <slug>.json, the source (not served) · <slug>.html, PUBLISHED at /diagrams/ with the site shell
 ├── scripts/
 │   └── sync-content.ts  # after next build: pushes static.json records to Algolia
 ├── .env.example         # every variable the site reads, names only (§9)
-├── next.config.mjs      # Fumadocs MDX plugin, Cache Components, the sandbox header for /diagrams/
+├── next.config.mjs      # Fumadocs MDX plugin, Cache Components, the sandbox header for /diagrams/, X-Robots-Tag on machine-readable routes
 ├── postcss.config.mjs   # Tailwind CSS 4
 ├── eslint.config.mjs    # eslint-config-next (core-web-vitals)
 ├── tsconfig.json        # strict; @/* → ./src/*; leaves out *.test.ts(x)

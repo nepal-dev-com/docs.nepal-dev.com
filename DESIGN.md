@@ -409,6 +409,13 @@ The brand mark is the **Verse mark**: the one system seen from outside, a star-c
   - an observatory silhouette on the ridge left of the star, leaning with the curve: a dome with its slit open toward the star, a telescope line, a side annex and one warm window; Graphite Ground in dark, a dark ink in light.
   Then the surface, on Graphite Ground 2: one link per public planet (its mark and name in data, teal on hover), a row of Search ⌘K, `llms.txt`, `llms-full.txt`, GitHub and "Back to orbit ↑" ("Back to top ↑" on docs pages) in muted 14px, and the credit in Steel Faint. On docs pages the footer stacks above the sidebar and the trajectory, under the header: as it enters, they drop up to 24px and dim to 55% with the scroll and sink into the dusk edge.
 
+### Share images
+- Made at build by `next/og`, one per page at 1200 by 630, always in the dark theme's colours, whichever theme the reader has. They are the only surface drawn outside the browser, so colours come from `shareColors` in `src/lib/seo.ts`, which a test compares with the `.dark` tokens.
+- **A page's image:** the Verse mark and *Puncoz Verse* top left; the entry's planet mark, its name, the track, and the line with its moon; the title in the Display face, smaller as it gets longer rather than cut; the description in Text, Steel Muted, 30px, shortened at a word boundary; the domain at the foot, or nothing with no `SITE_URL`. On the right, the star in a tilted orbit, with the entry's planet on it.
+- **The home page's image:** the same mark, its line at 70px, and the system on the right: every orbit the hero draws, packed into one span so that a sixth or seventh ring never reaches the text, with one planet per entry. The outer orbit runs off the right edge.
+- **Text stands on clear ground.** Stars start at x=800 and the text column ends at x=776, so no star or orbit is behind a word; a star seeded from the page's address makes each sky its own and keeps it the same.
+- The icons: `src/app/icon.svg` and `src/app/apple-icon.tsx`, both the Verse mark.
+
 ### The 404
 - "This page drifted out of orbit.": a 420px drawing of a planet that has left its dashed orbit around the star, the Display heading, one muted line, the search button and a teal "Back to the system →", under the home page's header and above the full footer.
 

@@ -1,5 +1,6 @@
 import type * as PageTree from 'fumadocs-core/page-tree';
 import { assertKnownPaths } from './catalog-routes';
+import { searchRule, siteUrl, type SearchRule } from './seo';
 import { getMeta, source } from './source';
 import {
   compareLines,
@@ -194,6 +195,19 @@ export function pageInLine(page: Page, line: CatalogLine): string {
   const slugs = [...page.slugs];
   slugs[2] = line.segment;
   return source.getPage(slugs)?.url ?? line.url;
+}
+
+/** What search engines are told about a page (ADR-0035 decision 3). */
+export function pageSearchRule(page: Page): SearchRule {
+  const version = pageVersion(page.path, getMeta);
+  const latest = version?.channel === 'legacy' ? getEntry(version.slug)?.latest : undefined;
+  let latestCounterpart: string | undefined;
+  if (latest) {
+    const slugs = [...page.slugs];
+    slugs[2] = latest.segment;
+    latestCounterpart = source.getPage(slugs)?.url;
+  }
+  return searchRule({ url: page.url, path: page.path, channel: version?.channel, latestCounterpart }, siteUrl);
 }
 
 export interface TrackPreview {

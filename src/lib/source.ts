@@ -20,6 +20,8 @@ const docs = defineDocs({
   dir: 'content',
   docs: {
     schema: pageSchema,
+    // From `git log`, for the sitemap and `article:modified_time` (ADR-0035 decision 5).
+    lastModified: true,
     // ADR-0022: the shape check runs before Fumadocs' own plugins; Markdown keeps a diagram's Mermaid.
     mdxOptions: applyMdxPreset({ remarkPlugins: (plugins) => [remarkDiagrams, ...plugins] }),
     postprocess: {

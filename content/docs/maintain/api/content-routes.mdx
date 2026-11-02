@@ -1,5 +1,6 @@
 ---
 title: "API — Machine-readable content routes"
+description: "The contracts of the routes tools read: per-page Markdown, llms.txt, llms-full.txt, Open Graph images, search records and the proxy's redirects."
 ---
 
 - **Status:** Current
@@ -28,7 +29,7 @@ segment is a catalogued slug, and answers any path that is not a page with a 404
 | GET | `/llms.mdx/<slug>/content.md` | One page as Markdown | None |
 | GET | `/llms.txt` | Index of every page | None |
 | GET | `/llms-full.txt` | Every page's Markdown, concatenated | None |
-| GET | `/og/<slug>/image.png` | Open Graph image for a page | None |
+| GET | `/og/<slug>/image.png` | A page's share image, see [`./crawler-routes.mdx`](./crawler-routes.mdx) | None |
 | GET | `/static.json` | Every page as an Algolia search record | None |
 | GET | `/diagrams/<project-slug>/<slug>.html` | One Archify diagram, a static file from `public/`, served sandboxed | None |
 
@@ -73,8 +74,8 @@ is named with its line name, version and channel, such as `v4.0 — 4.0.1, lates
 
 ### `GET /og/<slug>/image.png`
 
-**Purpose.** A generated Open Graph image showing the page's title, description and the site
-name (`appName`).
+**Purpose.** A page's share image, showing its entry, track, line, title, description and the site's
+name. [`./crawler-routes.mdx`](./crawler-routes.mdx) has the details and the home page's image.
 
 **Authorisation.** Public.
 

@@ -91,7 +91,6 @@ describe('isSiteRoute (ADR-0034 decision 2)', () => {
       '/_next/static/chunks/a.js',
       '/_next/image',
       '/__nextjs_original-stack-frames',
-      '/api/search',
       '/diagrams/docs/site-pages.html',
       '/llms-full.txt',
       '/llms.mdx/docs/content.md',
@@ -99,13 +98,17 @@ describe('isSiteRoute (ADR-0034 decision 2)', () => {
       '/og/docs/image.png',
       '/static.json',
       '/icon.svg',
+      '/robots.txt',
+      '/sitemap.xml',
+      '/manifest.webmanifest',
+      '/apple-icon',
     ]) {
       expect(isSiteRoute(path)).toBe(true);
     }
   });
 
   test('judges everything else, including names that only start like a route', () => {
-    for (const path of ['/docs', '/no-such-page', '/ogre', '/api-docs', '/llms.txt.bak', '/favicon.ico', '/_not-found']) {
+    for (const path of ['/docs', '/no-such-page', '/ogre', '/api/search', '/llms.txt.bak', '/favicon.ico', '/_not-found']) {
       expect(isSiteRoute(path)).toBe(false);
     }
   });
@@ -113,7 +116,16 @@ describe('isSiteRoute (ADR-0034 decision 2)', () => {
   // A new top-level route or public file missing from the list would answer 404 (ADR-0034).
   test('lists exactly the routes in src/app and the files in public/', () => {
     const notRoutes = /^(\(.*\)|layout\.tsx|not-found\..*|.*\.css)$/;
-    const app = readdirSync(join(import.meta.dir, '../app')).filter((name) => !notRoutes.test(name));
+    // Next.js serves these metadata files at a different name.
+    const served: Record<string, string> = {
+      'robots.ts': 'robots.txt',
+      'sitemap.ts': 'sitemap.xml',
+      'manifest.ts': 'manifest.webmanifest',
+      'apple-icon.tsx': 'apple-icon',
+    };
+    const app = readdirSync(join(import.meta.dir, '../app'))
+      .filter((name) => !notRoutes.test(name))
+      .map((name) => served[name] ?? name);
     const publicDir = join(import.meta.dir, '../../public');
     const files = existsSync(publicDir) ? readdirSync(publicDir) : [];
     expect([...siteRoutes].sort()).toEqual([...app, ...files].sort());

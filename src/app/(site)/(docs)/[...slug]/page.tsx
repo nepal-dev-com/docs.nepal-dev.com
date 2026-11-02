@@ -13,7 +13,9 @@ import { withProfileChips } from '@/components/profile-link';
 import type { Metadata } from 'next';
 import { createRelativeLink } from 'fumadocs-ui/mdx';
 import { getPageImageUrl, getPageMarkdownUrl, gitConfig } from '@/lib/shared';
-import { checkKnownPaths, getEntry, getPageContext, pageInLine } from '@/lib/catalog';
+import { checkKnownPaths, getEntry, getPageContext, pageInLine, pageSearchRule } from '@/lib/catalog';
+import { pageJsonLd, pageMetadata, pageTitle, siteUrl } from '@/lib/seo';
+import { JsonLd } from '@/components/json-ld';
 import { VersionNotice } from '@/components/docs/version-notice';
 import { PackageHero } from '@/components/docs/package-hero';
 import { ReadingTimeProvider, TrajectoryPopover, TrajectoryTOC } from '@/components/docs/trajectory-toc';
@@ -61,9 +63,31 @@ export default async function Page(props: PageProps<'/[...slug]'>) {
   const version = context?.version;
   const overview = context && page.slugs.length === 1;
   const levels = scaleLevels({ tree: source.getPageTree(), url: page.url, title: page.data.title, entry: context?.entry });
+  const rule = pageSearchRule(page);
+  const repository = context?.entry.repository ?? context?.entry.repositories?.find((item) => item.primary)?.url;
 
   return (
     <ReadingTimeProvider minutes={readingMinutes(page.data.structuredData)}>
+      {/* A page that points at another, or stays out of search, describes nothing (ADR-0035 decision 10). */}
+      {siteUrl && rule.canonical === page.url && (
+        <JsonLd
+          data={pageJsonLd(
+            {
+              headline: page.data.title,
+              description: page.data.description ?? '',
+              url: page.url,
+              imageUrl: getPageImageUrl(page).url,
+              levels,
+              modified: page.data.lastModified,
+              software:
+                overview && repository
+                  ? { name: context.entry.title, repository, version: latest?.version }
+                  : undefined,
+            },
+            siteUrl,
+          )}
+        />
+      )}
       <ZoomPage>
         <DocsPage
           toc={page.data.toc}
@@ -120,11 +144,24 @@ export async function generateMetadata(props: PageProps<'/[...slug]'>): Promise<
     return {};
   }
 
-  return {
+  const context = getPageContext(page);
+  const overview = context && page.slugs.length === 1;
+  const version = context?.version;
+  const title = pageTitle({
     title: page.data.title,
-    description: page.data.description,
-    openGraph: {
-      images: getPageImageUrl(page).url,
-    },
-  };
+    entry: context?.entry.title,
+    overview,
+    line: version && { name: version.line, channel: version.channel },
+  });
+  return pageMetadata({
+    title,
+    description: page.data.description ?? '',
+    url: page.url,
+    rule: pageSearchRule(page),
+    type: overview ? 'website' : 'article',
+    imageUrl: getPageImageUrl(page).url,
+    imageAlt: title,
+    markdownUrl: `${page.url}.md`,
+    modified: page.data.lastModified,
+  });
 }

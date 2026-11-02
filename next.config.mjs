@@ -14,8 +14,16 @@ const config = {
     return [
       {
         source: '/diagrams/:path*',
-        headers: [{ key: 'Content-Security-Policy', value: 'sandbox allow-scripts allow-downloads' }],
+        headers: [
+          { key: 'Content-Security-Policy', value: 'sandbox allow-scripts allow-downloads' },
+          { key: 'X-Robots-Tag', value: 'noindex' },
+        ],
       },
+      // Copies of pages stay readable by tools but out of search results (ADR-0035 decision 6).
+      ...['/llms.txt', '/llms-full.txt', '/static.json'].map((source) => ({
+        source,
+        headers: [{ key: 'X-Robots-Tag', value: 'noindex' }],
+      })),
     ];
   },
 };

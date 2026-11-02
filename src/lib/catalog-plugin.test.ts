@@ -1,6 +1,6 @@
 import { describe, expect, test } from 'bun:test';
 import type { CatalogMeta } from './catalog-schema';
-import { checkCatalogue, compareLines, lineInfo, lineSegment, repositoryName } from './catalog-plugin';
+import { checkCatalogue, checkDescriptions, compareLines, lineInfo, lineSegment, repositoryName } from './catalog-plugin';
 
 const pkg: CatalogMeta = { title: 'lodestar', catalog: { kind: 'package', ecosystem: 'npm', visibility: 'public', featured: false } };
 
@@ -80,6 +80,7 @@ describe('checkCatalogue', () => {
     expect(check({ 'Lode_Star/meta.json': pkg })[0]).toContain('lowercase letters, digits and hyphens');
     expect(check({ 'diagrams/meta.json': pkg })[0]).toContain('reserved');
     expect(check({ 'og/meta.json': pkg })[0]).toContain('reserved');
+    expect(check({ 'apple-icon/meta.json': pkg })[0]).toContain('reserved');
   });
 
   test('a line without version or channel, or dev in the wrong folder', () => {
@@ -193,5 +194,26 @@ describe('repositoryName', () => {
     expect(repositoryName('acme/maintain/guides', read)).toBeUndefined();
     expect(repositoryName('acme/use/v9/frontend', read)).toBeUndefined();
     expect(repositoryName('acme/maintain/frontend/deep', read)).toBeUndefined();
+  });
+});
+
+describe('checkDescriptions (ADR-0035 decision 8)', () => {
+  const pages: Record<string, string | undefined> = {
+    'x/index.mdx': 'Says what it is.',
+    'x/use/a.mdx': undefined,
+    'x/use/b.mdx': '   ',
+    'x/meta.json': undefined,
+  };
+  const problems = checkDescriptions(Object.keys(pages), (path) => pages[path]);
+
+  test('names every page without one, including a blank one', () => {
+    expect(problems).toEqual([
+      'content/x/use/a.mdx: needs a frontmatter `description`',
+      'content/x/use/b.mdx: needs a frontmatter `description`',
+    ]);
+  });
+
+  test('ignores files that are not pages, and passes when every page has one', () => {
+    expect(checkDescriptions(['x/meta.json', 'x/index.mdx'], (path) => pages[path])).toEqual([]);
   });
 });

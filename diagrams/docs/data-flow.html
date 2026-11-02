@@ -5249,14 +5249,14 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
         <path data-edge-from="owner" data-edge-to="content" data-edge-label="MDX pages" data-edge-key="0" data-edge-id="pages-in" data-composition-points="156,148;259,148" d="M 156 148 L 259 148" class="a-emphasis" data-animate="edge" style="--step:0" stroke-width="1.8" marker-end="url(#arrowhead-emphasis)"/>
         <path data-edge-from="consumer" data-edge-to="content" data-edge-label="pages, owner commits" data-edge-key="1" data-edge-id="consumer-in" data-composition-points="156,385;207.5,385;207.5,166;259,166" d="M 156 385 L 207.5 385 L 207.5 166 L 259 166" class="a-default" data-animate="edge" style="--step:1" stroke-width="1.4" marker-end="url(#arrowhead)"/>
         <path data-edge-from="content" data-edge-to="build" data-edge-label="pages" data-edge-key="2" data-edge-id="to-build" data-composition-points="371,157;474,157" d="M 371 157 L 474 157" class="a-emphasis" data-animate="edge" style="--step:2" stroke-width="1.8" marker-end="url(#arrowhead-emphasis)"/>
-        <path data-edge-from="build" data-edge-to="serve" data-edge-label="static output" data-edge-key="3" data-edge-id="to-serve" data-composition-points="586,157;689,157" d="M 586 157 L 689 157" class="a-emphasis" data-animate="edge" style="--step:3" stroke-width="1.8" marker-end="url(#arrowhead-emphasis)"/>
+        <path data-edge-from="build" data-edge-to="serve" data-edge-label="static output" data-edge-key="3" data-edge-id="to-serve" data-composition-points="586,148;689,148" d="M 586 148 L 689 148" class="a-emphasis" data-animate="edge" style="--step:3" stroke-width="1.8" marker-end="url(#arrowhead-emphasis)"/>
         <path data-edge-from="build" data-edge-to="syncp" data-edge-label="static.json records" data-edge-key="4" data-edge-id="records" data-composition-points="530,186;530,356" d="M 530 186 L 530 356" class="a-default" data-animate="edge" style="--step:4" stroke-width="1.4" marker-end="url(#arrowhead)"/>
         <path data-edge-from="env" data-edge-to="syncp" data-edge-label="ALGOLIA_WRITE_KEY" data-edge-key="5" data-edge-id="key" data-composition-points="371,385;474,385" d="M 371 385 L 474 385" class="a-security" data-animate="edge" style="--step:5" stroke-width="1.4" marker-end="url(#arrowhead-security)"/>
         <path data-edge-from="syncp" data-edge-to="algolia" data-edge-label="every record" data-edge-key="6" data-edge-id="replace" data-composition-points="586,385;689,385" d="M 586 385 L 689 385" class="a-security" data-animate="edge" style="--step:6" stroke-width="1.4" marker-end="url(#arrowhead-security)"/>
         <path data-edge-from="serve" data-edge-to="reader" data-edge-label="pages" data-edge-key="7" data-edge-id="pages-out" data-composition-points="801,148;904,148" d="M 801 148 L 904 148" class="a-emphasis" data-animate="edge" style="--step:7" stroke-width="1.8" marker-end="url(#arrowhead-emphasis)"/>
         <g data-graph-role="automatic-crossover" style="--step:8">
           <path data-graph-role="automatic-crossover-underlay" d="M 801 166 L 844.5 166 L 844.5 271 L 904 271" fill="none" stroke="var(--mask)" stroke-width="5.4" stroke-linecap="round" stroke-linejoin="round" pointer-events="none"/>
-        <path data-edge-from="serve" data-edge-to="bot" data-edge-label="Markdown, llms.txt" data-edge-key="8" data-edge-id="md-out" data-composition-points="801,166;844.5,166;844.5,271;904,271" data-composition-crossover="halo" d="M 801 166 L 844.5 166 L 844.5 271 L 904 271" class="a-default" data-animate="edge" style="--step:8" stroke-width="1.4" marker-end="url(#arrowhead)"/>
+        <path data-edge-from="serve" data-edge-to="bot" data-edge-label="Markdown, robots, sitemap" data-edge-key="8" data-edge-id="md-out" data-composition-points="801,166;844.5,166;844.5,271;904,271" data-composition-crossover="halo" d="M 801 166 L 844.5 166 L 844.5 271 L 904 271" class="a-default" data-animate="edge" style="--step:8" stroke-width="1.4" marker-end="url(#arrowhead)"/>
         </g>
         <g data-graph-role="automatic-crossover" style="--step:9">
           <path data-graph-role="automatic-crossover-underlay" d="M 904 166 L 852.5 166 L 852.5 385 L 801 385" fill="none" stroke="var(--mask)" stroke-width="5.4" stroke-linecap="round" stroke-linejoin="round" pointer-events="none"/>
@@ -5266,6 +5266,7 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
           <path data-graph-role="automatic-crossover-underlay" d="M 960 186 L 960 227 L 889 227 L 889 332 L 960 332 L 960 356" fill="none" stroke="var(--mask)" stroke-width="5.4" stroke-linecap="round" stroke-linejoin="round" pointer-events="none"/>
         <path data-edge-from="reader" data-edge-to="github" data-edge-label="avatar, no referrer" data-edge-key="10" data-edge-id="avatar" data-composition-points="960,186;960,227;889,227;889,332;960,332;960,356" data-composition-crossover="halo" d="M 960 186 L 960 227 L 889 227 L 889 332 L 960 332 L 960 356" class="a-dashed" data-animate="edge" style="--step:10" stroke-width="1.4" marker-end="url(#arrowhead-dashed)"/>
         </g>
+        <path data-edge-from="build" data-edge-to="fonts" data-edge-label="font request, no content" data-edge-key="11" data-edge-id="font-request" data-composition-points="586,166;637.5,166;637.5,271;689,271" d="M 586 166 L 637.5 166 L 637.5 271 L 689 271" class="a-dashed" data-animate="edge" style="--step:11" stroke-width="1.4" marker-end="url(#arrowhead-dashed)"/>
 
         <!-- Nodes -->
         <g id="node-owner" data-node-id="owner" data-node-label="Owner" tabindex="0" role="button" aria-label="Focus Owner, author, 01 / Authors" aria-pressed="false" data-node-kind="external" data-node-sublabel="author" data-node-context="01 / Authors">
@@ -5398,6 +5399,17 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
           <text data-detail="context" x="960" y="393" class="t-muted" font-size="7" text-anchor="middle">avatars</text>
         </g>
 
+        <g id="node-fonts" data-node-id="fonts" data-node-label="Google Fonts" tabindex="0" role="button" aria-label="Focus Google Fonts, font files, 04 / Public · deployed site" aria-pressed="false" data-node-kind="cloud" data-node-sublabel="font files" data-node-context="04 / Public · deployed site">
+          <title>Google Fonts · font files · 04 / Public · deployed site</title>
+          <rect x="689" y="242" width="112" height="58" rx="6" class="c-mask"/>
+          <rect x="689" y="242" width="112" height="58" rx="6" class="c-cloud" data-animate="node" style="--step:12" stroke-width="1.5"/>
+          <g aria-hidden="true" data-semantic-sigil="cloud" class="semantic-sigil s-cloud" transform="translate(695 248) scale(0.6875)">
+            <path d="M4.3 12.5h7.3a2.4 2.4 0 0 0 .2-4.8 4 4 0 0 0-7.5-1.3A3.1 3.1 0 0 0 4.3 12.5Z"/>
+          </g>
+          <text data-node-label="" data-detail-anchor="" x="745" y="263" class="t-primary" font-size="10" font-weight="600" text-anchor="middle">Google Fonts</text>
+          <text data-detail="context" x="745" y="279" class="t-muted" font-size="7" text-anchor="middle">font files</text>
+        </g>
+
         <!-- Flow labels -->
         <g data-detail="context" data-edge-from="owner" data-edge-to="content" data-edge-label="MDX pages" data-edge-key="0" data-edge-id="pages-in">
           <rect x="179.45" y="127" width="56.1" height="16" rx="4" class="c-mask"/>
@@ -5412,8 +5424,8 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
           <text x="422.5" y="147" class="t-edge-emphasis" font-size="8" text-anchor="middle">pages</text>
         </g>
         <g data-detail="context" data-edge-from="build" data-edge-to="serve" data-edge-label="static output" data-edge-key="3" data-edge-id="to-serve">
-          <rect x="599.65" y="136" width="75.7" height="16" rx="4" class="c-mask"/>
-          <text x="637.5" y="147" class="t-edge-emphasis" font-size="8" text-anchor="middle">static output</text>
+          <rect x="599.65" y="127" width="75.7" height="16" rx="4" class="c-mask"/>
+          <text x="637.5" y="138" class="t-edge-emphasis" font-size="8" text-anchor="middle">static output</text>
         </g>
         <g data-detail="context" data-edge-from="build" data-edge-to="syncp" data-edge-label="static.json records" data-edge-key="4" data-edge-id="records">
           <rect x="477.45" y="250" width="105.1" height="16" rx="4" class="c-mask"/>
@@ -5431,17 +5443,21 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
           <rect x="834.25" y="127" width="36.5" height="16" rx="4" class="c-mask"/>
           <text x="852.5" y="138" class="t-edge-emphasis" font-size="8" text-anchor="middle">pages</text>
         </g>
-        <g data-detail="context" data-edge-from="serve" data-edge-to="bot" data-edge-label="Markdown, llms.txt" data-edge-key="8" data-edge-id="md-out">
-          <rect x="738.3" y="211.5" width="100.2" height="16" rx="4" class="c-mask"/>
-          <text x="788.4" y="222.5" class="t-edge-default" font-size="8" text-anchor="middle">Markdown, llms.txt</text>
+        <g data-detail="context" data-edge-from="serve" data-edge-to="bot" data-edge-label="Markdown, robots, sitemap" data-edge-key="8" data-edge-id="md-out">
+          <rect x="704" y="215.5" width="134.5" height="16" rx="4" class="c-mask"/>
+          <text x="771.25" y="226.5" class="t-edge-default" font-size="8" text-anchor="middle">Markdown, robots, sitemap</text>
         </g>
         <g data-detail="context" data-edge-from="reader" data-edge-to="algolia" data-edge-label="query, search-only key" data-edge-key="9" data-edge-id="query">
-          <rect x="718.7" y="268.5" width="119.8" height="16" rx="4" class="c-mask"/>
-          <text x="778.6" y="279.5" class="t-edge-dashed" font-size="8" text-anchor="middle">query, search-only key</text>
+          <rect x="726.7" y="323.25" width="119.8" height="16" rx="4" class="c-mask"/>
+          <text x="786.6" y="334.25" class="t-edge-dashed" font-size="8" text-anchor="middle">query, search-only key</text>
         </g>
         <g data-detail="context" data-edge-from="reader" data-edge-to="github" data-edge-label="avatar, no referrer" data-edge-key="10" data-edge-id="avatar">
           <rect x="871.95" y="206" width="105.1" height="16" rx="4" class="c-mask"/>
           <text x="924.5" y="217" class="t-edge-dashed" font-size="8" text-anchor="middle">avatar, no referrer</text>
+        </g>
+        <g data-detail="context" data-edge-from="build" data-edge-to="fonts" data-edge-label="font request, no content" data-edge-key="11" data-edge-id="font-request">
+          <rect x="572.7" y="197.5" width="129.6" height="16" rx="4" class="c-mask"/>
+          <text x="637.5" y="208.5" class="t-edge-dashed" font-size="8" text-anchor="middle">font request, no content</text>
         </g>
 
         <!-- Legend -->

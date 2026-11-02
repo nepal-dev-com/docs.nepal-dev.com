@@ -7,6 +7,7 @@ export const owner = { name: 'Puncoz Nepal', url: 'https://puncoz.com' };
 // Packages and projects live at the root, `/<slug>` (ADR-0015 decision 1).
 export const docsRoute = '';
 export const docsImageRoute = '/og';
+export const homeImageUrl = `${docsImageRoute}/image.png`;
 export const docsContentRoute = '/llms.mdx';
 
 // The owner's choice, ADR-0014.

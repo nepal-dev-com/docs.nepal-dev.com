@@ -1,0 +1,73 @@
+---
+title: "API — crawler routes"
+description: "The contracts of robots.txt, sitemap.xml, the web manifest, the Apple icon, the share images and the noindex header."
+---
+
+- **Status:** Current
+- **Last updated:** 2026-11-03
+- **Related ADRs:** [ADR-0035](../adr/ADR-0035-every-page-is-ready-for-search-and-sharing.mdx)
+
+> Snapshot of the system as it stands today. Edit in place; never record what changed.
+
+All of these are prerendered at build, take no input and need no authentication. They are built only
+from pages already published, so a private project stays out of them by staying out of `content/`
+(`AGENTS.md` §6.1).
+
+## Endpoints
+
+| Method | Path | Purpose | Auth |
+|---|---|---|---|
+| GET | `/robots.txt` | Who may crawl, and where the sitemap is | None |
+| GET | `/sitemap.xml` | Every page that should be indexed | None |
+| GET | `/manifest.webmanifest` | The site's name, colours and icons | None |
+| GET | `/apple-icon` | The Verse mark, drawn at build | None |
+| GET | `/og/image.png` | The home page's share image | None |
+| GET | `/og/<page>/image.png` | A page's share image | None |
+
+---
+
+### `GET /robots.txt`
+
+**Purpose.** Tells every crawler it may read the site.
+
+**Responses**
+
+| `SITE_URL` | Body |
+|---|---|
+| Set | `User-Agent: *`, `Allow: /`, and `Sitemap: <SITE_URL>/sitemap.xml` |
+| Not set | `User-Agent: *`, `Disallow: /` |
+
+---
+
+### `GET /sitemap.xml`
+
+**Purpose.** Lists the home page and each page ADR-0035's table marks, as absolute addresses, with
+`lastmod` from git. No `changefreq` or `priority`.
+
+**Responses**
+
+| `SITE_URL` | Body |
+|---|---|
+| Set | One `<url>` per listed page |
+| Not set | An empty `<urlset>` |
+
+---
+
+### `GET /og/image.png` and `GET /og/<page>/image.png`
+
+**Purpose.** A PNG of 1200 by 630, the same on every request.
+
+**Responses**
+
+| Status | Meaning | Body |
+|---|---|---|
+| 200 | A page, or the home page | `image/png` |
+| 404 | No such page | Next.js not-found page |
+
+---
+
+## The `noindex` header
+
+`X-Robots-Tag: noindex` is on these, which stay readable and are not blocked in `robots.txt`:
+`/llms.mdx/…` (with `/<page>.md` and Markdown negotiation), `/llms.txt`, `/llms-full.txt`,
+`/static.json` and `/diagrams/…`.

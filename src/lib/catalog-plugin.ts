@@ -15,6 +15,7 @@ export const reservedSlugs = new Set([
   'sign-in',
   'sign-out',
   'og',
+  'apple-icon',
   'search',
   'static',
   'assets',
@@ -218,6 +219,13 @@ export function checkCatalogue(files: string[], read: (path: string) => CatalogM
   return problems;
 }
 
+/** ADR-0035 decision 8: every page has a written description. */
+export function checkDescriptions(files: string[], description: (path: string) => string | undefined): string[] {
+  return files
+    .filter((file) => file.endsWith('.mdx') && !description(file)?.trim())
+    .map((file) => `content/${file}: needs a frontmatter \`description\``);
+}
+
 export function catalogPlugin(): LoaderPlugin {
   return {
     name: 'puncoz:catalog',
@@ -225,6 +233,13 @@ export function catalogPlugin(): LoaderPlugin {
       const problems = checkCatalogue(storage.getFiles(), (path) => readMeta(storage, path));
       if (problems.length > 0) {
         throw new Error(`Catalogue check failed (ADR-0013, ADR-0015):\n- ${problems.join('\n- ')}`);
+      }
+      const undescribed = checkDescriptions(storage.getFiles(), (path) => {
+        const file = storage.read(path) as { data?: { description?: string } } | undefined;
+        return file?.data?.description;
+      });
+      if (undescribed.length > 0) {
+        throw new Error(`Description check failed (ADR-0035):\n- ${undescribed.join('\n- ')}`);
       }
     },
     transformPageTree: {

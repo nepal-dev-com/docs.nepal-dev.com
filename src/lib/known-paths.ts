@@ -4,13 +4,16 @@ import type { CatalogMeta } from './catalog-schema';
 
 /** The top-level routes in `src/app` and files in `public/`, which share the root with pages. */
 export const siteRoutes = new Set([
-  'api',
+  'apple-icon',
   'diagrams',
   'icon.svg',
   'llms-full.txt',
   'llms.mdx',
   'llms.txt',
+  'manifest.webmanifest',
   'og',
+  'robots.txt',
+  'sitemap.xml',
   'static.json',
 ]);
 

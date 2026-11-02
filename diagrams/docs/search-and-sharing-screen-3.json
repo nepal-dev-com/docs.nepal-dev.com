@@ -1,0 +1,103 @@
+{
+  "schema_version": 1,
+  "diagram_type": "architecture",
+  "meta": {
+    "title": "Screen 3 — Browser tab, at phone width",
+    "subtitle": "Wireframe at phone width, drawn from its Mermaid version · search and sharing",
+    "output": "search-and-sharing-screen-3.html",
+    "animation": "trace",
+    "quality_profile": "showcase",
+    "legend": {
+      "entries": {
+        "backend": {
+          "label": "Control or link"
+        }
+      }
+    }
+  },
+  "components": [
+    {
+      "id": "latest",
+      "type": "backend",
+      "label": "Tab, latest line: Install — lodestar — Puncoz",
+      "pos": [
+        40,
+        60
+      ],
+      "size": [
+        436,
+        70
+      ],
+      "sublabel": "Verse"
+    },
+    {
+      "id": "older",
+      "type": "backend",
+      "label": "Tab, older line: Install — lodestar 2.x LTS —",
+      "pos": [
+        40,
+        142
+      ],
+      "size": [
+        436,
+        70
+      ],
+      "sublabel": "Puncoz Verse"
+    },
+    {
+      "id": "dev",
+      "type": "backend",
+      "label": "Tab, dev line: Install — lodestar dev — Puncoz",
+      "pos": [
+        40,
+        224
+      ],
+      "size": [
+        436,
+        70
+      ],
+      "sublabel": "Verse"
+    },
+    {
+      "id": "overview",
+      "type": "backend",
+      "label": "Tab, overview: lodestar — Puncoz Verse",
+      "pos": [
+        40,
+        306
+      ],
+      "size": [
+        436,
+        58
+      ]
+    },
+    {
+      "id": "home",
+      "type": "backend",
+      "label": "Tab, home page: Puncoz Verse — every package and",
+      "pos": [
+        40,
+        376
+      ],
+      "size": [
+        436,
+        70
+      ],
+      "sublabel": "project, documented to the version"
+    }
+  ],
+  "boundaries": [
+    {
+      "kind": "region",
+      "label": "Phone screen · Browser tab, at phone width",
+      "wraps": [
+        "latest",
+        "older",
+        "dev",
+        "overview",
+        "home"
+      ],
+      "pad": 22
+    }
+  ]
+}

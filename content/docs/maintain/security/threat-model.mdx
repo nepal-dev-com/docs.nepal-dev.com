@@ -1,5 +1,6 @@
 ---
 title: "Threat model — puncoz-packages-docs"
+description: "What could go wrong on this site, what is at risk, and how each threat is handled, with private documentation as the main concern."
 ---
 
 - **Status:** Current
@@ -15,7 +16,7 @@ title: "Threat model — puncoz-packages-docs"
 ## Current attack surface
 
 The site is static pages built from `content/`, one folder per package or project at
-`/<slug>/…`, served with their Markdown, `llms.txt` / `llms-full.txt`, OG images and `static.json`, plus Algolia
+`/<slug>/…`, served with their Markdown, `llms.txt` / `llms-full.txt`, share images and `static.json`, plus Algolia
 search ([`../architecture/system.mdx`](../architecture/system.mdx)). Every page is prerendered
 (Cache Components, ADR-0016); none reads cookies or headers. There is no sign-in, no database
 and no user input beyond the search box. The home page's Private projects group is public
@@ -25,7 +26,7 @@ static markup listing three invented projects from `src/components/home/private-
 | Surface | Present | Detail |
 |---|---|---|
 | Authentication / sessions | No | — |
-| Route handlers | Yes | Markdown, `llms.txt`, `llms-full.txt`, OG images, `static.json`, the Archify diagrams under `/diagrams/` — all public, all static ([`../api/content-routes.mdx`](../api/content-routes.mdx)) |
+| Route handlers | Yes | Markdown, `llms.txt`, `llms-full.txt`, share images, `static.json`, `robots.txt`, `sitemap.xml`, the manifest, the Apple icon, the Archify diagrams under `/diagrams/` — all public, all static ([`../api/content-routes.mdx`](../api/content-routes.mdx), [`../api/crawler-routes.mdx`](../api/crawler-routes.mdx)) |
 | User input of any kind | Yes | The search query, sent from the browser straight to Algolia; the `Accept` header, read by `src/proxy.ts`; the request's path, compared by `src/proxy.ts` with a fixed list and never echoed |
 | Database or persistence | No | Content is files; the search index is a build output |
 | Files / uploads | No uploads | Archify diagrams in `diagrams/`: generated script, committed by the owner, served with the site shell's added script and style, run in a sandboxed frame and served with a CSP `sandbox` header. The frame sends the page one message, its height, which the page takes only from that frame's window and only as a number from 120 to 4000 (ADR-0011, ADR-0022, [`../api/content-routes.mdx`](../api/content-routes.mdx)) |

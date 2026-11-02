@@ -1,5 +1,6 @@
 ---
 title: "Security audit checklist"
+description: "The full security audits run before the first public deployment and each release, including the checks for each adopted tool."
 ---
 
 - **Status:** Current
@@ -25,8 +26,8 @@ and unauthorized access first, abuse and logic flaws second.
 - [ ] Every page in `content/` belongs to a public package or project, or is handled as
       its private-documentation ADR requires.
 - [ ] For each private page: absent from (or protected on) the rendered site, the Markdown
-      route, `llms.txt`, `llms-full.txt`, `static.json`, the OG image route, any sitemap and
-      the search index. Check each surface on the deployed site, not only in code.
+      route, `llms.txt`, `llms-full.txt`, `static.json`, the share image route, `sitemap.xml`,
+      each page's structured data and the search index. Check each surface on the deployed site, not only in code.
 - [ ] Query the live Algolia index with the public search-only key; confirm it returns only
       Public records.
 - [ ] "View on GitHub" links point only at a repository whose visibility matches the page.
@@ -34,7 +35,11 @@ and unauthorized access first, abuse and logic flaws second.
 
 ## Audit 3 — Pre-deploy production
 
-- [ ] The publishing build refuses to run without its secrets.
+- [ ] The publishing build refuses to run without its secrets and without `SITE_URL`.
+- [ ] `SITE_URL` is set on the production host and on no preview; `robots.txt` names the sitemap on
+      production and disallows everything on a preview.
+- [ ] The host clones the repository in full, so `lastmod` is true (ADR-0035).
+- [ ] The 404's one-year `s-maxage` (ADR-0034) does not outlive a deploy in the host's cache.
 - [ ] TLS everywhere.
 - [ ] Security headers set (CSP, frame-ancestors, referrer policy) and verified.
 - [ ] Placeholder settings replaced: `appName` and `gitConfig` in `src/lib/shared.ts`.

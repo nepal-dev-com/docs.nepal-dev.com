@@ -23,6 +23,8 @@ repository's working agreement. Where this guide is silent, `AGENTS.md` applies.
 - You edit **only two folders**: `content/<project-slug>/` and `diagrams/<project-slug>/` (§3).
 - **Use is versioned, Maintain is not** (§5).
 - **Every diagram is Mermaid and Archify together**, on every page, in both tracks (§8).
+- **Every page has a `description`**, and the build fails without one. Search and share cards follow
+  from it and from where the page sits, automatically (§4.4, §7).
 - **Everything is published.** Nothing private goes here (§2).
 - **You edit; a human commits** (§10).
 
@@ -39,8 +41,9 @@ is published. Before changing anything in it, read `<submodule-path>/PROJECT_AGE
 it. In short: edit only `<submodule-path>/content/<project-slug>/` and
 `<submodule-path>/diagrams/<project-slug>/`; keep both the Use docs (for users, versioned) and the
 Maintain docs (for maintainers, not versioned) current in the same change as the code; give every
-diagram both a Mermaid fence and its Archify view; never commit, push or switch branches inside
-the submodule; never put private content there; ask the owner when anything is unclear.
+diagram both a Mermaid fence and its Archify view; give every page a frontmatter `description`,
+written for someone reading a search result; never commit, push or switch branches inside the
+submodule; never put private content there; ask the owner when anything is unclear.
 ```
 
 **A project with several repositories** (§6) adds two lines, with `<repository-id>` this
@@ -56,8 +59,13 @@ only the primary repository edits the project's shared files.
 ## 2. Public only, for now
 
 Every file under `content/` and every diagram's HTML is **published**: on the website, in the
-search index, in `llms.txt` / `llms-full.txt`, as per-page Markdown and as Open Graph images.
-Published is permanent. **That includes the Maintain track**: maintainer docs are public too.
+search index, in `llms.txt` / `llms-full.txt`, as per-page Markdown, in `sitemap.xml`, in the
+page's structured data and on its share image. Published is permanent. **That includes the Maintain
+track**: maintainer docs are public too.
+
+**`noindex` is not privacy.** A `dev` page is left out of search results (§4.4), and it can still be
+read by anyone with the link, in `llms-full.txt` and in the site's search. Nothing here keeps a page
+private, so there is no setting to look for.
 
 - **A private project adds nothing here.** Keep its documentation in its own repository until
   an ADR here decides how private documentation is kept and served (`AGENTS.md` §6.1).
@@ -214,6 +222,7 @@ The names are suggestions, like those in §4.1, except `adr/`, which the sidebar
 [`content/docs/maintain/_templates/`](content/docs/maintain/_templates/index.mdx): copy one into
 your own `maintain/` folder and fill it in. Each Mermaid fence in a template is bare, and only
 that folder is allowed to do so: once copied, each one needs its `<Diagram>` and Archify view (§8).
+Each template's `description` is a placeholder, and the build can't tell: replace it with your own.
 
 **Two kinds of Maintain page:**
 
@@ -247,6 +256,40 @@ Update the docs **in the same change as the code**:
 | A flow that a diagram shows | The diagram's Mermaid **and** its Archify view (§8) |
 | Something released | §5.2 |
 
+### 4.4 What search engines and share cards get
+
+Everything here is automatic. It comes from where the page sits and from its frontmatter, so you
+write no metadata and no tags ([ADR-0035](content/docs/maintain/adr/ADR-0035-every-page-is-ready-for-search-and-sharing.mdx)).
+The one thing you write is the page's `description` (§7).
+
+| Your page | In search | Canonical link | In `sitemap.xml` |
+|---|---|---|---|
+| The overview, or a page in an unversioned `use/` | Yes | Itself | Yes |
+| A page in the `latest` line | Yes | Itself | Yes |
+| A page in `maintain/` | Yes | Itself | Yes |
+| A page in a `legacy` line, with the same path in `latest` | Yes | **That page in `latest`** | No |
+| A page in a `legacy` line, with no such page in `latest` | Yes | Itself | Yes |
+| A page in `use/dev/` | No, `noindex, follow` | None | No |
+| A page in a folder named `_templates` | No, `noindex, follow` | None | No |
+
+So **a package with only `dev` is out of search until its first release**, apart from its overview and
+Maintain. Keep a page's path the same from one line to the next: that is how an older page finds its
+counterpart in `latest`.
+
+From the same facts, each page also gets:
+
+- **A title** with the page, its entry and the site: `Install — lodestar — Puncoz Verse` on `latest`,
+  `Install — lodestar 2.x LTS — Puncoz Verse` on an older line, `lodestar — Puncoz Verse` on the overview.
+- **A share image at 1200 by 630**, drawn at build: the Verse mark, your entry's planet, its name, the
+  track, the line with its moon, then the page's title and description. Don't add your own.
+- **Structured data**: `TechArticle` and breadcrumbs on a page, and on an overview `SoftwareSourceCode`
+  with your repository and latest version from the catalogue. A page that is `noindex`, or whose
+  canonical link is another page, carries none.
+
+Search only sees your pages once the site has an address (`SITE_URL`, set by the owner). A local build
+without it says `noindex` on every page, which is expected. Canonical links and sitemaps are hints:
+nothing here promises a ranking.
+
 ## 5. Versions
 
 **Only the Use track is versioned.** Maintain and the overview have one copy.
@@ -276,6 +319,8 @@ A version line is a folder in `use/`, with `version` and `channel` in its `meta.
   latest. Don't write your own banner.
 - **A released line keeps describing its version.** Correct mistakes in it; new behaviour goes in
   `dev/`.
+- **Search follows the channel** (§4.4): `latest` is indexed, an older page points search engines at
+  the same path in `latest`, and `dev` stays out. Changing a `channel` is all it takes.
 
 **A project is unversioned by default**: its `use/` holds pages directly. A project that ships
 releases has `use/dev/` and at most one released line (`channel: "latest"`), never `legacy` lines:
@@ -373,8 +418,14 @@ Format:
 - **Every page is `.mdx`.** Write Markdown, plus a registered component where it helps. In
   prose, MDX reads `<` and `{` as JSX: put a `<slug>`-style placeholder in backticks or escape
   it (`\<slug>`), close void tags (`<br />`), and use `{/* … */}` for comments.
-- **Frontmatter `title` is required** (`pageSchema` in `src/lib/source.ts`); `description` is
-  optional. Fumadocs renders the title, so don't repeat it as an `#` heading.
+- **Frontmatter `title` and `description` are both required**, on every page in every track and line.
+  Fumadocs renders the title, so don't repeat it as an `#` heading. The description shows under the
+  title on the page, in search results and on the share image; the build fails without one (§9).
+- **Write the description for someone reading a search result:** one or two plain sentences, about
+  160 characters at most, saying what the page is for, read from the page itself. Name the thing, not
+  the document: "Add lodestar to a React project and open the command palette with one hook.", not
+  "This page describes installation." No space words, keyword lists or version numbers, which the
+  site adds itself.
 - **Links between pages are relative paths that start with `./` or `../`**
   (`./getting-started.mdx`). Only those resolve to page URLs.
 - **No binary or externally hosted images.** Draw it as a diagram (§8). The one exception is
@@ -465,7 +516,7 @@ The build fails, naming the file, on:
 - a page directly in `content/`, or a folder without a `catalog`;
 - an invalid or non-`public` `catalog`, or a wrong `repositories` list (§6);
 - a slug that is not lowercase letters, digits and hyphens, or is reserved: `api`, `auth`,
-  `callback`, `sign-in`, `sign-out`, `og`, `search`, `static`, `assets`, `public`, `diagrams`,
+  `callback`, `sign-in`, `sign-out`, `og`, `apple-icon`, `search`, `static`, `assets`, `public`, `diagrams`,
   `_next`;
 - a line without `version` or `channel`;
 - `channel: "dev"` anywhere but `use/dev/`, or `use/dev/` with another channel;
@@ -473,6 +524,7 @@ The build fails, naming the file, on:
   segment;
 - pages directly in a versioned `use/`;
 - two `latest` lines, `legacy` lines without a `latest`, or a `legacy` line in a project;
+- a page with no `description`, naming every such page (§7);
 - any diagram problem in §8.3.
 
 Fix the folder rather than working around the check.
@@ -535,6 +587,7 @@ own.
 - [ ] A line's `version` matches the manifest, and its `channel` is right (§5).
 - [ ] Every diagram has its Mermaid inside a `<Diagram>` and its Archify `.json` and `.html` (§8).
 - [ ] Links between pages start with `./` or `../` (§7).
+- [ ] Every page has a `description`, written for a search result (§7).
 - [ ] `bunx next build` passes, or you said it was not run and why.
 - [ ] The human has the list of changed files and the commands in §10.
 

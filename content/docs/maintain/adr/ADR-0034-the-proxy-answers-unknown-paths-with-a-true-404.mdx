@@ -1,5 +1,6 @@
 ---
 title: "ADR-0034 — The proxy answers unknown paths with a true 404"
+description: "The proxy answers every unknown path with a 404 status and the whole out-of-orbit page from the first request, instead of a blank 200."
 ---
 
 - **Status:** Approved
@@ -146,7 +147,8 @@ costs less than a render. The threat model is checked on implementation.
     that adopts one must check this.
   - Decision 2 leaves everything below a site route alone, so a path such as `/api/nope` or
     `/diagrams/nope`, which only `[...slug]` matches, is still a blank 200. `/og/nope` is a 404 from
-    its own route.
+    its own route. ADR-0035 later removed `api` from the site routes, since no such route exists, so
+    `/api/nope` is now a true 404; `/diagrams/nope` and `/llms.txt/x` are still blank 200s.
 - [x] `bun run test`, `bun run types:check` and `bunx next build` pass; `bun run lint` is reported
   while it stays blocked.
 

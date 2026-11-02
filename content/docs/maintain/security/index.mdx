@@ -1,5 +1,6 @@
 ---
 title: "Security"
+description: "How this site protects what it holds: security and privacy as part of every change, with its threat model, secrets and audits."
 ---
 
 How puncoz-packages-docs protects what it holds. Security and privacy are a property of
@@ -29,8 +30,8 @@ whether a route is public, what is sent to the search provider — the owner dec
 recorded ([ADR-0004](../adr/ADR-0004-ask-never-guess.mdx)).
 
 **2. Private stays private.** Today every page in `content/` is published on every
-surface: the site, the Markdown routes, `llms.txt` / `llms-full.txt`, `static.json`, OG images
-and the search index. **No private project content goes there** until an ADR decides how it is
+surface: the site, the Markdown routes, `llms.txt` / `llms-full.txt`, `static.json`, share images,
+`sitemap.xml`, structured data and the search index. **No private project content goes there** until an ADR decides how it is
 kept and served (`AGENTS.md` §6.1).
 
 **3. Published is permanent.** A page that was served, indexed or crawled cannot be recalled.

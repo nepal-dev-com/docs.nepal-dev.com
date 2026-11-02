@@ -1,0 +1,75 @@
+{
+  "schema_version": 1,
+  "diagram_type": "architecture",
+  "meta": {
+    "title": "Screen 1 — Search result, at phone width",
+    "subtitle": "Wireframe at phone width, drawn from its Mermaid version · search and sharing",
+    "output": "search-and-sharing-screen-1.html",
+    "animation": "trace",
+    "quality_profile": "showcase",
+    "legend": {
+      "entries": {
+        "backend": {
+          "label": "Control or link"
+        },
+        "frontend": {
+          "label": "Site chrome"
+        }
+      }
+    }
+  },
+  "components": [
+    {
+      "id": "site",
+      "type": "backend",
+      "label": "docs.puncoz.com › lodestar › use › install",
+      "pos": [
+        40,
+        60
+      ],
+      "size": [
+        436,
+        58
+      ]
+    },
+    {
+      "id": "title",
+      "type": "frontend",
+      "label": "Install — lodestar — Puncoz Verse",
+      "pos": [
+        40,
+        130
+      ],
+      "size": [
+        436,
+        58
+      ]
+    },
+    {
+      "id": "desc",
+      "type": "backend",
+      "label": "Add lodestar to a React project and open the",
+      "pos": [
+        40,
+        200
+      ],
+      "size": [
+        436,
+        70
+      ],
+      "sublabel": "command palette with one hook."
+    }
+  ],
+  "boundaries": [
+    {
+      "kind": "region",
+      "label": "Phone screen · Search result, at phone width",
+      "wraps": [
+        "site",
+        "title",
+        "desc"
+      ],
+      "pad": 22
+    }
+  ]
+}

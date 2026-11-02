@@ -8,37 +8,225 @@
     "animation": "trace",
     "output": "system-architecture.html"
   },
-  "layout": { "mode": "grid", "cols": 5, "cellW": 170, "cellH": 64, "gapX": 70, "gapY": 46, "origin": [60, 90] },
+  "layout": {
+    "mode": "grid",
+    "cols": 5,
+    "cellW": 170,
+    "cellH": 64,
+    "gapX": 70,
+    "gapY": 46,
+    "origin": [
+      60,
+      90
+    ]
+  },
   "components": [
-    { "id": "reader", "type": "external", "label": "Reader", "sublabel": "browser", "row": 0, "col": 1 },
-    { "id": "bot", "type": "external", "label": "LLM tools", "sublabel": "and crawlers", "row": 0, "col": 2 },
-    { "id": "content", "type": "database", "label": "content/", "sublabel": "MDX + catalogue", "row": 2, "col": 0 },
-    { "id": "next", "type": "backend", "label": "next build", "sublabel": "checks, static output", "row": 2, "col": 1 },
-    { "id": "sync", "type": "backend", "label": "sync-content.ts", "sublabel": "after the build", "row": 4, "col": 1 },
-    { "id": "proxy", "type": "security", "label": "proxy", "sublabel": "redirects, Markdown, 404", "row": 1, "col": 2 },
-    { "id": "home", "type": "frontend", "label": "/ home page", "row": 1, "col": 3 },
-    { "id": "pages", "type": "frontend", "label": "/slug pages", "row": 2, "col": 3 },
-    { "id": "diagram", "type": "frontend", "label": "/diagrams/", "sublabel": "Archify, shell", "row": 3, "col": 3 },
-    { "id": "md", "type": "frontend", "label": "Markdown", "sublabel": "llms.txt, llms-full", "row": 1, "col": 4 },
-    { "id": "og", "type": "frontend", "label": "OG images", "row": 2, "col": 4 },
-    { "id": "rec", "type": "frontend", "label": "static.json", "row": 3, "col": 4 },
-    { "id": "algolia", "type": "cloud", "label": "Algolia", "sublabel": "index document", "row": 4, "col": 3 }
+    {
+      "id": "reader",
+      "type": "external",
+      "label": "Reader",
+      "sublabel": "browser",
+      "row": 0,
+      "col": 1
+    },
+    {
+      "id": "bot",
+      "type": "external",
+      "label": "LLM tools",
+      "sublabel": "and crawlers",
+      "row": 0,
+      "col": 2
+    },
+    {
+      "id": "content",
+      "type": "database",
+      "label": "content/",
+      "sublabel": "MDX + catalogue",
+      "row": 2,
+      "col": 0
+    },
+    {
+      "id": "next",
+      "type": "backend",
+      "label": "next build",
+      "sublabel": "checks, static output",
+      "row": 2,
+      "col": 1
+    },
+    {
+      "id": "sync",
+      "type": "backend",
+      "label": "sync-content.ts",
+      "sublabel": "after the build",
+      "row": 4,
+      "col": 1
+    },
+    {
+      "id": "proxy",
+      "type": "security",
+      "label": "proxy",
+      "sublabel": "redirects, Markdown, 404",
+      "row": 1,
+      "col": 2
+    },
+    {
+      "id": "home",
+      "type": "frontend",
+      "label": "/ home page",
+      "row": 1,
+      "col": 3
+    },
+    {
+      "id": "pages",
+      "type": "frontend",
+      "label": "/slug pages",
+      "row": 2,
+      "col": 3
+    },
+    {
+      "id": "diagram",
+      "type": "frontend",
+      "label": "/diagrams/",
+      "sublabel": "Archify, shell",
+      "row": 3,
+      "col": 3
+    },
+    {
+      "id": "md",
+      "type": "frontend",
+      "label": "Markdown",
+      "sublabel": "llms.txt, llms-full",
+      "row": 1,
+      "col": 4
+    },
+    {
+      "id": "og",
+      "type": "frontend",
+      "label": "Share images",
+      "row": 2,
+      "col": 4,
+      "sublabel": "/og, Apple icon"
+    },
+    {
+      "id": "rec",
+      "type": "frontend",
+      "label": "static.json",
+      "row": 3,
+      "col": 4
+    },
+    {
+      "id": "algolia",
+      "type": "cloud",
+      "label": "Algolia",
+      "sublabel": "index document",
+      "row": 4,
+      "col": 3
+    },
+    {
+      "id": "crawl",
+      "type": "frontend",
+      "label": "Crawler files",
+      "sublabel": "robots, sitemap, manifest",
+      "row": 3,
+      "col": 2
+    }
   ],
   "boundaries": [
-    { "kind": "region", "label": "Repository", "wraps": ["content"] },
-    { "kind": "region", "label": "bun run build", "wraps": ["next", "sync"] },
-    { "kind": "region", "label": "Deployed site", "wraps": ["proxy", "home", "pages", "diagram", "md", "og", "rec"] }
+    {
+      "kind": "region",
+      "label": "Repository",
+      "wraps": [
+        "content"
+      ]
+    },
+    {
+      "kind": "region",
+      "label": "bun run build",
+      "wraps": [
+        "next",
+        "sync"
+      ]
+    },
+    {
+      "kind": "region",
+      "label": "Deployed site",
+      "wraps": [
+        "proxy",
+        "home",
+        "pages",
+        "diagram",
+        "md",
+        "og",
+        "rec",
+        "crawl"
+      ]
+    }
   ],
   "connections": [
-    { "from": "content", "to": "next", "label": "compiled", "variant": "emphasis" },
-    { "from": "next", "to": "pages", "label": "prerenders", "variant": "emphasis" },
-    { "from": "next", "to": "sync", "label": "then", "variant": "default" },
-    { "from": "sync", "to": "algolia", "label": "write key", "variant": "security" },
-    { "from": "reader", "to": "proxy", "label": "visits", "variant": "emphasis" },
-    { "from": "bot", "to": "proxy", "label": "fetches", "variant": "default" },
-    { "from": "proxy", "to": "home", "variant": "default" },
-    { "from": "proxy", "to": "md", "label": "Markdown", "variant": "default" },
-    { "from": "pages", "to": "diagram", "label": "frames", "variant": "dashed" },
-    { "from": "reader", "to": "algolia", "label": "search-only key", "variant": "dashed" }
+    {
+      "from": "content",
+      "to": "next",
+      "label": "compiled",
+      "variant": "emphasis"
+    },
+    {
+      "from": "next",
+      "to": "pages",
+      "label": "prerenders",
+      "variant": "emphasis"
+    },
+    {
+      "from": "next",
+      "to": "sync",
+      "label": "then",
+      "variant": "default"
+    },
+    {
+      "from": "sync",
+      "to": "algolia",
+      "label": "write key",
+      "variant": "security"
+    },
+    {
+      "from": "reader",
+      "to": "proxy",
+      "label": "visits",
+      "variant": "emphasis"
+    },
+    {
+      "from": "bot",
+      "to": "proxy",
+      "label": "fetches",
+      "variant": "default"
+    },
+    {
+      "from": "proxy",
+      "to": "home",
+      "variant": "default"
+    },
+    {
+      "from": "proxy",
+      "to": "md",
+      "label": "Markdown",
+      "variant": "default"
+    },
+    {
+      "from": "pages",
+      "to": "diagram",
+      "label": "frames",
+      "variant": "dashed"
+    },
+    {
+      "from": "reader",
+      "to": "algolia",
+      "label": "search-only key",
+      "variant": "dashed"
+    },
+    {
+      "from": "proxy",
+      "to": "crawl",
+      "label": "crawlers",
+      "variant": "default"
+    }
   ]
 }

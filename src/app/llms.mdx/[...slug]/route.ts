@@ -10,6 +10,8 @@ export async function GET(_req: Request, { params }: RouteContext<'/llms.mdx/[..
   return new Response(await docsLlms.page(page), {
     headers: {
       'Content-Type': 'text/markdown',
+      // Here rather than next.config.mjs: `/<page>.md` reaches this route through the proxy's rewrite (ADR-0035).
+      'X-Robots-Tag': 'noindex',
     },
   });
 }

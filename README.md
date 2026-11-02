@@ -64,6 +64,7 @@ goes into `content/`**: everything there is published to the site, the search in
 | Styling | Tailwind CSS 4 |
 | Search | [Algolia](https://www.algolia.com), synced after each production build |
 | For LLMs | `llms.txt`, `llms-full.txt`, and every page as Markdown (`/<page>.md`) |
+| Search engines and sharing | Canonical links, `robots.txt`, `sitemap.xml`, JSON-LD and a designed share image per page, all from the content |
 | Linting | ESLint 9 + `eslint-config-next` |
 | Testing | `bun test`, tests beside the code |
 | Package manager | [Bun](https://bun.sh) |
@@ -81,8 +82,8 @@ sync script runs on Node; the owner's machine has v24).
    bun install
    ```
 
-2. **Configure search.** Copy `.env.example` to `.env.local` and fill in the three Algolia
-   variables, described in [`content/docs/maintain/security/secrets.mdx`](content/docs/maintain/security/secrets.mdx).
+2. **Configure.** Copy `.env.example` to `.env.local` and fill in `SITE_URL` (the site's public
+   address; without it every page is `noindex`) and the three Algolia variables, described in [`content/docs/maintain/security/secrets.mdx`](content/docs/maintain/security/secrets.mdx).
    `.env.local` is gitignored; never commit it.
 
 3. **Run.**
@@ -136,14 +137,14 @@ Open [http://localhost:3000](http://localhost:3000). The docs are at `/docs`.
 │           └── _templates/  # a starting point for each document type
 ├── src/
 │   ├── proxy.ts         # version-line redirects and Markdown versions of pages
-│   ├── app/             # home, every page at /<slug>/…, llms.txt, OG images, search records, tokens
+│   ├── app/             # home, every page at /<slug>/…, llms.txt, share images, robots, sitemap, search records, tokens
 │   ├── components/      # site header, MDX components, search dialog, docs/ (scale strip, hero, track switch, version banners), home/
 │   └── lib/             # content loader, catalogue schema and checks, search client, site settings
 ├── diagrams/            # Archify diagrams: the candidate JSON (not served) and the HTML, served sandboxed at /diagrams/
 ├── scripts/
 │   └── sync-content.ts  # pushes search records to Algolia after a build
 ├── .env.example         # every variable the site reads, names only
-├── next.config.mjs      # Fumadocs MDX plugin, Cache Components, the sandbox header for /diagrams/
+├── next.config.mjs      # Fumadocs MDX plugin, Cache Components, the sandbox header for /diagrams/, noindex on machine-readable routes
 ├── eslint.config.mjs
 ├── tsconfig.json
 └── tsconfig.test.json   # the tests' type check, with Bun's types

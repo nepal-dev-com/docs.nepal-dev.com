@@ -1,0 +1,176 @@
+---
+title: "App flow — search and sharing"
+description: "What a person sees of a page before opening it: the browser tab, a search result and a shared link's card."
+---
+
+- **Status:** Current
+- **Last updated:** 2026-11-03
+- **Related ADRs:** [ADR-0035](../adr/ADR-0035-every-page-is-ready-for-search-and-sharing.mdx),
+  [ADR-0034](../adr/ADR-0034-the-proxy-answers-unknown-paths-with-a-true-404.mdx),
+  [ADR-0015](../adr/ADR-0015-every-entry-lives-at-the-root-in-one-shape-and-one-look.mdx)
+
+> Snapshot of the system as it stands today. Edit in place; never record what changed.
+
+What a person sees of a page before opening it, or outside it: the browser tab, a search result and
+the card when a link is shared. Inside a page, one thing shows: its description, under its title. Sample values are invented (ADR-0008),
+including the package `lodestar`. Phone width first.
+
+The flow and the screens are drawn with Archify; the page shows them and its Markdown carries their
+Mermaid (ADR-0022). Their sources are in `diagrams/docs/`: `search-and-sharing.json` for the flow and
+`search-and-sharing-screen-1.json` to `-screen-5.json` for the screens.
+
+## Entry points
+
+- **A search engine:** a person searches, and sees the page's title and description.
+- **A shared link:** pasted into a chat or a post, which shows the page's card.
+- **Any open page:** its title in the browser tab, in history and in bookmarks.
+- **Not here:** the 404, which stays out of search; Markdown copies, `llms.txt`, `static.json` and
+  diagram frames, which stay readable by tools but out of search results.
+
+## Flow
+
+<Diagram src="/diagrams/docs/search-and-sharing.html" title="Search and sharing">
+
+```mermaid
+flowchart TB
+  C["A search engine<br/>robots.txt, then the sitemap"] --> P["A page<br/>judged by where it sits"]
+  P -->|home, latest line, no lines, Maintain, or only in an older line| I["Indexed<br/>its own canonical link"]
+  P -->|older line, and also in latest| A["Canonical link<br/>to the same page in latest"]
+  P -->|dev line or a template| N["noindex<br/>still readable by link"]
+  I --> R["Search result<br/>title and description"]
+  A -->|shown as the page in latest| R
+  L["A shared link"] --> K["Share card<br/>title, description and image"]
+```
+
+</Diagram>
+
+## Screens
+
+### 1. Search result, at phone width
+
+<Diagram src="/diagrams/docs/search-and-sharing-screen-1.html" title="Screen 1 — Search result">
+
+```mermaid
+block-beta
+  columns 4
+  site["docs.puncoz.com › lodestar › use › install"]:4
+  title["Install — lodestar — Puncoz Verse"]:4
+  desc["Add lodestar to a React project and open the command palette with one hook."]:4
+```
+
+</Diagram>
+
+How the result is laid out is the search engine's choice; the site supplies the words.
+
+**States**
+
+- Empty: not applicable; the build refuses a page without a description.
+- Loading: not applicable.
+- Not found: a removed page answers 404 and drops out over time.
+- Refused: a `dev` page or a template is `noindex`, so it has no result.
+- Error: not applicable.
+- Degraded: with no `SITE_URL`, as on a preview or a local build, every page is `noindex`.
+- Success: the reader opens the page. A search for an older version's page usually leads to the same
+  page in latest, where the version menu is one click away.
+
+### 2. Share card, at phone width
+
+<Diagram src="/diagrams/docs/search-and-sharing-screen-2.html" title="Screen 2 — Share card">
+
+```mermaid
+block-beta
+  columns 4
+  image["The page's share image, screen 4"]:4
+  title["Install — lodestar — Puncoz Verse"]:4
+  desc["Add lodestar to a React project and open the command palette with one hook."]:4
+  domain["docs.puncoz.com"]:4
+```
+
+</Diagram>
+
+The home page's card has its own image, screen 5. The layout is the sharing app's choice.
+
+**States**
+
+- Empty: not applicable; every page has an image and a description.
+- Loading: the sharing app fetches the card; the site does nothing.
+- Not found: an unknown path has no card of its own, only the title *Page not found*.
+- Refused, error: not applicable.
+- Degraded: with no `SITE_URL` the image's address is a local one, so the app shows no image. This
+  is only ever a preview or a local build.
+- Success: the card shows, and opening it leads to the page.
+
+### 3. Browser tab, at phone width
+
+<Diagram src="/diagrams/docs/search-and-sharing-screen-3.html" title="Screen 3 — Browser tab">
+
+```mermaid
+block-beta
+  columns 4
+  latest["Tab, latest line: Install — lodestar — Puncoz Verse"]:4
+  older["Tab, older line: Install — lodestar 2.x LTS — Puncoz Verse"]:4
+  dev["Tab, dev line: Install — lodestar dev — Puncoz Verse"]:4
+  overview["Tab, overview: lodestar — Puncoz Verse"]:4
+  home["Tab, home page: Puncoz Verse — every package and project, documented to the version"]:4
+```
+
+</Diagram>
+
+**States**
+
+- Empty, loading, refused, error, degraded: not applicable; the title is in the page's HTML.
+- Not found: *Page not found — Puncoz Verse*.
+- Success: the tab, history and bookmarks name the page, its package and the site.
+
+### 4. A page's share image, at its fixed 1200 by 630
+
+<Diagram src="/diagrams/docs/search-and-sharing-screen-4.html" title="Screen 4 — A page's share image">
+
+```mermaid
+block-beta
+  columns 4
+  brand["The Verse mark and Puncoz Verse, top left, on the still dark star field"]:4
+  kicker["The entry's planet mark · lodestar · Use · v3.2 with its moon"]:4
+  title["Install"]:4
+  desc["Add lodestar to a React project and open the command palette with one hook."]:4
+  domain["docs.puncoz.com"]:4
+```
+
+</Diagram>
+
+Always in the dark theme's colours, because an image cannot follow the reader's theme. A project has
+a ringed planet and a package a solid one, as everywhere on the site. Maintain has no moon, and a
+long title is set smaller rather than cut.
+
+**States**
+
+- Empty: a page outside a track, such as an overview, has no track or moon in its kicker.
+- Loading: none; every image is made at build.
+- Not found: an unknown path's image address answers 404.
+- Refused, error: a font that cannot be fetched fails the build rather than publishing a wrong image.
+- Degraded: with no `SITE_URL` the image leaves out the domain.
+- Success: the image shows in the sharing app's card.
+
+### 5. The home page's share image, at its fixed 1200 by 630
+
+<Diagram src="/diagrams/docs/search-and-sharing-screen-5.html" title="Screen 5 — The home page's share image">
+
+```mermaid
+block-beta
+  columns 4
+  brand["The Verse mark and Puncoz Verse, top left, on the still dark star field"]:4
+  line["Every package and project, documented to the version."]:2
+  system["On the right: the star, its orbits and a planet on each, still, clear of the text"]:2
+  domain["docs.puncoz.com"]:4
+```
+
+</Diagram>
+
+**States**
+
+- Empty: with nothing documented, the orbits are drawn with no planets on them.
+- Loading: none; the image is made at build.
+- Not found, refused: not applicable.
+- Error: as screen 4.
+- Degraded: as screen 4.
+- Success: the image shows in the sharing app's card.

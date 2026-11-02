@@ -1,5 +1,6 @@
 ---
 title: "Architecture — puncoz-packages-docs"
+description: "How the site works as built: a Next.js and Fumadocs app rendering content as pages, Markdown, images and search records, with its routes and components."
 ---
 
 - **Status:** Current
@@ -48,7 +49,11 @@ documents; no package is documented yet, so the home page shows its empty states
 | `/llms.mdx/…/content.md` | `src/app/llms.mdx/[...slug]/route.ts` | Processed Markdown of one page, `text/markdown` |
 | `/llms.txt` | `src/app/llms.txt/route.ts` | Index of every page, version lines labelled |
 | `/llms-full.txt` | `src/app/llms-full.txt/route.ts` | Every page's full Markdown in one file |
-| `/og/…/image.png` | `src/app/og/[...slug]/route.tsx` | Open Graph image: title, description, site name |
+| `/og/image.png`, `/og/…/image.png` | `src/app/og/[...slug]/route.tsx` | Share image, 1200 by 630: the home page's system, or a page's entry, track, line, title and description (ADR-0035) |
+| `/robots.txt` | `src/app/robots.ts` | Allows everyone and names the sitemap; with no `SITE_URL`, disallows everything |
+| `/sitemap.xml` | `src/app/sitemap.ts` | Every page the rule of ADR-0035 marks, with `lastmod` from git; with no `SITE_URL`, empty |
+| `/manifest.webmanifest` | `src/app/manifest.ts` | Name, description, theme colours and icons |
+| `/apple-icon` | `src/app/apple-icon.tsx` | The Verse mark as a PNG, drawn at build |
 | `/static.json` | `src/app/static.json/route.ts` | Every page as an Algolia search record |
 
 Pages share the root with the site's own routes. The proxy leaves those routes and everything
@@ -97,7 +102,10 @@ that would collide with a route (`api`, `og`, `static`, …). Contracts for the 
 | `src/components/home/` | Server: hero, home header, planet cards, beyond the belt (private projects from `private-projects.ts`), two sides, moon rows. Client: orbit map (canvas; a planet opens its overview; the Verse view at `#verse`, its easing and far planets from `src/lib/verse-view.ts`, ADR-0029; every ecosystem's orbit, the living star, trails, pointer depth, the arrival, the comet and the telemetry line from `src/lib/hero-sky.ts`, with the nebula behind it in `home.css`, ADR-0032), search button (opens the search dialog), terminal (tabs), assistant actions (Fumadocs' Copy Markdown and Open menu for the example page), reveal | `catalog.ts`, `rings.ts`, `fumadocs-ui`, `lucide-react` |
 | `src/components/search.tsx`, `search-empty.tsx` | The site-wide search dialog, opened by `⌘K`, the docs header's search button and the home page's hero button; its no-results line is the site's own (ADR-0029) | `algolia.ts` |
 | `src/proxy.ts` | Leaves site routes alone; on catalogued paths, line redirects and the Markdown rewrites; any other unknown path, the 404 | `catalog-routes.ts`, `known-paths.ts`, `fumadocs-core/negotiation` |
-| `scripts/sync-content.ts` | After `next build`, reads the built `static.json` and replaces the Algolia index `document` with it | `algoliasearch`, `ALGOLIA_WRITE_KEY` |
+| `src/lib/seo.ts` | Pure and tested: validates `SITE_URL` (`https` origin, no path), each page's search rule, its title, its metadata, the robots rules, the sitemap entries, the JSON-LD and its escaping, and the share images' colours and sizing (ADR-0035) | `shared.ts` |
+| `src/components/json-ld.tsx` | The JSON-LD `<script>` in the home page and in an indexed docs page | `seo.ts` |
+| `src/components/share-image.tsx`, `src/lib/share-fonts.ts` | The two share images for `next/og`, with the stars and orbits kept clear of the text; Bricolage Grotesque and Onest fetched as `ttf` from Google Fonts in `use cache`, so a failed fetch fails the build and the routes stay prerendered | `seo.ts`, `sky.ts`, `verse-mark.tsx` |
+| `scripts/sync-content.ts` | After `next build`, refuses to run without `SITE_URL`; reads the built `static.json` and replaces the Algolia index `document` with it | `algoliasearch`, `ALGOLIA_WRITE_KEY`, `SITE_URL` |
 
 ## How navigation is scoped
 
@@ -138,7 +146,8 @@ flowchart TB
     HOME["/ home page"]
     PAGES["/slug pages"]
     MD["Markdown · llms.txt · llms-full.txt"]
-    OG["OG images"]
+    OG["Share images · Apple icon"]
+    CRAWL["robots.txt · sitemap.xml · manifest"]
     DIAG["/diagrams/ Archify views, with the site shell"]
     REC["static.json"]
   end
@@ -146,11 +155,11 @@ flowchart TB
   Reader["Reader / browser"]
   Bot["LLM tools and crawlers"]
 
-  CONTENT --> NEXT --> HOME & PAGES & MD & OG & REC
+  CONTENT --> NEXT --> HOME & PAGES & MD & OG & REC & CRAWL
   NEXT --> SYNC -->|write key| ALG
   Reader --> PROXY --> HOME & PAGES
   Reader -->|search-only key, from the dialog and the hero| ALG
-  Bot --> PROXY --> MD
+  Bot --> PROXY --> MD & CRAWL
   PAGES -.->|frames| DIAG
 ```
 
@@ -169,9 +178,12 @@ flowchart TB
 
 - **Mermaid is not rendered.** Diagrams in these pages show as highlighted code.
 - **Every page is public on every surface.** Nothing filters a page out of the site, the
-  Markdown routes, `llms.txt` / `llms-full.txt`, `static.json`, the OG images or the search
-  index. The catalogue schema rejects a private entry, so the build fails instead of publishing
+  Markdown routes, `llms.txt` / `llms-full.txt`, `static.json`, the share images or the search
+  index; `noindex` keeps a page out of search results only. The catalogue schema rejects a private entry, so the build fails instead of publishing
   one (`AGENTS.md` §6.1).
+- **`lastmod` needs a full clone.** It comes from `git log`, so a shallow clone would date every page
+  to the last commit, and an uncommitted page has none. The hosting ADR must clone in full.
+- **The build needs the network**, for `next/font` and the share images' fonts.
 - **Demos are not published.** A `use/<line>/demo.mdx` page would be linked from the catalogue,
   but ADR-0011's embed takes only `/diagrams/…` files, so how a demo runs needs its own ADR; the
   home page has no demo section.

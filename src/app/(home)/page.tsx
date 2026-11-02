@@ -3,7 +3,9 @@ import Link from 'next/link';
 import { ArrowRight } from 'lucide-react';
 import { getCatalog, getExamplePage, getTracksPreview } from '@/lib/catalog';
 import { docsLlms } from '@/lib/source';
-import { appName, getPageMarkdownUrl, gitConfig } from '@/lib/shared';
+import { appName, getPageMarkdownUrl, gitConfig, homeImageUrl } from '@/lib/shared';
+import { homeJsonLd, pageMetadata, searchRule, siteUrl } from '@/lib/seo';
+import { JsonLd } from '@/components/json-ld';
 import { verseFragment } from '@/lib/verse-view';
 import { HomeHeader } from '@/components/home/home-header';
 import { Hero } from '@/components/home/hero';
@@ -17,10 +19,18 @@ import { AssistantActions } from '@/components/home/assistant-actions';
 import { Reveal } from '@/components/home/reveal';
 import { ZoomPage } from '@/components/zoom-page';
 
-export const metadata: Metadata = {
-  title: `${appName} — every package and project, documented to the version`,
-  description: 'Guides, APIs and release notes for npm, Composer, PyPI and Go packages, read from each package’s own source.',
-};
+const description = 'Guides, APIs and release notes for npm, Composer, PyPI and Go packages, read from each package’s own source.';
+const title = `${appName} — every package and project, documented to the version`;
+
+export const metadata: Metadata = pageMetadata({
+  title,
+  description,
+  url: '/',
+  rule: searchRule({ url: '/', path: '' }, siteUrl),
+  type: 'website',
+  imageUrl: homeImageUrl,
+  imageAlt: title,
+});
 
 const head = (text: string) => text.split('\n').slice(0, 6).join('\n');
 
@@ -56,6 +66,7 @@ export default async function HomePage() {
     <>
       {/* Next.js keeps the old scroll position for a hash with no target; this one is at the very top (ADR-0033). */}
       <span id={verseFragment.slice(1)} className="verse-target" />
+      {siteUrl && <JsonLd data={homeJsonLd(description, siteUrl)} />}
       <HomeHeader
         appName={appName}
         githubUrl={githubUrl}
