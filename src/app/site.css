@@ -1415,15 +1415,34 @@
   }
 }
 
-/* The Horizon footer (ADR-0017 decision 8) */
+/* The Horizon footer (ADR-0017 decision 8, ADR-0030) */
 
 .horizon {
+  /* White clouds vanish on the light sky; a cool grey body keeps their shape (ADR-0030 decision 4). */
+  --cloud-top: color-mix(in srgb, var(--home-faint) 45%, var(--home-bg));
+  --cloud-under: color-mix(in srgb, var(--home-star) 55%, var(--home-bg));
+  --aurora: 0.5;
   position: relative;
-  margin-top: 140px;
+  margin-top: 44px;
+  padding-top: 96px;
   overflow: hidden;
   color: var(--home-ink);
   font: 400 15px/1.6 var(--home-font-text);
+  /* The dusk edge: whatever runs into the footer sinks into its ground (ADR-0030 decision 1). */
+  background: linear-gradient(transparent, var(--home-bg) 96px);
   isolation: isolate;
+  view-timeline: --horizon block;
+}
+
+.dark .horizon {
+  --cloud-top: var(--home-line-2);
+  --cloud-under: var(--home-star);
+  --aurora: 1;
+}
+
+/* Above the docs sidebar and the trajectory, under the header (z-index 40). */
+.site-header[data-docs] ~ .horizon {
+  z-index: 30;
 }
 
 .horizon a,
@@ -1450,6 +1469,10 @@
   text-wrap: balance;
 }
 
+.horizon-closing span {
+  display: block;
+}
+
 .horizon-closing a {
   padding-bottom: 2px;
   background: linear-gradient(var(--home-star), var(--home-star)) 0 100% / 100% 2px no-repeat;
@@ -1459,13 +1482,243 @@
   position: relative;
   height: clamp(170px, 22vw, 260px);
   margin-top: -6px;
+  container-type: size;
 }
 
-.horizon-scene svg {
+.horizon-scene > svg,
+.horizon-clouds {
   position: absolute;
   inset: 0;
   width: 100%;
   height: 100%;
+}
+
+.horizon-stars circle {
+  fill: var(--home-faint);
+}
+
+.horizon-stars {
+  opacity: 0.7;
+}
+
+.dark .horizon-stars {
+  opacity: 1;
+}
+
+.horizon-twinkle {
+  animation: horizon-twinkle var(--twinkle) ease-in-out var(--delay) infinite alternate;
+}
+
+.horizon-aurora {
+  opacity: 0.4;
+  transform-origin: 50% 85%;
+  animation: horizon-breathe 9s ease-in-out infinite alternate;
+  will-change: transform, opacity;
+}
+
+.horizon-aurora g {
+  opacity: var(--aurora);
+}
+
+.horizon-rim-glow {
+  opacity: 0.8;
+  animation: horizon-rim 9s ease-in-out infinite alternate;
+  will-change: opacity;
+}
+
+.horizon-scene > .horizon-shooting {
+  position: absolute;
+  inset: auto;
+  width: 160px;
+  height: 60px;
+  opacity: 0;
+  animation: horizon-shoot var(--cycle) linear var(--delay) infinite;
+  will-change: transform, opacity;
+}
+
+.horizon-scene > .horizon-shooting-a {
+  top: 4%;
+  left: 66%;
+}
+
+.horizon-scene > .horizon-shooting-b {
+  top: 14%;
+  left: 28%;
+}
+
+/* Sized to the viewBox the other layers show (scale = max(width / 1200, height / 260)), so sliding
+   a band by half its width moves it exactly one period and the loop is seamless. */
+.horizon-cloud-band {
+  position: absolute;
+  bottom: 0;
+  left: calc(50% - max(50cqw, 230.77cqh));
+  width: max(200cqw, 923.08cqh);
+  height: max(21.667cqw, 100cqh);
+  animation: horizon-drift var(--drift) linear infinite;
+  will-change: transform;
+}
+
+.horizon-cloud-band:nth-child(1) {
+  opacity: 0.45;
+}
+
+.horizon-cloud-band:nth-child(2) {
+  opacity: 0.65;
+}
+
+.horizon-cloud-band:nth-child(3) {
+  opacity: 0.85;
+}
+
+/* The star's light falls off with distance; the clouds fade toward the scene's sides. */
+.horizon-clouds {
+  mask-image: radial-gradient(ellipse 60% 120% at 50% 100%, #000 35%, rgb(0 0 0 / 0.3) 80%);
+}
+
+.horizon-observatory {
+  fill: color-mix(in srgb, var(--home-ink) 72%, var(--home-bg));
+}
+
+.dark .horizon-observatory {
+  fill: var(--home-bg);
+}
+
+.horizon-observatory .horizon-scope {
+  stroke: var(--home-faint);
+  stroke-width: 1.2;
+  stroke-linecap: round;
+}
+
+.horizon-observatory .horizon-slit {
+  fill: var(--home-star);
+  opacity: 0.7;
+}
+
+.horizon-observatory .horizon-dome-lit {
+  fill: none;
+  stroke: var(--home-star);
+  stroke-opacity: 0.45;
+}
+
+.horizon-observatory .horizon-window {
+  fill: var(--home-star);
+}
+
+/* Loops sleep until HorizonAwake sees the footer on screen; without scripts the scene is still. */
+.horizon:not([data-awake]) .h-loop {
+  animation-play-state: paused;
+}
+
+@keyframes horizon-twinkle {
+  from {
+    opacity: 0.25;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes horizon-breathe {
+  from {
+    opacity: 0.25;
+    transform: scaleY(0.92);
+  }
+  to {
+    opacity: 0.55;
+    transform: scaleY(1.06);
+  }
+}
+
+@keyframes horizon-rim {
+  from {
+    opacity: 0.6;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes horizon-shoot {
+  0% {
+    opacity: 0;
+    transform: translate(0, 0);
+  }
+  1.5% {
+    opacity: 1;
+  }
+  7% {
+    opacity: 0;
+    transform: translate(-220px, 76px);
+  }
+  100% {
+    opacity: 0;
+    transform: translate(-220px, 76px);
+  }
+}
+
+@keyframes horizon-drift {
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+@keyframes horizon-rise {
+  from {
+    transform: translateY(40px);
+  }
+}
+
+@keyframes horizon-glow {
+  from {
+    opacity: 0.35;
+  }
+}
+
+@keyframes horizon-set {
+  to {
+    translate: 0 24px;
+  }
+}
+
+/* The star rises and the docs sidebar and trajectory set, in step with the scroll. Without
+   scroll-driven animations the star stands risen and the dusk edge simply covers them. */
+@supports (animation-timeline: view()) {
+  :root {
+    timeline-scope: --horizon;
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .horizon-rise {
+      animation: horizon-rise linear both;
+      animation-timeline: --horizon;
+      animation-range: entry 15% entry 95%;
+    }
+
+    .horizon-glow {
+      animation: horizon-glow linear both;
+      animation-timeline: --horizon;
+      animation-range: entry 15% entry 95%;
+    }
+  }
+
+  @media (prefers-reduced-motion: no-preference) and (min-width: 768px) {
+    .site-header[data-docs] ~ [class*='[grid-area:sidebar]'],
+    .site-header[data-docs] ~ #nd-toc {
+      animation: horizon-set linear both;
+      animation-timeline: --horizon;
+      animation-range: entry 0% entry 60%;
+    }
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .horizon .h-loop {
+    animation: none;
+  }
+
+  .horizon-scene > .horizon-shooting {
+    display: none;
+  }
 }
 
 .horizon-surface {

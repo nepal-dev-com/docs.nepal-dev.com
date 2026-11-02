@@ -56,7 +56,7 @@ to see all of it at a glance.
 | US-8 | As a **developer or AI tool**, I want **to see how to take a page out of the site**, so that **I can use it in my tools**. | - Terminal tabs for `.md`, `llms.txt` and `Accept: text/markdown`, each with its route's real output.<br />- The live Copy Markdown button and Open menu for one real page.<br />- A link to `/llms-full.txt`; `llms.txt` lists every package and project. |
 | US-9 | As a **reader who prefers less motion or uses a keyboard or screen reader**, I want **the same information without the animation**, so that **the page works for me**. | - Under reduced motion the system is still, commands don't type and nothing enters or turns.<br />- The planet cards hold everything the system shows, as text.<br />- The hero's headline and subline select with the mouse.<br />- Every control is reachable and visible on focus. |
 | US-10 | As a **reader**, I want **a theme switch I can understand**, so that **I know what it will do**. | - The same height as the header's other buttons; draws the sun in front of a lit planet in light and behind a crescent in dark.<br />- Its name and tooltip say what a click does ("Switch to day side (light theme)").<br />- Shows the current theme from first paint; instant under reduced motion. |
-| US-11 | As a **reader at the end of a page**, I want **a footer that takes me somewhere**, so that **I don't scroll back up to move on**. | - Every planet, Search, `llms.txt`, `llms-full.txt`, GitHub and Back to orbit.<br />- The home page and 404 add the closing line and the horizon; docs pages keep only the rows. |
+| US-11 | As a **reader at the end of a page**, I want **a footer that takes me somewhere**, so that **I don't scroll back up to move on**. | - Every planet, Search, `llms.txt`, `llms-full.txt`, GitHub and Back to orbit.<br />- Every page has the closing line and the horizon; the closing line's *The Verse* opens the Verse view. |
 | US-12 | As a **reader who followed a dead link**, I want **a way back**, so that **I am not stuck**. | - Unknown paths show "This page drifted out of orbit." with search and "Back to the system". |
 
 ## Rules and edge cases
@@ -64,8 +64,10 @@ to see all of it at a glance.
 - Entries come only from content folders with a valid `catalog` (ADR-0013); this
   site is listed as the project `docs`.
 - Counts are computed from the same entries: public packages and public projects.
-- An ecosystem with no packages has no orbit in the system. With no public entries at all, the
-  system draws faint default orbits (npm, Composer, PyPI, Go, projects) around the star, and the
+- The system always draws the npm, Composer, PyPI, Go and Projects orbits, and Cargo and Other
+  when an entry is in them (ADR-0032). An orbit with no planet is a thinner, fainter solid line
+  with its name, and pointing at it says "No planets yet". With no public entries at all, every
+  orbit is empty, the telemetry line reads `0 planets · 5 orbits waiting · 0 moons`, and the
   cards are replaced by "No planets in the Verse yet. Packages and projects appear here once
   they are documented."
 - A kind with no entries has no header link.

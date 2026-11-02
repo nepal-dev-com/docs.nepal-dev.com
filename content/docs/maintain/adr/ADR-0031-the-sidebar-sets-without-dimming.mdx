@@ -1,0 +1,100 @@
+---
+title: "ADR-0031 — The sidebar sets without dimming"
+---
+
+- **Status:** Approved
+- **Date:** 2026-11-01
+- **Deciders:** [@puncoz](https://github.com/puncoz)
+- **Approved by:** [@puncoz](https://github.com/puncoz)
+- **Approved on:** 2026-11-01
+- **Supersedes:** [ADR-0030](./ADR-0030-the-horizon-rises-over-the-page-and-its-sky-comes-alive.mdx)
+  decision 1 (in part: "dim to 55%")
+- **Superseded by:** —
+- **Design documents:** [`../app-flow/living-horizon.mdx`](../app-flow/living-horizon.mdx) (screen 2),
+  [`../prd/docs-sidebars.mdx`](../prd/docs-sidebars.mdx), `DESIGN.md`
+
+## Context
+
+- Under ADR-0030 decision 1, when the Horizon footer rises over a docs page, the sidebar and the
+  trajectory **set**: they drop up to 24px and dim to 55%, in step with the scroll
+  (`@keyframes horizon-set` in `src/app/site.css`).
+- What stays above the horizon still works: its links can be read, hovered and clicked.
+- A light-theme contrast audit, run in Chrome against `bunx next build` on
+  `/docs`, found that at 55% this text falls below WCAG AA's 4.5:1 on Graphite Ground
+  (`#f6f7f9`). The ratios below are computed from the tokens in `src/app/global.css`:
+
+  | Text | Full | 85% | 75% | 55% |
+  |---|---|---|---|---|
+  | Ink | 17.8:1 | 11.9:1 | 8.3:1 | 4.1:1 |
+  | Muted | 6.7:1 | 4.7:1 | 3.7:1 | 2.5:1 |
+  | Steel Faint (separators, counts, the trajectory) | 5.2:1 | 3.8:1 | 3.2:1 | 2.2:1 |
+  | Teal (the open station, the current page) | 4.9:1 | 3.8:1 | 3.2:1 | 2.3:1 |
+
+- No dim level keeps every text colour at 4.5:1; even 85% fails Steel Faint and Teal.
+- The dusk edge already does the setting's visual work: what runs below the horizon fades into
+  the ground over 96px and is hidden.
+- The owner chose, with options: drop only, no dimming.
+
+## Decision
+
+1. **The sidebar and the trajectory set by dropping, not by dimming.** As the Horizon enters, they
+   drop up to 24px in step with the scroll, as now, and stay at full opacity. What runs below the
+   horizon still sinks into the dusk edge and is hidden. In both themes.
+2. **Unchanged from ADR-0030:**
+   - the scroll range (entry 0% to 60%), the 768px minimum and the reduced-motion and
+     no-support fallbacks;
+   - the footer's stacking, its dusk edge and everything in the scene.
+
+## Options considered
+
+| Option | Pros | Cons | Verdict |
+|---|---|---|---|
+| A — Drop only, no dimming | Every text colour keeps its contrast above the horizon; the dusk edge still does the setting | The sidebar no longer looks like it fades as it sets | Chosen (owner) |
+| B — Dim only in dark | Keeps the fade where it reads as dusk | Dark keeps the same failure, measured against darker tokens; two behaviours to keep | Rejected |
+| C — Dim less (75% or 85%) | A softer fade | Still under 4.5:1 for Steel Faint and Teal at any level that shows | Rejected |
+| D — Keep 55% | No change | Readable, clickable text below AA at the end of every docs page | Rejected |
+
+## Consequences
+
+**Positive**
+
+- The part of the sidebar and trajectory still above the horizon keeps the contrast every other
+  text on the site has (DESIGN.md: every text colour 4.5:1 or more).
+- One property fewer animates on the sidebar and the trajectory.
+
+**Negative / accepted trade-offs**
+
+- The setting is a drop and the dusk edge only; nothing fades as it sinks except where the dusk
+  edge covers it.
+
+## Content invariants
+
+None is touched. No content, URL or Markdown surface changes.
+
+## Security considerations
+
+None. This change touches no data, no endpoint and no secret.
+
+## Implementation notes
+
+- [x] `src/app/site.css`: `@keyframes horizon-set` keeps `translate: 0 24px` and drops its
+  `opacity`.
+- [x] Tests: the setting is CSS on Fumadocs' layout and is not rendered in a unit test
+  (ADR-0021). `src/components/horizon-footer.test.tsx` reads the keyframes from `site.css`
+  instead: they drop 24px and set no opacity (it failed before the change). The contrast of
+  the sidebar's text at full opacity was measured in the light-theme audit that led to this ADR
+  (the table above). Checked in Chrome after the change, in the light theme at the end of a
+  docs page: the sidebar and the trajectory stand at opacity 1, dropped 24px; a full contrast
+  scan was not re-run.
+- [x] `bun run test`, `bun run types:check` and `bunx next build` pass; `bun run lint` is reported
+  while it stays blocked.
+
+## Docs to update on implementation
+
+- [x] [`../app-flow/living-horizon.mdx`](../app-flow/living-horizon.mdx): screen 2's text and
+  states (no dimming).
+- [x] [`../prd/docs-sidebars.mdx`](../prd/docs-sidebars.mdx), where it describes the setting:
+  it does not mention the dimming, so nothing changed.
+- [x] `DESIGN.md`, the Horizon footer bullet: it names the setting without the dimming, so
+  nothing changed.
+- [x] ADR-0030's "Superseded by" line, and [`./index.mdx`](./index.mdx): index row and status.

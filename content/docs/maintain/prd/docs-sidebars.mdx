@@ -5,7 +5,8 @@ title: "PRD — docs sidebars: orbit stations, the trajectory and the horizon"
 - **Status:** Current
 - **Last updated:** 2026-11-01
 - **Related ADRs:** [ADR-0018](../adr/ADR-0018-docs-pages-get-orbit-stations-a-trajectory-and-the-full-horizon.mdx),
-  [ADR-0027](../adr/ADR-0027-the-sidebar-is-a-scale-ladder-with-one-lifted-orbit.mdx)
+  [ADR-0027](../adr/ADR-0027-the-sidebar-is-a-scale-ladder-with-one-lifted-orbit.mdx),
+  [ADR-0030](../adr/ADR-0030-the-horizon-rises-over-the-page-and-its-sky-comes-alive.mdx)
 
 > Snapshot of the system as it stands today. Edit in place; never record what changed.
 
@@ -22,7 +23,8 @@ shortened footer that differs from every other page's.
 - Each sidebar level reads as a smaller body than the one above it: landmarks, belts, orbits,
   satellites; only the open orbit is a card (ADR-0027).
 - "On this page" curves on every page, shows where the reader is, and how long is left.
-- Every page, docs pages included, ends on the same full horizon.
+- Every page, docs pages included, ends on the same full horizon, with a living sky, and nothing
+  of the sidebar or the trajectory sits on it.
 
 ## Non-goals
 
@@ -40,7 +42,7 @@ shortened footer that differs from every other page's.
 | US-4 | As a **reader**, I want **to see how far through a page I am**, so that **I know what is left**. | - The read stretch of the path is solid with filled dots; ahead is dashed with hollow dots.<br />- A probe rides the path at the reading position. |
 | US-5 | As a **reader**, I want **to know how long the rest of the page takes**, so that **I can decide to read now or later**. | - The header shows the minutes left, from the build-time word count at 220 a minute, rounded up.<br />- "End of page" at the end; no time for a page under a minute. |
 | US-6 | As a **reader on a phone**, I want **the same progress and section list**, so that **I can jump without scrolling back up**. | - The bar under the header shows the ring, the current heading and the time left.<br />- Tapping opens the trajectory; choosing a heading scrolls there and closes it. |
-| US-7 | As a **reader at the end of a docs page**, I want **the same footer as every page**, so that **the site feels like one place**. | - The full horizon, with its closing line and scene, closes every docs page.<br />- Its last link reads "Back to top". |
+| US-7 | As a **reader at the end of a docs page**, I want **the same footer as every page**, so that **the site feels like one place**. | - The full horizon, with its closing line and scene, closes every docs page.<br />- Its last link reads "Back to top".<br />- The sidebar and the trajectory set below its dusk edge as it comes into view, and come back as the reader scrolls up. |
 | US-8 | As a **reader who prefers less motion, or uses a keyboard or a screen reader**, I want **the same information**, so that **nothing depends on animation or pointing**. | - With reduced motion, stations and the sheet open without animation and the probe jumps.<br />- Stations, headings and buttons are reachable by keyboard and named for screen readers. |
 
 ## Rules and edge cases
@@ -53,6 +55,11 @@ shortened footer that differs from every other page's.
   the total reading time, and there is no probe.
 - Reading time counts the page's headings, paragraphs, quotes, tables and components, not its
   code blocks.
+- While the horizon is in view, the bottom of the sidebar is hidden under it; on a page shorter
+  than the window the sidebar stands partly below the horizon on arrival, and its upper part and
+  its own scrolling still work.
+- The horizon's sky loops only while it is on screen; with reduced motion it is still and the
+  sidebar does not set.
 
 ## Out of scope for now
 

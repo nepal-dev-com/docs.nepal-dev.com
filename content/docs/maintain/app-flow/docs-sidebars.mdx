@@ -7,7 +7,8 @@ title: "App flow — docs sidebars: orbit stations, the trajectory and the horiz
 - **Related ADRs:** [ADR-0019](../adr/ADR-0019-adr-folders-show-as-a-constellation-in-the-sidebar.mdx),
   [ADR-0018](../adr/ADR-0018-docs-pages-get-orbit-stations-a-trajectory-and-the-full-horizon.mdx),
   [ADR-0017](../adr/ADR-0017-the-whole-site-is-one-solar-system.mdx),
-  [ADR-0027](../adr/ADR-0027-the-sidebar-is-a-scale-ladder-with-one-lifted-orbit.mdx)
+  [ADR-0027](../adr/ADR-0027-the-sidebar-is-a-scale-ladder-with-one-lifted-orbit.mdx),
+  [ADR-0030](../adr/ADR-0030-the-horizon-rises-over-the-page-and-its-sky-comes-alive.mdx)
 
 > Snapshot of the system as it stands today. Edit in place; never record what changed.
 
@@ -211,8 +212,8 @@ trajectory as a sheet; choosing a heading scrolls there and closes it.
 ```mermaid
 block-beta
   columns 4
-  close["Everything here orbits one maker: Puncoz Nepal."]:4
-  scene["star rising behind a curved planet horizon, accent atmosphere rim, faint stars"]:4
+  close["You've reached the horizon. The Verse goes on."]:4
+  scene["Living sky · twinkling stars, aurora, shooting stars, lit clouds, the star rising, an observatory on the ridge"]:4
   planets["● lodestar  ● ledgerly  ○ orbit-board  ○ Puncoz Verse Docs"]:4
   links["Search ⌘K · llms.txt · llms-full.txt · GitHub · Back to top"]:4
   credit["Packages and projects by Puncoz Nepal"]:4
@@ -221,12 +222,15 @@ block-beta
 </Diagram>
 
 The same footer as the home page ([The solar system](./solar-system.mdx), screen 5), across the
-full width below the sidebar and the page; its last link reads "Back to top".
+full width; its last link reads "Back to top". It rises over the sidebar and the trajectory, which
+set below its dusk edge as it comes into view ([The living horizon](./living-horizon.mdx),
+screen 2).
 
 **States**
 
 - Empty: with no public entries, the planet row is left out.
-- Degraded: with reduced motion Back to top jumps instead of scrolling. Without scripts Search and
-  Back to top do nothing; the links work.
+- Degraded: with reduced motion Back to top jumps instead of scrolling, the sky is still and the
+  sidebar does not set. Without scripts Search and Back to top do nothing and the sky is still;
+  the links work.
 - Success: a planet link opens its overview; Search opens the dialog; Back to top returns to the
   top of the page.

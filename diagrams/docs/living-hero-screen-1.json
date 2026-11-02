@@ -1,0 +1,167 @@
+{
+  "schema_version": 1,
+  "diagram_type": "architecture",
+  "meta": {
+    "title": "Screen 1 — The living hero",
+    "subtitle": "Wireframe at phone width, drawn from its Mermaid version · living hero",
+    "output": "living-hero-screen-1.html",
+    "animation": "trace",
+    "quality_profile": "showcase",
+    "legend": {
+      "entries": {
+        "backend": {
+          "label": "Control or link"
+        },
+        "external": {
+          "label": "Content"
+        },
+        "frontend": {
+          "label": "Site chrome"
+        }
+      }
+    }
+  },
+  "components": [
+    {
+      "id": "mark",
+      "type": "frontend",
+      "label": "Verse mark",
+      "pos": [
+        40,
+        60
+      ],
+      "size": [
+        324,
+        70
+      ],
+      "sublabel": "Puncoz Verse"
+    },
+    {
+      "id": "menu",
+      "type": "frontend",
+      "label": "☰",
+      "pos": [
+        376,
+        60
+      ],
+      "size": [
+        100,
+        58
+      ]
+    },
+    {
+      "id": "system",
+      "type": "external",
+      "label": "The system",
+      "pos": [
+        40,
+        142
+      ],
+      "size": [
+        436,
+        70
+      ],
+      "sublabel": "star with corona, five orbits, lodestar with its trail, nebula…"
+    },
+    {
+      "id": "caption",
+      "type": "external",
+      "label": "Telemetry",
+      "pos": [
+        40,
+        224
+      ],
+      "size": [
+        324,
+        70
+      ],
+      "sublabel": "1 planet · 4 orbits waiting · 0 moons"
+    },
+    {
+      "id": "zoom",
+      "type": "backend",
+      "label": "Zoom out ↘",
+      "pos": [
+        376,
+        224
+      ],
+      "size": [
+        100,
+        58
+      ]
+    },
+    {
+      "id": "head",
+      "type": "external",
+      "label": "Every package and project, documented to the",
+      "pos": [
+        40,
+        306
+      ],
+      "size": [
+        436,
+        70
+      ],
+      "sublabel": "version"
+    },
+    {
+      "id": "sub",
+      "type": "external",
+      "label": "Guides, APIs and release notes for npm, Composer,",
+      "pos": [
+        40,
+        388
+      ],
+      "size": [
+        436,
+        70
+      ],
+      "sublabel": "PyPI and Go"
+    },
+    {
+      "id": "search",
+      "type": "frontend",
+      "label": "⌕ Search packages, projects and pages",
+      "pos": [
+        40,
+        470
+      ],
+      "size": [
+        436,
+        58
+      ]
+    },
+    {
+      "id": "legend",
+      "type": "external",
+      "label": "Legend",
+      "pos": [
+        40,
+        540
+      ],
+      "size": [
+        436,
+        70
+      ],
+      "sublabel": "package · project · moon = version · dashed = unreleased"
+    }
+  ],
+  "boundaries": [
+    {
+      "kind": "region",
+      "label": "Phone screen · /, at phone width",
+      "wraps": [
+        "mark",
+        "menu",
+        "system",
+        "caption",
+        "zoom",
+        "head",
+        "sub",
+        "search",
+        "legend"
+      ],
+      "pad": 22
+    }
+  ]
+}

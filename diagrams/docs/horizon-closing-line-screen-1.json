@@ -1,0 +1,123 @@
+{
+  "schema_version": 1,
+  "diagram_type": "architecture",
+  "meta": {
+    "title": "Screen 1 — The closing line",
+    "subtitle": "Wireframe at phone width, drawn from its Mermaid version · horizon closing line",
+    "output": "horizon-closing-line-screen-1.html",
+    "animation": "trace",
+    "quality_profile": "showcase",
+    "legend": {
+      "entries": {
+        "backend": {
+          "label": "Control or link"
+        },
+        "external": {
+          "label": "Content"
+        },
+        "frontend": {
+          "label": "Site chrome"
+        }
+      }
+    }
+  },
+  "components": [
+    {
+      "id": "closing",
+      "type": "external",
+      "label": "You've reached the horizon.",
+      "pos": [
+        40,
+        60
+      ],
+      "size": [
+        436,
+        58
+      ]
+    },
+    {
+      "id": "verse",
+      "type": "backend",
+      "label": "The Verse goes on.",
+      "pos": [
+        40,
+        130
+      ],
+      "size": [
+        436,
+        70
+      ],
+      "sublabel": "The Verse is the link, underlined"
+    },
+    {
+      "id": "scene",
+      "type": "external",
+      "label": "The Horizon's sky",
+      "pos": [
+        40,
+        212
+      ],
+      "size": [
+        436,
+        70
+      ],
+      "sublabel": "the star rising · the observatory"
+    },
+    {
+      "id": "planets",
+      "type": "external",
+      "label": "lodestar",
+      "pos": [
+        40,
+        294
+      ],
+      "size": [
+        436,
+        70
+      ],
+      "sublabel": "Puncoz Verse Docs"
+    },
+    {
+      "id": "links",
+      "type": "frontend",
+      "label": "Search ⌘K",
+      "pos": [
+        40,
+        376
+      ],
+      "size": [
+        436,
+        70
+      ],
+      "sublabel": "llms.txt · llms-full.txt · GitHub · Back to top ↑"
+    },
+    {
+      "id": "credit",
+      "type": "external",
+      "label": "Packages and projects by Puncoz Nepal",
+      "pos": [
+        40,
+        458
+      ],
+      "size": [
+        436,
+        58
+      ]
+    }
+  ],
+  "boundaries": [
+    {
+      "kind": "region",
+      "label": "Phone screen · the end of any page, at phone width",
+      "wraps": [
+        "closing",
+        "verse",
+        "scene",
+        "planets",
+        "links",
+        "credit"
+      ],
+      "pad": 22
+    }
+  ]
+}

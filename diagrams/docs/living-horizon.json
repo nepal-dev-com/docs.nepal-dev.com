@@ -1,0 +1,102 @@
+{
+  "schema_version": 2,
+  "diagram_type": "workflow",
+  "meta": {
+    "title": "App flow: the living horizon",
+    "subtitle": "The end of every page: the horizon rises and its sky comes alive",
+    "quality_profile": "showcase",
+    "output": "living-horizon.html"
+  },
+  "lanes": [
+    {
+      "id": "page",
+      "label": "Docs page"
+    },
+    {
+      "id": "foot",
+      "label": "Horizon footer"
+    },
+    {
+      "id": "out",
+      "label": "Leaves"
+    }
+  ],
+  "mainPath": [
+    "read",
+    "enter",
+    "view"
+  ],
+  "nodes": [
+    {
+      "id": "read",
+      "lane": "page",
+      "col": 0,
+      "type": "frontend",
+      "label": "Reading",
+      "sublabel": "sidebar and trajectory in place"
+    },
+    {
+      "id": "enter",
+      "lane": "foot",
+      "col": 1,
+      "type": "frontend",
+      "label": "Horizon enters",
+      "sublabel": "star rises, sidebar sets"
+    },
+    {
+      "id": "view",
+      "lane": "foot",
+      "col": 2,
+      "type": "frontend",
+      "label": "Horizon in view",
+      "sublabel": "the sky loops"
+    },
+    {
+      "id": "next",
+      "lane": "out",
+      "col": 3,
+      "type": "external",
+      "label": "Another page",
+      "sublabel": "a planet or a footer link"
+    }
+  ],
+  "edges": [
+    {
+      "id": "down",
+      "from": "read",
+      "to": "enter",
+      "label": "scrolls to the end",
+      "variant": "emphasis"
+    },
+    {
+      "id": "more",
+      "from": "enter",
+      "to": "view",
+      "label": "keeps scrolling",
+      "variant": "emphasis"
+    },
+    {
+      "id": "up1",
+      "from": "view",
+      "to": "enter",
+      "label": "scrolls up",
+      "variant": "dashed",
+      "role": "return"
+    },
+    {
+      "id": "up2",
+      "from": "enter",
+      "to": "read",
+      "label": "scrolls up",
+      "variant": "dashed",
+      "role": "return"
+    },
+    {
+      "id": "leave",
+      "from": "view",
+      "to": "next",
+      "label": "a link",
+      "variant": "default"
+    }
+  ]
+}

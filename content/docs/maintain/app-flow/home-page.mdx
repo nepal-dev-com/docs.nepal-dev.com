@@ -78,7 +78,7 @@ flowchart TB
 block-beta
   columns 4
   word["◎ Puncoz Verse"]:2 gh["GitHub"] theme["orrery switch"]
-  sys["star · Puncoz Nepal, orbits npm · Composer · PyPI · projects, planets lodestar · ledgerly · pykettle · orbit-board with moons"]:4
+  sys["star · Puncoz Nepal, orbits npm · Composer · PyPI · Go · projects, planets lodestar · ledgerly · pykettle · orbit-board with moons"]:4
   h1["Every package and project, documented to the version."]:4
   sub["Guides, APIs and release notes for npm, Composer, PyPI and Go packages"]:4
   field["⌕  Search packages, projects and pages"]:4
@@ -86,8 +86,10 @@ block-beta
 
 </Diagram>
 
-The star sits in the system with "Puncoz Nepal" under it. Each ecosystem with entries is an
-orbit; every planet is labelled, carries its moons, and turns its night side away from the star.
+The star sits in the system with "Puncoz Nepal" under it. The npm, Composer, PyPI, Go and
+Projects orbits are always there, the empty ones fainter and named; every planet is labelled,
+carries its moons and a trail, and turns its night side away from the star. How the system
+spins up, leans, breathes and sees a comet is in [the living hero](./living-hero.mdx).
 The system turns slowly; pointing at a planet slows it and shows a card (name, description,
 kind, latest version, "click to open"); clicking opens the overview. The headline and subline
 are selectable text, and the canvas's crosshair cursor shows only over open sky.
@@ -103,8 +105,8 @@ the top 310px, the text and button below it.
 
 **States**
 
-- Empty: with no public entries, faint default orbits (npm, Composer, PyPI, Go, projects) around
-  the star, no planets.
+- Empty: with no public entries, the five orbits around the star are all empty and named, no
+  planets, and the telemetry line reads `0 planets · 5 orbits waiting · 0 moons`.
 - Loading: none; prerendered. The system starts turning after first paint; the text and button
   are usable before it.
 - Not found, Refused: not applicable at `/`; unknown paths get the out-of-orbit 404.
@@ -277,5 +279,5 @@ Desktop: the two sides sit either side of the terminator; Read it anywhere is tw
 
 ### 6. `Horizon footer`
 
-Drawn in [The solar system](./solar-system.mdx), screen 5: the closing line, the star rising over
-a planet's horizon, the planet links and the link row.
+Drawn in [The solar system](./solar-system.mdx), screen 5: the closing line, the living sky over
+a planet's horizon ([The living horizon](./living-horizon.mdx)), the planet links and the link row.

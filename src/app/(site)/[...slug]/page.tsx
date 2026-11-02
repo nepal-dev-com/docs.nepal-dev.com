@@ -23,6 +23,10 @@ import { scaleLevels } from '@/lib/scale-strip';
 import { ScaleStrip } from '@/components/docs/scale-strip';
 import { ZoomPage } from '@/components/zoom-page';
 
+// Every part of a docs page comes from its slug, so there is no shared shell worth streaming
+// behind a skeleton; blocking keeps each page whole in its static HTML, readable without scripts.
+export const instant = false;
+
 /**
  * `/<slug>/use` and a line's own address have no page of their own: they open the first page
  * (ADR-0015 decision 1).

@@ -57,6 +57,11 @@
 
 /* Hero: the system, with the text and search beside it (ADR-0017 decision 2) */
 
+.verse-target {
+  position: absolute;
+  top: 0;
+}
+
 .home .hero {
   position: relative;
   z-index: 2;
@@ -73,6 +78,39 @@
   width: 100%;
   height: 100%;
   cursor: crosshair;
+}
+
+/* A still nebula behind the system, kept off the text column; it moves only with the pointer's lean (ADR-0032 decision 8). */
+.home .orbit-nebula {
+  --nebula-teal: 4%;
+  --nebula-star: 3%;
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(
+      var(--nebula-r) calc(var(--nebula-r) * 0.55) at calc(var(--star-x) - var(--nebula-r) * 0.18) calc(var(--star-y) - var(--nebula-r) * 0.08),
+      color-mix(in srgb, var(--home-accent) var(--nebula-teal), transparent),
+      transparent 70%
+    ),
+    radial-gradient(
+      calc(var(--nebula-r) * 0.8) calc(var(--nebula-r) * 0.45) at var(--star-x) var(--star-y),
+      color-mix(in srgb, var(--home-star) var(--nebula-star), transparent),
+      transparent 70%
+    );
+  mask-image: linear-gradient(to right, transparent 50%, #000 62%);
+  translate: var(--nebula-x, 0) var(--nebula-y, 0);
+  transform-origin: var(--star-x) var(--star-y);
+  transition: scale 1.2s var(--home-ease);
+}
+
+.dark .home .orbit-nebula {
+  --nebula-teal: 8%;
+  --nebula-star: 6%;
+}
+
+.home .hero:has(.orbit[data-verse]) .orbit-nebula {
+  scale: 0.4;
 }
 
 .home .orbit-tip {
@@ -1048,6 +1086,10 @@
     animation: none;
   }
 
+  .home .orbit-nebula {
+    transition: none;
+  }
+
   .home .planet,
   .home .planet-moons,
   .home .bar,
@@ -1066,6 +1108,12 @@
     align-items: flex-end;
     min-height: auto;
     padding: 334px 0 40px;
+  }
+
+  .home .orbit-nebula {
+    bottom: auto;
+    height: 310px;
+    mask-image: linear-gradient(to bottom, #000 80%, transparent);
   }
 
   .home .orbit-zoom-row {

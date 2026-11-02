@@ -1,0 +1,137 @@
+{
+  "schema_version": 1,
+  "diagram_type": "architecture",
+  "meta": {
+    "title": "Screen 2 — The horizon rises",
+    "subtitle": "Wireframe on a wide screen, drawn from its Mermaid version · living horizon",
+    "output": "living-horizon-screen-2.html",
+    "animation": "trace",
+    "quality_profile": "showcase",
+    "legend": {
+      "entries": {
+        "external": {
+          "label": "Content"
+        },
+        "frontend": {
+          "label": "Site chrome"
+        }
+      }
+    }
+  },
+  "components": [
+    {
+      "id": "header",
+      "type": "frontend",
+      "label": "Verse mark",
+      "pos": [
+        40,
+        60
+      ],
+      "size": [
+        959,
+        70
+      ],
+      "sublabel": "Puncoz Verse · Search ⌘K · GitHub · theme"
+    },
+    {
+      "id": "side",
+      "type": "external",
+      "label": "Sidebar",
+      "pos": [
+        40,
+        142
+      ],
+      "size": [
+        139,
+        70
+      ],
+      "sublabel": "setting"
+    },
+    {
+      "id": "last",
+      "type": "external",
+      "label": "The page's last lines",
+      "pos": [
+        205,
+        142
+      ],
+      "size": [
+        631,
+        70
+      ],
+      "sublabel": "previous and next"
+    },
+    {
+      "id": "toc",
+      "type": "external",
+      "label": "On this page",
+      "pos": [
+        861,
+        142
+      ],
+      "size": [
+        139,
+        70
+      ],
+      "sublabel": "setting"
+    },
+    {
+      "id": "dusk",
+      "type": "external",
+      "label": "Dusk edge",
+      "pos": [
+        40,
+        224
+      ],
+      "size": [
+        959,
+        70
+      ],
+      "sublabel": "the sidebar and the trajectory sink into it"
+    },
+    {
+      "id": "scene",
+      "type": "external",
+      "label": "The Horizon",
+      "pos": [
+        40,
+        306
+      ],
+      "size": [
+        959,
+        70
+      ],
+      "sublabel": "over the sidebar and the contents"
+    },
+    {
+      "id": "surface",
+      "type": "external",
+      "label": "Planets",
+      "pos": [
+        40,
+        388
+      ],
+      "size": [
+        959,
+        70
+      ],
+      "sublabel": "links · credit"
+    }
+  ],
+  "boundaries": [
+    {
+      "kind": "region",
+      "label": "Wide screen · the end of a docs page, on a wide screen",
+      "wraps": [
+        "header",
+        "side",
+        "last",
+        "toc",
+        "dusk",
+        "scene",
+        "surface"
+      ],
+      "pad": 22
+    }
+  ]
+}

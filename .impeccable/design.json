@@ -763,7 +763,7 @@
       "Graphite neutrals with a single signal-teal accent and a warm star; ecosystem hues mark shapes, never text.",
       "Three faces with fixed jobs: Bricolage Grotesque for display, Onest for reading and controls, JetBrains Mono for data only.",
       "One metaphor carrying real data: planets are entries, moons are version lines, sides are tracks.",
-      "One authored motion moment, the turning system; everything else is a short, single response.",
+      "One authored motion moment, the turning system, and one living sky where every page ends; everything else is a short, single response.",
       "Every state readable without scripts and without motion."
     ],
     "rules": [
@@ -809,7 +809,7 @@
       },
       {
         "name": "The One Orbit Rule",
-        "body": "The system is the only continuous motion. New motion is a single, short response to arrival or input, never a second loop.",
+        "body": "The system is the only continuous motion. New motion is a single, short response to arrival or input, never a second loop. Three exceptions: a diagram's Archify trace (ADR-0022); the Horizon's sky, whose slow loops run only while the footer is on screen, never behind text, and stop under reduced motion (ADR-0030); and the hero's comet, every 20 to 30 seconds, right of the text and below the header, never under reduced motion or in the Verse view (ADR-0032).",
         "section": "components"
       },
       {

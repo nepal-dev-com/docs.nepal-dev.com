@@ -4,7 +4,8 @@ title: "App flow — the solar system"
 
 - **Status:** Current
 - **Last updated:** 2026-11-01
-- **Related ADRs:** [ADR-0018](../adr/ADR-0018-docs-pages-get-orbit-stations-a-trajectory-and-the-full-horizon.mdx),
+- **Related ADRs:** [ADR-0030](../adr/ADR-0030-the-horizon-rises-over-the-page-and-its-sky-comes-alive.mdx),
+  [ADR-0018](../adr/ADR-0018-docs-pages-get-orbit-stations-a-trajectory-and-the-full-horizon.mdx),
   [ADR-0017](../adr/ADR-0017-the-whole-site-is-one-solar-system.mdx),
   [ADR-0016](../adr/ADR-0016-home-search-is-the-fumadocs-dialog-and-private-projects-render-server-side.mdx),
   [ADR-0015](../adr/ADR-0015-every-entry-lives-at-the-root-in-one-shape-and-one-look.mdx),
@@ -187,8 +188,8 @@ instead: a full moon and "Documents lodestar 0.1.4".
 ```mermaid
 block-beta
   columns 4
-  close["Everything here orbits one maker: Puncoz Nepal."]:4
-  scene["star rising behind a curved planet horizon, accent atmosphere rim, faint stars"]:4
+  close["You've reached the horizon. The Verse goes on."]:4
+  scene["Living sky · twinkling stars, aurora, shooting stars, lit clouds, the star rising, an observatory on the ridge"]:4
   planets["● lodestar  ● ledgerly  ● pykettle  ○ orbit-board  ○ Puncoz Verse Docs"]:4
   links["Search ⌘K · llms.txt · llms-full.txt · GitHub · Back to orbit"]:4
   credit["Packages and projects by Puncoz Nepal"]:4
@@ -196,16 +197,17 @@ block-beta
 
 </Diagram>
 
-`src/components/horizon-footer.tsx`, the same on every page: the closing line (the name links to
-`https://puncoz.com`), the scene, then the surface rows. On docs pages it runs across the full
-width below the sidebar and the page, and its last link reads "Back to top" instead of "Back to
-orbit". The links wrap on phones.
+`src/components/horizon-footer.tsx`, the same on every page: the closing line (its *The Verse* links to
+the Verse view, [the closing line](./horizon-closing-line.mdx)), the scene, then the surface rows. The scene is a living dusk sky
+([The living horizon](./living-horizon.mdx), screen 1). On docs pages it runs across the full
+width and rises over the sidebar and the trajectory, and its last link reads "Back to top"
+instead of "Back to orbit". The links wrap on phones.
 
 **States**
 
 - Empty: with no public entries, the planet row is left out.
-- Degraded: with reduced motion, Back to orbit jumps instead of scrolling. Without scripts,
-  Search and Back to orbit do nothing; the links work.
+- Degraded: with reduced motion, Back to orbit jumps instead of scrolling and the sky is still.
+  Without scripts, Search and Back to orbit do nothing and the sky is still; the links work.
 - Success: a planet link opens its overview; Search opens the dialog; Back to orbit (Back to top
   on docs pages) returns to the top.
 

@@ -22,7 +22,7 @@
     {
       "id": "close",
       "type": "external",
-      "label": "Everything here orbits one maker: Puncoz Nepal.",
+      "label": "You've reached the horizon. The Verse goes on.",
       "pos": [
         40,
         60
@@ -35,7 +35,7 @@
     {
       "id": "scene",
       "type": "external",
-      "label": "star rising behind a curved planet horizon,",
+      "label": "Living sky",
       "pos": [
         40,
         130
@@ -44,7 +44,7 @@
         436,
         70
       ],
-      "sublabel": "accent atmosphere rim, faint stars"
+      "sublabel": "twinkling stars, aurora, shooting stars, lit clouds, the star…"
     },
     {
       "id": "planets",

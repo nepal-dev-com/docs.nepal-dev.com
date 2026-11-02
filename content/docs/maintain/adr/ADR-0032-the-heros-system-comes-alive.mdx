@@ -1,0 +1,217 @@
+---
+title: "ADR-0032 — The hero's system comes alive"
+---
+
+- **Status:** Approved
+- **Date:** 2026-11-01
+- **Deciders:** [@puncoz](https://github.com/puncoz)
+- **Approved by:** [@puncoz](https://github.com/puncoz)
+- **Approved on:** 2026-11-01
+- **Supersedes:** [ADR-0017](./ADR-0017-the-whole-site-is-one-solar-system.mdx) decision 2 (in
+  part: what the hero's system draws), and the *One Orbit* rule's two-exception list in
+  `DESIGN.md` (ADR-0030 decision 3), which gains a third
+- **Superseded by:** —
+- **Design documents:** [`../app-flow/living-hero.mdx`](../app-flow/living-hero.mdx),
+  [`../prd/home-page.mdx`](../prd/home-page.mdx),
+  [`../architecture/system.mdx`](../architecture/system.mdx), `DESIGN.md`
+
+## Context
+
+- The home page's hero is the system (ADR-0017 decision 2): a canvas drawn by
+  `src/components/home/orbit-map.tsx`. It has the star, an orbit for each ring that has entries
+  (`presentRings` in `src/lib/rings.ts`), the planets with their moons, a tooltip on pointing,
+  and the zoom to the Verse (ADR-0029).
+- **Today it draws one star, one orbit and one ringed planet.** Only the site's own project is
+  documented, so `presentRings` returns the Projects ring alone. The five default orbits appear
+  only when the catalogue is empty. On a 1412px screen the system takes the right half of
+  the hero and is mostly empty canvas. The owner finds it dull.
+- What stands in the way:
+  - **The Mark Means rule** (DESIGN.md): a ring means project, a full moon the latest release, a
+    crescent an older one, a dashed new moon `dev`, a lock private. None is used for
+    decoration, and the legend teaches "dashed = unreleased".
+  - **The One Orbit rule** (DESIGN.md): the system is the site's only continuous motion. Its
+    exceptions are a diagram's Archify trace (ADR-0022) and the Horizon's sky (ADR-0030).
+  - **The still sky** (ADR-0029 decision 3): the page's sky never moves.
+  - **The Places, Not Controls rule** (ADR-0029): a space word always stands beside a plain
+    sentence.
+  - **No invented planets.** The system shows only documented entries; the invented private
+    names appear only in the Verse view and beyond the belt (ADR-0016, ADR-0017 decision 4).
+- The owner chose, with options, all eight of: every ecosystem's orbit, a living star, planet
+  trails, pointer depth, an arrival spin-up, a telemetry line, a comet now and then, and a
+  nebula behind the system.
+
+## Decision
+
+The hero's system gains eight things. Everything stays on the existing canvas, or in one still
+layer behind it, and uses only the existing tokens. No dependency is added.
+
+1. **Every ecosystem's orbit, waiting.**
+   - The system always draws the npm, Composer, PyPI, Go and Projects orbits, the five the
+     subline names. It also draws Cargo and Other when an entry is in them, in the existing ring
+     order.
+   - An orbit with planets is drawn as now.
+   - An orbit with none is a thinner, fainter **solid** line: 0.75px, Line 2 mixed with 35% of
+     its ecosystem colour, at 60% opacity. It is not dashed, because a dashed mark means
+     unreleased.
+   - Its name (npm, Composer, PyPI, Go, Projects) sits on the orbit's upper left in 11px Data,
+     Steel Faint, and turns with nothing.
+   - Pointing within 8px of an empty orbit shows the existing tooltip: its name, "No planets
+     yet". It has nothing to open.
+   - With planets in only some orbits, the documented planets take their own orbits' radii, so
+     the system has the same shape whatever is documented.
+2. **A living star.**
+   - The disc grows from 9px to 14px, with "Puncoz Nepal" under it as now.
+   - Its glow becomes a corona of three soft layers that breathe together over about 6 seconds
+     (±15% opacity).
+   - Eight thin rays in the star colour at 25% turn once every 120 seconds.
+   - This is part of the system's own motion.
+3. **Planet trails.** Each planet leaves a trail behind it along its orbit, a sixth of the way
+   round: 2px wide, fading from 35% of its colour to nothing (Frost Ink for projects). Moons
+   leave none. A trail is drawn from the planet's own position each frame and adds no motion of
+   its own.
+4. **Pointer depth.**
+   - On a device with a fine pointer, the system leans toward the pointer as it moves over the
+     hero: the orbits' tilt moves from 0.36 by up to ±0.05, and the centre by up to 8px.
+   - The nebula shifts up to 12px the other way. Both ease over about 0.6s, and settle back
+     when the pointer leaves.
+   - The page's still sky does not move (ADR-0029 decision 3).
+   - Off for touch and under reduced motion. A response to input, so the *One Orbit* rule holds.
+5. **Arrival: the system spins up.**
+   - On the first view of `/` in a session, the star ignites: its disc grows from 40% and its
+     corona from nothing, over 0.6s.
+   - Each planet starts a third of a turn behind its place and sweeps in along its orbit over
+     1.2s with the site's ease; the orbits fade in over 0.4s. Then the system turns as usual.
+   - Not again in the same session (remembered in `sessionStorage`; if storage is unavailable,
+     it runs each time). Not when `/#verse` is opened, where the zoom out runs instead, and not
+     under reduced motion.
+   - A single response to arrival.
+6. **A telemetry line.**
+   - The caption beside *Zoom out to the Verse*, empty in the system view today, reads in 12.5px
+     Data, Steel Faint, for example: `1 planet · 4 orbits waiting · 0 moons`.
+   - Its counts come from the catalogue: the public entries; the drawn orbits with no planet;
+     the version lines, `dev` included. Singular and plural follow the counts.
+   - The plain sentence stands with it for screen readers, in place of the data line: "1
+     project documented; npm, Composer, PyPI and Go have none yet; no versions released." On
+     screen the legend under the search button names the marks.
+   - In the Verse view the caption reads, as now, *The Verse · one system so far*.
+7. **A comet now and then: the One Orbit rule's third exception.**
+   - Every 20 to 30 seconds, on a seeded schedule, a comet crosses the upper part of the
+     system: a 2px Frost Ink head with a 90px tail that fades. The tail always points away from
+     the star, the way a comet's does.
+   - It is in view for about 2.5 seconds.
+   - It never crosses the text column. On desktop it stays right of 52% of the width; on phones
+     it stays inside the system's 310px.
+   - It runs only while the hero is on screen, like the system. It doesn't run in the Verse view
+     or under reduced motion.
+   - It is not a mark, and it carries no meaning.
+8. **A nebula behind the system.**
+   - A still layer behind the canvas: two soft radial washes centred on the star, Teal at 8% and
+     the star colour at 6% in dark, half that in light. They reach 1.4 times the outer orbit.
+   - It is masked away from the text column (left of 50% on desktop; outside the system's 310px
+     on phones), so nothing glows behind text.
+   - It moves only with pointer depth, and shrinks with the system in the Verse view.
+9. **Restraint.**
+   - Everything new is quieter than the planets. The only new labels are the empty orbits'
+     names.
+   - The new continuous motion is the star's breathing and rays, inside the system, and the
+     rare comet.
+   - Under reduced motion the system is drawn once, as now, with the corona, the trails, the
+     empty orbits and the nebula still. Without scripts there is no canvas and nothing changes.
+10. **Unchanged:** the headline, subline, search button, legend, tooltip on planets, clicking a
+    planet, the Verse view and its words, the morph, the still sky, every URL and every Markdown
+    surface.
+
+## Options considered
+
+| Question | Option | Pros | Cons | Verdict |
+|---|---|---|---|---|
+| Objects | Every ecosystem's orbit | Structure today; honest about scope; fills naturally | Five orbits with one planet still reads as early days | Chosen (owner) |
+| Objects | A living star | The centre is the maker; costs a few draws | One more motion, inside the system | Chosen (owner) |
+| Objects | Planet trails | The turning reads at a glance | Busier with many planets | Chosen (owner) |
+| Objects | Pointer depth | Responsive and alive on desktop; no loop | Desktop only | Chosen (owner) |
+| Around it | Arrival spin-up | A first-screen moment, once | 1.2s before the system settles | Chosen (owner) |
+| Around it | A telemetry line | Honest numbers in the site's technical voice | One more line in the hero | Chosen (owner) |
+| Around it | A comet now and then | The most alive | A third loop exception; it means nothing | Chosen (owner) |
+| Around it | A nebula | Depth behind the system | Decorative; near the glow cliché | Chosen (owner), kept faint and masked from text |
+| Empty orbits | Dashed, as first offered | Reads as "waiting" | The legend says dashed = unreleased: breaks *Mark Means* | Rejected for a fainter solid line |
+| Telemetry | Plain words only ("1 project · 0 packages") | No space words | Less of the system's voice | Rejected; the plain sentence is the screen-reader text |
+| Objects | A moon or ring as decoration | Familiar | Breaks *Mark Means* | Not offered |
+
+## Consequences
+
+**Positive**
+
+- The first screen shows the whole shape of the site today, and grows into it as packages arrive.
+- The system has a living centre, visible motion and depth, without a second always-on loop
+  except the rare comet.
+
+**Negative / accepted trade-offs**
+
+- A third exception to the *One Orbit* rule: a comet with no meaning crosses the hero every 20
+  to 30 seconds.
+- The canvas code grows (`orbit-map.tsx` is already 443 lines); the new geometry moves to a
+  library file so it can be tested.
+- On first visit the system takes 1.2s to settle; the text and search button are usable at once.
+- The nebula is decoration; it is kept faint and away from text.
+
+## Content invariants
+
+None is touched. No content is added; the telemetry counts come from the public catalogue.
+Per-page Markdown, `llms.txt` and `llms-full.txt` are unchanged (§6.5).
+
+## Security considerations
+
+None. This change touches no data, no endpoint and no secret. It reads only the public
+catalogue the page already has. `sessionStorage` holds one flag, "the hero has spun up", with
+no personal data.
+
+## Implementation notes
+
+- [x] `src/lib/hero-sky.ts`, plain functions so they can be tested:
+  - `heroRings(entries)`: the five orbits always, plus Cargo and Other when present, in ring
+    order;
+  - `systemFacts(entries)`: the telemetry counts, the data line and the plain sentence;
+    the sentence ends "no versions documented yet" rather than decision 6's "no versions
+    released", because a `dev` line is a moon the count includes but is not a release;
+  - `cometStarts(seed, n)`: when each comet starts, 20 to 30 seconds apart (named for what it
+    returns, in place of `cometSchedule`);
+  - `cometPath(...)`: its path inside the system region, never left of the text boundary nor
+    above a `top` line, its tail pointing away from the star. The canvas passes `top: 72`, so a
+    comet stays below the site header, which the hero's canvas runs under;
+  - `trailArc(...)`: a planet's trail as an arc behind it;
+  - `spinUp(t)`: the arrival's eased offset and the star's, corona's and orbits' light;
+  - also `corona(t)`, `lean(nx, ny)`, `orbitDistance(...)` for the empty orbits' tooltip, and
+    `mixHex(...)` for their colour.
+- [x] `src/lib/rings.ts`: the hero uses `heroRings`. `presentRings` and `emptyRings` were used
+  only by the hero, so they are removed; `ringOrder` is exported for `heroRings`.
+- [x] `src/components/home/orbit-map.tsx`: empty orbits and their labels and tooltip, the star's
+  corona and rays, trails, pointer depth, the arrival, the comet, all in the existing draw loop
+  and its pause, reduced-motion and hidden-tab handling; the caption shows the telemetry line.
+  With five orbits the system's size is capped on desktop so it stays clear of the text, and a
+  planet's label flips to its left where it would leave the canvas.
+- [x] `src/app/(home)/home.css`: the nebula layer, its mask and its pointer shift; the caption.
+- [x] Tests (ADR-0007, ADR-0021) for `hero-sky.ts` (`src/lib/hero-sky.test.ts`):
+  - the five orbits always, with extra rings only when present;
+  - the counts, plurals and plain sentence, including an empty catalogue;
+  - comets 20 to 30 seconds apart, always right of the text boundary and below the header,
+    tails away from the star;
+  - trails behind the planet and a sixth of a turn long;
+  - the spin-up ending exactly at zero offset.
+- [x] The canvas is a client component and is not unit-tested (ADR-0021). Checked in Chrome
+  against `bunx next build` and the development server, at about 1412px and 390px, in both
+  themes: the empty orbits and tooltip, the star, trails, pointer depth, the arrival once per
+  session, the comet (sampled from the canvas: nothing drawn under the header), the nebula's
+  mask, the caption, the Verse view; reduced motion in the code.
+- [x] `bun run test`, `bun run types:check` and `bunx next build` pass; `bun run lint` is reported
+  while it stays blocked.
+
+## Docs to update on implementation
+
+- [x] [`../app-flow/living-hero.mdx`](../app-flow/living-hero.mdx): Current; the
+  [home page](../app-flow/home-page.mdx) and [universe theme](../app-flow/universe-theme.mdx)
+  app flows where they describe the system and its empty state.
+- [x] [`../prd/home-page.mdx`](../prd/home-page.mdx): the hero's requirements.
+- [x] `DESIGN.md` and `.impeccable/design.json`: the system (hero canvas), Motion, the
+  *One Orbit* rule's third exception.
+- [x] `AGENTS.md` §1, §5 and §10, and [`../architecture/system.mdx`](../architecture/system.mdx).
+- [x] ADR-0017's "Superseded by" line, and [`./index.mdx`](./index.mdx): index row and status.

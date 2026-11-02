@@ -1,0 +1,167 @@
+{
+  "schema_version": 1,
+  "diagram_type": "architecture",
+  "meta": {
+    "title": "Screen 2 — The living hero",
+    "subtitle": "Wireframe on a wide screen, drawn from its Mermaid version · living hero",
+    "output": "living-hero-screen-2.html",
+    "animation": "trace",
+    "quality_profile": "showcase",
+    "legend": {
+      "entries": {
+        "backend": {
+          "label": "Control or link"
+        },
+        "external": {
+          "label": "Content"
+        },
+        "frontend": {
+          "label": "Site chrome"
+        }
+      }
+    }
+  },
+  "components": [
+    {
+      "id": "header",
+      "type": "frontend",
+      "label": "Verse mark",
+      "pos": [
+        40,
+        60
+      ],
+      "size": [
+        959,
+        70
+      ],
+      "sublabel": "Puncoz Verse · Projects · llms.txt · GitHub · theme"
+    },
+    {
+      "id": "head",
+      "type": "external",
+      "label": "Every package and project, documented to the version",
+      "pos": [
+        40,
+        142
+      ],
+      "size": [
+        466,
+        70
+      ]
+    },
+    {
+      "id": "system",
+      "type": "external",
+      "label": "The system",
+      "pos": [
+        533,
+        142
+      ],
+      "size": [
+        466,
+        70
+      ],
+      "sublabel": "leans toward the pointer · a comet now and then"
+    },
+    {
+      "id": "sub",
+      "type": "external",
+      "label": "Guides, APIs and release notes",
+      "pos": [
+        40,
+        224
+      ],
+      "size": [
+        466,
+        70
+      ]
+    },
+    {
+      "id": "orbits",
+      "type": "external",
+      "label": "Five orbits",
+      "pos": [
+        533,
+        224
+      ],
+      "size": [
+        466,
+        70
+      ],
+      "sublabel": "npm · Composer · PyPI · Go · Projects"
+    },
+    {
+      "id": "search",
+      "type": "frontend",
+      "label": "⌕ Search packages, projects and pages ⌘K",
+      "pos": [
+        40,
+        306
+      ],
+      "size": [
+        466,
+        70
+      ]
+    },
+    {
+      "id": "tip",
+      "type": "external",
+      "label": "Pointing at an orbit",
+      "pos": [
+        533,
+        306
+      ],
+      "size": [
+        466,
+        70
+      ],
+      "sublabel": "Go · No planets yet"
+    },
+    {
+      "id": "legend",
+      "type": "external",
+      "label": "Legend",
+      "pos": [
+        40,
+        388
+      ],
+      "size": [
+        466,
+        70
+      ],
+      "sublabel": "package · project · moon = version · dashed = unreleased"
+    },
+    {
+      "id": "caption",
+      "type": "backend",
+      "label": "Telemetry",
+      "pos": [
+        533,
+        388
+      ],
+      "size": [
+        466,
+        70
+      ],
+      "sublabel": "1 planet · 4 orbits waiting · 0 moons · Zoom out to the Verse"
+    }
+  ],
+  "boundaries": [
+    {
+      "kind": "region",
+      "label": "Wide screen · /, on a wide screen",
+      "wraps": [
+        "header",
+        "head",
+        "system",
+        "sub",
+        "orbits",
+        "search",
+        "tip",
+        "legend",
+        "caption"
+      ],
+      "pad": 22
+    }
+  ]
+}

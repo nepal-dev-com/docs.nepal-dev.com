@@ -4,6 +4,7 @@ import { ArrowRight } from 'lucide-react';
 import { getCatalog, getExamplePage, getTracksPreview } from '@/lib/catalog';
 import { docsLlms } from '@/lib/source';
 import { appName, getPageMarkdownUrl, gitConfig } from '@/lib/shared';
+import { verseFragment } from '@/lib/verse-view';
 import { HomeHeader } from '@/components/home/home-header';
 import { Hero } from '@/components/home/hero';
 import { PlanetCards } from '@/components/home/planet-cards';
@@ -53,6 +54,8 @@ export default async function HomePage() {
 
   return (
     <>
+      {/* Next.js keeps the old scroll position for a hash with no target; this one is at the very top (ADR-0033). */}
+      <span id={verseFragment.slice(1)} className="verse-target" />
       <HomeHeader
         appName={appName}
         githubUrl={githubUrl}
