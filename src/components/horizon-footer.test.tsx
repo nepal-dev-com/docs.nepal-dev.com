@@ -135,6 +135,19 @@ describe('the flag (ADR-0037 decision 5)', () => {
   });
 });
 
+describe("the Horizon in the notebook layout's grid", () => {
+  const css = readFileSync(join(import.meta.dir, '../app/site.css'), 'utf8');
+  const rule = css.match(/#nd-notebook-layout > \.horizon \{[^}]*\}/)?.[0] ?? '';
+
+  test('spans the outer tracks, so its sky reaches both edges of the window', () => {
+    expect(rule).toContain('grid-column: 1 / -1');
+  });
+
+  test('adds no min-content to those tracks, which would narrow the page on a phone', () => {
+    expect(rule).toContain('contain: inline-size');
+  });
+});
+
 describe('the docs sidebar setting behind the Horizon (ADR-0031)', () => {
   const css = readFileSync(join(import.meta.dir, '../app/site.css'), 'utf8');
   const keyframes = css.match(/@keyframes horizon-set\s*\{[\s\S]*?\n\}/)?.[0] ?? '';

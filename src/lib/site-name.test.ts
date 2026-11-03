@@ -1,7 +1,7 @@
 import { describe, expect, test } from 'bun:test';
 import { readdirSync, readFileSync, statSync } from 'node:fs';
 import { join, relative } from 'node:path';
-import { appName, community, homeLine, maker } from './shared';
+import { appName, community, gitConfig, homeLine, maker } from './shared';
 
 const root = join(import.meta.dir, '..', '..');
 const read = (path: string) => readFileSync(join(root, path), 'utf8');
@@ -32,15 +32,16 @@ describe('the site name (ADR-0036)', () => {
     expect(read('src/lib/source.ts')).toContain("node.type === 'root'");
   });
 
-  // Approved ADRs keep the names they were written with (ADR-0036 decision 12).
-  test('the old names are gone from the code, the pages and the living documents', () => {
-    const olds = [['Puncoz', 'Docs'], ['Puncoz', 'Verse'], ['docs', 'puncoz', 'com']].map((words, index) =>
-      words.join(index === 2 ? '.' : ' '),
-    );
-    // A list of ADRs quotes ADR-0028's title as it was approved.
-    const withoutAdrRows = (text: string) => text.split('\n').filter((line) => !line.includes('/ADR-0028-')).join('\n');
-    const named = (text: string) => olds.some((old) => withoutAdrRows(text).includes(old));
-    const skip = new Set(['node_modules', '.next', '.source', '.git', '.archify', '.claude', 'adr']);
+  // This test reads its own file, so the names are never written whole here (ADR-0038).
+  test('the old names are gone from the code, the pages, the ADRs and the living documents', () => {
+    const olds = [
+      ['Puncoz', 'Docs'].join(' '),
+      ['Puncoz', 'Verse'].join(' '),
+      ['docs', 'puncoz', 'com'].join('.'),
+      ['puncoz-official', 'docs'].join('/'),
+    ];
+    const named = (text: string) => olds.some((old) => text.includes(old));
+    const skip = new Set(['node_modules', '.next', '.source', '.git', '.archify', '.claude']);
     const found: string[] = [];
     const walk = (dir: string) => {
       for (const name of readdirSync(dir)) {
@@ -64,5 +65,53 @@ describe('the site name (ADR-0036)', () => {
       }
     }
     expect(found).toEqual([]);
+  });
+
+  // The repository keeps this name as an identifier, but a reader sees the site's (ADR-0038 decision 8).
+  test('no page calls the site by its repository name', () => {
+    const found: string[] = [];
+    const walk = (dir: string) => {
+      for (const name of readdirSync(dir)) {
+        const path = join(dir, name);
+        if (statSync(path).isDirectory()) {
+          walk(path);
+        } else if (readFileSync(path, 'utf8').includes('puncoz-packages-docs')) {
+          found.push(relative(root, path));
+        }
+      }
+    };
+    walk(join(root, 'content'));
+    expect(found).toEqual([]);
+  });
+
+  test("the GitHub link is the repository's new home (ADR-0038 decision 7)", () => {
+    expect(gitConfig).toEqual({ user: 'nepal-dev-com', repo: 'docs.nepal-dev.com', branch: 'main' });
+    const meta = JSON.parse(read('content/docs/meta.json')) as { catalog: { repository: string } };
+    expect(meta.catalog.repository).toBe('https://github.com/nepal-dev-com/docs.nepal-dev.com');
+  });
+
+  describe('the reworded ADRs (ADR-0038)', () => {
+    const adrFolder = 'content/docs/maintain/adr';
+    const adrs = readdirSync(join(root, adrFolder))
+      .filter((name) => /^ADR-\d{4}-/.test(name))
+      .sort();
+    const numbers = (matches: (text: string) => boolean) =>
+      adrs.filter((name) => matches(read(join(adrFolder, name)))).map((name) => name.slice(4, 8));
+
+    test('each of the eleven says it was reworded, and no other does', () => {
+      expect(numbers((text) => text.includes('**Reworded by:** [ADR-0038]'))).toEqual([
+        '0001', '0014', '0015', '0017', '0027', '0028', '0029', '0032', '0033', '0035', '0036',
+      ]);
+    });
+
+    test("the maker's name is left only where an ADR describes the footer's credit", () => {
+      expect(numbers((text) => text.includes('Puncoz Nepal'))).toEqual(['0016', '0033', '0036']);
+    });
+
+    test('ADR-0028 has its new title and file name', () => {
+      expect(read(join(adrFolder, 'ADR-0028-the-site-gets-its-first-verse-name.mdx'))).toContain(
+        'title: "ADR-0028 — The site gets its first Verse name"',
+      );
+    });
   });
 });

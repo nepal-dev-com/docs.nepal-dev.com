@@ -1,6 +1,6 @@
 ---
-title: "ADR-0028 — The site is named Puncoz Verse"
-description: "The site is named Puncoz Verse, shown in its header, titles and share images, and its own documentation is Puncoz Verse Docs."
+title: "ADR-0028 — The site gets its first Verse name"
+description: "The site takes its first Verse name, shown in its header, titles and share images, and its own documentation takes the same name with Docs."
 ---
 
 - **Status:** Approved
@@ -10,18 +10,19 @@ description: "The site is named Puncoz Verse, shown in its header, titles and sh
 - **Approved on:** 2026-11-01
 - **Supersedes:** — (changes the brand rule recorded in `PRODUCT.md`: "The final name will include
   neither the owner's name nor 'docs'")
-- **Superseded by:** [ADR-0036](./ADR-0036-the-site-is-nepal-dev-verse.mdx) (decisions 1 and 2)
+- **Superseded by:** [ADR-0036](./ADR-0036-the-site-is-nepal-dev-verse.mdx) (decisions 1 and 2); [ADR-0038](./ADR-0038-earlier-names-leave-the-pages-and-the-github-link-follows-the-move.mdx) (decision 3, in part)
+- **Reworded by:** [ADR-0038](./ADR-0038-earlier-names-leave-the-pages-and-the-github-link-follows-the-move.mdx) (earlier names only)
 - **Design documents:** [`../app-flow/community-identity.mdx`](../app-flow/community-identity.mdx)
 
 ## Context
 
-The site has used a working name, *Puncoz Docs*, since it began (`appName` in
+The site has used a working name since it began (`appName` in
 `src/lib/shared.ts`). `PRODUCT.md` records that the final name was not chosen and would include
 neither the owner's name nor "docs".
 
-On 2026-11-01 the owner chose the name **Puncoz Verse**, as in universe, and asked for it
+On 2026-11-01 the owner chose the site's first Verse name, as in universe, and asked for it
 throughout the project. They named this site's own documentation, the project with the slug
-`docs`, **Puncoz Verse Docs**. Earlier the same day they decided that the rename gets its own ADR,
+`docs`, the same name with *Docs* added. Earlier the same day they decided that the rename gets its own ADR,
 separate from the sidebar (ADR-0027), and mentioned a whole-site universe theme.
 
 Today the one name stands for two things:
@@ -33,16 +34,16 @@ Today the one name stands for two things:
 
 ## Decision
 
-1. **The site is Puncoz Verse.** `appName` becomes *Puncoz Verse*: the header's wordmark on every
-   page, the home page's title (*Puncoz Verse — every package and project, documented to the
+1. **The site takes the Verse name.** `appName` becomes that name: the header's wordmark on every
+   page, the home page's title (*the name — every package and project, documented to the
    version*), the 404's title, the site line of every Open Graph image, and the heading of
    `llms.txt` and `llms-full.txt`'s index, which reads *Docs* today (Fumadocs' default root name).
-2. **This site's own docs are Puncoz Verse Docs.** The project with the slug `docs` takes the
-   title *Puncoz Verse Docs* in its `meta.json` and overview, so its planet card, planet header,
+2. **This site's own docs take the name with *Docs*.** The project with the slug `docs` takes the
+   same title in its `meta.json` and overview, so its planet card, planet header,
    sidebar chip, search records and Markdown carry it. Its overview's prose names the site
-   *Puncoz Verse*. The slug and every URL stay as they are: `/docs`, `/docs/maintain/…`.
-3. **Unchanged identifiers.** The repository folder and `package.json` name
-   (`puncoz-packages-docs`), the GitHub link (`puncoz-official/docs`, still undecided in
+   by the Verse name. The slug and every URL stay as they are: `/docs`, `/docs/maintain/…`.
+3. **Unchanged identifiers.** The repository folder and `package.json` name,
+   the GitHub link (still undecided in
    `PRODUCT.md`), the Algolia index name and environment variable names stay as they are: they
    are identifiers, not the name readers see, and renaming the repository is outside this
    repository. Approved ADRs keep the name they were written with; they are history.
@@ -56,7 +57,7 @@ Today the one name stands for two things:
 
 | Concern | Option | Pros | Cons | Verdict |
 |---|---|---|---|---|
-| Name | *Puncoz Verse* for the site, *Puncoz Verse Docs* for its own project | The owner's choice; the site and its own docs are told apart | Two names to keep in step | Chosen (owner) |
+| Name | The Verse name for the site, the same with *Docs* for its own project | The owner's choice; the site and its own docs are told apart | Two names to keep in step | Chosen (owner) |
 | Identifiers | A — keep the repository, package and GitHub names | Nothing outside the site changes; no broken clones or links | The repository is still called `…-docs` | Chosen |
 | Identifiers | B — rename them too | One name everywhere | The GitHub rename is outside this repository and the owner's to do; `package.json` alone changes nothing a reader sees | Rejected |
 | Slug of this site's project | A — keep `docs` | Every URL, search record and link keeps working | The slug does not say "verse" | Chosen |
@@ -69,8 +70,8 @@ Today the one name stands for two things:
 **Positive**
 
 - The site has its chosen name everywhere a reader sees one.
-- The site and its own documentation are told apart: *Puncoz Verse* is the whole, *Puncoz Verse
-  Docs* is one planet in it.
+- The site and its own documentation are told apart: the site's name is the whole, the name with
+  *Docs* is one planet in it.
 
 **Negative / accepted trade-offs**
 
@@ -90,13 +91,13 @@ None — this change touches no data, no endpoint and no secret. The name is pub
 
 - [x] `src/lib/shared.ts`: `appName` (decision 1).
 - [x] `src/lib/source.ts`: the `llms.txt` index heading reads the site's name (decision 1).
-- [x] `content/docs/meta.json` and `content/docs/index.mdx`: *Puncoz Verse Docs*, and the prose
+- [x] `content/docs/meta.json` and `content/docs/index.mdx`: the new title, and the prose
       (decision 2).
 - [x] Tests (ADR-0007): the site's name and this project's title; the `llms.txt` heading; no
-      *Puncoz Docs* left in `src/`, `content/` outside approved ADRs, or the living documents.
+      working name left in `src/`, `content/` outside approved ADRs, or the living documents.
 - [x] Checked in Chrome on localhost against `bunx next build`: the header, the home page and 404
       titles, `/docs` (planet card, planet header, sidebar chip, title), `/og/docs/image.png`,
-      `llms.txt` (*# Puncoz Verse*) and `/docs.md`. `llms-full.txt` keeps *Puncoz Docs* only inside
+      `llms.txt` (its heading, the site's name) and `/docs.md`. `llms-full.txt` keeps the working name only inside
       approved ADRs (decision 3).
 - [x] `bun run test`, `bun run types:check` and `bunx next build` pass; `bun run lint` is
       reported while it stays blocked.

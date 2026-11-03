@@ -68,7 +68,6 @@ installed version) without leaving for the source code.
   to everyone as if real, by the owner's decision (ADR-0017, 2026-11-01). They are names in
   code, not private content. Who sees the private group is decided with sign-in, which will use
   WorkOS, in a later ADR.
-- Undecided: the GitHub link in the header (today the scaffold's).
 
 ## Brand Commitments
 

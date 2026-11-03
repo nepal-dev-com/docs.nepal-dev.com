@@ -4,7 +4,7 @@
   "catalog": {
     "kind": "project",
     "visibility": "public",
-    "repository": "https://github.com/puncoz-official/docs",
+    "repository": "https://github.com/nepal-dev-com/docs.nepal-dev.com",
     "featured": false
   },
   "pages": ["index", "maintain"]

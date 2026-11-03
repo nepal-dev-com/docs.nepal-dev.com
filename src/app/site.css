@@ -1957,6 +1957,8 @@
 #nd-notebook-layout > .horizon {
   grid-column: 1 / -1;
   grid-row: 4;
+  /* The outer tracks are minmax(min-content, 1fr), so the footer's own min-content would widen them and narrow the page. */
+  contain: inline-size;
 }
 
 /* Diagrams: the Archify view at its own height on the page's ground (ADR-0022) */

@@ -10,6 +10,7 @@ description: "Canonical links, a sitemap, robots rules, structured data, descrip
 - **Approved on:** 2026-11-03
 - **Supersedes:** —
 - **Superseded by:** [ADR-0036](./ADR-0036-the-site-is-nepal-dev-verse.mdx) (decisions 1 and 10, in part: the address's value, and the owner's `Person`)
+- **Reworded by:** [ADR-0038](./ADR-0038-earlier-names-leave-the-pages-and-the-github-link-follows-the-move.mdx) (earlier names only)
 - **Design documents:** [`../app-flow/search-and-sharing.mdx`](../app-flow/search-and-sharing.mdx),
   [`../prd/search-and-sharing.mdx`](../prd/search-and-sharing.mdx),
   [`../api/crawler-routes.mdx`](../api/crawler-routes.mdx),
@@ -34,8 +35,8 @@ description: "Canonical links, a sitemap, robots rules, structured data, descrip
   | Markdown copies, `llms.txt`, `static.json`, diagram frames | Open to indexing, so they can compete with the pages they copy |
   | Version lines | Nothing stops an older line outranking the latest |
 
-- No host or domain is adopted (`architecture/system.mdx`). The owner has chosen the address
-  `https://docs.puncoz.com`, read from an environment variable at build.
+- No host or domain is adopted (`architecture/system.mdx`). The owner has chosen the site's public address,
+  read from an environment variable at build.
 - What the installed versions provide, read from their docs and source:
   - Next.js has `metadataBase`, `alternates`, `title.template`, `robots.ts`, `sitemap.ts`,
     `manifest.ts` and generated `apple-icon`; JSON-LD is a `<script>` in the page, with `<` escaped
@@ -50,7 +51,7 @@ description: "Canonical links, a sitemap, robots rules, structured data, descrip
 
 ### The address
 
-1. **`SITE_URL` holds the site's address**, read at build: `https://docs.puncoz.com`, set in
+1. **`SITE_URL` holds the site's address**, read at build, set in
    `.env.local` and on the host, and named without a value in `.env.example`. It is not secret and
    not `NEXT_PUBLIC_`, because only the server reads it. It must be an `https` origin with no path,
    or the build fails.
@@ -91,12 +92,12 @@ description: "Canonical links, a sitemap, robots rules, structured data, descrip
 
    | The page | Title |
    |---|---|
-   | Home | `Puncoz Verse — every package and project, documented to the version` (as today, ADR-0028) |
-   | Overview | `lodestar — Puncoz Verse` |
-   | Latest line, no lines, Maintain | `Install — lodestar — Puncoz Verse` |
-   | Older line | `Install — lodestar 2.x LTS — Puncoz Verse` |
-   | `dev` line | `Install — lodestar dev — Puncoz Verse` |
-   | 404 | `Page not found — Puncoz Verse` (as today) |
+   | Home | `<site name> — every package and project, documented to the version` (as today, ADR-0028) |
+   | Overview | `lodestar — <site name>` |
+   | Latest line, no lines, Maintain | `Install — lodestar — <site name>` |
+   | Older line | `Install — lodestar 2.x LTS — <site name>` |
+   | `dev` line | `Install — lodestar dev — <site name>` |
+   | 404 | `Page not found — <site name>` (as today) |
 
 8. **`description` is required on every page.** The build fails and names any page without one, in
    every entry. Written for a person reading a search result: one or two plain sentences, about 160
@@ -123,7 +124,7 @@ description: "Canonical links, a sitemap, robots rules, structured data, descrip
     by the site with `next/og` in place of Fumadocs' default, and made at build:
     - in the dark theme's colours on the still star field, seeded from the page's address so each
       image's sky is its own and stays the same;
-    - the Verse mark and *Puncoz Verse* (ADR-0028, ADR-0029);
+    - the Verse mark and the site's name (ADR-0028, ADR-0029);
     - a docs page: the entry's planet mark, its name, the track and the line with its moon; then the
       page's title and description; then the domain from `SITE_URL`;
     - the home page: the system, drawn still, with one planet per entry, and its line; at
@@ -147,7 +148,7 @@ description: "Canonical links, a sitemap, robots rules, structured data, descrip
 
 | Option | Pros | Cons | Verdict |
 |---|---|---|---|
-| Address: `SITE_URL` at build, `docs.puncoz.com` | The domain can move with no code change; previews stay unindexed | One more variable to set | Chosen (owner) |
+| Address: `SITE_URL` at build, the site's public address | The domain can move with no code change; previews stay unindexed | One more variable to set | Chosen (owner) |
 | Address: fixed in `shared.ts` | No variable | A preview would be crawlable; moving means a code change | Rejected (owner) |
 | Versions: latest wins, nothing vanishes | Readers land on current docs, and a page only in an older line stays findable | A search for an old version usually reaches latest first | Chosen (owner) |
 | Versions: only latest indexed | The simplest rule | A page only in an older line can't be found | Rejected (owner) |
@@ -182,7 +183,7 @@ description: "Canonical links, a sitemap, robots rules, structured data, descrip
 - The 404 is served with a one-year `s-maxage` (ADR-0034), which is unchanged here.
 - Search engines decide what they do. Canonical links and sitemaps are hints, and no ranking is
   promised.
-- Nothing is reachable until a host serves `docs.puncoz.com`; this ADR adopts no host.
+- Nothing is reachable until a host serves the site's public address; this ADR adopts no host.
 
 ## Content invariants
 
@@ -257,7 +258,7 @@ What the implementation found, with the Decision above left as approved:
 - **Not fixed here:** `/diagrams/nope` and `/llms.txt/x` are still blank 200s, as ADR-0034 records. No
   real host has been tested, so nothing has been seen in a search engine or a real sharing app's card.
 
-**For the owner after approval:** add `SITE_URL=https://docs.puncoz.com` to `.env.local`, which agents
+**For the owner after approval:** add `SITE_URL`, with the site's public address, to `.env.local`, which agents
 do not read or change, and to the host when one is adopted.
 
 ## Docs to update on implementation
