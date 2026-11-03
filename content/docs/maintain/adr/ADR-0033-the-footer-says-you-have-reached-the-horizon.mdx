@@ -11,15 +11,16 @@ description: "The footer's closing line becomes \"You've reached the horizon. Th
 - **Supersedes:** [ADR-0017](./ADR-0017-the-whole-site-is-one-solar-system.mdx) decision 8 (in
   part: the words and the link of the closing line)
 - **Superseded by:** [ADR-0036](./ADR-0036-the-site-is-nepal-dev-verse.mdx) (in part: decision 3, the credit's words)
+- **Reworded by:** [ADR-0038](./ADR-0038-earlier-names-leave-the-pages-and-the-github-link-follows-the-move.mdx) (earlier names only)
 - **Design documents:** [`../app-flow/horizon-closing-line.mdx`](../app-flow/horizon-closing-line.mdx),
   [`../app-flow/living-horizon.mdx`](../app-flow/living-horizon.mdx), `DESIGN.md`
 
 ## Context
 
 - Every page ends with the Horizon footer. Its large closing line reads "Everything here orbits
-  one maker: Puncoz Nepal", with the name linked to `https://puncoz.com` (ADR-0017 decision 8).
+  one maker", with the maker's name linked to their site (ADR-0017 decision 8).
 - The owner wants the line rewritten, better and more about the Verse. Since ADR-0028 and
-  ADR-0029 the site is the Puncoz Verse, but the line speaks only of a maker and says nothing
+  ADR-0029 the site is a Verse, but the line speaks only of a maker and says nothing
   of the Verse, or of the horizon drawn right under it.
 - The wording is quoted in an approved decision, so changing it takes this ADR, though it is copy.
 - What was measured in Chrome with the new words, on the development server:
@@ -53,9 +54,9 @@ description: "The footer's closing line becomes \"You've reached the horizon. Th
 | Option | Pros | Cons | Verdict |
 |---|---|---|---|
 | "You've reached the horizon. The Verse goes on." | Says where the reader is, matches the drawn horizon, and leads somewhere | The name leaves the large line; the link needs care on the home page | Chosen (owner) |
-| "One Verse, one star: Puncoz Nepal." | The shortest; keeps the name large | About who made it, not where the reader is | Rejected |
-| "Every world in this Verse circles one star: Puncoz Nepal." | The closest to today's line | Three lines on most screens | Rejected |
-| "The Verse is young. One star so far: Puncoz Nepal." | Honest; echoes the Verse view's caption | Hints that other makers may join, and "young" will date | Rejected |
+| "One Verse, one star: *the maker*." | The shortest; keeps the name large | About who made it, not where the reader is | Rejected |
+| "Every world in this Verse circles one star: *the maker*." | The closest to today's line | Three lines on most screens | Rejected |
+| "The Verse is young. One star so far: *the maker*." | Honest; echoes the Verse view's caption | Hints that other makers may join, and "young" will date | Rejected |
 | Home page link: a plain link | No script | The Verse view opens out of sight, as measured above | Rejected |
 | Home page link: `id="verse"` on the hero, so the browser scrolls there | Almost no code | Lands 61px down the page, as measured, with the hero's top under the header, and would also move the page when `/#verse` is opened directly | Rejected |
 

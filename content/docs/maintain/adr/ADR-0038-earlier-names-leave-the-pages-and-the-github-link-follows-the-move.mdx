@@ -1,0 +1,129 @@
+---
+title: "ADR-0038 — Earlier names leave the pages, and the GitHub link follows the move"
+description: "Approved ADRs are reworded once so the site's earlier names leave every page, and the site's GitHub link moves to the repository's new home."
+---
+
+- **Status:** Approved
+- **Date:** 2026-11-03
+- **Deciders:** [@puncoz](https://github.com/puncoz)
+- **Approved by:** [@puncoz](https://github.com/puncoz)
+- **Approved on:** 2026-11-03
+- **Supersedes:** [ADR-0036](./ADR-0036-the-site-is-nepal-dev-verse.mdx) decision 12 (in part: that approved
+  ADRs keep the names they were written with, and the GitHub link); [ADR-0028](./ADR-0028-the-site-gets-its-first-verse-name.mdx), decision 3 (the same two points); [ADR-0014](./ADR-0014-home-page-is-a-search-first-release-map.mdx)
+  (the GitHub link); and, once, the rule in `AGENTS.md` §2 and §8 that an approved ADR is never edited
+- **Superseded by:** —
+- **Design documents:** [`../architecture/system.mdx`](../architecture/system.mdx)
+
+## Context
+
+The site is Nepal Dev Verse, part of nepal-dev.com (ADR-0036). The owner has asked that no page refer to
+the site's earlier, personal names, apart from the maker's credit in the footer.
+
+The living pages are already clear of them. What remains is in two places:
+
+- **Approved ADRs.** Eleven still use an earlier name in their own words: the working name, the first Verse
+  name, the personal-domain address, the repository's folder name, the former GitHub address, or the maker's
+  name as the star. ADR-0036 decision 12 says they keep those names, and `AGENTS.md` makes approved ADRs
+  immutable. The owner has chosen to change that (2026-11-03).
+- **The GitHub link.** The site links to the repository's former address, which now redirects to
+  `nepal-dev-com/docs.nepal-dev.com`. ADR-0036 kept that link only until the repository was renamed. The
+  address and its `main` branch both resolve (checked 2026-11-03).
+
+## Decision
+
+1. **Eleven approved ADRs are reworded, once:** ADR-0001, ADR-0014, ADR-0015, ADR-0017, ADR-0027, ADR-0028,
+   ADR-0029, ADR-0032, ADR-0033, ADR-0035 and ADR-0036.
+2. **An earlier name becomes a description, not the current name.** The ADRs must stay true about what was
+   decided and when, and the current name was not chosen on those dates:
+
+   | In the ADR's text | Becomes |
+   |---|---|
+   | The working name | "the working name" |
+   | The first Verse name | "the first Verse name" or "the site's name" |
+   | The personal-domain address | "the site's public address" or "the earlier address" |
+   | The repository's folder name | "this repository" or "this site" |
+   | The former GitHub address | "the repository's GitHub page" |
+   | The maker's name as the star, or a line it no longer appears in | "the maker" |
+
+   Nothing else in an ADR changes: not its decisions' meaning, status, dates, options or verdicts.
+3. **These stay, because they are current or are the credit:**
+   - `@puncoz` in `Deciders` and `Approved by`, and the examples of it: the owner's GitHub username today
+     (ADR-0020), which also leaves ADR-0020 unchanged.
+   - The maker's name and link where an ADR describes the footer's credit, which also leaves ADR-0016
+     unchanged.
+4. **A reworded ADR says so.** Each gets one header line, `- **Reworded by:** ADR-0038 (earlier names only)`,
+   so the record is never silently different from what was approved.
+5. **ADR-0028 takes a new title and file name:** *The site gets its first Verse name*, at
+   `ADR-0028-the-site-gets-its-first-verse-name.mdx`. Links to it follow. The old URL gets no redirect, because
+   a redirect would keep the old name in the code.
+6. **This happens once.** An approved ADR stays immutable, and `AGENTS.md` §2 and §8 keep that rule. A later
+   rename needs its own ADR.
+7. **The GitHub link is `nepal-dev-com/docs.nepal-dev.com`,** in `gitConfig` and in `content/docs/meta.json`.
+8. **Identifiers no reader sees stay,** as ADR-0036 decision 12 has it: the repository folder and package name,
+   the working-agreement headings that use it, internal plugin names and storage keys, the Algolia index and the
+   environment variables. Nothing is added to or removed from the git history.
+
+## Options considered
+
+| Option | Pros | Cons | Verdict |
+|---|---|---|---|
+| Approved ADRs: reword them | No page carries an earlier name | Approved text changes; needs this exception | Chosen (owner) |
+| Approved ADRs: keep as written | Immutability holds | The names stay on those pages | Rejected (owner) |
+| Approved ADRs: a site-wide "as written at the time" notice | Keeps the text and explains it | The names stay; a new UI element | Rejected (owner) |
+| Wording: a neutral description | Stays true about the dates and decisions | Slightly less vivid | Chosen |
+| Wording: put the current name in | Simple find and replace | False: says the current name was chosen on dates it was not, and makes ADR-0036 meaningless | Rejected |
+| Reach: once, by this ADR | Immutability still means something | A later rename needs another ADR | Chosen |
+| Reach: names in ADRs may always be updated | No more ADRs for this | Opens the record to quiet edits | Rejected |
+| Marking: a header line on each | The change is visible on the page | One more header line | Chosen |
+| Marking: none | Cleaner header | The record differs from the approval with no sign | Rejected |
+| GitHub link: `nepal-dev-com/docs.nepal-dev.com` | Where the old address lands; has no personal name | Another change to a named identifier | Chosen (owner) |
+| GitHub link: the `origin` remote, under the owner's account | Resolves too | A personal name, and not where the old address lands | Rejected (owner) |
+| GitHub link: leave it | No change | Depends on GitHub's redirect | Rejected (owner) |
+
+## Consequences
+
+**Positive**
+
+- A reader sees one name across the site, with the maker in the footer's credit.
+- The GitHub link goes straight to the repository.
+
+**Negative / accepted trade-offs**
+
+- The pages no longer show the words as approved. The git history does, and the header line points to why.
+- ADR-0028 and ADR-0033's rejected options lose some of their flavour, since they were written about a name.
+- If the site is already served or indexed, ADR-0028's old URL becomes a 404 and earlier copies may remain with
+  search engines. Rewording cannot recall them.
+- The next `bun run build`, run by the owner, is what refreshes the search index.
+
+## Content invariants
+
+None departed from. Invariant 2 is served by checking the GitHub address, and the wording stays true to the
+decisions recorded. No private content is involved.
+
+## Security considerations
+
+No new data, endpoint, secret or third party. The pages and repository are already public, and the new link
+points to a public repository. This is a naming change, not a privacy measure: the earlier names remain in the
+git history and in anything already published, which is accepted.
+
+## Implementation notes
+
+No app flow (ADR-0008): no screen, control or state changes, only words and a link's target.
+
+- [x] Reword the eleven ADRs (decisions 1 to 3), each with its header line (decision 4).
+- [x] Rename ADR-0028 and update its links in the ADR index, `README.md`, `../app-flow/community-identity.mdx`
+      and ADR-0036 (decision 5).
+- [x] Add "Superseded by: ADR-0038" (in part) to ADR-0014, ADR-0028 and ADR-0036.
+- [x] `gitConfig` in `src/lib/shared.ts` and `repository` in `content/docs/meta.json` (decision 7).
+- [x] Tests (ADR-0007): the old-names test in `src/lib/site-name.test.ts` also covers the ADR folder, including
+      the repository's folder name and former GitHub address; `gitConfig` points at the new repository; each
+      reworded ADR has its header line. Failure path: an earlier name put back in an ADR fails the test.
+- [x] `bun run test`, `bun run types:check` and `bunx next build` pass, and the lint failure is reported while
+      it stands. Links checked in the built pages.
+
+## Docs to update on implementation
+
+- [x] `content/docs/maintain/architecture/system.mdx`: the GitHub repository in its `shared.ts` row
+- [x] `AGENTS.md`: the GitHub repository in §1, and §2 and §8 naming this one exception
+- [x] `README.md`: ADR-0028's row and link
+- [x] `content/docs/maintain/adr/index.mdx`: ADR-0028's row, and this ADR's status

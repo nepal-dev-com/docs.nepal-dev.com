@@ -10,12 +10,13 @@ description: "The Verse is the still sky around the one system: a brand mark, a 
 - **Approved on:** 2026-11-01
 - **Supersedes:** —
 - **Superseded by:** [ADR-0036](./ADR-0036-the-site-is-nepal-dev-verse.mdx) (in part: the brand mark)
+- **Reworded by:** [ADR-0038](./ADR-0038-earlier-names-leave-the-pages-and-the-github-link-follows-the-move.mdx) (earlier names only)
 - **Design documents:** [`../app-flow/universe-theme.mdx`](../app-flow/universe-theme.mdx),
   [`../prd/universe-theme.mdx`](../prd/universe-theme.mdx)
 
 ## Context
 
-The site is named *Puncoz Verse*, as in universe (ADR-0028). When the owner chose the name, they
+The site has a Verse name, as in universe (ADR-0028). When the owner chose the name, they
 asked for the whole site to carry that theme, and ADR-0028 left the theme to this ADR.
 
 The solar system is already on every page (ADR-0017, ADR-0018, ADR-0027): the star is the maker,
@@ -65,7 +66,7 @@ The owner chose on 2026-11-01:
    Graph images, and becomes the site's icon (`src/app/icon.svg`, Next.js' file convention): the
    system seen from outside, a star-coloured centre inside two nested, tilted orbits in Frost Ink
    with a teal planet on the inner one. It has no ring, so it never reads as a project. The
-   wordmark keeps its face and size; the name stays *Puncoz Verse*. The final drawing is reviewed
+   wordmark keeps its face and size; the name stays. The final drawing is reviewed
    with stage 1.
 3. **A still sky on every page.** The home page, docs pages and the 404 stand on one star field:
    - drawn on the server as SVG from a fixed seed, so it is the same on every load and needs no
@@ -94,7 +95,7 @@ The owner chose on 2026-11-01:
 5. **The Verse view.** The home page's system gets one control at its lower right, *Zoom out to
    the Verse*. Pressing it, or opening `/#verse`, eases the camera out over about 1.2 seconds with
    the site's ease: the system shrinks to the centre, still turning, the wider sky opens around it,
-   the belt and the private planets show dim and far, labels fade except *Puncoz Nepal*, and a
+   the belt and the private planets show dim and far, labels fade except the maker's, and a
    caption reads *The Verse · one system so far*. The control becomes *Back to the system*;
    pressing it, or the system itself, eases back in. It is a single response to input, so the
    *One Orbit* rule holds.

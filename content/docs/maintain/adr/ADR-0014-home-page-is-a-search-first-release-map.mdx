@@ -11,7 +11,8 @@ description: "The decision to make the home page a search-first map of every pac
 - **Supersedes:** —
 - **Superseded by:** [ADR-0015](./ADR-0015-every-entry-lives-at-the-root-in-one-shape-and-one-look.mdx)
   in part (decisions 3, 6 and 9); [ADR-0016](./ADR-0016-home-search-is-the-fumadocs-dialog-and-private-projects-render-server-side.mdx) in part (decisions 3, 4, 8 and 10);
-  [ADR-0017](./ADR-0017-the-whole-site-is-one-solar-system.mdx) in part (decision 4 and the footer)
+  [ADR-0017](./ADR-0017-the-whole-site-is-one-solar-system.mdx) in part (decision 4 and the footer); [ADR-0038](./ADR-0038-earlier-names-leave-the-pages-and-the-github-link-follows-the-move.mdx) (the GitHub link)
+- **Reworded by:** [ADR-0038](./ADR-0038-earlier-names-leave-the-pages-and-the-github-link-follows-the-move.mdx) (earlier names only)
 - **Design documents:** [`../app-flow/home-page.mdx`](../app-flow/home-page.mdx),
   [`../prd/home-page.mdx`](../prd/home-page.mdx), `../architecture/system.mdx`,
   `../dfd/system.mdx`, `PRODUCT.md`
@@ -29,7 +30,7 @@ seamless and unique. The owner settled these:
 - **Private projects:** signed-out visitors see nothing of them: no name, count or placeholder.
 - **Two tracks** per package and project, Use and Maintain (ADR-0013).
 - **Craft bar:** Stripe, Linear and Resend.
-- **Name:** "Puncoz Docs" for now. The final name will include neither the owner's name nor
+- **Name:** a working name for now. The final name will include neither the owner's name nor
   "docs".
 
 A first direction (a narrow "quiet instrument" column, a hero of two doors for Packages and
@@ -159,7 +160,7 @@ demos.
 9. **Header:** the wordmark on the left; Packages, Projects and `llms.txt` links; GitHub on the
    right. Sticky, with a blurred background and a border that appears after scrolling. No
    sign-in link until the private-documentation ADR. `appName` in `src/lib/shared.ts` becomes
-   `Puncoz Docs` until the final name is chosen.
+   the working name until the final name is chosen.
 
 10. **Phones first.** The headline, search field and "Try" row fill the first screen; the map
     turns behind them at a smaller scale; the legend and key hints are hidden. The catalogue
@@ -251,7 +252,7 @@ demos.
 - [x] Tokens and fonts (decisions 5 and 6), home page scope (`.home` in `global.css`,
       `src/app/(home)/home.css`).
 - [x] Motion (decision 7) with reduced-motion and no-script fallbacks.
-- [x] Header (decision 9); `appName` → `Puncoz Docs`; `gitConfig` → `puncoz-official/docs`.
+- [x] Header (decision 9); `appName` → the working name; `gitConfig` → the repository's GitHub page.
 - [x] impeccable's detector on the source and the built HTML. Contrast was computed from the
       tokens in both themes. No browser visual check: it needs the owner's yes.
 - [ ] Tests — manual checks until ADR-0007 picks a runner:
@@ -268,8 +269,8 @@ demos.
 
 ## Open questions
 
-- **GitHub link:** resolved: the header links to `puncoz-official/docs` (owner, 2026-10-31).
-- **Final name:** still open. Until it is chosen the site is "Puncoz Docs" (owner, 2026-10-31);
+- **GitHub link:** resolved: the header links to the repository's GitHub page (owner, 2026-10-31).
+- **Final name:** still open. Until it is chosen the site uses the working name (owner, 2026-10-31);
   the name lives in `appName` in `src/lib/shared.ts` only.
 
 ## Docs to update on implementation

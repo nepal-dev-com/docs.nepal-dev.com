@@ -18,10 +18,10 @@ export const docsImageRoute = '/og';
 export const homeImageUrl = `${docsImageRoute}/image.png`;
 export const docsContentRoute = '/llms.mdx';
 
-// The owner's choice, ADR-0014.
+// The owner's choice, ADR-0038.
 export const gitConfig = {
-  user: 'puncoz-official',
-  repo: 'docs',
+  user: 'nepal-dev-com',
+  repo: 'docs.nepal-dev.com',
   branch: 'main',
 };
 

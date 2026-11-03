@@ -50,7 +50,7 @@ decisions and design documents are its Maintain track, `content/docs/maintain/`,
 
 **Current state:** the site is named **Nepal Dev Verse** (`appName` in `src/lib/shared.ts`,
 ADR-0036), its own documentation is **Nepal Dev Verse Docs**, and it links to GitHub
-`puncoz-official/docs`. **No package or project is documented
+`nepal-dev-com/docs.nepal-dev.com`. **No package or project is documented
 yet** besides the site itself, so the home page shows its empty states.
 
 - **One shape for every entry** (ADR-0013, ADR-0015). `content/<slug>/` has a `catalog` entry in
@@ -134,7 +134,7 @@ before the repository owner approves it.** The full decision is
 4. **On explicit approval only:** set `Status: Approved`, fill `Approved by: [@puncoz](https://github.com/puncoz)` (the approver's GitHub username)
    and `Approved on: <date>`, update the index row, *then* implement.
 5. **Never** edit an approved ADR's Decision section. Supersede it with a new ADR and
-   cross-link both files.
+   cross-link both files. The one exception was the single rewording of earlier names in ADR-0038.
 
 ### Does my change need an ADR?
 
@@ -370,7 +370,7 @@ Everything lives under `content/`, and **everything there is published** (§6.1,
 | Kind | Where | Rule |
 |---|---|---|
 | **Package and project documentation** | `content/<slug>/`, except `content/docs/maintain/` | The product: what readers come for. Written and updated freely within the approved content conventions and the invariants (§6). |
-| **Decisions** | `content/docs/maintain/adr/` | Immutable once approved. Superseded, never edited. |
+| **Decisions** | `content/docs/maintain/adr/` | Immutable once approved. Superseded, never edited (one rewording of earlier names, ADR-0038). |
 | **Living design documents** | everything else under `content/docs/maintain/` | Describe this site **as it stands right now**, and are edited in place. |
 
 This site's Maintain track is about this site only. A package's or project's own decisions

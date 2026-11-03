@@ -8,13 +8,14 @@ description: "The site becomes Nepal Dev Verse, a documentation platform for Nep
 - **Deciders:** [@puncoz](https://github.com/puncoz)
 - **Approved by:** [@puncoz](https://github.com/puncoz)
 - **Approved on:** 2026-11-03
-- **Supersedes:** [ADR-0028](./ADR-0028-the-site-is-named-puncoz-verse.mdx) decisions 1 and 2;
+- **Supersedes:** [ADR-0028](./ADR-0028-the-site-gets-its-first-verse-name.mdx) decisions 1 and 2;
   [ADR-0017](./ADR-0017-the-whole-site-is-one-solar-system.mdx) decision 1 (in part: who the star is, and
   its label); [ADR-0029](./ADR-0029-the-verse-is-a-still-sky-you-zoom-through.mdx) decision 2 (in part:
   the brand mark); [ADR-0033](./ADR-0033-the-footer-says-you-have-reached-the-horizon.mdx) decision 3 (the
   credit's words); [ADR-0035](./ADR-0035-every-page-is-ready-for-search-and-sharing.mdx) decisions 1 and 10
   (in part: the address's value, and the owner's `Person`)
-- **Superseded by:** —
+- **Superseded by:** [ADR-0038](./ADR-0038-earlier-names-leave-the-pages-and-the-github-link-follows-the-move.mdx) (decision 12, in part)
+- **Reworded by:** [ADR-0038](./ADR-0038-earlier-names-leave-the-pages-and-the-github-link-follows-the-move.mdx) (earlier names only)
 - **Design documents:** [`../app-flow/community-identity.mdx`](../app-flow/community-identity.mdx),
   `PRODUCT.md`, `DESIGN.md`
 
@@ -22,7 +23,7 @@ description: "The site becomes Nepal Dev Verse, a documentation platform for Nep
 
 - The owner wants to publish this site as a documentation platform for the packages and projects of
   Nepalese developers all over the world, under the name **Nepal Dev Verse**, and has supplied the
-  nepal-dev.com logo in `temp/logo.svg`. They asked for references to Puncoz Nepal to become
+  nepal-dev.com logo in `temp/logo.svg`. They asked for references to the maker to become
   nepal-dev.com, with a footer credit to nepal-dev.com and "made with ❤️ by Puncoz Nepal".
 - The name appears through `appName` in `src/lib/shared.ts`. The maker appears through `owner` in the
   same file: the star's label, the footer's credit, the page metadata and the JSON-LD.
@@ -86,7 +87,7 @@ description: "The site becomes Nepal Dev Verse, a documentation platform for Nep
 
 12. **Puncoz Nepal stays** in the footer's credit, as `@puncoz` in ADRs (ADR-0020), and as *the owner* in
     the working documents. Approved ADRs keep the names they were written with. The repository and package
-    names, the GitHub link (`puncoz-official/docs`), the Algolia index and the environment variables are
+    names, the GitHub link, the Algolia index and the environment variables are
     identifiers and do not change here.
 13. **This is the identity, not the platform's workings.** How other developers contribute, who reviews
     them, and showing who built each entry all wait for their own ADR. Until then ADR-0010 stands and the
@@ -103,7 +104,7 @@ description: "The site becomes Nepal Dev Verse, a documentation platform for Nep
 | Logo | Keep the Verse mark as the brand, the logo in the credit only | The smallest change | The site barely looks like nepal-dev.com | Rejected (owner) |
 | Address | `docs.nepal-dev.com` | Says what it is, on the community's domain | The owner adds DNS | Chosen (owner) |
 | Address | `verse.nepal-dev.com` | Matches the name | Says less on its own | Rejected (owner) |
-| Address | Keep `docs.puncoz.com` | No change | A community platform on a personal domain, with redirects to come later | Rejected (owner) |
+| Address | Keep the earlier address | No change | A community platform on a personal domain, with redirects to come later | Rejected (owner) |
 | Scope | Identity now, and the belt stays | A small visual change; the contribution model gets its own review | Invented private projects under a community name | Chosen (owner) |
 | Scope | Identity now, and the belt removed | No invented names on a community site | One more change here | Rejected (owner) |
 | Scope | Identity and the contribution model together | One review | A far larger review, and the rename waits | Rejected (owner) |
@@ -125,7 +126,7 @@ description: "The site becomes Nepal Dev Verse, a documentation platform for Nep
 - The long home line takes more of the first screen, most of all on phones. It is measured at 320px and
   390px during implementation.
 - The original logo adds 1.6 MB to the repository, and so to every consuming submodule's checkout.
-- The repository and GitHub names keep *puncoz* until the owner renames them.
+- The repository and GitHub names keep the maker's name until the owner renames them.
 - The full logo appears nowhere on the site itself; only the mark drawn from it does.
 - Nothing has been said here about whether `https://nepal-dev.com` is live. The owner confirms it before
   publishing, because the credit links there.
@@ -157,7 +158,7 @@ takes it on the next publish, which only the owner runs.
   title. `src/components/home/hero.tsx` and `orbit-map.tsx`: the star's label and sentence.
 - [x] `src/components/horizon-footer.tsx`: the credit. `src/lib/seo.ts`, `src/app/layout.tsx`: decision 10.
 - [x] `content/docs/meta.json`, `content/docs/index.mdx`: the title and prose. `.env.example`: unchanged.
-- [x] Tests (ADR-0007): the name and the project's title; no *Puncoz Verse* left in `src/`, `content/` outside
+- [x] Tests (ADR-0007): the name and the project's title; no earlier name left in `src/`, `content/` outside
   approved ADRs, or the living documents; the credit's words and two links; the mark's contrast in both themes
   and its small form; the `Organization`; the share image's headline staying clear of the system.
 - [x] Looked at, in Chrome on localhost against `bunx next build`: the header at 320px, 390px and wide; the
@@ -185,7 +186,7 @@ the DNS record, confirm `https://nepal-dev.com` is live, and remove `temp/`.
 
 - [x] [`../app-flow/community-identity.mdx`](../app-flow/community-identity.mdx): Current, in place of
   `../app-flow/site-name.mdx`, which is deleted; every app flow whose wireframes show the name or
-  `docs.puncoz.com`, with their Archify views.
+  the earlier address, with their Archify views.
 - [x] `PRODUCT.md`, `DESIGN.md`, `.impeccable/design.json`, `AGENTS.md` §1 and §10, `README.md`,
   `PROJECT_AGENTS.md`, [`../architecture/system.mdx`](../architecture/system.mdx), and the PRDs and API pages
   that name the site.

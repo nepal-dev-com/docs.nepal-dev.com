@@ -18,6 +18,7 @@ description: "Every package and project lives at the site's root, at its own sho
   [ADR-0017](./ADR-0017-the-whole-site-is-one-solar-system.mdx) in part (decision 9);
   [ADR-0030](./ADR-0030-the-horizon-rises-over-the-page-and-its-sky-comes-alive.mdx) in part (decision 7's "no entrance motion on docs pages", for the footer);
   [ADR-0034](./ADR-0034-the-proxy-answers-unknown-paths-with-a-true-404.mdx) in part (its implementation's "the proxy acts only on catalogued paths")
+- **Reworded by:** [ADR-0038](./ADR-0038-earlier-names-leave-the-pages-and-the-github-link-follows-the-move.mdx) (earlier names only)
 - **Design documents:** [`../app-flow/site-pages.mdx`](../app-flow/site-pages.mdx),
   [`../prd/site-pages.mdx`](../prd/site-pages.mdx); on implementation
   `architecture/system.mdx`, `api/content-routes.mdx`, `state/package-version-lifecycle.mdx`,
@@ -145,7 +146,7 @@ Facts this decision rests on, read from the installed code:
 ### This site's own documentation
 
 6. **The site is the catalogued project `docs`.** Its folder is `content/docs/` (overview at
-   `/docs`, "Puncoz Docs: what this site is and how it is organised"), with
+   `/docs`, "what this site is and how it is organised"), with
    `catalog: { kind: "project", visibility: "public" }`. Today's Documentation tree becomes its
    **Maintain track**: `content/docs/maintain/{adr,architecture,app-flow,prd,api,dfd,sequence,
    state,erd,rbac,security,_templates}` at `/docs/maintain/…`. It has no Use track yet; one

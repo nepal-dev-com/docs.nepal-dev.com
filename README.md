@@ -256,7 +256,7 @@ threat model, data classification, secrets inventory and audit checklist live in
 | [0025](content/docs/maintain/adr/ADR-0025-the-overview-has-the-same-sidebar-as-its-tracks.mdx) | The overview has the same sidebar as its tracks | Approved |
 | [0026](content/docs/maintain/adr/ADR-0026-the-moon-picker-on-an-overview-opens-a-lines-first-page.mdx) | The moon picker on an overview opens a line's first page | Approved |
 | [0027](content/docs/maintain/adr/ADR-0027-the-sidebar-is-a-scale-ladder-with-one-lifted-orbit.mdx) | The sidebar is a scale ladder with one lifted orbit | Approved |
-| [0028](content/docs/maintain/adr/ADR-0028-the-site-is-named-puncoz-verse.mdx) | The site is named Puncoz Verse | Approved |
+| [0028](content/docs/maintain/adr/ADR-0028-the-site-gets-its-first-verse-name.mdx) | The site gets its first Verse name | Approved |
 | [0029](content/docs/maintain/adr/ADR-0029-the-verse-is-a-still-sky-you-zoom-through.mdx) | The Verse is a still sky you zoom through | Approved |
 | [0030](content/docs/maintain/adr/ADR-0030-the-horizon-rises-over-the-page-and-its-sky-comes-alive.mdx) | The horizon rises over the page, and its sky comes alive | Approved |
 | [0031](content/docs/maintain/adr/ADR-0031-the-sidebar-sets-without-dimming.mdx) | The sidebar sets without dimming | Approved |
@@ -266,3 +266,4 @@ threat model, data classification, secrets inventory and audit checklist live in
 | [0035](content/docs/maintain/adr/ADR-0035-every-page-is-ready-for-search-and-sharing.mdx) | Every page is ready for search and sharing | Approved |
 | [0036](content/docs/maintain/adr/ADR-0036-the-site-is-nepal-dev-verse.mdx) | The site is Nepal Dev Verse, part of nepal-dev.com | Approved |
 | [0037](content/docs/maintain/adr/ADR-0037-the-horizon-is-the-himalaya.mdx) | The Horizon is the Himalaya | Approved |
+| [0038](content/docs/maintain/adr/ADR-0038-earlier-names-leave-the-pages-and-the-github-link-follows-the-move.mdx) | Earlier names leave the pages, and the GitHub link follows the move | Approved |
