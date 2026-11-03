@@ -84,6 +84,25 @@ describe('the site name (ADR-0036)', () => {
     expect(found).toEqual([]);
   });
 
+  describe('who owns the site (ADR-0039)', () => {
+    test('the working documents name nepal-dev.com as the owner, and who approves for it', () => {
+      expect(read('AGENTS.md')).toContain('Its owner is nepal-dev.com');
+      expect(read('PROJECT_AGENTS.md')).toContain('The owner is nepal-dev.com');
+      expect(read('PRODUCT.md')).toContain('Community and owner: **nepal-dev.com**');
+      expect(read('README.md')).toContain('The owner is nepal-dev.com');
+      expect(read('AGENTS.md')).toContain('`puncoz`');
+    });
+
+    test('no working document still calls the maker the owner', () => {
+      const claims = ['Its owner and maintainer is', 'Owner and maintainer:'];
+      for (const file of ['AGENTS.md', 'PROJECT_AGENTS.md', 'PRODUCT.md', 'README.md']) {
+        for (const claim of claims) {
+          expect(read(file)).not.toContain(claim);
+        }
+      }
+    });
+  });
+
   test("the GitHub link is the repository's new home (ADR-0038 decision 7)", () => {
     expect(gitConfig).toEqual({ user: 'nepal-dev-com', repo: 'docs.nepal-dev.com', branch: 'main' });
     const meta = JSON.parse(read('content/docs/meta.json')) as { catalog: { repository: string } };

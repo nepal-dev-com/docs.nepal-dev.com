@@ -71,7 +71,7 @@ installed version) without leaving for the source code.
 
 ## Brand Commitments
 
-- Community: **nepal-dev.com**. Owner and maintainer: Puncoz Nepal, credited in the footer.
+- Community and owner: **nepal-dev.com**. Maintainer: Puncoz Nepal, credited in the footer, who approves decisions for the owner.
 - Name: **Nepal Dev Verse**, as in universe (owner's decision, 2026-11-03; ADR-0036). The site's
   own documentation, the project `docs`, is **Nepal Dev Verse Docs**. Its brand mark is
   nepal-dev.com's mountain and flag, and the Verse keeps its own place mark in the scale strip

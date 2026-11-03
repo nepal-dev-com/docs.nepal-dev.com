@@ -240,8 +240,8 @@ Title each `ADR-NNNN — …` and keep the template's `- **Status:** Approved` l
 Proposed, Superseded or Rejected) near the top. The folder's `index.mdx` is the full list.
 
 **People in an ADR are GitHub usernames**, written as a profile link:
-`- **Deciders:** [@puncoz](https://github.com/puncoz)` and the same for `Approved by`. The
-owner's username is `puncoz`. When a decider's or approver's GitHub username is not already known
+`- **Deciders:** [@puncoz](https://github.com/puncoz)` and the same for `Approved by`.
+The owner is nepal-dev.com, and `puncoz` decides and approves for it. When a decider's or approver's GitHub username is not already known
 (in your project's existing ADRs or from the owner), ask for it. Never write a display name in its
 place, and never guess a username.
 
