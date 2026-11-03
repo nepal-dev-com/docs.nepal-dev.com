@@ -1,0 +1,106 @@
+{
+  "schema_version": 1,
+  "diagram_type": "architecture",
+  "meta": {
+    "title": "Screen 5 — Maintain page",
+    "subtitle": "Wireframe at phone width, drawn from its Mermaid version · site pages",
+    "output": "site-pages-screen-5.html",
+    "animation": "trace",
+    "quality_profile": "showcase",
+    "legend": {
+      "entries": {
+        "backend": {
+          "label": "Control or link"
+        },
+        "external": {
+          "label": "Content"
+        },
+        "frontend": {
+          "label": "Site chrome"
+        }
+      }
+    }
+  },
+  "components": [
+    {
+      "id": "hdr",
+      "type": "frontend",
+      "label": "▲ Nepal Dev Verse   ⌕ orrery ☰",
+      "pos": [
+        40,
+        60
+      ],
+      "size": [
+        436,
+        58
+      ]
+    },
+    {
+      "id": "chip",
+      "type": "backend",
+      "label": "● lodestar",
+      "pos": [
+        40,
+        130
+      ],
+      "size": [
+        436,
+        70
+      ],
+      "sublabel": "npm package"
+    },
+    {
+      "id": "track",
+      "type": "backend",
+      "label": "☀ Use | ☾ Maintain",
+      "pos": [
+        40,
+        212
+      ],
+      "size": [
+        436,
+        58
+      ]
+    },
+    {
+      "id": "h1",
+      "type": "external",
+      "label": "Releasing",
+      "pos": [
+        40,
+        282
+      ],
+      "size": [
+        436,
+        58
+      ]
+    },
+    {
+      "id": "body",
+      "type": "external",
+      "label": "How a release is cut from the default branch",
+      "pos": [
+        40,
+        352
+      ],
+      "size": [
+        436,
+        58
+      ]
+    }
+  ],
+  "boundaries": [
+    {
+      "kind": "region",
+      "label": "Phone screen · /<slug>/maintain/<page>",
+      "wraps": [
+        "hdr",
+        "chip",
+        "track",
+        "h1",
+        "body"
+      ],
+      "pad": 22
+    }
+  ]
+}

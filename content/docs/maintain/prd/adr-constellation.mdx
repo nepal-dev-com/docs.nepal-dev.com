@@ -1,0 +1,53 @@
+---
+title: "PRD — the ADR constellation"
+description: "Why long ADR lists in the sidebar became a constellation: the problem, who it is for, and what it must do."
+---
+
+- **Status:** Current
+- **Last updated:** 2026-11-01
+- **Related ADRs:** [ADR-0019](../adr/ADR-0019-adr-folders-show-as-a-constellation-in-the-sidebar.mdx)
+
+> Snapshot of the system as it stands today. Edit in place; never record what changed.
+
+## Problem
+
+An open ADR station lists every decision as a 32px row. This site's 18 ADRs take about 600px of
+sidebar, the list grows with every decision, and each package or project that keeps ADRs will
+grow the same way.
+
+## Goal
+
+- An ADR folder's station stays about seven rows tall at any number of ADRs.
+- A reader sees each ADR's status, and where the current one sits among them, at a glance.
+- Every title stays one point, one step or one click away.
+
+## Non-goals
+
+- Changing other folders' stations (ADR-0018).
+- Changing ADR pages or their index page.
+
+## User stories
+
+| # | Story | Acceptance criteria |
+|---|---|---|
+| US-1 | As a **maintainer**, I want **the decisions to take little sidebar space**, so that **the other sections stay in view**. | - An ADR folder's open station shows a grid of moons, not rows.<br />- Its height does not grow with each ADR beyond one row per about nine. |
+| US-2 | As a **reader**, I want **to see each decision's status**, so that **I know what is in force**. | - Full moon approved, dashed new moon proposed, crescent superseded, faint ring rejected or unknown.<br />- A one-line legend names them. |
+| US-3 | As a **reader**, I want **to see an ADR's title before opening it**, so that **I open the right one**. | - Pointing at or focusing a moon shows its number and title in the readout.<br />- Each moon's accessible name is its full title and status. |
+| US-4 | As a **reader working through decisions**, I want **to step to the next or previous one**, so that **I read them in order**. | - "← 15" and "17 →" link to the neighbours; each is left out at the ends. |
+| US-5 | As a **reader**, I want **every title in one list**, so that **I can scan them all**. | - "All 18 decisions →" opens the folder's index page. |
+| US-6 | As a **consuming repository**, I want **the same for my ADRs**, so that **I don't configure anything**. | - Any folder named `adr` in an entry shows as a constellation. |
+
+## Rules and edge cases
+
+- The folder's index page is not a moon; it is the register.
+- The number is the title's `ADR-NNNN`, or the page's place in the folder.
+- The status comes from the template's `**Status:**` line; without it, the faint ring.
+- On touch screens nothing is pointed at; a tap opens the ADR.
+
+## Out of scope for now
+
+- Filtering or searching inside the constellation: the site's search and the register cover it.
+
+## Open questions
+
+None.

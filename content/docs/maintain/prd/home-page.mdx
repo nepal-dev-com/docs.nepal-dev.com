@@ -1,0 +1,91 @@
+---
+title: "PRD — home page and catalogue"
+description: "What the home page and catalogue must do: show what is documented, which version a page covers, and where to go next."
+---
+
+- **Status:** Current
+- **Last updated:** 2026-11-01
+- **Related ADRs:** [ADR-0017](../adr/ADR-0017-the-whole-site-is-one-solar-system.mdx),
+  [ADR-0016](../adr/ADR-0016-home-search-is-the-fumadocs-dialog-and-private-projects-render-server-side.mdx),
+  [ADR-0014](../adr/ADR-0014-home-page-is-a-search-first-release-map.mdx),
+  [ADR-0013](../adr/ADR-0013-packages-and-projects-share-one-catalogue-shape.mdx)
+
+> Snapshot of the system as it stands today. Edit in place; never record what changed.
+
+## Problem
+
+A developer arriving from a registry or a README needs to see what is documented, which version
+a page covers, and whether a package has a demo, without guessing URLs. A maintainer needs to
+find a package's release and contribution notes. A visitor curious about the owner's work needs
+to see all of it at a glance.
+
+## Goal
+
+- From `/`, a reader reaches any public page in two interactions or fewer: search, then choose,
+  with the same Fumadocs search dialog as every other page.
+- The first screen shows the shape of the whole collection as one solar system: ecosystems,
+  packages, projects, version lines, and what is unreleased.
+- Every planet card shows the latest released version, any unreleased `dev` version and any
+  older lines, as read from the content.
+- The same marks (planets, moons, day and night sides) carry the same meaning on every page.
+- Every package and project has a Use track, and can have a Maintain track, reachable from the
+  home page and its overview.
+- Private projects have a group on the home page, beyond an asteroid belt. Today it lists three
+  invented projects by the owner's decision (ADR-0017 decision 4); no real private name or
+  content is on any public surface.
+- The footer is useful: every planet, the Markdown routes, search and the way back up.
+
+## Non-goals
+
+- Sign-in, and listing private projects: later ADRs (WorkOS; private documentation).
+- Filters on the home page or in the search dialog.
+- Documentation page design: ADR-0015 and [site pages](./site-pages.mdx).
+- Usage figures, download counts, testimonials: none are on hand, and none are invented
+  (`PRODUCT.md`). The invented private projects are the one exception, by the owner's decision.
+
+## User stories
+
+| # | Story | Acceptance criteria |
+|---|---|---|
+| US-1 | As a **package user**, I want **to search for a package or page from the first screen**, so that **I reach its docs without guessing a URL**. | - The hero's search button, Enter or Space on it, and `⌘K` / `Ctrl K` open the Fumadocs search dialog, the same one as on every page.<br />- The home header has no second search.<br />- Arrow keys and Enter open a result; Escape closes the dialog. |
+| US-2 | As a **reader**, I want **to browse packages and projects**, so that **I see everything without searching**. | - One planet card per public entry, with no section heading on screen.<br />- The header's Packages and Projects links land on the first card of each kind, from any page.<br />- Clicking a planet in the system opens its overview; every planet is labelled. |
+| US-3 | As a **package user**, I want **to see which version is documented**, so that **I know the docs match what I installed**. | - Each card's fact sheet shows the `latest` line's exact version, `In development` with the `dev` version, and older lines.<br />- An unreleased package shows "unreleased".<br />- The card and the system draw one moon per line, labelled with the line's name; unreleased moons dashed.<br />- Every moon, released or not, lists each entry's lines with their phase marks. |
+| US-4 | As a **developer evaluating a package**, I want **to try a demo**, so that **I can judge it before installing**. | - Planet cards link to the latest line's `demo` page when it has one.<br />- A demo that runs on the page, and a demo section on the home page, wait for ADR-0011's sandboxed embed. |
+| US-5 | As a **maintainer**, I want **to reach a package's Maintain track**, so that **I find the release and contribution notes**. | - Every planet card links to Maintain when the track exists.<br />- Two sides of every planet shows what each track holds, with real pages. |
+| US-6 | As a **project stakeholder**, I want **to find a public project**, so that **I can read its documentation**. | - Projects are ringed planets: on their own orbit in the system, as cards, and in the footer. |
+| US-7 | As a **signed-in reader**, I want **my private projects on the home page**, so that **I reach them from the same place**. | - Private projects, beyond an asteroid belt after the cards, rendered on the server.<br />- Each is a night-side planet with a lock, a description and who it is for.<br />- With none, an empty dashed orbit says so.<br />- Today every reader sees the three invented projects (owner's decision); the sign-in ADR decides who sees the group.<br />- No private project is in `content/`, search, `llms.txt` or `static.json`, and none is a planet in the system. |
+| US-8 | As a **developer or AI tool**, I want **to see how to take a page out of the site**, so that **I can use it in my tools**. | - Terminal tabs for `.md`, `llms.txt` and `Accept: text/markdown`, each with its route's real output.<br />- The live Copy Markdown button and Open menu for one real page.<br />- A link to `/llms-full.txt`; `llms.txt` lists every package and project. |
+| US-9 | As a **reader who prefers less motion or uses a keyboard or screen reader**, I want **the same information without the animation**, so that **the page works for me**. | - Under reduced motion the system is still, commands don't type and nothing enters or turns.<br />- The planet cards hold everything the system shows, as text.<br />- The hero's headline and subline select with the mouse.<br />- Every control is reachable and visible on focus. |
+| US-10 | As a **reader**, I want **a theme switch I can understand**, so that **I know what it will do**. | - The same height as the header's other buttons; draws the sun in front of a lit planet in light and behind a crescent in dark.<br />- Its name and tooltip say what a click does ("Switch to day side (light theme)").<br />- Shows the current theme from first paint; instant under reduced motion. |
+| US-11 | As a **reader at the end of a page**, I want **a footer that takes me somewhere**, so that **I don't scroll back up to move on**. | - Every planet, Search, `llms.txt`, `llms-full.txt`, GitHub and Back to orbit.<br />- Every page has the closing line and the horizon; the closing line's *The Verse* opens the Verse view. |
+| US-12 | As a **reader who followed a dead link**, I want **a way back**, so that **I am not stuck**. | - Unknown paths show "This page drifted out of orbit." with search and "Back to the system". |
+
+## Rules and edge cases
+
+- Entries come only from content folders with a valid `catalog` (ADR-0013); this
+  site is listed as the project `docs`.
+- Counts are computed from the same entries: public packages and public projects.
+- The system always draws the npm, Composer, PyPI, Go and Projects orbits, and Cargo and Other
+  when an entry is in them (ADR-0032). An orbit with no planet is a thinner, fainter solid line
+  with its name, and pointing at it says "No planets yet". With no public entries at all, every
+  orbit is empty, the telemetry line reads `0 planets · 5 orbits waiting · 0 moons`, and the
+  cards are replaced by "No planets in the Verse yet. Packages and projects appear here once
+  they are documented."
+- A kind with no entries has no header link.
+- The private projects are three invented names in `src/components/home/private-projects.ts`
+  until the private-documentation ADR; their links return the 404.
+- If Algolia is unreachable, the dialog shows its error; the cards still list everything.
+- More than 40 entries: further grouping, decided in its own ADR.
+- Every moon shows each entry with two or more lines. Two sides shows the first entry that has
+  both tracks.
+
+## Out of scope for now
+
+- Sign-in, and hiding the private group from signed-out readers: the sign-in ADR. Listing
+  private projects: the private-documentation ADR.
+- A changelog or "recent releases" feed: no release data source is decided.
+- Open Graph image for the home page: the existing OG route covers documentation pages only.
+
+## Open questions
+
+- None open in this document; see ADR-0013, ADR-0014, ADR-0016 and ADR-0017.

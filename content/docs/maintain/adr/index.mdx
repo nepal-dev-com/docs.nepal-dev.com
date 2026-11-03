@@ -1,0 +1,66 @@
+---
+title: "Architecture Decision Records"
+description: "Every decision about how this site is built and run, with its status, from the first ADR to the latest."
+---
+
+Every feature and functional change starts here
+([ADR-0001](./ADR-0001-adr-driven-development-workflow.mdx)). Template:
+[`../_templates/adr.mdx`](../_templates/adr.mdx).
+
+**Next free number: 0038**
+
+## Conventions
+
+- File name: `ADR-NNNN-kebab-title.mdx`, numbered from the *next free number* above. Add the
+  index row and bump the number **in the same change** that creates the file, so ADRs in flight
+  cannot collide.
+- Title: a short imperative statement of the decision ("Keep private project docs out of the
+  public build").
+- Status: `Proposed` → `Approved` (by the owner, with name and date) → optionally
+  `Superseded by ADR-NNNN`. A rejected proposal is marked `Rejected` and kept.
+- An approved ADR's **Decision** is never edited. Supersede it with a new ADR and cross-link
+  both.
+- The **Security considerations** section is mandatory
+  ([ADR-0005](./ADR-0005-security-as-a-standing-practice.mdx)).
+
+## Index
+
+| ADR | Title | Status | Date |
+|---|---|---|---|
+| [0001](./ADR-0001-adr-driven-development-workflow.mdx) | Every change starts with an approved ADR | Approved | 2026-10-31 |
+| [0002](./ADR-0002-living-design-documentation.mdx) | Design documents are living snapshots, published as this site's Maintain track | Approved | 2026-10-31 |
+| [0003](./ADR-0003-code-comment-policy.mdx) | Comments explain why; every branch takes a block | Approved | 2026-10-31 |
+| [0004](./ADR-0004-ask-never-guess.mdx) | Resolve ambiguity by asking, never by guessing | Approved | 2026-10-31 |
+| [0005](./ADR-0005-security-as-a-standing-practice.mdx) | Security and privacy are a standing practice | Approved | 2026-10-31 |
+| [0006](./ADR-0006-agent-skills-are-advisory.mdx) | Agent skills are advisory; this repository's documentation is binding | Approved | 2026-10-31 |
+| [0007](./ADR-0007-tests-are-part-of-every-change.mdx) | Tests are part of every change | Approved | 2026-10-31 |
+| [0008](./ADR-0008-a-ui-change-ships-an-app-flow.mdx) | A UI change ships an app flow, drawn in Mermaid | Approved | 2026-10-31 |
+| [0009](./ADR-0009-trusted-agent-skills-are-vendored.mdx) | Trusted agent skills are vendored in `.claude/agent-skills/`, routed by an index | Approved | 2026-10-31 |
+| [0010](./ADR-0010-projects-document-themselves-through-a-submodule.mdx) | Projects document themselves here through a git submodule, one folder each | Approved | 2026-10-31 |
+| [0011](./ADR-0011-archify-diagrams-are-embedded-from-sandboxed-html.mdx) | Archify diagrams are embedded in pages from sandboxed HTML files | Approved | 2026-10-31 |
+| [0012](./ADR-0012-every-page-is-mdx.mdx) | Every page in `content/docs` is MDX | Approved | 2026-10-31 |
+| [0013](./ADR-0013-packages-and-projects-share-one-catalogue-shape.mdx) | Packages and projects share one catalogue shape: two tracks, version lines and demos | Approved | 2026-10-31 |
+| [0014](./ADR-0014-home-page-is-a-search-first-release-map.mdx) | The home page is a search-first map of every release | Approved | 2026-10-31 |
+| [0015](./ADR-0015-every-entry-lives-at-the-root-in-one-shape-and-one-look.mdx) | Every package and project lives at the root, in one shape and one look | Approved | 2026-10-31 |
+| [0016](./ADR-0016-home-search-is-the-fumadocs-dialog-and-private-projects-render-server-side.mdx) | Home search is the Fumadocs dialog, and private projects render server-side | Approved | 2026-11-01 |
+| [0017](./ADR-0017-the-whole-site-is-one-solar-system.mdx) | The whole site is one solar system | Approved | 2026-11-01 |
+| [0018](./ADR-0018-docs-pages-get-orbit-stations-a-trajectory-and-the-full-horizon.mdx) | Docs pages get orbit stations, a trajectory and the full horizon | Approved | 2026-11-01 |
+| [0019](./ADR-0019-adr-folders-show-as-a-constellation-in-the-sidebar.mdx) | ADR folders show as a constellation in the sidebar | Approved | 2026-11-01 |
+| [0020](./ADR-0020-people-in-adrs-are-github-usernames-shown-as-profile-chips.mdx) | People in ADRs are GitHub usernames, shown as profile chips | Approved | 2026-11-01 |
+| [0021](./ADR-0021-tests-run-with-bun-test.mdx) | Tests run with Bun's built-in test runner | Approved | 2026-11-01 |
+| [0022](./ADR-0022-diagrams-show-archify-on-the-page-and-mermaid-in-markdown.mdx) | Diagrams show their Archify view on the page and their Mermaid in Markdown | Approved | 2026-11-01 |
+| [0023](./ADR-0023-sidebar-stations-open-one-at-a-time.mdx) | Sidebar stations open one at a time | Approved | 2026-11-01 |
+| [0024](./ADR-0024-a-project-can-span-several-repositories.mdx) | A project can span several repositories | Approved | 2026-11-01 |
+| [0025](./ADR-0025-the-overview-has-the-same-sidebar-as-its-tracks.mdx) | The overview has the same sidebar as its tracks | Approved | 2026-11-01 |
+| [0026](./ADR-0026-the-moon-picker-on-an-overview-opens-a-lines-first-page.mdx) | The moon picker on an overview opens a line's first page | Approved | 2026-11-01 |
+| [0027](./ADR-0027-the-sidebar-is-a-scale-ladder-with-one-lifted-orbit.mdx) | The sidebar is a scale ladder with one lifted orbit | Approved | 2026-11-01 |
+| [0028](./ADR-0028-the-site-is-named-puncoz-verse.mdx) | The site is named Puncoz Verse | Approved | 2026-11-01 |
+| [0029](./ADR-0029-the-verse-is-a-still-sky-you-zoom-through.mdx) | The Verse is a still sky you zoom through | Approved | 2026-11-01 |
+| [0030](./ADR-0030-the-horizon-rises-over-the-page-and-its-sky-comes-alive.mdx) | The horizon rises over the page, and its sky comes alive | Approved | 2026-11-01 |
+| [0031](./ADR-0031-the-sidebar-sets-without-dimming.mdx) | The sidebar sets without dimming | Approved | 2026-11-01 |
+| [0032](./ADR-0032-the-heros-system-comes-alive.mdx) | The hero's system comes alive | Approved | 2026-11-01 |
+| [0033](./ADR-0033-the-footer-says-you-have-reached-the-horizon.mdx) | The footer says you've reached the horizon | Approved | 2026-11-03 |
+| [0034](./ADR-0034-the-proxy-answers-unknown-paths-with-a-true-404.mdx) | The proxy answers unknown paths with a true 404 | Approved | 2026-11-03 |
+| [0035](./ADR-0035-every-page-is-ready-for-search-and-sharing.mdx) | Every page is ready for search and sharing | Approved | 2026-11-03 |
+| [0036](./ADR-0036-the-site-is-nepal-dev-verse.mdx) | The site is Nepal Dev Verse, part of nepal-dev.com | Approved | 2026-11-03 |
+| [0037](./ADR-0037-the-horizon-is-the-himalaya.mdx) | The Horizon is the Himalaya | Approved | 2026-11-03 |

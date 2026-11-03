@@ -1,0 +1,122 @@
+{
+  "schema_version": 1,
+  "diagram_type": "architecture",
+  "meta": {
+    "title": "Screen 4 — Share image",
+    "subtitle": "Wireframe at phone width, drawn from its Mermaid version · community identity",
+    "output": "community-identity-screen-4.html",
+    "animation": "trace",
+    "quality_profile": "showcase",
+    "legend": {
+      "entries": {
+        "backend": {
+          "label": "Control or link"
+        },
+        "external": {
+          "label": "Content"
+        },
+        "frontend": {
+          "label": "Site chrome"
+        }
+      }
+    }
+  },
+  "components": [
+    {
+      "id": "brand",
+      "type": "frontend",
+      "label": "▲ Summit-and-flag mark",
+      "pos": [
+        40,
+        60
+      ],
+      "size": [
+        436,
+        70
+      ],
+      "sublabel": "Nepal Dev Verse"
+    },
+    {
+      "id": "kicker",
+      "type": "backend",
+      "label": "lodestar",
+      "pos": [
+        40,
+        142
+      ],
+      "size": [
+        212,
+        70
+      ],
+      "sublabel": "Use · v3.2"
+    },
+    {
+      "id": "sky",
+      "type": "external",
+      "label": "The star and its orbit,",
+      "pos": [
+        264,
+        142
+      ],
+      "size": [
+        212,
+        70
+      ],
+      "sublabel": "on the right"
+    },
+    {
+      "id": "title",
+      "type": "frontend",
+      "label": "Install",
+      "pos": [
+        40,
+        224
+      ],
+      "size": [
+        212,
+        58
+      ]
+    },
+    {
+      "id": "sky2",
+      "type": "external",
+      "label": "Clear of the text",
+      "pos": [
+        264,
+        224
+      ],
+      "size": [
+        212,
+        58
+      ]
+    },
+    {
+      "id": "domain",
+      "type": "external",
+      "label": "docs.nepal-dev.com",
+      "pos": [
+        40,
+        294
+      ],
+      "size": [
+        436,
+        58
+      ]
+    }
+  ],
+  "boundaries": [
+    {
+      "kind": "region",
+      "label": "Phone screen · at its fixed 1200 by 630",
+      "wraps": [
+        "brand",
+        "kicker",
+        "sky",
+        "title",
+        "sky2",
+        "domain"
+      ],
+      "pad": 22
+    }
+  ]
+}

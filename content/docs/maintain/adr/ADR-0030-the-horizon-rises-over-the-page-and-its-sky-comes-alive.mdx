@@ -1,0 +1,194 @@
+---
+title: "ADR-0030 — The horizon rises over the page, and its sky comes alive"
+description: "On docs pages the Horizon footer rises over the sidebar and trajectory, under a living dusk sky whose loops run only while it is on screen."
+---
+
+- **Status:** Approved
+- **Date:** 2026-11-01
+- **Deciders:** [@puncoz](https://github.com/puncoz)
+- **Approved by:** [@puncoz](https://github.com/puncoz)
+- **Approved on:** 2026-11-01
+- **Supersedes:** [ADR-0018](./ADR-0018-docs-pages-get-orbit-stations-a-trajectory-and-the-full-horizon.mdx)
+  decision 4 (in part: the footer sitting "below the sidebar and the page", and its scene);
+  [ADR-0017](./ADR-0017-the-whole-site-is-one-solar-system.mdx) decision 8 (in part: what the
+  scene draws); [ADR-0015](./ADR-0015-every-entry-lives-at-the-root-in-one-shape-and-one-look.mdx)
+  decision 7 (in part: "no entrance motion on docs pages", for the footer only)
+- **Superseded by:** [ADR-0031](./ADR-0031-the-sidebar-sets-without-dimming.mdx) (in part: decision 1's "dim to 55%"); [ADR-0037](./ADR-0037-the-horizon-is-the-himalaya.mdx) (in part: decision 2's aurora and rim, and the places of the clouds, the star and the observatory; decision 4's light scene)
+- **Design documents:** [`../app-flow/living-horizon.mdx`](../app-flow/living-horizon.mdx),
+  [`../prd/docs-sidebars.mdx`](../prd/docs-sidebars.mdx),
+  [`../architecture/system.mdx`](../architecture/system.mdx), `DESIGN.md`
+
+## Context
+
+- Every page ends with the full Horizon footer (ADR-0018 decision 4): the closing line, a scene
+  of the star rising behind a planet's curved edge, then the planet row, the link row and the
+  credit. `src/components/horizon-footer.tsx` draws the scene as one still SVG: 60 seeded stars,
+  the star's glow and disc, the planet's ground and its teal atmosphere rim.
+- **On docs pages the sidebar runs over it.** Fumadocs' notebook layout puts the sidebar in a
+  sticky wrapper (`z-index: 20`) as tall as the window, and the trajectory ("On this page") in a
+  sticky column. The footer is a full-width grid row with no stacking of its own, so at the end
+  of a page the sidebar's cards and the trajectory sit on top of the closing line and the scene.
+  Checked in Chrome at 1632px on `/docs/maintain/prd/diagrams`.
+- The owner finds the scene not lively enough, and asked for clouds and other sky objects, with
+  animation where it helps, without making it worse.
+- What stands in the way:
+  - DESIGN.md's *One Orbit* rule: the turning system is the site's only continuous motion. Its one
+    exception is a diagram's Archify trace (ADR-0022).
+  - ADR-0015 decision 7: no entrance motion on docs pages.
+  - DESIGN.md's *Mark Means* rule: a moon means a version line and a ring means a project. So
+    the scene gets no moon and no ringed planet.
+  - ADR-0029 decision 3: the page's still sky never moves. That sky lies behind the page; the
+    scene is the footer's own sky and is not part of it.
+- The owner chose, with options: the horizon **rises over** the page; a **gentle loop** of
+  motion; and four objects, **lit clouds, a shooting star, an aurora on the rim and an
+  observatory on the ridge**.
+
+## Decision
+
+1. **The horizon rises over the page.** On docs pages the footer stacks above the sidebar and
+   the trajectory, under the site header (`z-index: 30`, the header is 40), on an opaque sky.
+   - Its top edge is a **dusk edge**: 96px fading from transparent to the ground colour, so
+     the sidebar and the trajectory sink into dusk where the horizon meets them, rather than
+     being cut off by a line.
+   - As the footer comes into view, the sidebar and the trajectory **set**: they drop up to 24px
+     and dim to 55%, in step with the scroll. Scrolling back up raises them again.
+   - What lies above the horizon stays where it was and works as before. What lies below it is
+     hidden until the reader scrolls up.
+   - On phones the sidebar is a drawer and the trajectory a bar under the header, so nothing
+     overlaps. The home page and the 404 have neither.
+2. **The scene is a dusk sky with five layers**, back to front, the same on every page:
+   - **Stars:** the 60 seeded stars stay. Fourteen of them twinkle, between 25% and full
+     opacity over 3 to 7 seconds each, with staggered starts.
+   - **Aurora:** two soft teal ribbons rising off the atmosphere rim, drawn as blurred SVG
+     paths. They breathe over about 9 seconds (opacity 0.25 to 0.55, a slight vertical
+     stretch), and the rim brightens with them.
+   - **Shooting stars:** a thin streak with a fading tail crosses the upper sky, down and to the
+     left, visible for about a second. There are two, on 14- and 23-second cycles, so they never
+     fall into a beat.
+   - **The star** rises with the scroll: from 40px below the curve, as the footer starts to
+     enter, to its place when the footer is half in view, its glow growing with it.
+   - **Lit clouds:** three thin bands at different heights, each a seamless strip that loops
+     sideways over 90, 140 and 200 seconds. Their undersides catch the star's colour and their
+     tops fade into the ground; the lowest band passes in front of the star's glow, never its
+     disc.
+   - **The observatory:** a small silhouette on the ridge, left of the star: a domed building
+     standing on the planet's curve, its slit open toward the star, a telescope line in it and
+     one warm window. It does not move.
+3. **The rules for its motion.** The scene is the *One Orbit* rule's second named exception,
+   beside Archify:
+   - Only transform and opacity animate, in CSS, with no library (ADR-0014 decision 7). The blur
+     is drawn once and never animated.
+   - Loops run only while the footer is on screen. A small client component,
+     `HorizonAwake`, sets `data-awake` on the footer through an `IntersectionObserver`; without it,
+     every loop is paused. Browsers already pause them in hidden tabs.
+   - The rise and the setting are scroll-driven (`animation-timeline`, named
+     `--horizon` on the footer and scoped to the page). Where a browser does not support that,
+     the star stands risen, and the sidebar and the trajectory are simply covered by the dusk
+     edge.
+   - Under reduced motion nothing loops, rises or sets. The star stands risen, the clouds stay
+     where they are drawn, and the sidebar is covered as in the fallback.
+   - Nothing moves behind text: the closing line and the surface rows stand on the opaque
+     ground, above the scene.
+4. **Light theme.** The clouds turn pale with warm undersides, the aurora drops to half its
+   opacity, the stars use Steel Faint at lower opacity, and the ground is the light ground.
+5. **Unchanged:** the closing line, the planet row, the link row and its labels ("Back to top" on
+   docs pages, "Back to orbit" elsewhere), the credit, the page's still sky (ADR-0029), every
+   URL and every Markdown surface. The scene stays `aria-hidden` inline SVG in the existing
+   tokens (ADR-0017 decision 13). No dependency is added.
+
+## Options considered
+
+| Question | Option | Pros | Cons | Verdict |
+|---|---|---|---|---|
+| Overlap | A — the horizon rises over the page | Keeps the full-width scene; the end of the page becomes a moment; reuses the planet's own edge | The bottom of the sidebar is hidden while the footer is in view | Chosen (owner) |
+| Overlap | B — the sidebar lands on the horizon | Conventional; no new motion | The sidebar and trajectory scroll away abruptly; nothing of the theme | Rejected |
+| Overlap | C — the horizon fits the reading column | No overlap at all | A narrow, cramped scene; two footer widths to keep | Rejected |
+| Motion | A — a moment on arrival, then a slow drift | Calm; one small exception | Less lively than asked | Rejected |
+| Motion | B — a moment on arrival only | Keeps the *One Orbit* rule | The scene goes still again at once | Rejected |
+| Motion | C — a gentle loop | The liveliest; reads as a real sky | Motion at the end of every page; a second exception to *One Orbit* | Chosen (owner) |
+| Objects | Lit clouds, a shooting star, an aurora on the rim, an observatory on the ridge | Depth, life and a story beat, with no mark that carries meaning | More drawing and CSS in the footer | Chosen (owner), all four |
+| Objects | A moon, a ringed planet | Familiar sky objects | Break the *Mark Means* rule: moons are version lines, rings are projects | Rejected |
+
+## Consequences
+
+**Positive**
+
+- The sidebar and the trajectory no longer sit on the closing line and the scene; they set
+  below the horizon, which belongs to the site's own world.
+- The end of every page has a living sky that rewards reaching it.
+- The motion stays cheap and stops when nobody is looking: CSS transforms and opacity, paused off
+  screen and in hidden tabs, and gone under reduced motion.
+
+**Negative / accepted trade-offs**
+
+- While the footer is in view, the bottom of the sidebar is hidden; scrolling up brings it back.
+  On a page shorter than the window the footer is in view on arrival, and the sidebar stands
+  partly below the horizon.
+- The scene moves at the end of every page, including docs pages, which ADR-0015 kept still.
+- Firefox, without scroll-driven animations by default, shows the risen star and no setting.
+- The footer's SVG and CSS grow; they ship with every page.
+
+## Content invariants
+
+None is touched. The scene is decoration in the footer: per-page Markdown, `llms.txt` and
+`llms-full.txt` are unchanged (§6.5), and no content is added.
+
+## Security considerations
+
+None. This change touches no data, no endpoint and no secret. The scene is inline SVG and
+CSS with no external resource. The new client component reads only whether the footer is on
+screen.
+
+## Implementation notes
+
+- [x] `src/lib/horizon-sky.ts`:
+  - the scene's stars, from `starField` in `src/lib/sky.ts` (seeded, as now), with the
+    twinkling subset and each one's duration and delay;
+  - the cloud bands' shapes;
+  - `ridgeY(x)`, the height of the planet's curve at a point, so the observatory stands on it.
+- [x] `src/components/horizon-footer.tsx`: the layers in decision 2, in order, inside the
+  `aria-hidden` scene. Every looping layer is its own element, so its transform or opacity is
+  composited and the blurs are drawn once. The cloud bands are sized in container units to the
+  viewBox the other layers show, so sliding a band by half its width moves it exactly one period
+  at any width.
+- [x] `src/components/horizon-awake.tsx`: the client component in decision 3. It sets
+  `data-awake` while the footer is on screen and removes it when it leaves.
+- [x] `src/app/site.css`:
+  - the footer's stacking, opaque ground and dusk edge on docs pages;
+  - the layers, their keyframes and the light theme;
+  - the scroll-driven rise and setting inside `@supports (animation-timeline: view())`;
+  - `timeline-scope: --horizon` on the root;
+  - paused loops without `data-awake`;
+  - the reduced-motion rules.
+- [x] Tests (ADR-0007, ADR-0021):
+  - the stars are the same on every build and the twinkling count is fourteen;
+  - `ridgeY` lies on the curve at the centre and at the observatory's place;
+  - the scene renders every layer in order, stays `aria-hidden` and has nothing to focus;
+  - the clouds loop seamlessly (each puff inside its period) and never cross the star's disc.
+  `HorizonAwake` is a client component, not unit-tested until a DOM is chosen. The surface rows
+  are unchanged and not rendered in a test, because their Search button reads Fumadocs' search
+  context. Both were checked in Chrome instead.
+- [x] Checked in Chrome on localhost against `bunx next build`:
+  - a docs page at about 1600px: the horizon over the sidebar and the trajectory, the setting
+    and the rise both ways with the scroll;
+  - the loops running only while the footer is on screen;
+  - the home page, the light theme, and phone width;
+  - the 404 ends with the same Horizon, but it still renders inside the docs layout at unknown
+    paths, and that layout's header covers it (an existing bug, unchanged here);
+  - reduced motion in the CSS, not by emulating the setting.
+- [x] `bun run test`, `bun run types:check` and `bunx next build` pass; `bun run lint` is reported
+  while it stays blocked.
+
+## Docs to update on implementation
+
+- [x] [`../app-flow/living-horizon.mdx`](../app-flow/living-horizon.mdx): Current; the
+  [docs sidebars](../app-flow/docs-sidebars.mdx) and [home page](../app-flow/home-page.mdx) app
+  flows where they describe the footer.
+- [x] [`../prd/docs-sidebars.mdx`](../prd/docs-sidebars.mdx): the horizon's requirements.
+- [x] `DESIGN.md` and `.impeccable/design.json`:
+  - the Horizon footer component;
+  - Motion;
+  - the *One Orbit* rule's second exception.
+- [x] `AGENTS.md` §1, §5 and §10, `README.md` if its overview names the footer, and
+  [`../architecture/system.mdx`](../architecture/system.mdx).
+- [x] [`./index.mdx`](./index.mdx): index row and status.

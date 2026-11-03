@@ -1,0 +1,44 @@
+{
+  "schema_version": 1,
+  "diagram_type": "architecture",
+  "meta": {
+    "title": "Screen 4 — Version notice",
+    "subtitle": "Wireframe at phone width, drawn from its Mermaid version · solar system",
+    "output": "solar-system-screen-4.html",
+    "animation": "trace",
+    "quality_profile": "showcase",
+    "legend": {
+      "entries": {
+        "cloud": {
+          "label": "Notice or state"
+        }
+      }
+    }
+  },
+  "components": [
+    {
+      "id": "notice",
+      "type": "cloud",
+      "label": "dashed new moon",
+      "pos": [
+        40,
+        60
+      ],
+      "size": [
+        436,
+        70
+      ],
+      "sublabel": "In development. This page documents lodestar 0.2.0-dev.3, work…"
+    }
+  ],
+  "boundaries": [
+    {
+      "kind": "region",
+      "label": "Phone screen · on dev and older lines",
+      "wraps": [
+        "notice"
+      ],
+      "pad": 22
+    }
+  ]
+}

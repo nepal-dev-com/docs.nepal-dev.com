@@ -1,0 +1,46 @@
+---
+title: "PRD — search and sharing"
+description: "What people searching for or sharing a page should get: the right page, plain words and an image that looks like this site."
+---
+
+- **Status:** Current
+- **Last updated:** 2026-11-03
+- **Related ADRs:** [ADR-0035](../adr/ADR-0035-every-page-is-ready-for-search-and-sharing.mdx)
+
+> Snapshot of the system as it stands today. Edit in place; never record what changed.
+
+## Problem
+
+A page's life starts outside the site: in a search result, in a shared link or in a browser tab. Today
+those show a bare title, usually no description, a generic image and a local address.
+
+## Who it is for
+
+- **A developer searching** for a package's API or a guide.
+- **A maintainer sharing** a link to a page or a decision.
+- **Any consuming project**, which gets all of this from its folder.
+
+## User stories
+
+| ID | Story | Acceptance |
+|---|---|---|
+| US-1 | As a **developer searching**, I want **the current docs to come first**, so that **I don't follow outdated instructions**. | Given a page in an older line that also exists in latest, when a search engine reads it, then its canonical link is the page in latest. |
+| US-2 | As a **developer searching**, I want **a result that says what the page is for**, so that **I can choose without opening it**. | Given any page, when the site is built, then it has a written description, or the build fails naming it. |
+| US-3 | As a **developer on an old version**, I want **a page only that version has to stay findable**, so that **it doesn't vanish**. | Given a page in an older line with no counterpart in latest, then it is indexed, in the sitemap and its own canonical. |
+| US-4 | As a **maintainer sharing a link**, I want **a card with the page's title, its package and version, and the site's look**, so that **people know what they're opening**. | Given any page's link, when a sharing app reads it, then it gets that page's own image, title and description, with an absolute address. |
+| US-5 | As **someone with many tabs**, I want **the tab to name the page and its package**, so that **I can tell them apart**. | Given a docs page, then its title is page, entry and site, with the line when it isn't latest. |
+| US-6 | As **the owner**, I want **a preview never to be indexed**, so that **no draft address reaches search**. | Given no `SITE_URL`, then every page is `noindex` and `robots.txt` disallows everything; and `bun run build` refuses to publish. |
+| US-7 | As **a consuming project**, I want **all of this without configuration**, so that **I only write pages**. | Given a page with a title and a description in the right folder, then everything else follows from where it sits. |
+
+## Rules and edge cases
+
+- **Unreleased work:** `dev` pages are out of search. An unreleased package is found through its
+  overview and Maintain until its first release.
+- **Templates** in `_templates/` are out of search and readable by link.
+- **Not a privacy tool:** `noindex` keeps a page out of results, not out of reach. Nothing private goes
+  in `content/` (`AGENTS.md` §6.1).
+- **No promise of ranking:** search engines decide what they show. The site gives them accurate signals.
+
+## Out of scope
+
+Analytics, RSS, translated versions and any per-page override of indexing.

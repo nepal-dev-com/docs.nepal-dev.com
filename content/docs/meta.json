@@ -1,0 +1,11 @@
+{
+  "title": "Nepal Dev Verse Docs",
+  "description": "This documentation site: how it is organised, built and decided.",
+  "catalog": {
+    "kind": "project",
+    "visibility": "public",
+    "repository": "https://github.com/puncoz-official/docs",
+    "featured": false
+  },
+  "pages": ["index", "maintain"]
+}

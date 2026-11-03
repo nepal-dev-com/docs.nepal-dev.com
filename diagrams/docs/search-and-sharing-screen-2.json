@@ -1,0 +1,92 @@
+{
+  "schema_version": 1,
+  "diagram_type": "architecture",
+  "meta": {
+    "title": "Screen 2 — Share card, at phone width",
+    "subtitle": "Wireframe at phone width, drawn from its Mermaid version · search and sharing",
+    "output": "search-and-sharing-screen-2.html",
+    "animation": "trace",
+    "quality_profile": "showcase",
+    "legend": {
+      "entries": {
+        "backend": {
+          "label": "Control or link"
+        },
+        "external": {
+          "label": "Content"
+        },
+        "frontend": {
+          "label": "Site chrome"
+        }
+      }
+    }
+  },
+  "components": [
+    {
+      "id": "image",
+      "type": "external",
+      "label": "The page's share image, screen 4",
+      "pos": [
+        40,
+        60
+      ],
+      "size": [
+        436,
+        58
+      ]
+    },
+    {
+      "id": "title",
+      "type": "frontend",
+      "label": "Install — lodestar — Nepal Dev Verse",
+      "pos": [
+        40,
+        130
+      ],
+      "size": [
+        436,
+        58
+      ]
+    },
+    {
+      "id": "desc",
+      "type": "backend",
+      "label": "Add lodestar to a React project and open the",
+      "pos": [
+        40,
+        200
+      ],
+      "size": [
+        436,
+        70
+      ],
+      "sublabel": "command palette with one hook."
+    },
+    {
+      "id": "domain",
+      "type": "external",
+      "label": "docs.nepal-dev.com",
+      "pos": [
+        40,
+        282
+      ],
+      "size": [
+        436,
+        58
+      ]
+    }
+  ],
+  "boundaries": [
+    {
+      "kind": "region",
+      "label": "Phone screen · Share card, at phone width",
+      "wraps": [
+        "image",
+        "title",
+        "desc",
+        "domain"
+      ],
+      "pad": 22
+    }
+  ]
+}

@@ -1,0 +1,100 @@
+---
+title: "DFD — System (Level 0)"
+description: "The whole site as one data flow, from authoring through the build and publishing to reading, with its trust boundaries."
+---
+
+- **Status:** Current
+- **Last updated:** 2026-11-01
+- **Related ADRs:** ADR-0005, ADR-0010, ADR-0020, ADR-0013, ADR-0014, ADR-0016
+
+> Snapshot of the system as it stands today. Edit in place; never record what changed.
+> Conventions: `content/docs/maintain/dfd/index.mdx`. Levels balance — a child's flows match its parent's.
+
+## Scope
+
+The whole site: authoring, build, publishing and reading. No parent diagram.
+
+## Diagram
+
+<Diagram src="/diagrams/docs/data-flow.html" title="Data flow">
+
+```mermaid
+flowchart LR
+  Owner["Owner<br/>(author)"]
+  Consumer["Consuming repositories<br/>(submodule)"]
+  Reader["Reader"]
+  Bot["LLM tools / crawlers"]
+  ALG["Algolia"]
+  GH["GitHub<br/>(avatars)"]
+  GF["Google Fonts"]
+
+  subgraph Trust["Trust boundary — repository and build"]
+    D1[("D1 · content/ and diagrams/")]
+    D2[("D2 · .env.local")]
+    P1(("1.0<br/>Build"))
+    P2(("2.0<br/>Sync search index"))
+  end
+
+  subgraph Public["Public — deployed site"]
+    P3(("3.0<br/>Serve pages and<br/>machine-readable routes"))
+  end
+
+  Owner -->|"MDX pages"| D1
+  Consumer -->|"MDX pages in content/&lt;slug&gt;/,<br/>reviewed and committed by the owner"| D1
+  D1 -->|"pages"| P1
+  P1 -->|"static pages, Markdown, llms.txt, share images,<br/>robots.txt, sitemap.xml, static.json"| P3
+  P1 -->|"font request, no content"| GF
+  P1 -->|"static.json records"| P2
+  D2 -->|"ALGOLIA_WRITE_KEY"| P2
+  P2 -->|"every record, replaces index"| ALG
+  P3 -->|"pages"| Reader
+  P3 -->|"Markdown, llms.txt, llms-full.txt,<br/>robots.txt, sitemap.xml"| Bot
+  Reader -->|"search query + search-only key<br/>(the search dialog, on every page)"| ALG
+  ALG -->|"matching records"| Reader
+  Reader -->|"avatar request, no referrer<br/>(profile chips)"| GH
+  GH -->|"avatar image"| Reader
+```
+
+</Diagram>
+
+## External entities
+
+| Entity | Role |
+|---|---|
+| Owner | Writes the content; reviews and commits every change; runs the build |
+| Consuming repositories | The owner's project and package repositories, which include this one as a git submodule and write their own folder, `content/<slug>/` (ADR-0010) |
+| Reader | Reads pages; searches from the browser, in the search dialog or the home page's hero field |
+| LLM tools / crawlers | Read the pages, the Markdown routes, `llms.txt` / `llms-full.txt`, `robots.txt` and `sitemap.xml` |
+| Google Fonts | Serves font files during the build, for `next/font` and the share images (ADR-0035) |
+| Algolia | Hosts the search index `document` |
+| GitHub | Serves the avatar in each profile chip, `github.com/<user>.png`, redirecting to `avatars.githubusercontent.com` (ADR-0020) |
+
+## Processes
+
+| # | Process | Input → Output |
+|---|---|---|
+| 1.0 | Build (`next build`) | `content/` → static pages and routes |
+| 2.0 | Sync search index (`scripts/sync-content.ts`) | Built `static.json` → Algolia index |
+| 3.0 | Serve | Built output → readers and tools |
+
+## Data stores
+
+| ID | Store | Contents | Classification |
+|---|---|---|---|
+| D1 | `content/` | Published documentation, one folder per package or project, including this site's own design documents (`docs/maintain/`) | Public — see [`../security/data-classification.mdx`](../security/data-classification.mdx) |
+| D2 | `.env.local` (gitignored) | Algolia app ID, search-only key, write key | The write key is Restricted; the others are Public |
+
+## Trust boundary crossings
+
+| Flow | Direction | Authorisation | Private content? |
+|---|---|---|---|
+| Pages from a consuming repository → `content/` | Submodule → repository | The owner's review and commit; agents there never commit (`PROJECT_AGENTS.md` §10) | Could carry a private project's text if written into its folder; the owner's review is the control, and `PROJECT_AGENTS.md` §2 forbids it |
+| Records → Algolia | Build → Algolia | `ALGOLIA_WRITE_KEY` | Would carry any page in `content/`. Each record also carries its scope `tag` and, for catalogue pages, `package`, `kind`, `ecosystem`, `track`, `line`, `channel` (ADR-0013) — public metadata about public pages |
+| Search query → Algolia | Browser → Algolia | Search-only key, public by design | Can read every record in the index. The query is the reader's text only; the dialog adds no filter |
+| Pages and machine-readable routes → readers and tools | Site → public | None | Would carry any page in `content/` |
+| Font request → Google Fonts | Build → Google Fonts | None | No. The request names a font family and weight, and no page's words |
+| Avatar → reader | Browser → GitHub | None | No. The request carries the reader's IP address and user agent and, with `referrerpolicy="no-referrer"`, no page address. The username in it is already on the page (Public) |
+| "View on GitHub" link | Site → GitHub | GitHub's own access rules | Points at the page's source in the repository named in `gitConfig` |
+
+Every crossing carries everything in `content/`. That is why no private project content
+may go there until its ADR is approved (`AGENTS.md` §6.1).

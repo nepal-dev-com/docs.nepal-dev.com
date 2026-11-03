@@ -1,0 +1,261 @@
+{
+  "schema_version": 1,
+  "diagram_type": "architecture",
+  "meta": {
+    "title": "Screen 1 — Docs page with a diagram",
+    "subtitle": "Wireframe at phone width, drawn from its Mermaid version · diagrams",
+    "output": "diagrams-screen-1.html",
+    "animation": "trace",
+    "quality_profile": "showcase",
+    "legend": {
+      "entries": {
+        "backend": {
+          "label": "Control or link"
+        },
+        "external": {
+          "label": "Content"
+        },
+        "frontend": {
+          "label": "Site chrome"
+        }
+      }
+    }
+  },
+  "components": [
+    {
+      "id": "menu",
+      "type": "frontend",
+      "label": "☰",
+      "pos": [
+        40,
+        60
+      ],
+      "size": [
+        100,
+        58
+      ]
+    },
+    {
+      "id": "title",
+      "type": "frontend",
+      "label": "Site name",
+      "pos": [
+        152,
+        60
+      ],
+      "size": [
+        212,
+        58
+      ]
+    },
+    {
+      "id": "search",
+      "type": "frontend",
+      "label": "⌕",
+      "pos": [
+        376,
+        60
+      ],
+      "size": [
+        100,
+        58
+      ]
+    },
+    {
+      "id": "h1",
+      "type": "external",
+      "label": "Internals",
+      "pos": [
+        40,
+        130
+      ],
+      "size": [
+        436,
+        58
+      ]
+    },
+    {
+      "id": "para",
+      "type": "external",
+      "label": "How a request moves through the CLI.",
+      "pos": [
+        40,
+        200
+      ],
+      "size": [
+        436,
+        58
+      ]
+    },
+    {
+      "id": "live",
+      "type": "backend",
+      "label": "● Live",
+      "pos": [
+        54,
+        300
+      ],
+      "size": [
+        93,
+        58
+      ]
+    },
+    {
+      "id": "present",
+      "type": "backend",
+      "label": "Present",
+      "pos": [
+        159,
+        300
+      ],
+      "size": [
+        93,
+        58
+      ]
+    },
+    {
+      "id": "export",
+      "type": "backend",
+      "label": "Export ▾",
+      "pos": [
+        264,
+        300
+      ],
+      "size": [
+        198,
+        58
+      ]
+    },
+    {
+      "id": "canvas",
+      "type": "backend",
+      "label": "Parser → Router → Handler (vibrant boxes,",
+      "pos": [
+        54,
+        370
+      ],
+      "size": [
+        408,
+        70
+      ],
+      "sublabel": "moving arrows)"
+    },
+    {
+      "id": "route",
+      "type": "backend",
+      "label": "Route",
+      "pos": [
+        54,
+        452
+      ],
+      "size": [
+        93,
+        58
+      ]
+    },
+    {
+      "id": "map",
+      "type": "backend",
+      "label": "Map",
+      "pos": [
+        159,
+        452
+      ],
+      "size": [
+        93,
+        58
+      ]
+    },
+    {
+      "id": "lens",
+      "type": "backend",
+      "label": "Lens",
+      "pos": [
+        264,
+        452
+      ],
+      "size": [
+        93,
+        58
+      ]
+    },
+    {
+      "id": "zoom",
+      "type": "backend",
+      "label": "＋ －",
+      "pos": [
+        369,
+        452
+      ],
+      "size": [
+        93,
+        58
+      ]
+    },
+    {
+      "id": "caption",
+      "type": "external",
+      "label": "Request flow",
+      "pos": [
+        40,
+        536
+      ],
+      "size": [
+        212,
+        58
+      ]
+    },
+    {
+      "id": "full",
+      "type": "backend",
+      "label": "Open full screen ↗",
+      "pos": [
+        264,
+        536
+      ],
+      "size": [
+        212,
+        58
+      ]
+    }
+  ],
+  "boundaries": [
+    {
+      "kind": "region",
+      "label": "Phone screen · /<project-slug>/…",
+      "wraps": [
+        "menu",
+        "title",
+        "search",
+        "h1",
+        "para",
+        "live",
+        "present",
+        "export",
+        "canvas",
+        "route",
+        "map",
+        "lens",
+        "zoom",
+        "caption",
+        "full"
+      ],
+      "pad": 22
+    },
+    {
+      "kind": "region",
+      "label": "frame",
+      "wraps": [
+        "live",
+        "present",
+        "export",
+        "canvas",
+        "route",
+        "map",
+        "lens",
+        "zoom"
+      ],
+      "pad": 10
+    }
+  ]
+}

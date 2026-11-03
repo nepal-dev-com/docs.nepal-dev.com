@@ -1,0 +1,206 @@
+{
+  "schema_version": 2,
+  "diagram_type": "workflow",
+  "meta": {
+    "title": "App flow — site pages",
+    "subtitle": "Root URLs, the package hero, versions and the two tracks; one header with search and the theme switch on every page",
+    "quality_profile": "showcase",
+    "output": "site-pages.html"
+  },
+  "lanes": [
+    {
+      "id": "visitor",
+      "label": "Visitor"
+    },
+    {
+      "id": "home",
+      "label": "Home and header"
+    },
+    {
+      "id": "pkg",
+      "label": "Package"
+    },
+    {
+      "id": "use",
+      "label": "Use"
+    },
+    {
+      "id": "lines",
+      "label": "Other lines"
+    },
+    {
+      "id": "maintain",
+      "label": "Maintain"
+    },
+    {
+      "id": "site",
+      "label": "This site (docs)"
+    }
+  ],
+  "mainPath": [
+    "visitor_node",
+    "home_node",
+    "overview",
+    "use_latest"
+  ],
+  "nodes": [
+    {
+      "id": "visitor_node",
+      "lane": "visitor",
+      "col": 0,
+      "type": "external",
+      "label": "Visitor"
+    },
+    {
+      "id": "home_node",
+      "lane": "home",
+      "col": 1,
+      "type": "frontend",
+      "label": "Home",
+      "sublabel": "/ · release map"
+    },
+    {
+      "id": "search",
+      "lane": "home",
+      "col": 2,
+      "type": "frontend",
+      "label": "Hero search",
+      "sublabel": "header search · ⌘K"
+    },
+    {
+      "id": "overview",
+      "lane": "pkg",
+      "col": 2,
+      "type": "frontend",
+      "label": "Package overview",
+      "sublabel": "/lodestar · hero"
+    },
+    {
+      "id": "alias",
+      "lane": "use",
+      "col": 2,
+      "type": "backend",
+      "label": "Alias",
+      "sublabel": "/lodestar/use · use/latest/…"
+    },
+    {
+      "id": "use_latest",
+      "lane": "use",
+      "col": 3,
+      "type": "frontend",
+      "label": "Use · latest line",
+      "sublabel": "/lodestar/use/v1.4/install"
+    },
+    {
+      "id": "master_line",
+      "lane": "lines",
+      "col": 4,
+      "type": "frontend",
+      "label": "Use · dev",
+      "sublabel": "banner: In development"
+    },
+    {
+      "id": "legacy_line",
+      "lane": "lines",
+      "col": 5,
+      "type": "frontend",
+      "label": "Use · older line",
+      "sublabel": "2024 LTS · Older version"
+    },
+    {
+      "id": "maintain_node",
+      "lane": "maintain",
+      "col": 4,
+      "type": "frontend",
+      "label": "Maintain page",
+      "sublabel": "/lodestar/maintain/releasing"
+    },
+    {
+      "id": "site_node",
+      "lane": "site",
+      "col": 2,
+      "type": "frontend",
+      "label": "Site overview",
+      "sublabel": "/docs"
+    },
+    {
+      "id": "site_maintain",
+      "lane": "site",
+      "col": 3,
+      "type": "frontend",
+      "label": "Site Maintain",
+      "sublabel": "/docs/maintain/adr/…"
+    }
+  ],
+  "edges": [
+    {
+      "id": "open-home",
+      "from": "visitor_node",
+      "to": "home_node",
+      "label": "opens /",
+      "variant": "emphasis"
+    },
+    {
+      "id": "to-search",
+      "from": "home_node",
+      "to": "search",
+      "label": "header · ⌘K"
+    },
+    {
+      "id": "search-result",
+      "from": "search",
+      "to": "overview",
+      "label": "result"
+    },
+    {
+      "id": "to-overview",
+      "from": "home_node",
+      "to": "overview",
+      "label": "row · body · result",
+      "variant": "emphasis"
+    },
+    {
+      "id": "hero-use",
+      "from": "overview",
+      "to": "use_latest",
+      "label": "hero: Use",
+      "variant": "emphasis"
+    },
+    {
+      "id": "alias-redirect",
+      "from": "alias",
+      "to": "use_latest",
+      "label": "307"
+    },
+    {
+      "id": "menu-master",
+      "from": "use_latest",
+      "to": "master_line",
+      "label": "version menu"
+    },
+    {
+      "id": "menu-legacy",
+      "from": "master_line",
+      "to": "legacy_line",
+      "label": "older line"
+    },
+    {
+      "id": "track-switch",
+      "from": "use_latest",
+      "to": "maintain_node",
+      "label": "track switch"
+    },
+    {
+      "id": "to-site",
+      "from": "home_node",
+      "to": "site_node",
+      "label": "catalogue: Nepal Dev Verse Docs"
+    },
+    {
+      "id": "site-maint",
+      "from": "site_node",
+      "to": "site_maintain",
+      "label": "Maintain"
+    }
+  ]
+}

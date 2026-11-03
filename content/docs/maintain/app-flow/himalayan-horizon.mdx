@@ -1,0 +1,103 @@
+---
+title: "App flow — the Himalayan Horizon"
+description: "How the end of every page looks and behaves with the range on the planet's edge: alpenglow, the flag raised on arrival and a light for every entry."
+---
+
+- **Status:** Current
+- **Last updated:** 2026-11-03
+- **Related ADRs:** [ADR-0037](../adr/ADR-0037-the-horizon-is-the-himalaya.mdx),
+  [ADR-0030](../adr/ADR-0030-the-horizon-rises-over-the-page-and-its-sky-comes-alive.mdx),
+  [ADR-0033](../adr/ADR-0033-the-footer-says-you-have-reached-the-horizon.mdx)
+
+> Snapshot of the system as it stands today. Edit in place; never record what changed.
+
+How the end of every page works under ADR-0037. The bare curve of the planet becomes a range rising out
+of a sea of cloud, and the summit carries the flag. Sample values are invented (ADR-0008). Phone width
+first.
+
+The flow and each screen are drawn with Archify; the page shows them and its Markdown carries their
+Mermaid (ADR-0022). Their sources are in `diagrams/docs/`: `himalayan-horizon.json` for the flow, one
+`himalayan-horizon-screen-<n>.json` per screen.
+
+## Entry points
+
+- **The end of every page:** docs pages, the home page and the 404. Everyone sees it, and nothing in the
+  scene is a control.
+- **The planet row:** hovering or focusing an entry's link lights that entry's point on the mountain.
+- **Not here:** Markdown surfaces, which carry no footer. Screen readers skip the scene, which is
+  `aria-hidden`, and read the closing line, the planet row and the credit.
+
+## Flow
+
+<Diagram src="/diagrams/docs/himalayan-horizon.html" title="The Himalayan Horizon">
+
+```mermaid
+flowchart LR
+  R["Reading a page"] -->|scrolls to the end| E["The footer enters<br/>the star rises, alpenglow grows"]
+  E -->|40% in view| A["Arrival<br/>the flag runs up its pole once"]
+  A --> S["The summit<br/>the flag waves while on screen"]
+  S -->|hover or focus a planet link| L["That entry's light brightens"]
+```
+
+</Diagram>
+
+## Screens
+
+### 1. `The Horizon` — the end of any page, at phone width
+
+<Diagram src="/diagrams/docs/himalayan-horizon-screen-1.html" title="Screen 1 — The Horizon, phone">
+
+```mermaid
+block-beta
+  columns 4
+  closing["You've reached the horizon. The Verse goes on."]:4
+  moon["Stars and shooting stars · a still crescent moon above the star"]:4
+  flag["The flag on the summit"]:2 star["The star, right of the summit"]:2
+  peak["The summit · snow, its right face red with alpenglow"]:4
+  sea["A sea of cloud between the ranges"]:4
+  rock["The near rock · traces climb to one light per entry"]:4
+  planets["Planet row · Nepal Dev Verse Docs"]:4
+  links["Search · llms.txt · llms-full.txt · GitHub · Back to orbit"]:4
+  credit["▲ Part of nepal-dev.com. Made with ❤️ by Puncoz Nepal."]:4
+```
+
+</Diagram>
+
+**States**
+
+- Empty: with no entries there are no traces and no lights, and the mountain stands bare; the planet row
+  is not shown, as now.
+- Loading: none; the scene is inline in the static page. Before scripts run, the flag stands raised.
+- Not found: the 404 has the same scene.
+- Refused, error: not applicable.
+- Degraded: under reduced motion, with no scripts or with no scroll-driven animations, the star stands
+  risen, the alpenglow is full, the flag stands raised and still, and the clouds stay where they are drawn.
+- Success: the flag is at the top of its pole by the time the closing line has been read, and is never
+  left part-way.
+
+### 2. `The Horizon` — the end of a docs page, on a wide screen
+
+<Diagram src="/diagrams/docs/himalayan-horizon-screen-2.html" title="Screen 2 — The Horizon, wide">
+
+```mermaid
+block-beta
+  columns 4
+  closing["You've reached the horizon. The Verse goes on."]:4
+  far["Far range, hazy"] flag["The flag on the summit"] star["Moon above the star"] far2["Far range, hazy"]
+  mid["Middle range, out of the clouds"] peak["The summit, its right face lit"] shoulder["A second peak, lit on its right"] mid2["Middle range, out of the clouds"]
+  obs["The observatory on the left shoulder"] rock["Traces and lights on the near rock"]:2 slope["The range runs off both edges"]
+  surface["Planet row · link row · credit"]:4
+```
+
+</Diagram>
+
+The summit and the flag are never cropped, at any width: the far and middle ranges run wider and fall off
+the edges, and the summit stays at the centre.
+
+**States**
+
+- As screen 1.
+- Light theme: the same scene at dawn. The sky washes warm toward the ranges, the rock is the logo's navy,
+  and the red and the flag do not change.
+- Success: hovering *lodestar* in the planet row brightens its light, in its ecosystem's colour, and it
+  settles again when the pointer leaves.

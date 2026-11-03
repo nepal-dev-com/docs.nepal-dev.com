@@ -1,0 +1,62 @@
+{
+  "schema_version": 1,
+  "diagram_type": "architecture",
+  "meta": {
+    "title": "Screen 4 — Beyond the belt (2)",
+    "subtitle": "Wireframe at phone width, drawn from its Mermaid version · home page",
+    "output": "home-page-screen-4-2.html",
+    "animation": "trace",
+    "quality_profile": "showcase",
+    "legend": {
+      "entries": {
+        "cloud": {
+          "label": "Notice or state"
+        },
+        "external": {
+          "label": "Content"
+        }
+      }
+    }
+  },
+  "components": [
+    {
+      "id": "orbit",
+      "type": "cloud",
+      "label": "dashed emp",
+      "pos": [
+        40,
+        60
+      ],
+      "size": [
+        100,
+        70
+      ],
+      "sublabel": "ty orbit"
+    },
+    {
+      "id": "msg",
+      "type": "external",
+      "label": "No private projects in orbit yet.",
+      "pos": [
+        152,
+        60
+      ],
+      "size": [
+        324,
+        70
+      ],
+      "sublabel": "They'll appear here once private…"
+    }
+  ],
+  "boundaries": [
+    {
+      "kind": "region",
+      "label": "Phone screen · /#private",
+      "wraps": [
+        "orbit",
+        "msg"
+      ],
+      "pad": 22
+    }
+  ]
+}

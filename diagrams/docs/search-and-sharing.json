@@ -1,0 +1,155 @@
+{
+  "schema_version": 2,
+  "diagram_type": "workflow",
+  "meta": {
+    "title": "App flow: search and sharing",
+    "subtitle": "How a page reaches a search result or a share card",
+    "quality_profile": "showcase",
+    "output": "search-and-sharing.html"
+  },
+  "lanes": [
+    {
+      "id": "in",
+      "label": "What reaches it"
+    },
+    {
+      "id": "judge",
+      "label": "The page"
+    },
+    {
+      "id": "rule",
+      "label": "What search engines are told"
+    },
+    {
+      "id": "see",
+      "label": "What a person sees"
+    }
+  ],
+  "mainPath": [
+    "crawler",
+    "page",
+    "indexed",
+    "result"
+  ],
+  "nodes": [
+    {
+      "id": "crawler",
+      "lane": "in",
+      "col": 0,
+      "type": "external",
+      "label": "A search engine",
+      "sublabel": "robots.txt, then the sitemap",
+      "width": 200
+    },
+    {
+      "id": "link",
+      "lane": "in",
+      "col": 3,
+      "type": "external",
+      "label": "A shared link",
+      "width": 190
+    },
+    {
+      "id": "page",
+      "lane": "judge",
+      "col": 0,
+      "type": "backend",
+      "label": "A page",
+      "sublabel": "judged by where it sits",
+      "width": 200
+    },
+    {
+      "id": "indexed",
+      "lane": "rule",
+      "col": 0,
+      "type": "frontend",
+      "label": "Indexed",
+      "sublabel": "its own canonical link",
+      "width": 200
+    },
+    {
+      "id": "canon",
+      "lane": "rule",
+      "col": 1,
+      "type": "frontend",
+      "label": "Canonical link",
+      "sublabel": "to the same page in latest",
+      "width": 200
+    },
+    {
+      "id": "noindex",
+      "lane": "rule",
+      "col": 2,
+      "type": "security",
+      "label": "noindex",
+      "sublabel": "still readable by link",
+      "width": 190
+    },
+    {
+      "id": "result",
+      "lane": "see",
+      "col": 0,
+      "type": "frontend",
+      "label": "Search result",
+      "sublabel": "title and description",
+      "width": 200
+    },
+    {
+      "id": "card",
+      "lane": "see",
+      "col": 3,
+      "type": "frontend",
+      "label": "Share card",
+      "sublabel": "title, description and image",
+      "width": 200
+    }
+  ],
+  "edges": [
+    {
+      "id": "e1",
+      "from": "crawler",
+      "to": "page",
+      "variant": "default"
+    },
+    {
+      "id": "e2",
+      "from": "link",
+      "to": "card",
+      "variant": "default"
+    },
+    {
+      "id": "e3",
+      "from": "page",
+      "to": "indexed",
+      "label": "home, latest, no lines, Maintain, only in older",
+      "variant": "emphasis"
+    },
+    {
+      "id": "e4",
+      "from": "page",
+      "to": "canon",
+      "label": "older, also in latest",
+      "variant": "default"
+    },
+    {
+      "id": "e5",
+      "from": "page",
+      "to": "noindex",
+      "label": "dev or template",
+      "variant": "default"
+    },
+    {
+      "id": "e6",
+      "from": "indexed",
+      "to": "result",
+      "variant": "emphasis"
+    },
+    {
+      "id": "e7",
+      "from": "canon",
+      "to": "result",
+      "label": "as the page in latest",
+      "variant": "default"
+    }
+  ]
+}

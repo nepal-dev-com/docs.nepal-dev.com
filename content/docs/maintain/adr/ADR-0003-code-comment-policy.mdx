@@ -1,0 +1,82 @@
+---
+title: "ADR-0003 — Comments explain why; every branch takes a block"
+description: "Comments explain why and the code explains what, so most code has no comment, and every branch takes a block."
+---
+
+- **Status:** Approved
+- **Date:** 2026-10-31
+- **Deciders:** [@puncoz](https://github.com/puncoz)
+- **Approved by:** [@puncoz](https://github.com/puncoz)
+- **Approved on:** 2026-11-01
+- **Supersedes:** —
+- **Superseded by:** —
+- **Design documents:** `AGENTS.md` §7
+
+## Context
+
+AI-written code tends to over-comment: restating the code, adding banners and section headers.
+Those comments rot as the code changes, and they hide the few comments that matter — the
+non-obvious constraints (framework quirks, third-party API limits, build-environment
+differences).
+
+Separately, an unbraced `if` body reads as guarded when a second line is added under it, and
+the diff looks right. In a filter that decides which pages are published, that is a silent
+leak.
+
+## Decision
+
+1. **Comments explain *why*; the code explains *what*.** Default to no comment. Write one only
+   for reasoning, trade-offs, edge cases or external constraints that cannot be recovered from
+   the code. Prefer a reference to an ADR over prose. One or two lines, directly above what they
+   explain. No banners, no `=====` headers.
+2. **Configuration files may describe what a key does** (`next.config.mjs`,
+   `eslint.config.mjs`, `tsconfig.json`, `.env.example`, CI and deployment manifests), still
+   briefly, still linking the governing ADR. `.env.example` documents every variable and never
+   its value.
+3. **Tooling-consumed documentation stays**: JSDoc/TSDoc on exported public APIs,
+   `@ts-expect-error` reasons, pragmas, directives.
+4. **Every control-flow branch takes a block**: `if`, `else`, `for`, `while`, `do` bodies are
+   braced even for one statement, enforced by ESLint `curly: ["error", "all"]`.
+
+## Options considered
+
+| Option | Pros | Cons | Verdict |
+|---|---|---|---|
+| A — Why-only comments + mandatory braces (lint-enforced) | Comments stay meaningful; brace rule is mechanical and cheap | Requires discipline from agents | Chosen |
+| B — Comment liberally | Feels explanatory | Comments rot and drown the important ones | Rejected |
+| C — Braces by convention only | No lint change | Unenforced conventions drift | Rejected |
+
+## Consequences
+
+**Positive**
+
+- The comments that exist are worth reading.
+- A class of control-flow bugs is ruled out by lint.
+
+**Negative / accepted trade-offs**
+
+- Slightly more verbose one-line conditionals.
+
+## Content invariants
+
+None directly.
+
+## Security considerations
+
+None — this change touches no data, no endpoint and no secret. (Comments must still never
+contain secrets; see ADR-0005.)
+
+## Implementation notes
+
+- [ ] Add `curly: ["error", "all"]` to `eslint.config.mjs`, with a one-line comment linking
+      this ADR. **Deferred by the owner's choice (2026-11-01)** to the ADR that makes
+      `bun run lint` run again: typescript-eslint does not support TypeScript 7, so the rule
+      could not be checked. The policy is followed by hand until then.
+- [ ] Run `bun run lint` and fix any violations, with that ADR.
+- [ ] Tests: none meaningful for a lint rule; verified by `bun run lint` failing on an unbraced
+      branch and passing after.
+
+## Docs to update on implementation
+
+- [ ] `AGENTS.md` §7 — say the brace rule is enforced (drop "once it is approved").
+- [x] `content/docs/maintain/adr/index.mdx` — status.

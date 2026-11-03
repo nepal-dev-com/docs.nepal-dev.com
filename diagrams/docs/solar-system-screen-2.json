@@ -1,0 +1,118 @@
+{
+  "schema_version": 1,
+  "diagram_type": "architecture",
+  "meta": {
+    "title": "Screen 2 — Planet header",
+    "subtitle": "Wireframe at phone width, drawn from its Mermaid version · solar system",
+    "output": "solar-system-screen-2.html",
+    "animation": "trace",
+    "quality_profile": "showcase",
+    "legend": {
+      "entries": {
+        "backend": {
+          "label": "Control or link"
+        },
+        "external": {
+          "label": "Content"
+        }
+      }
+    }
+  },
+  "components": [
+    {
+      "id": "kind",
+      "type": "external",
+      "label": "● npm package",
+      "pos": [
+        40,
+        60
+      ],
+      "size": [
+        436,
+        58
+      ]
+    },
+    {
+      "id": "name",
+      "type": "external",
+      "label": "lodestar",
+      "pos": [
+        40,
+        130
+      ],
+      "size": [
+        436,
+        58
+      ]
+    },
+    {
+      "id": "desc",
+      "type": "external",
+      "label": "A command palette for React apps.",
+      "pos": [
+        40,
+        200
+      ],
+      "size": [
+        436,
+        58
+      ]
+    },
+    {
+      "id": "facts",
+      "type": "external",
+      "label": "Latest 0.1.4",
+      "pos": [
+        40,
+        270
+      ],
+      "size": [
+        436,
+        70
+      ],
+      "sublabel": "v0.1 · In development 0.2.0-dev.3"
+    },
+    {
+      "id": "links",
+      "type": "backend",
+      "label": "[Use →] Maintain",
+      "pos": [
+        40,
+        352
+      ],
+      "size": [
+        436,
+        70
+      ],
+      "sublabel": "Registry ↗ · Repository ↗"
+    },
+    {
+      "id": "draw",
+      "type": "external",
+      "label": "planet with labelled moons v0.1 and dev",
+      "pos": [
+        40,
+        434
+      ],
+      "size": [
+        436,
+        58
+      ]
+    }
+  ],
+  "boundaries": [
+    {
+      "kind": "region",
+      "label": "Phone screen · /lodestar",
+      "wraps": [
+        "kind",
+        "name",
+        "desc",
+        "facts",
+        "links",
+        "draw"
+      ],
+      "pad": 22
+    }
+  ]
+}

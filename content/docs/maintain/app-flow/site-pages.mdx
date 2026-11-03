@@ -1,0 +1,303 @@
+---
+title: "App flow — site pages: root URLs, header and docs pages"
+description: "What a person sees of the site's structure: the root addresses, the shared header and the docs page layout."
+---
+
+- **Status:** Current
+- **Last updated:** 2026-11-01
+- **Related ADRs:** [ADR-0018](../adr/ADR-0018-docs-pages-get-orbit-stations-a-trajectory-and-the-full-horizon.mdx),
+  [ADR-0017](../adr/ADR-0017-the-whole-site-is-one-solar-system.mdx),
+  [ADR-0016](../adr/ADR-0016-home-search-is-the-fumadocs-dialog-and-private-projects-render-server-side.mdx),
+  [ADR-0015](../adr/ADR-0015-every-entry-lives-at-the-root-in-one-shape-and-one-look.mdx),
+  [ADR-0013](../adr/ADR-0013-packages-and-projects-share-one-catalogue-shape.mdx),
+  [ADR-0014](../adr/ADR-0014-home-page-is-a-search-first-release-map.mdx)
+
+> Snapshot of the system as it stands today. Edit in place; never record what changed.
+
+What a person sees and how they move through it: the root URLs, the header and the docs pages
+(ADR-0015), drawn in the site's solar-system look (ADR-0017). The look's shared pieces, the
+theme switch, the planet header, the sidebar's planet row and moon picker, the notices, the
+footer and the 404, are drawn in [The solar system](./solar-system.mdx); the sidebar's stations
+and "On this page" in [Docs sidebars](./docs-sidebars.mdx). Sample values are
+invented (ADR-0008): `lodestar`, `ledgerly` and `orbit-board` are not real packages or projects.
+Phone width first; desktop differences are noted under each screen.
+
+Every package and project lives at `/<slug>`. Inside it, **Use** holds the user docs, one line
+per release, each named by the package, plus `dev` for work in progress, and **Maintain**
+holds the maintainer docs. This
+site is the project `docs`: its overview is `/docs` and its ADRs and design documents are its
+Maintain track, `/docs/maintain/…`. Every page, the home page included, shares one header with
+the orrery theme switch; docs pages add a search button, and use the home page's colours and
+type without its motion.
+
+The flow and every screen are drawn with Archify; the page shows them and its Markdown
+carries their Mermaid (ADR-0022). Their sources are in `diagrams/docs/`: `site-pages.json` for the
+flow, one `site-pages-screen-<n>.json` per screen.
+
+## Entry points
+
+- The home page: a planet card, a planet on the system or a search result opens `/<slug>` or one of its
+  pages.
+- The header on every page: the wordmark (home), Packages and Projects (their groups on the home
+  page, `/#packages` and `/#projects`), `llms.txt`, GitHub. On docs pages, the search button; on
+  every page, `⌘K` opens the search dialog (on the home page, the hero's button opens it too).
+- A README or registry badge: `/<slug>` or the stable `/<slug>/use/latest/<page>`.
+- A direct URL: `/<slug>/use/v1.4/install`, `/<slug>/use/dev/install`, `/<slug>/maintain/releasing`,
+  or the Markdown version with `.md`.
+- Everyone sees every public package and project. Private projects have no pages until the
+  private-documentation ADR; a private URL then gets the same 404 as a missing page.
+
+## Flow
+
+<Diagram src="/diagrams/docs/site-pages.html" title="Site pages">
+
+```mermaid
+flowchart TB
+  V[Visitor] --> H["Home /"]
+  V -->|badge or link| O
+  H -->|card, planet or result| O["Package overview<br/>/lodestar · planet header"]
+  H -->|hero button or ⌘K| S
+  P -->|header: search or ⌘K| S["Search dialog"]
+  S -->|result| P
+  O -->|planet header: Use| U["Use page · latest line<br/>/lodestar/use/v1.4/install"]
+  O -->|planet header: Maintain| M["Maintain page<br/>/lodestar/maintain/releasing"]
+  A["/lodestar/use/latest/… or /lodestar/use"] -->|redirect| U
+  U -->|moon picker: dev| N["Use page · dev<br/>notice: new moon"]
+  U -->|moon picker: older line| G["Use page · legacy line<br/>notice: crescent"]
+  N -->|notice link| U
+  G -->|notice link| U
+  U <-->|day/night switch| M
+  P["Any page"] -->|header: theme switch| P
+  H -->|card: Nepal Dev Verse Docs| D["Site overview /docs"]
+  D -->|Maintain| DM["/docs/maintain/adr/…"]
+```
+
+</Diagram>
+
+## Screens
+
+### 0. `Header` — on every page
+
+<Diagram src="/diagrams/docs/site-pages-screen-0.html" title="Screen 0 — Header">
+
+```mermaid
+block-beta
+  columns 6
+  mark["▲ Nepal Dev Verse"]:2 search["⌕"] gh["GitHub"] theme["orrery"] menu["☰"]
+```
+
+</Diagram>
+
+Phone width: the wordmark (the brand mark: the mountain and the flag, ADR-0036),
+then 36px icon buttons:
+search (docs pages only), GitHub, the theme switch (40px wide) and, on docs pages, a menu button that opens the sidebar. The nav links are hidden; on
+the home page its own sections carry them.
+
+Desktop: wordmark · Packages · Projects · `llms.txt` · a search button showing `⌘K` (docs pages
+only; the home page's hero holds its search) · GitHub · the theme switch. Sticky. On docs pages
+it carries a hairline border; on the home page it gains one once the page scrolls.
+
+**States**
+
+- Empty: with no package, Packages is not shown; with no project, Projects is not shown.
+- Loading: none; prerendered. The theme switch shows the current theme from first paint.
+- Not found, Refused: not applicable.
+- Error: none at runtime.
+- Degraded: search unavailable shows the dialog's notice; without scripts the search trigger and
+  the theme switch don't respond, and the page keeps the default dark theme.
+- Success: the switch flips light and dark on the spot and the choice holds on the next page and
+  the next visit.
+
+### 1. `Package overview` — `/<slug>`
+
+<Diagram src="/diagrams/docs/site-pages-screen-1.html" title="Screen 1 — Package overview">
+
+```mermaid
+block-beta
+  columns 4
+  hdr["▲ Nepal Dev Verse   ⌕ orrery ☰"]:4
+  block:hero:4
+    columns 4
+    kind["● npm package"]:4
+    name["lodestar"]:4
+    desc["Keyboard-first command palette for React."]:4
+    facts["Latest 1.4.2 · v1.4 · In development 2.0.0-dev.4 · Older 2024 LTS"]:4
+    use["Use →"] maint["Maintain"] reg["Registry ↗"] repo["Repository ↗"]
+    draw["planet with labelled moons v1.4 · dev · 2024 LTS"]:4
+  end
+  body["the package's own overview page"]:4
+```
+
+</Diagram>
+
+The planet header ([The solar system](./solar-system.mdx), screen 2): the planet mark and a
+faint wash take the ecosystem colour; a project is a ringed planet. Desktop: the text on the
+left, the planet and its labelled moons on the right; the sidebar shows the planet row and its
+stations, "On this page" the overview's headings on its trajectory.
+
+**States**
+
+- Empty: an unreleased package reads Latest "unreleased" and draws only its dashed `dev` moon;
+  a project without lines has no fact sheet and no moons; a missing track, registry or
+  repository has no link.
+- Loading: none; prerendered.
+- Not found: an unknown slug shows the site's 404.
+- Refused: not applicable until private documentation exists.
+- Error: a malformed catalogue field fails the build.
+- Degraded: as the header.
+- Success: the reader sees what the package is, its current and unreleased versions, and both
+  tracks one click away.
+
+### 2. `Use page` — `/<slug>/use/<line>/<page>`
+
+<Diagram src="/diagrams/docs/site-pages-screen-2.html" title="Screen 2 — Use page">
+
+```mermaid
+block-beta
+  columns 4
+  hdr["▲ Nepal Dev Verse   ⌕ orrery ☰"]:4
+  block:drawer:4
+    columns 4
+    chip["● lodestar · npm package"]:3 track["☀ | ☾"]:1
+    ver["● v1.4 · 1.4.2 · Latest ▾"]:4
+    st["◎ Get started · 2 ▾"]:4
+    l1[" ◉ Install"]:4
+    l2[" ○ Commands"]:4
+  end
+  bar["◔ Add the package · 4 min left ▾"]:4
+  h1["Install"]:4
+  stated["● Documents lodestar 1.4.2"]:4
+  body["page content · code in JetBrains Mono"]:4
+```
+
+</Diagram>
+
+The drawer is the sidebar, opened from the header's menu button. Its top holds the planet row
+(the chip linking to the overview, a sun for Use and a moon for Maintain) and the moon picker;
+below, each folder is an orbit station whose pages are moons on an arc, the current page the
+teal planet ([Docs sidebars](./docs-sidebars.mdx), screen 1). Under the header, the "On this
+page" bar shows the reading position and time left (screen 3 there). The sun, moon and dot
+characters in the wireframes stand for drawn SVG marks. Desktop: the sidebar on the left, the
+page in the middle, the trajectory on the right. Headings in Bricolage Grotesque, text in Onest,
+code on the panel colour.
+
+**States**
+
+- Empty: a line with only its index page shows that page and a one-link sidebar.
+- Loading: none; prerendered.
+- Not found: a missing page gets the site's 404; a removed line redirects to the same page in
+  `latest`.
+- Refused: not applicable today.
+- Error: the site's error page; no raw error text.
+- Degraded: as the header.
+- Success: the page, with its line selected and Use highlighted.
+
+### 3. `Moon picker` — opened from the sidebar
+
+<Diagram src="/diagrams/docs/site-pages-screen-3.html" title="Screen 3 — Moon picker">
+
+```mermaid
+block-beta
+  columns 4
+  cur["full moon · v1.4 · 1.4.2 · Latest ▾"]:4
+  block:opts:4
+    columns 4
+    o1["full moon · v1.4 · 1.4.2 · Latest ✓"]:4
+    o2["dashed new moon · dev · 2.0.0-dev.4 · In development"]:4
+    o3["crescent · 2024 LTS · 0.9.3 · Older version"]:4
+  end
+```
+
+</Diagram>
+
+Latest first, then `dev`, then older lines in the order `use/meta.json` gives, or newest
+version first. Each option shows its line's moon, the line's name as the package set it, its
+version, and its channel in words.
+
+**States**
+
+- Empty: an unreleased package lists only `dev`.
+- Success: choosing a line opens the same page in that line when it exists, otherwise that
+  line's first page.
+
+### 4. `In development or older page` — `/<slug>/use/dev/<page>`, `/<slug>/use/2024-lts/<page>`
+
+<Diagram src="/diagrams/docs/site-pages-screen-4.html" title="Screen 4 — In development or older page">
+
+```mermaid
+block-beta
+  columns 4
+  h1["Install"]:4
+  banner["dashed new moon · In development. This page documents lodestar 2.0.0-dev.4, work in progress on the default branch. Read this page for 1.4.2, the latest release."]:4
+  body["page content"]:4
+```
+
+</Diagram>
+
+An older line shows a crescent and reads "Older version. This page documents lodestar 0.9.3.
+Read this page for 1.4.2, the latest release."
+
+**States**
+
+- Success: the notice links to the same page in `latest`, or that line's first page. An
+  unreleased package's `dev` notice has no link.
+- Other states: as the Use page.
+
+### 5. `Maintain page` — `/<slug>/maintain/<page>`
+
+<Diagram src="/diagrams/docs/site-pages-screen-5.html" title="Screen 5 — Maintain page">
+
+```mermaid
+block-beta
+  columns 4
+  hdr["▲ Nepal Dev Verse   ⌕ orrery ☰"]:4
+  chip["● lodestar · npm package"]:4
+  track["☀ Use | ☾ Maintain"]:4
+  h1["Releasing"]:4
+  body["How a release is cut from the default branch"]:4
+```
+
+</Diagram>
+
+Not versioned: no moon picker and no version line.
+
+**States**
+
+- Empty: a package without a Maintain track has no switch; its Maintain URLs get the 404.
+- Other states: as the Use page.
+
+### 6. `Site overview` — `/docs`
+
+<Diagram src="/diagrams/docs/site-pages-screen-6.html" title="Screen 6 — Site overview">
+
+```mermaid
+block-beta
+  columns 4
+  hdr["▲ Nepal Dev Verse   ⌕ orrery ☰"]:4
+  block:hero:4
+    columns 4
+    kind["ringed planet · Project"]:4
+    name["Nepal Dev Verse Docs"]:4
+    desc["This documentation site: how it is organised, built and decided."]:4
+    maint["Maintain"]:2 repo["Repository ↗"]:2
+    draw["ringed planet, no moons"]:4
+  end
+  body["what the site is · where decisions and design documents live"]:4
+```
+
+</Diagram>
+
+The site's own entry has the project's planet header with a Maintain link and its repository. Its Maintain
+track holds
+the ADRs, architecture, app flows, PRDs, API, data flow, sequence, state, ERD, RBAC, security
+and templates, in today's order.
+
+**States**
+
+- Empty: not applicable; the site always has its Maintain track.
+- Other states: as the package overview.
+
+### 7. `Theme switch` and `Footer`
+
+Drawn in [The solar system](./solar-system.mdx): the orrery theme switch (screen 1) and, below
+every docs page, the full Horizon footer (screen 5).

@@ -1,0 +1,61 @@
+---
+title: "PRD — site pages: root URLs, versions, user and maintainer docs, one look"
+description: "What the site's structure must do for readers: short addresses, version lines, separate user and maintainer docs, and one look throughout."
+---
+
+- **Status:** Current
+- **Last updated:** 2026-11-01
+- **Related ADRs:** [ADR-0015](../adr/ADR-0015-every-entry-lives-at-the-root-in-one-shape-and-one-look.mdx),
+  [ADR-0013](../adr/ADR-0013-packages-and-projects-share-one-catalogue-shape.mdx)
+
+> Snapshot of the system as it stands today. Edit in place; never record what changed.
+
+## Problem
+
+Readers type and share package addresses, so they should be short. This site's own decisions
+belong with the site, not between package docs. A reader who moves from the home page into the
+docs should stay in one site, with one header, one look and a light/dark choice that holds.
+Packages need a lasting place for unreleased work and should name their released lines the way
+they name their releases.
+
+## Goal
+
+- Every package and project is at `/<slug>`, and its folder is `content/<slug>/`.
+- Every entry has the same shape: an overview, user docs (Use) with one line per release plus
+  `dev` for work in progress, and maintainer docs (Maintain), unversioned. Each package names its
+  own released lines.
+- This site documents itself the same way: the project `docs`, its decisions and design
+  documents in its Maintain track.
+- Every page shares one header, one palette and one type system, in light and dark.
+
+## Non-goals
+
+- Private projects and sign-in (their own ADR, WorkOS).
+- Demos (their own ADR; ADR-0011 covers diagrams only).
+- A Use track for this site (the consumer guide as pages): a later change.
+
+## User stories
+
+| # | Story | Acceptance criteria |
+|---|---|---|
+| US-1 | As a **package user**, I want **a short URL for a package**, so that **I can type or share it**. | - `/<slug>` opens the overview.<br />- `/<slug>/use` opens the latest line's first page, or `dev`'s when nothing is released.<br />- `/<slug>/use/latest/<page>` redirects to that page in the latest line. |
+| US-2 | As a **package user**, I want **docs for the version I installed**, so that **examples match my code**. | - Released lines carry the name the package set in their `meta.json` (`v1.4`, `2024 LTS`); the version menu lists latest, `dev`, then older lines.<br />- Each page states the version it documents; `dev` and older lines carry a banner linking to latest. |
+| US-3 | As a **package user**, I want **to see unreleased changes**, so that **I can prepare for the next release**. | - A package's `dev` line is at `/<slug>/use/dev`, labelled "In development" with the default branch's version, and stays after each release. |
+| US-4 | As a **maintainer**, I want **the maintainer docs one click from the overview**, so that **I find setup and release notes**. | - The hero and the track switch link to Maintain when it exists.<br />- Maintain has no version menu. |
+| US-5 | As a **reader**, I want **to know what a package is at a glance**, so that **I can decide whether to read on**. | - The overview opens with the hero: ecosystem, name, description, latest and `dev` versions, version rail, Use / Maintain / registry / repository links. |
+| US-6 | As a **reader**, I want **light or dark on any page**, so that **the site suits my screen**. | - Every page's header has the switch; dark is the default; the choice holds across pages and visits; no flash on load. |
+| US-7 | As a **maintainer of this site**, I want **its decisions in its own Maintain track**, so that **they follow the same rules as every project**. | - `/docs` is the site's overview; ADRs and design documents are under `/docs/maintain/…`.<br />- The site appears in the catalogue as a project. |
+| US-8 | As a **consuming repository**, I want **one folder shape and a build that checks it**, so that **mistakes fail before they publish**. | - Bad or reserved slugs, clashing line names, a misplaced `dev` channel, two `latest` lines and `legacy` without `latest` all fail the build with the file named. |
+
+## Rules and edge cases
+
+- Reserved slugs: `api`, `auth`, `callback`, `sign-in`, `sign-out`, `og`, `search`, `static`,
+  `assets`, `public`, `_next`. Slugs are lowercase letters, digits and hyphens.
+- Line names: `dev` for work in progress; a released line's `name` is any string, and its URL
+  segment is that name made URL-safe (`2024 LTS` → `2024-lts`). Two lines can't share a segment,
+  and none may be `dev` or `latest`.
+- Releasing copies `dev` into the new line; a release a package keeps in an existing line updates
+  it in place.
+- A deleted legacy line's URLs redirect to the same page in `latest`.
+- Docs pages have no motion beyond the theme change, opening a menu or a station, and the
+  trajectory's probe following the reader's scroll (ADR-0018).

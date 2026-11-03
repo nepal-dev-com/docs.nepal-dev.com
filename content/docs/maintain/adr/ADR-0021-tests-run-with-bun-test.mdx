@@ -1,0 +1,124 @@
+---
+title: "ADR-0021 — Tests run with Bun's built-in test runner"
+description: "Tests run on Bun's built-in test runner, with no test-runner dependency and only Bun's types added, checked like the rest of the code."
+---
+
+- **Status:** Approved
+- **Date:** 2026-11-01
+- **Deciders:** [@puncoz](https://github.com/puncoz)
+- **Approved by:** [@puncoz](https://github.com/puncoz)
+- **Approved on:** 2026-11-01
+- **Supersedes:** —
+- **Superseded by:** —
+- **Design documents:** [`../architecture/system.mdx`](../architecture/system.mdx), `AGENTS.md` §5
+  and §11, `README.md`
+
+## Context
+
+[ADR-0007](./ADR-0007-tests-are-part-of-every-change.mdx), approved 2026-11-01, makes tests part
+of every change and leaves the runner to its own ADR, "before the first code change that needs
+tests". Since then ADR-0011, ADR-0018 and ADR-0019 shipped code that was checked by hand with
+throwaway scripts: `src/lib/trajectory.ts` (20 cases), `src/lib/adr-status.ts` (12),
+`src/lib/diagrams.ts` and `diagrams-plugin.ts` (13). The owner chose (2026-11-01) to approve
+ADR-0007 now and propose the runner next, comparing Bun's built-in runner with Vitest, then turn
+the hand checks into tests.
+
+Facts this decision rests on, checked on 2026-11-01:
+
+- **Bun 1.4.4** is the package manager (`bun.lock`) and ships `bun test`. A probe test run with
+  `bun test` imported `src/components/html-embed.tsx`, resolved its `@/lib/diagrams` import
+  through `tsconfig.json` `paths`, rendered it with `react-dom/server`, and passed (3 tests,
+  sandbox attribute present, a missing file and an empty title rejected).
+- **Types.** `tsconfig.json` includes `**/*.ts`, so `bun run types:check` checks test files.
+  Without types for `bun:test`, `tsc` fails: "Cannot find module 'bun:test' or its
+  corresponding type declarations" (checked with a probe file, then removed). No `@types/bun`
+  is installed.
+- **Environment files.** Bun loads `.env` files on its own; `.env.local` holds
+  `ALGOLIA_WRITE_KEY`. `bun test --no-env-file` turns that off (`bun test --help`).
+- **Client components** (`trajectory-toc.tsx`, `orbit-station.tsx`, `adr-constellation.tsx`) use
+  hooks and the DOM. Rendering them needs a DOM implementation (happy-dom or jsdom), which is not
+  installed. Their logic lives in the pure modules above.
+- Vitest is not installed.
+
+## Decision
+
+1. **The runner is `bun test`**, built into Bun. No test-runner dependency.
+2. **`@types/bun` is added to `devDependencies`**, types only, so test files are type-checked
+   by `bun run types:check` like the rest of the code. The install runs after the owner's yes
+   on this ADR (`AGENTS.md` §3).
+3. **Tests sit beside the code**: `src/lib/diagrams.test.ts` next to `src/lib/diagrams.ts`,
+   `*.test.ts` and `*.test.tsx`. Fixtures are invented, inline in the test file.
+4. **The command is `bun run test`**, a `package.json` script running
+   `bun test --no-env-file`, so no secret from `.env.local` is in a test's environment.
+5. **What is unit-tested.** Pure modules, and server components rendered to a string with
+   `react-dom/server`. Client components are not rendered until an ADR adds a DOM; their logic
+   is tested through the pure modules they call, and what needs a browser is said in each ADR's
+   implementation notes (ADR-0007 decision 7).
+6. **The first tests** replace the hand checks: `trajectory.ts`, `reading-time.ts`,
+   `adr-status.ts`, `diagrams.ts` with `diagrams-plugin.ts`, `<HtmlEmbed>`, and the pure
+   catalogue checks in `catalog-plugin.ts` (`checkCatalogue`, `lineSegment`, `lineInfo`,
+   `compareLines`). Each is seen to fail once, by breaking the code, before it counts
+   (ADR-0007 decision 3).
+7. **Done means** `bun run test`, `bun run types:check` and `bunx next build` pass, with
+   `bun run lint` while it is blocked reported as such. `AGENTS.md` §5 and §11 list the
+   command.
+
+## Options considered
+
+| Option | Pros | Cons | Verdict |
+|---|---|---|---|
+| A — `bun test` | Already installed with Bun; fast; TypeScript, JSX and the `@/` alias work with no config (probed); Jest-style `expect` | Needs `@types/bun` for type checks; tests run on Bun while Next.js runs on Node, so a Node-only behaviour could pass here and fail there; DOM testing needs another package | Chosen (recommended) |
+| B — Vitest | The common choice for Vite and React projects; runs on Node, like Next.js; jsdom and happy-dom integrations documented | A new dependency tree (Vite with it); a config file for the `@/` alias and JSX; slower start | Rejected for now; the natural choice if component tests in a DOM are wanted later |
+| C — Node's built-in `node:test` | No dependency; runs on Node | No TypeScript paths or JSX without a loader; a thinner `assert` API | Rejected |
+
+## Consequences
+
+**Positive**
+
+- Tests run with what is installed, plus one types package.
+- The hand checks of ADR-0011, ADR-0018 and ADR-0019 become tests that run on every change.
+
+**Negative / accepted trade-offs**
+
+- Tests run on Bun, the site on Node. Accepted: the tested code is pure TypeScript and React
+  rendering, which behave the same on both; `bunx next build` still runs everything on Node.
+- Client components' rendering is not unit-tested. Accepted until a DOM is needed.
+- One more devDependency, `@types/bun`.
+
+## Content invariants
+
+Unchanged. Tests use invented fixtures, never real private content (ADR-0007 decision 5).
+
+## Security considerations
+
+- **Secrets.** `--no-env-file` keeps `.env.local`, and so `ALGOLIA_WRITE_KEY`, out of the test
+  environment (decision 4). No test reads a secret or calls a network service.
+- **Supply chain.** `@types/bun` is type declarations only, from the DefinitelyTyped
+  publisher, and is not bundled into the site. Its version is pinned by `bun.lock`.
+- **Nothing leaves the system.** Tests run locally; no live index, no network.
+
+## Implementation notes
+
+- [x] The owner's yes on the install, with this ADR's approval: `bun add -d @types/bun@1.4.4`
+      (devDependencies; the version matches Bun 1.4.4).
+- [x] `package.json`: `"test": "bun test --no-env-file"`.
+- [x] Found on implementation: TypeScript 7 loads no `@types` package unless `types` names it,
+      so `@types/bun` alone did not reach `tsc`. Tests get their own `tsconfig.test.json`
+      (extends `tsconfig.json`, `types: ["bun"]`), `tsconfig.json` excludes `*.test.ts(x)`, and
+      `bun run types:check` runs both. Bun's types stay out of the site's own check, since the
+      site runs on Node; `next build` checks only the site.
+- [x] Tests for the modules in decision 6, and for ADR-0020's chip: 94 tests in 9 files beside
+      the code. Each module was broken once (20 changes, from the arc's bow to the catalogue's
+      public-only rule) and its tests failed every time, then the code was restored.
+- [x] ADR-0011, ADR-0018 and ADR-0019 implementation notes: the hand-checked items ticked, with
+      the test files named.
+- [x] `bun run test`, `bun run types:check` and `bunx next build` pass; `bun run lint` stays
+      blocked (typescript-eslint and TypeScript 7).
+
+## Docs to update on implementation
+
+- [x] `AGENTS.md` §5 (Testing row, commands table) and §11 (the checklist)
+- [x] `README.md`: commands
+- [x] `PROJECT_AGENTS.md` §6: `bun run test` among the commands a consuming repository may run
+- [x] [`../architecture/system.mdx`](../architecture/system.mdx): where tests live
+- [x] [`./index.mdx`](./index.mdx): status on approval

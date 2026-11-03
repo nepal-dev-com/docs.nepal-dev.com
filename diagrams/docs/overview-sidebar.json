@@ -1,0 +1,134 @@
+{
+  "schema_version": 2,
+  "diagram_type": "workflow",
+  "meta": {
+    "title": "App flow: the overview's sidebar",
+    "subtitle": "The overview shows its default track's sidebar; every track starts with Overview",
+    "quality_profile": "showcase",
+    "output": "overview-sidebar.html"
+  },
+  "lanes": [
+    {
+      "id": "reader",
+      "label": "Reader"
+    },
+    {
+      "id": "use",
+      "label": "Use sidebar"
+    },
+    {
+      "id": "maintain",
+      "label": "Maintain sidebar"
+    }
+  ],
+  "mainPath": [
+    "entry",
+    "overview",
+    "usepage"
+  ],
+  "nodes": [
+    {
+      "id": "entry",
+      "lane": "reader",
+      "col": 0,
+      "type": "external",
+      "label": "Planet card or search"
+    },
+    {
+      "id": "overview",
+      "lane": "use",
+      "col": 1,
+      "type": "frontend",
+      "label": "Overview",
+      "sublabel": "Use sidebar, Overview current"
+    },
+    {
+      "id": "usepage",
+      "lane": "use",
+      "col": 2,
+      "type": "frontend",
+      "label": "Use page",
+      "sublabel": "the same sidebar"
+    },
+    {
+      "id": "line",
+      "lane": "use",
+      "col": 3,
+      "type": "frontend",
+      "label": "That line's first page",
+      "sublabel": "its sidebar"
+    },
+    {
+      "id": "maintainpage",
+      "lane": "maintain",
+      "col": 2,
+      "type": "backend",
+      "label": "Maintain page",
+      "sublabel": "Overview first"
+    }
+  ],
+  "edges": [
+    {
+      "id": "open",
+      "from": "entry",
+      "to": "overview",
+      "label": "opens /lodestar",
+      "variant": "emphasis"
+    },
+    {
+      "id": "moon",
+      "from": "overview",
+      "to": "usepage",
+      "label": "a moon in a station",
+      "variant": "emphasis"
+    },
+    {
+      "id": "back_use",
+      "from": "usepage",
+      "to": "overview",
+      "label": "Overview item",
+      "variant": "dashed",
+      "role": "return"
+    },
+    {
+      "id": "to_maintain",
+      "from": "overview",
+      "to": "maintainpage",
+      "label": "moon button",
+      "variant": "default",
+      "role": "branch"
+    },
+    {
+      "id": "use_maintain",
+      "from": "usepage",
+      "to": "maintainpage",
+      "label": "moon button",
+      "variant": "default",
+      "role": "branch"
+    },
+    {
+      "id": "back_maint",
+      "from": "maintainpage",
+      "to": "overview",
+      "label": "Overview item",
+      "variant": "dashed",
+      "role": "return"
+    },
+    {
+      "id": "sun",
+      "from": "maintainpage",
+      "to": "usepage",
+      "label": "sun button",
+      "variant": "dashed",
+      "role": "return"
+    },
+    {
+      "id": "picker",
+      "from": "overview",
+      "to": "line",
+      "label": "moon picker",
+      "variant": "default",
+      "role": "branch"
+    }
+  ]
+}

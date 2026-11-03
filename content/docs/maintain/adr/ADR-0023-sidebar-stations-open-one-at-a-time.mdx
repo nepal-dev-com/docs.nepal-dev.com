@@ -1,0 +1,122 @@
+---
+title: "ADR-0023 — Sidebar stations open one at a time"
+description: "At most one sidebar station is open at each level, so opening one closes the one beside it and the sidebar stays short."
+---
+
+- **Status:** Approved
+- **Date:** 2026-11-01
+- **Deciders:** [@puncoz](https://github.com/puncoz)
+- **Approved by:** [@puncoz](https://github.com/puncoz)
+- **Approved on:** 2026-11-01
+- **Supersedes:** [ADR-0018](./ADR-0018-docs-pages-get-orbit-stations-a-trajectory-and-the-full-horizon.mdx)
+  decision 2, its *Open and closed* point only (each station opening and closing on its own)
+- **Superseded by:** —
+- **Design documents:** [`../app-flow/one-open-station.mdx`](../app-flow/one-open-station.mdx),
+  [`../app-flow/docs-sidebars.mdx`](../app-flow/docs-sidebars.mdx)
+
+## Context
+
+ADR-0018 made every sidebar folder an orbit station. The station that holds the current page
+opens, the others start closed, and each station's chevron opens and closes it on its own. A
+reader who opens three stations has three open: this site's Maintain track has twelve
+sections, so a few clicks turn the sidebar back into the long list that stations were meant to
+shorten, and the open station you came for scrolls out of view.
+
+What the code does today (`src/components/docs/orbit-station.tsx`):
+
+- Each station is Fumadocs' `SidebarFolder`, which keeps its own `open` state
+  (`fumadocs-ui/components/sidebar/base`). It opens itself when it holds the current page
+  (`active`) and never closes itself.
+- `useFolder()` gives a station's content its own `open` and `setOpen`; nothing links one
+  station's state to another's.
+
+The owner asked on 2026-11-01 for one open section at a time, opening one closing the other,
+and chose that this applies at every level, nested stations included.
+
+## Decision
+
+1. **At most one open station per level.** Stations that share a parent (the track's top
+   level, or the inside of one station) form a group, and at most one station in a group is
+   open. Opening a station, with its chevron or its name, closes the open station beside it.
+   The same holds inside an open station for its nested stations, and below that.
+2. **Closing leaves the group closed.** Closing the open station opens no other; a track can
+   show every station closed.
+3. **The current page sets the open path.** On every page change, each station on the current
+   page's path opens and every other station closes, at every level. A reader who opened a
+   station and then follows a link elsewhere sees the new page's stations open, not the one
+   they had opened.
+4. **Everything else in ADR-0018 decision 2 stands**: the card, header, moons on an arc, the
+   current station's border in the ecosystem colour, nested stations, top-level pages and
+   separators. The ADR constellation (ADR-0019) is a station like any other here.
+5. **Built on Fumadocs' folder state.** A small client context per group records which station
+   is open; each station reports its own opening through `useFolder()` and closes when another
+   in its group opens. No fork of the sidebar and no new dependency.
+
+## Options considered
+
+| Concern | Option | Pros | Cons | Verdict |
+|---|---|---|---|---|
+| Scope | A — every level | One rule everywhere; the shortest sidebar | A nested station closes when its sibling opens, even inside a long section | Chosen (owner) |
+| Scope | B — top-level stations only | Nested stations stay free | Two behaviours in one sidebar | Rejected (owner) |
+| On a page change | A — the current path opens, the rest close | The sidebar always shows where the reader is | A station the reader opened by hand closes when they navigate away from it | Chosen |
+| On a page change | B — keep what the reader opened | Respects a manual choice | Two stations open again: the current one and the manual one, which breaks decision 1 | Rejected |
+| Build | A — a group context over Fumadocs' `useFolder()` | Small; stays on Fumadocs' primitives (ADR-0018) | Depends on `SidebarFolder` keeping `useFolder()` and opening on `active` | Chosen |
+| Build | B — a controlled folder of our own | Full control | Re-implements Fumadocs' collapsible, its animation and keyboard handling | Rejected |
+
+## Consequences
+
+**Positive**
+
+- A long track stays a short list of station names with one open, wherever the reader clicks.
+- The open station is always the one the reader chose last, or the current page's.
+
+**Negative / accepted trade-offs**
+
+- Comparing two sections side by side in the sidebar is no longer possible; the reader opens
+  one after the other.
+- A station opened by hand closes on the next page change unless it holds that page.
+- The behaviour needs a client context; the server render still shows the current path open
+  and the rest closed, as today.
+
+## Content invariants
+
+None touched: the sidebar's behaviour changes, not any page, and per-page Markdown and
+`llms.txt` carry no sidebar.
+
+## Security considerations
+
+None — this change touches no data, no endpoint and no secret. It changes client-side
+open and closed state in the sidebar only.
+
+## Implementation notes
+
+- [x] `src/components/docs/orbit-station.tsx`: a group context per level (the root's, and one
+      inside each station) holding the open station's id; a station that opens claims the
+      group, and a station closes when another claims it. The current page's path claims each
+      group on every page change.
+- [x] Keyboard and screen readers unchanged (by construction, not tested with a screen reader): the chevron stays Fumadocs' collapsible trigger
+      with `aria-expanded`; a station closed by another reports `aria-expanded="false"`.
+- [x] Reduced motion: stations open and close without animation, as today (the animation is untouched).
+- [x] Tests (ADR-0007, ADR-0021): the group's rule as a pure function (open one, open a
+      sibling, close the open one, a page change to another station, a nested group, a page
+      change into a nested station). The rendered station (client) is not unit-tested until a
+      DOM is chosen (ADR-0021); it is checked in Chrome on localhost at phone and desktop
+      width. Checked in Chrome at desktop width only: opening a station closes the open one,
+      closing leaves all closed, a page change opens that page's station (also when the reader had
+      opened another), and the ADR constellation follows the rule. The automated Chrome window did
+      not resize, so phone width (the drawer) was not seen.
+- [x] `bun run test`, `bun run types:check` and `bunx next build` pass; `bun run lint` is
+      reported while it stays blocked (AGENTS.md §5).
+
+## Docs to update on implementation
+
+- [x] [`../app-flow/one-open-station.mdx`](../app-flow/one-open-station.mdx): Current, folded
+      into [`../app-flow/docs-sidebars.mdx`](../app-flow/docs-sidebars.mdx) screen 1 and its
+      states. Kept as its own page, which docs-sidebars links from screen 1, so its diagrams stay
+      with it.
+- [x] [`ADR-0018`](./ADR-0018-docs-pages-get-orbit-stations-a-trajectory-and-the-full-horizon.mdx):
+      *Superseded by:* this ADR for decision 2's *Open and closed* point.
+- [x] `AGENTS.md` §1 (the sidebar bullet) and `PROJECT_AGENTS.md`, where the sidebar is
+      described (it describes only the ADR constellation, so nothing changed there); `README.md`.
+- [x] `DESIGN.md` and `.impeccable/design.json`, where they describe stations opening.
+- [x] [`./index.mdx`](./index.mdx): status.

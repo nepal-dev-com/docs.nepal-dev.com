@@ -1,0 +1,85 @@
+{
+  "schema_version": 2,
+  "diagram_type": "workflow",
+  "meta": {
+    "title": "App flow: unknown paths",
+    "subtitle": "What the proxy does with each request, before any page renders",
+    "quality_profile": "showcase",
+    "output": "unknown-paths.html"
+  },
+  "lanes": [
+    {
+      "id": "in",
+      "label": "The request"
+    },
+    {
+      "id": "out",
+      "label": "The response"
+    }
+  ],
+  "mainPath": [
+    "req",
+    "none"
+  ],
+  "nodes": [
+    {
+      "id": "req",
+      "lane": "in",
+      "col": 1,
+      "type": "backend",
+      "label": "The proxy checks the path",
+      "sublabel": "before any page renders",
+      "width": 210
+    },
+    {
+      "id": "site",
+      "lane": "out",
+      "col": 0,
+      "type": "external",
+      "label": "Served as today",
+      "sublabel": "home, site routes, files",
+      "width": 190
+    },
+    {
+      "id": "page",
+      "lane": "out",
+      "col": 1,
+      "type": "frontend",
+      "label": "The page",
+      "sublabel": "or its redirect",
+      "width": 190
+    },
+    {
+      "id": "none",
+      "lane": "out",
+      "col": 2,
+      "type": "security",
+      "label": "Out of orbit",
+      "sublabel": "a true 404, with full HTML",
+      "width": 190
+    }
+  ],
+  "edges": [
+    {
+      "id": "e1",
+      "from": "req",
+      "to": "site",
+      "label": "not a page path",
+      "variant": "default"
+    },
+    {
+      "id": "e2",
+      "from": "req",
+      "to": "page",
+      "label": "a known page",
+      "variant": "default"
+    },
+    {
+      "id": "e3",
+      "from": "req",
+      "to": "none",
+      "label": "anything else",
+      "variant": "emphasis"
+    }
+  ]
+}

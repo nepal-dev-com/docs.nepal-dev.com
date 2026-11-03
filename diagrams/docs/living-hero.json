@@ -1,0 +1,192 @@
+{
+  "schema_version": 2,
+  "diagram_type": "workflow",
+  "meta": {
+    "title": "App flow: the living hero",
+    "subtitle": "The home page's system: arrival, turning, the pointer, a comet, the Verse",
+    "quality_profile": "showcase",
+    "output": "living-hero.html"
+  },
+  "lanes": [
+    {
+      "id": "arrive",
+      "label": "Arrival and the comet"
+    },
+    {
+      "id": "sys",
+      "label": "The system"
+    },
+    {
+      "id": "resp",
+      "label": "Responses"
+    },
+    {
+      "id": "out",
+      "label": "Leaves"
+    }
+  ],
+  "mainPath": [
+    "first",
+    "spin",
+    "turn",
+    "tip",
+    "overview"
+  ],
+  "nodes": [
+    {
+      "id": "first",
+      "lane": "arrive",
+      "col": 0,
+      "type": "frontend",
+      "label": "Arrives at /",
+      "sublabel": "first time this session",
+      "width": 170
+    },
+    {
+      "id": "again",
+      "lane": "arrive",
+      "col": 2,
+      "type": "frontend",
+      "label": "Arrives again",
+      "sublabel": "or with reduced motion",
+      "width": 170
+    },
+    {
+      "id": "spin",
+      "lane": "sys",
+      "col": 1,
+      "type": "backend",
+      "label": "Spin-up",
+      "sublabel": "star ignites, planets sweep in",
+      "width": 170
+    },
+    {
+      "id": "turn",
+      "lane": "sys",
+      "col": 2,
+      "type": "backend",
+      "label": "The system turns",
+      "sublabel": "trails, star breathing",
+      "width": 170
+    },
+    {
+      "id": "verse",
+      "lane": "sys",
+      "col": 3,
+      "type": "backend",
+      "label": "The Verse view",
+      "sublabel": "Back to the system returns",
+      "width": 170
+    },
+    {
+      "id": "lean",
+      "lane": "resp",
+      "col": 1,
+      "type": "external",
+      "label": "Leans to the pointer",
+      "sublabel": "nebula shifts",
+      "width": 170
+    },
+    {
+      "id": "empty",
+      "lane": "resp",
+      "col": 2,
+      "type": "external",
+      "label": "No planets yet",
+      "sublabel": "an empty orbit's tooltip",
+      "width": 170
+    },
+    {
+      "id": "comet",
+      "lane": "arrive",
+      "col": 3,
+      "type": "external",
+      "label": "A comet crosses",
+      "sublabel": "every 20 to 30s",
+      "width": 170
+    },
+    {
+      "id": "tip",
+      "lane": "resp",
+      "col": 4,
+      "type": "external",
+      "label": "Planet tooltip",
+      "sublabel": "name, kind, latest",
+      "width": 170
+    },
+    {
+      "id": "overview",
+      "lane": "out",
+      "col": 5,
+      "type": "frontend",
+      "label": "The planet's overview",
+      "sublabel": "its page",
+      "width": 170
+    }
+  ],
+  "edges": [
+    {
+      "id": "e1",
+      "from": "first",
+      "to": "spin",
+      "label": "first view",
+      "variant": "emphasis"
+    },
+    {
+      "id": "e2",
+      "from": "spin",
+      "to": "turn",
+      "label": "1.2s",
+      "variant": "emphasis"
+    },
+    {
+      "id": "e3",
+      "from": "again",
+      "to": "turn",
+      "label": "no spin-up",
+      "variant": "default"
+    },
+    {
+      "id": "e4",
+      "from": "turn",
+      "to": "lean",
+      "label": "pointer moves",
+      "variant": "default"
+    },
+    {
+      "id": "e8",
+      "from": "turn",
+      "to": "empty",
+      "label": "points at an empty orbit",
+      "variant": "default"
+    },
+    {
+      "id": "e6",
+      "from": "turn",
+      "to": "comet",
+      "label": "now and then",
+      "variant": "default"
+    },
+    {
+      "id": "e9",
+      "from": "turn",
+      "to": "tip",
+      "label": "points at a planet",
+      "variant": "emphasis"
+    },
+    {
+      "id": "e10",
+      "from": "tip",
+      "to": "overview",
+      "label": "click",
+      "variant": "emphasis"
+    },
+    {
+      "id": "e11",
+      "from": "turn",
+      "to": "verse",
+      "label": "Zoom out to the Verse",
+      "variant": "default"
+    }
+  ]
+}

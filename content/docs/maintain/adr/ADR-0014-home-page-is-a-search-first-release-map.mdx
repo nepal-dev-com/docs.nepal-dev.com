@@ -1,0 +1,284 @@
+---
+title: "ADR-0014 — The home page is a search-first map of every release"
+description: "The decision to make the home page a search-first map of every package, project and release, and which skill builds it."
+---
+
+- **Status:** Approved
+- **Date:** 2026-10-31
+- **Deciders:** [@puncoz](https://github.com/puncoz)
+- **Approved by:** [@puncoz](https://github.com/puncoz)
+- **Approved on:** 2026-10-31
+- **Supersedes:** —
+- **Superseded by:** [ADR-0015](./ADR-0015-every-entry-lives-at-the-root-in-one-shape-and-one-look.mdx)
+  in part (decisions 3, 6 and 9); [ADR-0016](./ADR-0016-home-search-is-the-fumadocs-dialog-and-private-projects-render-server-side.mdx) in part (decisions 3, 4, 8 and 10);
+  [ADR-0017](./ADR-0017-the-whole-site-is-one-solar-system.mdx) in part (decision 4 and the footer)
+- **Design documents:** [`../app-flow/home-page.mdx`](../app-flow/home-page.mdx),
+  [`../prd/home-page.mdx`](../prd/home-page.mdx), `../architecture/system.mdx`,
+  `../dfd/system.mdx`, `PRODUCT.md`
+
+## Context
+
+The home page at `/` is still the Fumadocs scaffold: "Hello World" and a link to `/docs`
+(`src/app/(home)/page.tsx`). The site name is the placeholder `My App` and the GitHub link points
+at the Fumadocs repository (`src/lib/shared.ts`).
+
+The owner's brief, 2026-10-31: one home page for the whole collection, modern, readable,
+seamless and unique. The owner settled these:
+
+- **Job:** the catalogue and a showcase of the owner's work at once.
+- **Private projects:** signed-out visitors see nothing of them: no name, count or placeholder.
+- **Two tracks** per package and project, Use and Maintain (ADR-0013).
+- **Craft bar:** Stripe, Linear and Resend.
+- **Name:** "Puncoz Docs" for now. The final name will include neither the owner's name nor
+  "docs".
+
+A first direction (a narrow "quiet instrument" column, a hero of two doors for Packages and
+Projects, a sand-and-moss palette) was built as a prototype and **rejected by the owner** the
+same day. The owner asked for a cool, modern, technical look, a strong search input instead of a
+choice between two options, a page that reads as a documentation landing page, and motion and
+graphics. The owner **delegated the design decisions** to the agent without a further review
+round ("brainstorm yourself and you decide"). This ADR records those decisions for approval
+before any code is written.
+
+The home page depends on the catalogue shape in ADR-0013 for its entries, versions, tracks and
+demos.
+
+## Decision
+
+1. **The builder is impeccable**, the primary UI skill in this repository (`INDEX.md` §
+   Approved installed skills). design-taste-frontend built the rejected direction. Its house
+   rules also forbid monospace outside code, and a technical look needs monospace for package
+   names and versions. The page is a documentation landing page: it is structured for finding
+   things, with one showcase moment, the hero.
+
+2. **The signature is a map of every release.** The hero is a slowly turning orbital map drawn
+   on a `<canvas>`:
+
+   - each **ecosystem** (npm, Composer, PyPI, Go) is an elliptical orbit ring, and public
+     **projects** are a dotted outer ring;
+   - each **package or project** is a body on its ring, coloured by ecosystem (a project is an
+     outlined body);
+   - each **documented version line** is a moon circling its body: solid for a released line,
+     an outlined moon on a dashed orbit for an unreleased `next` line;
+   - hovering a body slows the map and shows a card with the name, description and version
+     tags; clicking it puts the name in the search.
+
+   The map is built from the same catalogue data as the list below it, so it shows the real
+   shape of the collection: how many packages per ecosystem, how many lines each, what is
+   unreleased. The canvas is decorative for assistive technology (`role="img"` with a label that
+   explains the encoding). The catalogue below holds the same information as text.
+
+3. **Search is the hero's one control, and it steers the page.** A large search field (64px
+   high on desktop, 56px on phones) sits under the headline:
+
+   - **Filter words become chips** inside the field. Typing `npm`, `composer`, `pypi`, `go`,
+     `projects`, `maintain` or `next` followed by a space turns the word into a removable chip
+     (`php`, `python` and `unreleased` are aliases). Backspace in an empty field removes the last
+     chip.
+   - **Three places answer at once.** The results list under the field shows matching pages,
+     each tagged with its line and version (`v0 · 0.1.4`, `next 0.2.0-beta.3`) or `maintain`.
+     Matching bodies in the orbital map light up and the rest dim. The catalogue below filters
+     itself, with a live count ("3 of 11 match") and a clear action.
+   - **Keyboard:** `⌘K` / `Ctrl K` and `/` focus the field from anywhere on the home page;
+     arrow keys move through results, Enter opens one, Escape closes the list. On every other
+     page the same keys open the existing Fumadocs search dialog.
+   - **Where answers come from.** The catalogue and the map filter locally, from build-time
+     catalogue data. Page results come from the existing Algolia index through the existing
+     search-only client. Chips become filters on the record fields ADR-0013 adds (`ecosystem`,
+     `kind`, `track`, `channel`). With no query, the list offers each package's install page.
+   - **Suggestions:** a row of "Try" buttons under the field (`npm`, `next`, `maintain` and two
+     example queries) adds a chip or fills the field.
+   - **An idle demonstration:** until the reader focuses the field, its placeholder types real
+     queries one after another and the map lights the matching bodies. It stops on focus and
+     never runs under reduced motion.
+
+4. **Page argument, top to bottom** (each section carries one claim):
+
+   | Section | Claim | Proof on the page |
+   |---|---|---|
+   | Hero: release map and search | Everything is here, and you can find it from one field | The map of every public package, project and line; the search field |
+   | Browse everything | Find any package or project in seconds | Every entry in a dense two-column list: name, description, Use / Maintain / Demo links, latest version, any `next`; filtered by the hero search |
+   | Two tracks, one place | Users and maintainers each get their own docs | A Use / Maintain switch that swaps a live preview of a documentation page |
+   | Every version, released or not | You always know which version a page describes | Version rails for featured packages, drawn on scroll: released lines solid, `latest` marked, `next` dashed |
+   | Try it before you install it | The packages work, and you can try one here | One featured package's real demo, with its controls |
+   | Read it anywhere | You can take the docs without the site | A terminal fetching `llms.txt`; cards for per-page `.md`, `llms.txt` / `llms-full.txt`, and private stays private |
+   | Footer | — | One line and four links |
+
+   A section with no data is left out, never shown empty: no featured demo means no demo
+   section, and fewer than two packages with several lines means no version rails.
+
+5. **Type** (loaded with `next/font/google`, as Inter is today, so the fonts are downloaded at
+   build time and served from the site):
+
+   | Role | Face | Used for |
+   |---|---|---|
+   | Display | Bricolage Grotesque 600–800 | Headline, section headings, wordmark |
+   | Text | Onest 400–600 | Body, controls, descriptions |
+   | Data | JetBrains Mono 400–500 | Package names, versions, URLs, commands, code, counts |
+
+   impeccable's detector flagged Geist and Instrument Sans as overused; these three pass it.
+   Home page only; documentation pages keep Inter until their own ADR.
+
+6. **Colour: graphite and teal, dark first.** Tokens in `src/app/global.css`, scoped to the home
+   page. The page follows the reader's theme through Fumadocs' theme setting; dark is the
+   default.
+
+   | Token | Dark | Light | Role |
+   |---|---|---|---|
+   | `--bg` | `#0a0c10` | `#f6f7f9` | Page |
+   | `--panel` | `#141821` | `#ffffff` | Search field, windows, cards |
+   | `--line` / `--line-2` | `#232937` / `#323a4c` | `#dde1e9` / `#c4cbd8` | Rules, borders, orbit rings |
+   | `--ink` | `#e9ecf2` | `#0d1016` | Text |
+   | `--muted` | `#9ba4b6` | `#4f586b` | Secondary text |
+   | `--faint` | `#7f889e` | `#5f6880` | Hints, group labels |
+   | `--accent` | `#3ddbb6` | `#077a63` | Focus, highlights, the one accent |
+   | `--npm` · `--composer` · `--pypi` · `--go` | `#ff6f61` · `#a394ff` · `#ffd166` · `#56cdf2` | `#d4382b` · `#5b48e0` · `#9a6d00` · `#0a7fa6` | Ecosystem bodies, dots and chips |
+
+   Measured: every text colour is 4.5:1 or more against `--bg` and `--panel` in both themes
+   (`--faint` on `--panel`, the tightest pair, is 5.0:1 dark and 5.6:1 light). Ecosystem colours
+   mark shapes, never carry text alone, and are 4.2:1 or more against `--bg`. Selection, caret,
+   scrollbar and focus rings use the tokens.
+
+7. **Motion, without a library.** Transform, opacity and canvas drawing only:
+
+   - the orbit turns slowly (one revolution of the inner ring takes about 100s); it slows under
+     the pointer, and pauses when the tab is hidden or the hero is off-screen;
+   - search highlights fade bodies in and out over about 300ms; chips pop in;
+   - each section's parts enter once, rising and un-blurring;
+   - the version rails draw from left to right once; the track preview cross-fades with a
+     blur; the terminal types its command once, when it comes into view;
+   - under `prefers-reduced-motion` the orbit is drawn once and stays still, the placeholder
+     doesn't type, the terminal shows its full output, and nothing enters or draws;
+   - without scripts every section's content is visible, the map is absent, and the search field
+     is replaced by a link to `/docs`; the catalogue below lists every entry.
+
+8. **Data comes from the catalogue at build time** (ADR-0013): entries, versions, `next` lines,
+   tracks, the featured demo and the rails. The page is static. Its only runtime request is the
+   Algolia query the reader types.
+
+9. **Header:** the wordmark on the left; Packages, Projects and `llms.txt` links; GitHub on the
+   right. Sticky, with a blurred background and a border that appears after scrolling. No
+   sign-in link until the private-documentation ADR. `appName` in `src/lib/shared.ts` becomes
+   `Puncoz Docs` until the final name is chosen.
+
+10. **Phones first.** The headline, search field and "Try" row fill the first screen; the map
+    turns behind them at a smaller scale; the legend and key hints are hidden. The catalogue
+    becomes one column, the track preview stacks its sidebar above the page, and the demo puts
+    its controls under the stage.
+
+## Options considered
+
+| Concern | Option | Pros | Cons | Verdict |
+|---|---|---|---|---|
+| Builder | impeccable | Primary UI skill here; its detector and craft floor ran on the prototype | — | Chosen (delegated) |
+| Builder | design-taste-frontend | Strong showcase pages | Built the rejected direction; its rules forbid the monospace a technical look needs | Rejected (owner's feedback) |
+| Hero | Orbital release map with search | Shows the real shape of the collection: ecosystems, packages, lines, what is unreleased; search lights it | Canvas code to write and test; information is visual, so the catalogue must carry it as text | Chosen (delegated) |
+| Hero | Constellation graph of packages | Lively | Decoration with no meaning: says nothing about versions or ecosystems | Rejected |
+| Hero | Two doors, Packages and Projects | Plain split of the collection | Rejected by the owner: a choice instead of a search, and a dull look | Rejected (owner) |
+| Hero | Search field only, no graphic | Quickest to build | The owner asked for motion and graphics | Rejected |
+| Search | Field steers the page: chips, results, map and catalogue | One control, three answers; filters are typed, not hunted in menus | More state to keep in sync | Chosen (delegated) |
+| Search | Field opens the existing dialog | No new code | The page does nothing with the query; the hero becomes a button | Rejected |
+| Page results | Existing Algolia index, chips as filters | No new integration; the same results as the dialog | Depends on ADR-0013's record fields; degraded when Algolia is down | Chosen (delegated) |
+| Page results | A local index of every page shipped to the browser | Works offline | Duplicates Algolia; grows with every page | Rejected |
+| Map rendering | Canvas 2D | No dependency; dozens of bodies at 60fps | Hit-testing by hand; needs a text equivalent | Chosen (delegated) |
+| Map rendering | SVG | Each body is an element | Animating dozens of elements every frame costs layout | Rejected |
+| Map rendering | WebGL / three.js | 3D depth | A dependency and its own ADR; heavy for a home page | Rejected |
+| Palette | Graphite and teal, dark first, light variant | Technical and calm; ecosystem colours stand out on it | Light theme needs its own tuned values | Chosen (delegated) |
+| Palette | Sand and moss | Warm | Rejected by the owner | Rejected (owner) |
+| Fonts | Bricolage Grotesque, Onest, JetBrains Mono | Distinct display face; readable text face; a coding mono | Three faces to load | Chosen (delegated) |
+| Fonts | Geist and Geist Mono | Two faces from one family | Flagged as overused by impeccable's detector | Rejected |
+| Fonts | System stack | No fetch | No character | Rejected |
+| Scope of tokens | Home page only, docs pages later | Small change; docs pages keep their treatment until their ADR | Home and docs look different until then | Proposed |
+| Scope of tokens | Sitewide now | One look at once | Changes every docs page without an app flow | Rejected |
+
+## Consequences
+
+**Positive**
+
+- The first screen says what the site is, shows the size and shape of the collection, and puts
+  the reader's next action, a search, in the middle of it.
+- Everything on the page is built from content, so the map, list and rails stay current as
+  packages and lines are added.
+- One field does the job of category menus, filters and a search dialog.
+
+**Negative / accepted trade-offs**
+
+- The map is custom canvas code: hit-testing, resizing, theming and reduced motion are
+  hand-written and need their own checks.
+- Page results need ADR-0013's search record fields first; until then chips filter only the
+  map and the catalogue.
+- Home and documentation pages look different until the docs-page ADR.
+- The two-column list suits up to about 40 entries; past that, grouping needs its own ADR.
+- The demo section waits for ADR-0011 and for a package with a demo.
+- Three fonts are added to the build.
+
+## Content invariants
+
+- **1 Private stays private:** the map, list, rails, search suggestions and counts are built only
+  from public catalogue entries; ADR-0013's build check rejects a private one. No placeholder,
+  lock or count hints at private work.
+- **2 Checked against the code:** versions and lines come from catalogue data, which consuming
+  repositories read from manifests (ADR-0013).
+- **3, 4:** versions on the page are the `latest` and `next` lines' exact versions; the demo
+  runs the version its line documents.
+- **5:** the home page is navigation; every entry it lists is a page with a Markdown version.
+
+## Security considerations
+
+- **Data.** Public catalogue metadata only, read at build time. No secret and no new environment
+  variable.
+- **Search.** The hero uses the existing Algolia search-only client (`src/components/search.tsx`);
+  the key is already public by design and reads only public records. Query text goes to Algolia
+  exactly as it does from the dialog today; the DFD gains no new crossing, only a second place
+  that starts one. Results and highlights are rendered as text, never as HTML from the record.
+- **Input.** Chips come from a fixed list of words; anything else stays free text. Free text is
+  only sent as a query and shown escaped.
+- **Fonts.** Fetched from Google at build time and served from the site; a reader's browser
+  makes no request to Google.
+- **Demo.** The featured demo runs in ADR-0011's sandboxed frame.
+- **Private projects.** Nothing reveals them to a signed-out visitor. The future private ADR
+  must keep it so when signed-in readers see them, including on the map.
+
+## Implementation notes
+
+- [x] `src/app/(home)/page.tsx` and a component per section (`src/components/home/`), reading
+      the ADR-0013 catalogue helper. No demo section until ADR-0011.
+- [x] The orbital map as a client component: canvas drawing, hit-testing, resize, theme tokens,
+      pause when hidden or off-screen, reduced-motion still frame.
+- [x] The hero search: chip parsing, results list (listbox pattern with
+      `aria-activedescendant`), Algolia filters from chips (on the `tag` facet), shared query
+      state for the map and the catalogue, degraded state when Algolia fails.
+- [x] Tokens and fonts (decisions 5 and 6), home page scope (`.home` in `global.css`,
+      `src/app/(home)/home.css`).
+- [x] Motion (decision 7) with reduced-motion and no-script fallbacks.
+- [x] Header (decision 9); `appName` → `Puncoz Docs`; `gitConfig` → `puncoz-official/docs`.
+- [x] impeccable's detector on the source and the built HTML. Contrast was computed from the
+      tokens in both themes. No browser visual check: it needs the owner's yes.
+- [ ] Tests — manual checks until ADR-0007 picks a runner:
+      - Catalogue filtering by chip and text, and the Algolia filter built from chips, were
+        checked against the functions with a throwaway `bun test` script outside the
+        repository: all passing.
+      - `next`, legacy and unreleased rows, the tracks preview and the version rails were
+        checked in the built HTML with sample content. Empty sections were checked as left out
+        in the built HTML with no entries.
+      - **Not checked in a browser:** chip parsing as the reader types, keyboard navigation of
+        the results, and the degraded state. They run only in the client.
+- [ ] `bun run lint`, `bun run types:check` and `bunx next build` pass. Type check and build
+      pass. **Lint does not run**: `typescript-eslint` does not support TypeScript 7.
+
+## Open questions
+
+- **GitHub link:** resolved: the header links to `puncoz-official/docs` (owner, 2026-10-31).
+- **Final name:** still open. Until it is chosen the site is "Puncoz Docs" (owner, 2026-10-31);
+  the name lives in `appName` in `src/lib/shared.ts` only.
+
+## Docs to update on implementation
+
+- [x] [`../app-flow/home-page.mdx`](../app-flow/home-page.mdx) — to match the build
+- [x] [`../prd/home-page.mdx`](../prd/home-page.mdx)
+- [x] `../architecture/system.mdx` — the home page, its data and the hero search
+- [x] `../dfd/system.mdx` — the home page as a second origin of search queries
+- [x] `DESIGN.md` — the home page's visual system
+- [x] `AGENTS.md` §1 (current state), `README.md` — the home page
+- [x] [`./index.mdx`](./index.mdx) — index row, next free number
+- [x] [`./index.mdx`](./index.mdx) — status on approval

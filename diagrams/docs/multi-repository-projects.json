@@ -1,0 +1,138 @@
+{
+  "schema_version": 2,
+  "diagram_type": "workflow",
+  "meta": {
+    "title": "App flow: multi-repository projects",
+    "subtitle": "One project, one overview and one planet; a station per repository in each track",
+    "quality_profile": "showcase",
+    "output": "multi-repository-projects.html"
+  },
+  "lanes": [
+    {
+      "id": "home",
+      "label": "Home"
+    },
+    {
+      "id": "project",
+      "label": "Project"
+    },
+    {
+      "id": "tracks",
+      "label": "Tracks"
+    },
+    {
+      "id": "outside",
+      "label": "Outside"
+    }
+  ],
+  "mainPath": [
+    "card",
+    "overview",
+    "use",
+    "page"
+  ],
+  "nodes": [
+    {
+      "id": "card",
+      "lane": "home",
+      "col": 0,
+      "type": "frontend",
+      "label": "Home planet card",
+      "sublabel": "Project · 3 repositories"
+    },
+    {
+      "id": "overview",
+      "lane": "project",
+      "col": 1,
+      "type": "frontend",
+      "label": "Project overview",
+      "sublabel": "repositories linked"
+    },
+    {
+      "id": "use",
+      "lane": "tracks",
+      "col": 2,
+      "type": "frontend",
+      "label": "Use track",
+      "sublabel": "a station per repository"
+    },
+    {
+      "id": "maintain",
+      "lane": "tracks",
+      "col": 3,
+      "type": "frontend",
+      "label": "Maintain track",
+      "sublabel": "shared + repository stations"
+    },
+    {
+      "id": "page",
+      "lane": "project",
+      "col": 3,
+      "type": "backend",
+      "label": "Docs page",
+      "sublabel": "scale strip names the repo"
+    },
+    {
+      "id": "repo",
+      "lane": "outside",
+      "col": 2,
+      "type": "external",
+      "label": "Repository on GitHub"
+    }
+  ],
+  "edges": [
+    {
+      "id": "open",
+      "from": "card",
+      "to": "overview",
+      "label": "opens",
+      "variant": "emphasis"
+    },
+    {
+      "id": "use_e",
+      "from": "overview",
+      "to": "use",
+      "label": "Use",
+      "variant": "emphasis"
+    },
+    {
+      "id": "maint_e",
+      "from": "overview",
+      "to": "maintain",
+      "label": "Maintain",
+      "variant": "default",
+      "role": "branch"
+    },
+    {
+      "id": "repo_e",
+      "from": "overview",
+      "to": "repo",
+      "label": "Frontend ↗",
+      "variant": "default",
+      "role": "branch"
+    },
+    {
+      "id": "upage",
+      "from": "use",
+      "to": "page",
+      "label": "a repository's page",
+      "variant": "emphasis"
+    },
+    {
+      "id": "mpage",
+      "from": "maintain",
+      "to": "page",
+      "label": "a repository's page",
+      "variant": "default",
+      "role": "branch"
+    },
+    {
+      "id": "side",
+      "from": "page",
+      "to": "use",
+      "label": "sun or moon",
+      "variant": "dashed",
+      "role": "return"
+    }
+  ]
+}

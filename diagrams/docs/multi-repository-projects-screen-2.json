@@ -1,0 +1,146 @@
+{
+  "schema_version": 1,
+  "diagram_type": "architecture",
+  "meta": {
+    "title": "Screen 2 — Project overview",
+    "subtitle": "Wireframe at phone width, drawn from its Mermaid version · multi repository projects",
+    "output": "multi-repository-projects-screen-2.html",
+    "animation": "trace",
+    "quality_profile": "showcase",
+    "legend": {
+      "entries": {
+        "backend": {
+          "label": "Control or link"
+        },
+        "external": {
+          "label": "Content"
+        }
+      }
+    }
+  },
+  "components": [
+    {
+      "id": "kind",
+      "type": "external",
+      "label": "◉ Project",
+      "pos": [
+        40,
+        60
+      ],
+      "size": [
+        436,
+        58
+      ]
+    },
+    {
+      "id": "name",
+      "type": "external",
+      "label": "acme",
+      "pos": [
+        40,
+        130
+      ],
+      "size": [
+        436,
+        58
+      ]
+    },
+    {
+      "id": "desc",
+      "type": "external",
+      "label": "Bookings for small studios.",
+      "pos": [
+        40,
+        200
+      ],
+      "size": [
+        436,
+        58
+      ]
+    },
+    {
+      "id": "facts",
+      "type": "external",
+      "label": "Latest 2.0.0",
+      "pos": [
+        40,
+        270
+      ],
+      "size": [
+        436,
+        70
+      ],
+      "sublabel": "v2 · In development 2.1.0-dev.1"
+    },
+    {
+      "id": "repos",
+      "type": "external",
+      "label": "Repositories: Frontend, Backend, API",
+      "pos": [
+        40,
+        352
+      ],
+      "size": [
+        436,
+        58
+      ]
+    },
+    {
+      "id": "links",
+      "type": "backend",
+      "label": "[Use →] Maintain",
+      "pos": [
+        40,
+        422
+      ],
+      "size": [
+        436,
+        58
+      ]
+    },
+    {
+      "id": "repolinks",
+      "type": "backend",
+      "label": "Frontend ↗",
+      "pos": [
+        40,
+        492
+      ],
+      "size": [
+        436,
+        70
+      ],
+      "sublabel": "Backend ↗ · API"
+    },
+    {
+      "id": "draw",
+      "type": "external",
+      "label": "ringed planet with moons v2 and dev",
+      "pos": [
+        40,
+        574
+      ],
+      "size": [
+        436,
+        58
+      ]
+    }
+  ],
+  "boundaries": [
+    {
+      "kind": "region",
+      "label": "Phone screen · /acme",
+      "wraps": [
+        "kind",
+        "name",
+        "desc",
+        "facts",
+        "repos",
+        "links",
+        "repolinks",
+        "draw"
+      ],
+      "pad": 22
+    }
+  ]
+}

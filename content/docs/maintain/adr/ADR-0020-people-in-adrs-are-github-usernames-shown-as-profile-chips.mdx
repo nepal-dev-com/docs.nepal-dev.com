@@ -1,0 +1,169 @@
+---
+title: "ADR-0020 — People in ADRs are GitHub usernames, shown as profile chips"
+description: "Everyone who decides or approves an ADR is written as a GitHub profile link, which the site shows as a chip with their avatar."
+---
+
+- **Status:** Approved
+- **Date:** 2026-11-01
+- **Deciders:** [@puncoz](https://github.com/puncoz)
+- **Approved by:** [@puncoz](https://github.com/puncoz)
+- **Approved on:** 2026-11-01
+- **Supersedes:** [ADR-0002](./ADR-0002-living-design-documentation.mdx) decision 5 (in part: "no
+  externally hosted images", for the avatar in a profile chip)
+- **Superseded by:** —
+- **Design documents:** [`../app-flow/github-profile-chips.mdx`](../app-flow/github-profile-chips.mdx),
+  [`../dfd/system.mdx`](../dfd/system.mdx), [`../security/threat-model.mdx`](../security/threat-model.mdx),
+  [`../architecture/system.mdx`](../architecture/system.mdx), `AGENTS.md` §2 and §8,
+  `PROJECT_AGENTS.md` §3
+
+## Context
+
+The owner asked (2026-11-01) that the people in an ADR, its deciders and approvers, be named by
+their GitHub username; that an ADR page link to each person's GitHub profile and show their
+profile picture if possible; and that agents in consuming repositories ask for a username they
+don't already have.
+
+The text side was done on the owner's direct instruction, as a content change: every ADR's
+`Deciders` and `Approved by` line, and the template's, reads
+`[@puncoz](https://github.com/puncoz)`; `AGENTS.md` §2 and `PROJECT_AGENTS.md` §3 and §7 say to
+write people that way and to ask for an unknown username. What remains is a UI change, the
+profile picture, and it departs from a rule, so it is this ADR.
+
+The owner chose, from options:
+
+- **Format:** a plain Markdown link, `[@user](https://github.com/user)`, not a component or a
+  frontmatter field.
+- **Avatar:** loaded live from GitHub, not a copy committed to the repository.
+
+Facts this decision rests on, checked:
+
+- MDX links on docs pages render through `a: createRelativeLink(source, page)` in
+  `src/app/(site)/[...slug]/page.tsx`, over Fumadocs' `a: Link` (`fumadocs-ui/dist/mdx.js`).
+  Fumadocs' `Link` opens an external link in a new tab (`fumadocs-core/dist/link.js`).
+- `https://github.com/puncoz.png` answers `302` to
+  `https://avatars.githubusercontent.com/u/7767424?v=4` (`cache-control: no-cache` on the
+  redirect); the image is a JPEG with `cache-control: max-age=300`. `?size=40` is passed on as
+  `s=40`. Checked with `curl -I` on 2026-11-01.
+- The Markdown surfaces (`/<page>.md`, `llms-full.txt`, `static.json`) carry the link as text.
+- `AGENTS.md` §8 and ADR-0002 decision 5 say "No binary or externally hosted images".
+
+## Decision
+
+1. **People in an ADR are GitHub usernames.** Every person an ADR names as deciding or
+   approving is written as a profile link, `[@user](https://github.com/user)`. The owner is
+   `puncoz`. An agent that does not know a person's username asks for it, and never writes a
+   display name in its place or guesses one (`AGENTS.md` §2, `PROJECT_AGENTS.md` §3).
+
+2. **A profile link renders as a chip.** On any page, a link whose text is exactly `@user` and
+   whose address is exactly `https://github.com/user`, for the same `user` (compared without
+   case) and a valid GitHub username (1 to 39 letters, digits or single hyphens, not starting
+   or ending with a hyphen), shows as a chip: a 20px round avatar beside `@user`, linking to
+   the profile and opening in a new tab like the site's other external links. Every other link
+   is unchanged. The site's `a` component checks the shape and hands everything else to
+   `createRelativeLink` as today.
+
+3. **The avatar is loaded live from GitHub**:
+   `<img src="https://github.com/<user>.png?size=40" width="20" height="20" alt="" loading="lazy" decoding="async" referrerpolicy="no-referrer">`.
+   The username's first letter sits behind the image, so while it loads, or if it is blocked or
+   missing, the chip shows the letter. The image is decorative: the link's name is its visible
+   `@user` text, with the title "@user on GitHub".
+
+4. **Nothing changes in the Markdown surfaces.** The per-page Markdown, `llms.txt`,
+   `llms-full.txt` and the search records keep the link as written; no image URL is added.
+
+5. **The one exception to "no externally hosted images".** The avatar in a profile chip is the
+   only externally hosted image on the site. `AGENTS.md` §8 says so, and this ADR supersedes
+   ADR-0002 decision 5 for it alone.
+
+## Options considered
+
+| Concern | Option | Pros | Cons | Verdict |
+|---|---|---|---|---|
+| Format | A — a Markdown link, `[@user](https://github.com/user)` | Reads and works anywhere: GitHub, the Markdown routes, an editor; no schema change | The site has to recognise a link's shape | Chosen (owner) |
+| Format | B — an MDX component, `<GitHubUser name="puncoz" />` | Explicit | Markdown readers and GitHub see a bare tag | Rejected |
+| Format | C — frontmatter, `deciders: [puncoz]` | Validated by the schema | A schema change; every ADR's header rewritten; the header lines lose the names | Rejected |
+| Avatar | A — loaded live from `github.com/<user>.png` | Always current; no file to keep; works on any host | Each reader's browser contacts GitHub; an exception to the no-external-images rule | Chosen (owner) |
+| Avatar | B — a copy committed to `public/` | No third-party request | Goes stale; a binary file in the repository; another person's picture copied | Rejected |
+| Avatar | C — through the Next.js image optimiser (`images.remotePatterns`) | Readers never contact GitHub | Needs a host with image optimisation; no hosting ADR yet; config change | Rejected for now |
+| Avatar | D — no avatar, the link only | Nothing new | Not what the owner asked for | Rejected |
+| Where | A — any link of exactly that shape, on any page | One rule; a project's own pages get it too | A page that writes such a link outside an ADR also gets a chip | Chosen (owner) |
+| Where | B — ADR pages only | Narrowest | A second rule about which pages count | Rejected |
+
+## Consequences
+
+**Positive**
+
+- Each decider and approver is one click from their profile, with their face beside the name.
+- ADRs read the same in an editor, on GitHub and on the site.
+
+**Negative / accepted trade-offs**
+
+- Every reader of a page with a chip makes requests to `github.com` and
+  `avatars.githubusercontent.com`.
+- A person's avatar is whatever they set on GitHub, shown on this site.
+- A renamed GitHub account leaves its old links pointing at someone else, or at nothing.
+
+## Content invariants
+
+- **1 (Private stays private).** Unchanged: a username in a public page is public. A private
+  project's ADRs are not in `content/` at all.
+- **5 (Readable as Markdown).** Kept: the Markdown keeps the link as written (decision 4).
+- **Departs from** ADR-0002 decision 5 and `AGENTS.md` §8, "no externally hosted images", for
+  the avatar alone (decision 5). That departure is part of what the owner approves.
+
+## Security considerations
+
+- **What leaves the system.** Nothing from the site. Each reader's browser requests
+  `github.com/<user>.png` and follows the redirect to `avatars.githubusercontent.com`, sending
+  the reader's IP address and user agent. `referrerpolicy="no-referrer"` keeps the page's
+  address out of the request. GitHub learns that someone viewed a picture of `user`. This is a
+  new boundary crossing, Browser → GitHub, recorded in [`../dfd/system.mdx`](../dfd/system.mdx)
+  on implementation.
+- **Personal data.** A GitHub username is personal data, public on GitHub. Only the owner's is
+  written today. Another person's goes in only with the owner's yes, as `PROJECT_AGENTS.md`
+  says.
+- **Input.** The username comes from a page's own Markdown, never from a reader. It is checked
+  against GitHub's username rules (decision 2) before it is put into a URL, so a link cannot
+  build an address on another host or path.
+- **Image content.** The picture is controlled by the GitHub account. Shown at 20px, as a
+  decorative image, not a link target of its own. Accepted.
+- **Content Security Policy.** The site sets none for its pages today. One added later must
+  allow `img-src` for `https://github.com` and `https://avatars.githubusercontent.com`; the
+  ADR that adds it says so.
+- **Residual risk.** GitHub can see which IP addresses load which avatars. Accepted by the
+  owner's choice of live avatars over a committed copy or a proxy.
+
+## Implementation notes
+
+- [x] `src/lib/github-profile.ts`: `profileUser(href, text)`, the username when the link is a
+      profile link of exactly that shape, else undefined; `profileUrl`, `avatarUrl`. Pure.
+- [x] `src/components/profile-link.tsx` (server): `ProfileChip`, and `withProfileChips`, the
+      page's `a` component wrapping `createRelativeLink`, used in
+      `src/app/(site)/[...slug]/page.tsx`.
+- [x] `src/app/site.css`: the chip, with focus, hover, the letter behind the avatar, and the
+      light and dark themes through the site's tokens.
+- [x] Tests (ADR-0007, with the runner of ADR-0021): a matching link; text and address naming
+      different users; a username of 40 characters, with a leading or doubled hyphen, or with
+      a path, query or other host; `http://`; a trailing slash; text without `@`; the chip's
+      markup (avatar URL, `referrerpolicy`, empty `alt`, the letter); other links unchanged.
+      In `src/lib/github-profile.test.ts` and `src/components/profile-link.test.tsx`; each
+      seen to fail with the code broken.
+- [x] Checked in the built HTML: the chips on ADR pages (`@puncoz` with its avatar), and the
+      Markdown route unchanged (`[@puncoz](https://github.com/puncoz)`). Not yet looked at in a
+      browser: the avatar loading, and the letter when it is blocked.
+- [x] `bun run test`, `bun run types:check` and `bunx next build` pass; `bun run lint` stays
+      blocked (typescript-eslint and TypeScript 7).
+
+## Docs to update on implementation
+
+- [x] [`../app-flow/github-profile-chips.mdx`](../app-flow/github-profile-chips.mdx): status
+      Current
+- [x] [`../dfd/system.mdx`](../dfd/system.mdx): the Browser → GitHub crossing
+- [x] [`../security/threat-model.mdx`](../security/threat-model.mdx): third-party integrations
+      and the accepted risk; [`../security/data-classification.mdx`](../security/data-classification.mdx):
+      GitHub usernames
+- [x] [`../architecture/system.mdx`](../architecture/system.mdx): the new files
+- [x] `AGENTS.md` §8: the one exception to "no externally hosted images"; §5 and §10
+- [x] `PROJECT_AGENTS.md` §4: the same exception
+- [x] `DESIGN.md` and `.impeccable/design.json`: the profile chip component
+- [x] [`./index.mdx`](./index.mdx): status on approval

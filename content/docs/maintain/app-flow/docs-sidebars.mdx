@@ -1,0 +1,237 @@
+---
+title: "App flow — docs sidebars: orbit stations, the trajectory and the horizon"
+description: "What a reader sees around a docs page: the planet row and orbit stations, the trajectory, its bar on phones and the horizon below."
+---
+
+- **Status:** Current
+- **Last updated:** 2026-11-01
+- **Related ADRs:** [ADR-0019](../adr/ADR-0019-adr-folders-show-as-a-constellation-in-the-sidebar.mdx),
+  [ADR-0018](../adr/ADR-0018-docs-pages-get-orbit-stations-a-trajectory-and-the-full-horizon.mdx),
+  [ADR-0017](../adr/ADR-0017-the-whole-site-is-one-solar-system.mdx),
+  [ADR-0027](../adr/ADR-0027-the-sidebar-is-a-scale-ladder-with-one-lifted-orbit.mdx),
+  [ADR-0030](../adr/ADR-0030-the-horizon-rises-over-the-page-and-its-sky-comes-alive.mdx)
+
+> Snapshot of the system as it stands today. Edit in place; never record what changed.
+
+What a reader sees around a docs page (ADR-0018): the left sidebar's planet row
+and orbit stations, the right-hand "On this page" trajectory, its bar on phones, and the full
+horizon below. Sample values are invented (ADR-0008): `lodestar` is not a real package. Phone
+width first; desktop differences are noted under each screen. The marks (planet, moons, sun and
+moon) are those of [The solar system](./solar-system.mdx); the characters in the wireframes stand
+for drawn SVG.
+
+The flow and every screen are drawn with Archify; the page shows them and its Markdown
+carries their Mermaid (ADR-0022). Their sources are in `diagrams/docs/`: `docs-sidebars.json` for the
+flow, one `docs-sidebars-screen-<n>.json` per screen.
+
+## Entry points
+
+- Every page inside a package or project, `/<slug>/…`, and this site's own pages under `/docs`.
+- On phones the left sidebar is Fumadocs' drawer, opened from the header; the trajectory is the
+  bar under the header.
+- Everyone sees the same pages. Nothing here depends on who the reader is.
+- The per-page Markdown (`/<page>.md`) and `llms.txt` carry none of this; they are the page's
+  content only.
+
+## Flow
+
+<Diagram src="/diagrams/docs/docs-sidebars.html" title="Docs page sidebars">
+
+```mermaid
+flowchart LR
+  R[Reader] -->|opens a page| PR["Planet row<br/>chip · sun | moon · moon picker"]
+  PR -->|current orbit lifts| ST["Open orbit, the one card<br/>pages as satellites"]
+  ST -->|chevron| CL["Closed orbit, a row<br/>ring · name · page count"]
+  CL -->|chevron| ST
+  ST -->|a satellite| P["Docs page"]
+  P -->|scroll| T["Trajectory<br/>probe · 4 min left"]
+  T -->|a heading| P
+  P -->|phone width| B["Phone bar<br/>ring · heading · min left"]
+  B -->|tap| SH["Trajectory sheet"]
+  SH -->|a heading| P
+  T -->|end of page| H["Full horizon<br/>scene · planets · Back to top"]
+  H -->|Back to top| P
+```
+
+</Diagram>
+
+## Screens
+
+### 1. `Planet row and orbit stations` — the left sidebar, `/lodestar/use/v0.1/install`
+
+<Diagram src="/diagrams/docs/docs-sidebars-screen-1.html" title="Screen 1 — Planet row and orbit stations">
+
+```mermaid
+block-beta
+  columns 4
+  chip["● lodestar"]:3 sw["☀ | ☾"]:1
+  moon["full moon · v0.1 · 0.1.4 · Latest ▾"]:4
+  top["• Overview (landmark)"]:4
+  block:card:4
+    columns 4
+    h1["◎ Get started · 2 ▾ (the one card)"]:4
+    p1["  ◉ Install (probe, tinted)"]:4
+    p2[" ∘ Commands"]:4
+  end
+  h2["○ Reference · 3 ▸ (a row)"]:4
+  h3["○ Guides · 4 ▸ (a row)"]:4
+```
+
+</Diagram>
+
+The planet row: the chip links to `/lodestar`; the sun and moon buttons open the same page on
+Use or Maintain ("Use, the day side" and "Maintain, the night side" as names and tooltips).
+Below it the sidebar is a scale ladder ([The sidebar's scale ladder](./sidebar-scale-ladder.mdx),
+ADR-0027): top-level pages are landmarks, separators are belts, folders are orbits. A closed
+orbit is a row with its ring, name and page count; the open one is the sidebar's one card, its
+border in the ecosystem colour when it holds the current page, its ring with a planet inside.
+Its pages are satellites on one outward-bowing arc, and the current page is the teal probe. One
+orbit is open at a time at each level: opening one closes the open one beside it, and a page
+change opens that page's orbits and closes the rest ([One open station](./one-open-station.mdx)).
+
+Desktop: the same, in the sidebar column; the sidebar's collapse button works as today. Phone:
+the same inside Fumadocs' drawer.
+
+<Diagram src="/diagrams/docs/docs-sidebars-screen-1-2.html" title="Screen 1 (2) — Planet row and orbit stations">
+
+```mermaid
+block-beta
+  columns 4
+  block:nest:4
+    columns 4
+    h["◎ Guides · 6 ▾ (the one card)"]:4
+    a1[" ∘ Theming"]:4
+    sub["   ◦ Recipes · 3 ▾ (nested orbit, no inner card)"]:4
+    a2["     ○ Async commands"]:4
+    a3[" ◉ Keyboard shortcuts (current)"]:4
+  end
+```
+
+</Diagram>
+
+A nested folder is a smaller orbit inside its parent's card, never a card of its own. A folder
+holding only its index page is an orbit link, with no count. A folder named
+`adr` is a constellation instead, one moon per ADR ([The ADR constellation](./adr-constellation.mdx)).
+
+**States**
+
+- Empty: a track with no folders shows only its landmarks; a track without separators shows no
+  belts.
+- Loading: none; the sidebar is prerendered with the page. Before scripts load, orbits show
+  in their starting state (the current one lifted, others as rows) and the chevrons do nothing until
+  hydration.
+- Not found: an unknown page gets the out-of-orbit 404, which has no sidebar.
+- Refused: not applicable; every page is public.
+- Error: not applicable at runtime; a broken `meta.json` fails the build (ADR-0013).
+- Degraded: with reduced motion, orbits lift and drop without animation. On touch screens no
+  tooltips; the buttons' names are read out.
+- One track: no sun and moon buttons. Maintain: no moon picker.
+- Success: a moon opens its page; the sun or moon opens the same page on the other side when it
+  exists, else that side's first page.
+
+### 2. `Trajectory` — "On this page", desktop column
+
+<Diagram src="/diagrams/docs/docs-sidebars-screen-2.html" title="Screen 2 — Trajectory">
+
+```mermaid
+block-beta
+  columns 4
+  head["On this page"]:3 left["4 min left"]:1
+  i1["● Add the package (read)"]:4
+  i2["● Render a palette (read)"]:4
+  i3["  ◉ Props (probe)"]:4
+  i4["  ○ Events (dashed ahead)"]:4
+  i5["○ Options"]:4
+  i6["○ Troubleshooting"]:4
+  top["Back to top ↑"]:4
+```
+
+</Diagram>
+
+The path curves through every dot: shallow outward arcs between headings of the same depth, an
+S-curve where depth changes. The read stretch is solid accent with filled dots; ahead is dashed
+and muted with hollow dots. The probe planet glides along the path as the reader scrolls. The
+column sits to the right of the page from Fumadocs' desktop breakpoint up.
+
+**States**
+
+- Empty: a page without headings shows "On this page", its reading time, and "This page has no
+  sections."; no path.
+- One heading: one dot and the probe on it; no path.
+- Loading: none; prerendered. Before scripts load the whole path is drawn dashed with hollow
+  dots, no probe, and the header shows the total, "4 min read".
+- Long lists: the column scrolls, and keeps the probe's row in view.
+- Not found, refused, error: not applicable.
+- Degraded: with reduced motion the probe jumps from dot to dot and headings scroll into view
+  instantly. Without scripts the headings are plain links that still jump.
+- A page under one minute: no time shown. At the end of the page: "End of page".
+- Success: choosing a heading scrolls to it; Back to top returns to the top of the page.
+
+### 3. `Phone bar and sheet` — under the header, phone width
+
+<Diagram src="/diagrams/docs/docs-sidebars-screen-3.html" title="Screen 3 — Phone bar and sheet">
+
+```mermaid
+block-beta
+  columns 4
+  ring["◔ ring + probe"]:1 cur["Props"]:2 min["4 min left ▾"]:1
+```
+
+</Diagram>
+
+<Diagram src="/diagrams/docs/docs-sidebars-screen-3-2.html" title="Screen 3 (2) — Phone bar and sheet">
+
+```mermaid
+block-beta
+  columns 4
+  sheet["On this page · 4 min left"]:4
+  s1["● Add the package"]:4
+  s2["● Render a palette"]:4
+  s3["  ◉ Props"]:4
+  s4["  ○ Events"]:4
+  s5["○ Options"]:4
+```
+
+</Diagram>
+
+The bar replaces Fumadocs' table-of-contents bar: a small ring with the probe at the reading
+position, the current heading (truncated), the time left and a chevron. Tapping opens the same
+trajectory as a sheet; choosing a heading scrolls there and closes it.
+
+**States**
+
+- Empty: a page without headings has no bar.
+- Before the first heading: the bar shows the first heading, muted, and the total time.
+- Degraded: with reduced motion the sheet opens without sliding. Without scripts the bar does not
+  open; the page reads normally.
+- Success: the reader jumps to a section and the sheet closes.
+
+### 4. `Full horizon` — below every docs page
+
+<Diagram src="/diagrams/docs/docs-sidebars-screen-4.html" title="Screen 4 — Full horizon">
+
+```mermaid
+block-beta
+  columns 4
+  close["You've reached the horizon. The Verse goes on."]:4
+  scene["The Himalaya · twinkling stars, shooting stars, the star rising, clouds, the flag on the summit, an observatory"]:4
+  planets["● lodestar  ● ledgerly  ○ orbit-board  ○ Nepal Dev Verse Docs"]:4
+  links["Search ⌘K · llms.txt · llms-full.txt · GitHub · Back to top"]:4
+  credit["Part of nepal-dev.com. Made with ❤️ by Puncoz Nepal."]:4
+```
+
+</Diagram>
+
+The same footer as the home page ([The solar system](./solar-system.mdx), screen 5), across the
+full width; its last link reads "Back to top". It rises over the sidebar and the trajectory, which
+set below its dusk edge as it comes into view ([The living horizon](./living-horizon.mdx),
+screen 2).
+
+**States**
+
+- Empty: with no public entries, the planet row is left out.
+- Degraded: with reduced motion Back to top jumps instead of scrolling, the sky is still and the
+  sidebar does not set. Without scripts Search and Back to top do nothing and the sky is still;
+  the links work.
+- Success: a planet link opens its overview; Search opens the dialog; Back to top returns to the
+  top of the page.

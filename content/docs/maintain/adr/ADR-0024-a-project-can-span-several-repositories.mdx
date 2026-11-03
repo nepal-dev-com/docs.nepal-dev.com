@@ -1,0 +1,230 @@
+---
+title: "ADR-0024 — A project can span several repositories"
+description: "A project made of several repositories lists them in its catalogue, with one primary, and gives each its own folder in each track."
+---
+
+- **Status:** Approved
+- **Date:** 2026-11-01
+- **Deciders:** [@puncoz](https://github.com/puncoz)
+- **Approved by:** [@puncoz](https://github.com/puncoz)
+- **Approved on:** 2026-11-01
+- **Supersedes:** [ADR-0013](./ADR-0013-packages-and-projects-share-one-catalogue-shape.mdx)
+  decision 4, its last sentence only ("A project that ships releases may use lines like a
+  package"); [ADR-0010](./ADR-0010-projects-document-themselves-through-a-submodule.mdx)
+  decision 2, for projects with several repositories (who edits what inside the one folder)
+- **Superseded by:** —
+- **Design documents:** [`../app-flow/multi-repository-projects.mdx`](../app-flow/multi-repository-projects.mdx),
+  [`../prd/multi-repository-projects.mdx`](../prd/multi-repository-projects.mdx),
+  [`../state/package-version-lifecycle.mdx`](../state/package-version-lifecycle.mdx),
+  [`../architecture/system.mdx`](../architecture/system.mdx), `PROJECT_AGENTS.md`
+
+## Context
+
+A project is often more than one repository: a frontend, a backend and an API, or any other
+split. Today the site assumes one repository per entry:
+
+- **One folder, one repository.** ADR-0010 gives each project one folder,
+  `content/<project-slug>/`, written by the repository that includes this one as a submodule,
+  and that repository edits only its own folder. Several repositories writing one folder would
+  all edit the same `meta.json`, overview and track files.
+- **One repository link.** `catalog.repository` is a single optional URL
+  (`src/lib/catalog-schema.ts`); the planet header shows it as one *Repository* link
+  (`src/components/docs/package-hero.tsx`).
+- **Project versions.** ADR-0013 lets a project version its Use track like a package, with any
+  number of lines, older (`legacy`) ones included. The build checks lines the same way for both
+  kinds (`src/lib/catalog-plugin.ts`).
+
+No project is documented yet, so nothing has to move. The owner decided on 2026-11-01:
+
+- one entry per project, with a folder per repository inside each track;
+- a project has at most a `dev` line and one released line, for the whole project, and this
+  holds for every project; several versions are for packages only;
+- one repository is primary and owns the shared files.
+
+## Decision
+
+1. **The catalogue lists a project's repositories.** A project with more than one repository
+   sets `catalog.repositories` instead of `catalog.repository`:
+
+   ```json
+   "catalog": {
+     "kind": "project",
+     "visibility": "public",
+     "repositories": [
+       { "id": "frontend", "name": "Frontend", "url": "https://github.com/example/acme-web", "primary": true },
+       { "id": "backend", "name": "Backend", "url": "https://github.com/example/acme-server" },
+       { "id": "api", "name": "API" }
+     ]
+   }
+   ```
+
+   - `id` is the repository's folder name: lowercase letters, digits and hyphens, unique in the
+     list, and not `dev`, `latest`, `adr` or the URL segment of one of the project's lines.
+   - `name` is what readers see; without it the `id` is shown. `url` is an optional `https`
+     URL to the repository.
+   - Exactly one repository has `primary: true`.
+   - The list holds two or more repositories, only on `kind: "project"`, and never together
+     with `repository`. A one-repository project keeps `repository`, as today. Packages are
+     one repository each.
+
+2. **Each repository has its own folder in each track.** Its pages go in a folder named its
+   `id`: `use/<id>/` and `maintain/<id>/`. Either may be missing; a repository with nothing for
+   readers has no `use/<id>/`. Pages about the project as a whole (an architecture that spans
+   the repositories, how they talk to each other) sit in the track beside those folders, as
+   pages or folders of their own. In the sidebar a repository folder is an orbit station like
+   any other, titled with the repository's `name` unless its `meta.json` sets a title.
+
+   ```
+   content/acme/
+   ├── meta.json          # catalog.repositories
+   ├── index.mdx          # the project overview
+   ├── use/
+   │   ├── frontend/
+   │   ├── backend/
+   │   └── api/
+   └── maintain/
+       ├── architecture.mdx   # spans the repositories
+       ├── frontend/
+       ├── backend/
+       └── api/
+   ```
+
+3. **Projects have at most two lines, for the whole project.** For every project, one
+   repository or several:
+
+   - Unversioned by default: `use/` holds pages (and, with several repositories, the
+     repository folders) directly.
+   - A project that ships releases has `use/dev/` (`channel: "dev"`) and at most one released
+     line (`channel: "latest"`). The build fails on a `legacy` line in a project. Packages keep
+     every rule of ADR-0013 and ADR-0015, older lines included.
+   - With several repositories, each line holds the repository folders:
+     `use/dev/<id>/` and `use/<line>/<id>/`. A release copies the whole of `use/dev/` to the
+     new released line and removes the previous one; a link to the removed line redirects to
+     the same path in the new one (ADR-0015).
+   - Maintain is not versioned (ADR-0013).
+
+4. **The primary repository owns the shared files.** In a project with several repositories:
+
+   - The **primary** repository edits the root `meta.json`, `index.mdx`, `use/meta.json`,
+     `maintain/meta.json`, every line's `meta.json`, every page outside a repository folder,
+     and releases (decision 3).
+   - **Every other repository** edits only its own folders: `use/<id>/` (in each line, when
+     the project has lines) and `maintain/<id>/`, and its diagrams, named
+     `diagrams/<project-slug>/<id>-<slug>.json` and `.html` (ADR-0022).
+   - A repository that needs a change outside its folders asks the primary repository's
+     maintainers or the owner. The slug, the list of repositories and which one is primary
+     are agreed with the owner.
+   - The build cannot know which repository wrote a file; `PROJECT_AGENTS.md` states the rule
+     and each repository's agent instructions name its `id`.
+
+5. **Readers see the repositories.**
+
+   - **Planet header**: the single *Repository* link becomes one link per repository, primary
+     first, each with the repository's name (*Frontend ↗*, *Backend ↗*); a repository without
+     a `url` is named without a link. The fact sheet shows *Repositories: Frontend, Backend,
+     API*.
+   - **Home page**: the planet card's kind line adds the count, *Project · 3 repositories*.
+   - **Sidebar**: repository folders are stations (decision 2), under ADR-0023's one open
+     station at a time.
+   - Search records, `llms.txt` and per-page Markdown are unchanged: a page in a repository
+     folder is a page of the project, and its breadcrumb names the folder.
+
+## Options considered
+
+| Concern | Option | Pros | Cons | Verdict |
+|---|---|---|---|---|
+| Layout | A — one entry, a folder per repository inside each track | One overview and one planet per project; repository folders are ordinary stations; smallest change to the one shape of ADR-0015 | Shared files need an owner (decision 4) | Chosen (owner) |
+| Layout | B — one entry with a repository switch: each repository its own Use and Maintain | Each repository fully independent | A new navigation level beside the track switch and the moon picker; departs from ADR-0015's one shape | Rejected (owner) |
+| Layout | C — separate entries linked by a group | No shared files at all | No project overview; one project shows as several planets | Rejected (owner) |
+| Versions | A — dev and one released line, for the whole project, for every project | One rule for projects; one moon picker per project | Repositories that release separately can't say so; a project's older release is not kept | Chosen (owner) |
+| Versions | B — lines per repository | Independent releases | A moon picker per station; much more to build and check | Rejected (owner) |
+| Versions | C — as today: projects version like packages | No change | Older project lines, which the owner does not want | Rejected (owner) |
+| Shared files | A — a primary repository owns them | Clear ownership; no two repositories edit one file | The others depend on it for the overview | Chosen (owner) |
+| Shared files | B — any repository edits them | Flexible | Two repositories can change the overview in different directions | Rejected |
+| Shared files | C — only the owner, in this repository | Strict | Every overview change waits for the owner | Rejected |
+| Catalogue | A — `repositories` beside `repository`, never both | A one-repository project is unchanged | Two fields for one idea | Chosen |
+| Catalogue | B — only `repositories`, for every entry | One field | Every existing entry, and packages, change for nothing | Rejected |
+
+## Consequences
+
+**Positive**
+
+- A project of several repositories reads as one project: one overview, one planet, one
+  search scope, with each repository's pages in its own station.
+- Each repository's agent has a folder it alone edits, so their changes don't collide.
+- One version rule for projects; the moon picker for a project shows at most `dev` and the
+  released line.
+
+**Negative / accepted trade-offs**
+
+- The primary repository is a bottleneck for the overview, the tracks' order and releases.
+- A project's previous release is not kept on the site once a new one is released.
+- Ownership inside the folder is a convention the build cannot check.
+- A repository `id` can't be named like a line (`dev`, `latest`) or `adr`.
+
+## Content invariants
+
+- **§6.1 Private stays private.** Unchanged: `visibility` must be `public` for the whole
+  project, so every repository's pages are public. A project whose repositories are partly
+  private documents only what is public, or nothing, until the private-documentation ADR.
+- **§6.2 Checked against the code.** Each repository's pages are checked against that
+  repository's source; the `url` in the catalogue is the repository's own.
+- **§6.3 Every package page says which version it documents.** Unchanged for packages; a
+  project's line states its version as today.
+- **§6.4, §6.5.** Unchanged.
+
+## Security considerations
+
+- **New data:** repository names and `https` URLs in the catalogue, all public. The schema
+  refuses a non-`https` URL, as it does `repository` today; links open with
+  `rel="noreferrer noopener"`.
+- **No private repository by accident.** A repository listed in a public project is named on
+  the site; listing a private repository's URL publishes its name and location. `PROJECT_AGENTS.md`
+  says to list a private repository without `url`, or not at all, and to ask the owner.
+- **Several writers, one folder.** More repositories can now write into one project's folder.
+  The rules of ADR-0010 still apply to each: edit only, a human commits, nothing private. The
+  owner reviews every change before committing; ownership (decision 4) narrows what each
+  repository should touch.
+- Nothing new leaves the system: search records gain no field.
+
+## Implementation notes
+
+- [x] `src/lib/catalog-schema.ts`: `repositories` (id, name, url, primary) with its checks:
+      projects only, two or more, unique ids, reserved ids, `https`, exactly one primary, not
+      with `repository`.
+- [x] `src/lib/catalog-plugin.ts`: no `legacy` line in a project, at most one released line; a
+      repository id that is a line's segment fails; a repository folder's title defaults to
+      the repository's `name`.
+- [x] `src/lib/catalog.ts`: entries carry `repositories` (primary first) for the planet header
+      and the home card.
+- [x] `src/components/docs/package-hero.tsx`: a link per repository and the *Repositories*
+      fact; `src/components/home/planet-cards.tsx`: the repository count.
+- [x] Tests (ADR-0007): the schema (a valid list; one repository; no primary, two primaries;
+      a duplicate, reserved or upper-case id; an `http` URL; `repositories` on a package; with
+      `repository`), the plugin (a project with `dev` and a released line passes; a `legacy`
+      line in a project fails; a package keeps its older lines; a repository folder titled from
+      its name; an id clashing with a line segment), the planet header (links, primary first, a
+      repository without a URL) and the home card count.
+- [x] Checked in Chrome on localhost with a test project in a scratch copy of `content/`, never
+      committed: invented names only. Done with a temporary `content/acme/` (three repositories,
+      `dev` and a latest line), deleted afterwards: the header links and the unlinked API, the
+      Repositories fact, a station per repository titled from the catalogue, a `meta.json` title
+      winning over the name, and shared Maintain pages above the stations.
+- [x] `bun run test`, `bun run types:check` and `bunx next build` pass; `bun run lint` is
+      reported while it stays blocked.
+
+## Docs to update on implementation
+
+- [x] [`../app-flow/multi-repository-projects.mdx`](../app-flow/multi-repository-projects.mdx)
+      and [`../prd/multi-repository-projects.mdx`](../prd/multi-repository-projects.mdx): Current.
+- [x] [`../state/package-version-lifecycle.mdx`](../state/package-version-lifecycle.mdx): a
+      project's lines (no Legacy state).
+- [x] [`../architecture/system.mdx`](../architecture/system.mdx): the catalogue's repositories.
+- [x] [`ADR-0013`](./ADR-0013-packages-and-projects-share-one-catalogue-shape.mdx) and
+      [`ADR-0010`](./ADR-0010-projects-document-themselves-through-a-submodule.mdx):
+      *Superseded by:* this ADR, for the parts named above.
+- [x] `PROJECT_AGENTS.md`: §1's snippet names the repository's `id` and whether it is primary;
+      §3 the folders, the catalogue's `repositories`, project lines and who edits what.
+- [x] `AGENTS.md` §1 (one shape for every entry) and §10 (the repository map); `README.md`
+      where it describes an entry's folder.
+- [x] [`./index.mdx`](./index.mdx): status.

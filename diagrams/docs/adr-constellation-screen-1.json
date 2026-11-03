@@ -1,0 +1,402 @@
+{
+  "schema_version": 1,
+  "diagram_type": "architecture",
+  "meta": {
+    "title": "Screen 1 — Constellation",
+    "subtitle": "Wireframe at phone width, drawn from its Mermaid version · adr constellation",
+    "output": "adr-constellation-screen-1.html",
+    "animation": "trace",
+    "quality_profile": "showcase",
+    "legend": {
+      "entries": {
+        "backend": {
+          "label": "Control or link"
+        },
+        "external": {
+          "label": "Content"
+        },
+        "frontend": {
+          "label": "Site chrome"
+        }
+      }
+    }
+  },
+  "components": [
+    {
+      "id": "head",
+      "type": "backend",
+      "label": "◎ Architecture Decision Records",
+      "pos": [
+        40,
+        60
+      ],
+      "size": [
+        436,
+        70
+      ],
+      "sublabel": "19 ▾"
+    },
+    {
+      "id": "m1",
+      "type": "external",
+      "label": "◌",
+      "pos": [
+        40,
+        142
+      ],
+      "size": [
+        33,
+        58
+      ]
+    },
+    {
+      "id": "m2",
+      "type": "external",
+      "label": "◌",
+      "pos": [
+        85,
+        142
+      ],
+      "size": [
+        33,
+        58
+      ]
+    },
+    {
+      "id": "m3",
+      "type": "external",
+      "label": "◌",
+      "pos": [
+        130,
+        142
+      ],
+      "size": [
+        33,
+        58
+      ]
+    },
+    {
+      "id": "m4",
+      "type": "external",
+      "label": "◌",
+      "pos": [
+        174,
+        142
+      ],
+      "size": [
+        33,
+        58
+      ]
+    },
+    {
+      "id": "m5",
+      "type": "external",
+      "label": "◌",
+      "pos": [
+        219,
+        142
+      ],
+      "size": [
+        33,
+        58
+      ]
+    },
+    {
+      "id": "m6",
+      "type": "external",
+      "label": "◌",
+      "pos": [
+        264,
+        142
+      ],
+      "size": [
+        33,
+        58
+      ]
+    },
+    {
+      "id": "m7",
+      "type": "external",
+      "label": "◌",
+      "pos": [
+        309,
+        142
+      ],
+      "size": [
+        33,
+        58
+      ]
+    },
+    {
+      "id": "m8",
+      "type": "external",
+      "label": "◌",
+      "pos": [
+        354,
+        142
+      ],
+      "size": [
+        33,
+        58
+      ]
+    },
+    {
+      "id": "m9",
+      "type": "external",
+      "label": "◌",
+      "pos": [
+        398,
+        142
+      ],
+      "size": [
+        33,
+        58
+      ]
+    },
+    {
+      "id": "m10",
+      "type": "external",
+      "label": "◌",
+      "pos": [
+        443,
+        142
+      ],
+      "size": [
+        33,
+        58
+      ]
+    },
+    {
+      "id": "m11",
+      "type": "external",
+      "label": "◌",
+      "pos": [
+        40,
+        212
+      ],
+      "size": [
+        33,
+        58
+      ]
+    },
+    {
+      "id": "m12",
+      "type": "external",
+      "label": "●",
+      "pos": [
+        85,
+        212
+      ],
+      "size": [
+        33,
+        58
+      ]
+    },
+    {
+      "id": "m13",
+      "type": "external",
+      "label": "●",
+      "pos": [
+        130,
+        212
+      ],
+      "size": [
+        33,
+        58
+      ]
+    },
+    {
+      "id": "m14",
+      "type": "external",
+      "label": "●",
+      "pos": [
+        174,
+        212
+      ],
+      "size": [
+        33,
+        58
+      ]
+    },
+    {
+      "id": "m15",
+      "type": "external",
+      "label": "●",
+      "pos": [
+        219,
+        212
+      ],
+      "size": [
+        33,
+        58
+      ]
+    },
+    {
+      "id": "m16",
+      "type": "external",
+      "label": "◉",
+      "pos": [
+        264,
+        212
+      ],
+      "size": [
+        33,
+        58
+      ]
+    },
+    {
+      "id": "m17",
+      "type": "external",
+      "label": "●",
+      "pos": [
+        309,
+        212
+      ],
+      "size": [
+        33,
+        58
+      ]
+    },
+    {
+      "id": "m18",
+      "type": "external",
+      "label": "●",
+      "pos": [
+        354,
+        212
+      ],
+      "size": [
+        33,
+        58
+      ]
+    },
+    {
+      "id": "m19",
+      "type": "external",
+      "label": "◌",
+      "pos": [
+        398,
+        212
+      ],
+      "size": [
+        33,
+        58
+      ]
+    },
+    {
+      "id": "sp",
+      "type": "external",
+      "label": "sp",
+      "pos": [
+        443,
+        212
+      ],
+      "size": [
+        33,
+        58
+      ]
+    },
+    {
+      "id": "read",
+      "type": "frontend",
+      "label": "16",
+      "pos": [
+        40,
+        282
+      ],
+      "size": [
+        436,
+        70
+      ],
+      "sublabel": "Home search is the Fumadocs dialog, and private projects…"
+    },
+    {
+      "id": "steps",
+      "type": "external",
+      "label": "← 15",
+      "pos": [
+        40,
+        364
+      ],
+      "size": [
+        212,
+        58
+      ]
+    },
+    {
+      "id": "next",
+      "type": "backend",
+      "label": "17 →",
+      "pos": [
+        264,
+        364
+      ],
+      "size": [
+        212,
+        58
+      ]
+    },
+    {
+      "id": "all",
+      "type": "backend",
+      "label": "All 19 decisions →",
+      "pos": [
+        40,
+        434
+      ],
+      "size": [
+        436,
+        58
+      ]
+    },
+    {
+      "id": "legend",
+      "type": "external",
+      "label": "● approved",
+      "pos": [
+        40,
+        504
+      ],
+      "size": [
+        436,
+        70
+      ],
+      "sublabel": "◌ proposed · ◐ superseded"
+    }
+  ],
+  "boundaries": [
+    {
+      "kind": "region",
+      "label": "Phone screen · the open Decisions station, on /docs/maintain/adr/ADR-0016-…",
+      "wraps": [
+        "head",
+        "m1",
+        "m2",
+        "m3",
+        "m4",
+        "m5",
+        "m6",
+        "m7",
+        "m8",
+        "m9",
+        "m10",
+        "m11",
+        "m12",
+        "m13",
+        "m14",
+        "m15",
+        "m16",
+        "m17",
+        "m18",
+        "m19",
+        "sp",
+        "read",
+        "steps",
+        "next",
+        "all",
+        "legend"
+      ],
+      "pad": 22
+    }
+  ]
+}

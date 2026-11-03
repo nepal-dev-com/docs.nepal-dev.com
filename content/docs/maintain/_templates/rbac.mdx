@@ -1,0 +1,43 @@
+---
+title: "RBAC — <feature>"
+description: "Replace this with one or two plain sentences, about 160 characters at most, saying what the page is for."
+---
+
+- **Status:** Draft
+- **Last updated:** YYYY-MM-DD
+- **Related ADRs:** ADR-NNNN
+
+> Snapshot of the system as it stands today. Edit in place; never record what changed.
+
+## Roles in scope
+
+| Role | Definition |
+|---|---|
+
+## Scope
+
+How a role's reach is bounded: public content only · one private project · every project.
+
+## Action matrix
+
+Legend: ✅ allowed · 🔶 allowed within scope · ❌ denied
+
+| Action | Role A | Role B | Role C |
+|---|---|---|---|
+| Read page | | | |
+| Read Markdown / `llms.txt` | | | |
+| Search | | | |
+| Edit content | | | |
+| Publish | | | |
+
+## Surface-level visibility
+
+Surfaces where visibility differs from the page's own (search index, `llms-full.txt`, Open
+Graph images, sitemap).
+
+| Surface | Public content | Private content | Enforced where |
+|---|---|---|---|
+
+## Denial behaviour
+
+Whether a denied page is hidden (404) or visible-but-locked (403), and why.

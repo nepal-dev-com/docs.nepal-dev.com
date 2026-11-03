@@ -1,0 +1,263 @@
+---
+title: "ADR-0022 — Diagrams show their Archify view on the page and their Mermaid in Markdown"
+description: "Every diagram is one component holding a Mermaid fence: pages show its Archify view, and every Markdown surface carries the Mermaid."
+---
+
+- **Status:** Approved
+- **Date:** 2026-11-01
+- **Deciders:** [@puncoz](https://github.com/puncoz)
+- **Approved by:** [@puncoz](https://github.com/puncoz)
+- **Approved on:** 2026-11-01
+- **Supersedes:** [ADR-0011](./ADR-0011-archify-diagrams-are-embedded-from-sandboxed-html.mdx)
+  decisions 1 to 3 (where the files live, the byte-for-byte copy into `public/`, `<HtmlEmbed>`
+  with the Mermaid shown above it)
+- **Superseded by:** —
+- **Design documents:** [`../app-flow/diagrams.mdx`](../app-flow/diagrams.mdx),
+  [`../prd/diagrams.mdx`](../prd/diagrams.mdx), [`../architecture/system.mdx`](../architecture/system.mdx),
+  [`../api/content-routes.mdx`](../api/content-routes.mdx),
+  [`../security/threat-model.mdx`](../security/threat-model.mdx), `AGENTS.md` §8, `PROJECT_AGENTS.md` §4,
+  `DESIGN.md`
+
+## Context
+
+ADR-0011 put each Archify diagram on its page in a sandboxed frame, under its Mermaid version.
+The owner asked (2026-11-01):
+
+- **Inside the frame, only the diagram, its labels and its controls.** Today the frame also
+  shows Archify's title and subtitle, its notes and index rail and its theme and style buttons,
+  and because all of that is taller than the frame, the frame scrolls.
+- **On the page, only the Archify view; in Markdown, only the Mermaid.** The copy-Markdown
+  action, the Markdown routes and `llms-full.txt` give Mermaid, never the Archify tag. Enforced
+  for every package and project.
+- **The diagram's background matches the site's theme**, while boxes and arrows stay vibrant
+  and meaningful, with live animation.
+
+The owner then chose, from options: **wireframes get Archify versions too**, drawn from their
+Mermaid, **one per screen**; enforcement is **strict**, so every Mermaid diagram outside the
+templates has an Archify view, and the four that lack one today get it in this change; and
+the implementation is **checked in the owner's Chrome** through the Claude in Chrome extension,
+on localhost only.
+
+Facts this decision rests on, read from Archify 3.2.0's output and the installed packages:
+
+- **What an Archify page holds.** A toolbar (theme, style, Live/Still, Present, Export); a
+  header (the title and subtitle); the diagram, with its own controls (Route, Map, Lens, find,
+  guide, zoom); and a notes rail (cards, a node index, "Notes & index").
+- **`?embed=1`** hides the toolbar, header, cards and diagram controls, and turns motion and
+  exploration off. Too bare for what the owner asked.
+- **`?theme=light` or `?theme=dark`** sets the theme before first paint.
+- **Colours are CSS variables.** The page's: `--bg`, `--grid`, `--canvas-dot`, `--panel`,
+  `--panel-border`, `--text` and its muted, dim and faint variants. The nodes' come from their
+  kind: `--frontend-stroke` cyan, `--backend-stroke` green, `--database-stroke` violet,
+  `--cloud-stroke` amber, `--security-stroke` rose, `--messagebus-stroke` orange,
+  `--external-stroke` slate, each with a light-theme value.
+- **Motion** starts Still when no preference is saved. Inside the sandbox, storage throws, so
+  every embed starts Still today.
+- **Size.** The diagram's `svg` carries a `viewBox` and `data-reader-fit`: `width-first`
+  (it fills the width) or `intrinsic-height` (a wide diagram, such as the 1277 × 236 version
+  lifecycle). Archify has no wheel handler; the scrolling comes from its page being taller than
+  the 420 or 560px frame.
+- **Markdown.** fumadocs-mdx's `includeProcessedMarkdown` takes a `filterElement` that can keep
+  an element's children and drop the element (`'children-only'`, `fumadocs-core` remark-llms).
+  The copy-Markdown action, `/<page>.md`, Markdown negotiation and `llms-full.txt` all read
+  that processed Markdown (`docsLlms` in `src/lib/source.ts`). Search records exclude code
+  blocks, so a Mermaid fence never reaches them.
+- **Wireframes.** Archify has no wireframe type. Its `architecture` type places components by
+  `pos` and `size` and wraps them in labelled `region` boundaries, enough to draw a screen as
+  boxes inside a phone frame.
+- **Counts.** 37 wireframes in 8 app flows, 4 Mermaid diagrams without an Archify view
+  (`maintain/index.mdx`, `architecture/system.mdx`, `dfd/system.mdx`,
+  `sequence/build-and-search-sync.mdx`), and 9 diagrams with one. An Archify file is about
+  820 KB, most of it the viewer built into every file.
+
+## Decision
+
+1. **One shape for every diagram.** A diagram in `content/` is written as a `<Diagram>` holding
+   exactly one Mermaid fence and nothing else:
+
+   ````mdx
+   <Diagram src="/diagrams/example-cli/request-flow.html" title="Request flow">
+
+   ```mermaid
+   flowchart LR
+     Parser --> Router --> Handler
+   ```
+
+   </Diagram>
+   ````
+
+   `src` follows ADR-0011's rule (`/diagrams/<project-slug>/<slug>.html`); `title` is required.
+   `<Diagram>` is registered in `src/components/mdx.tsx`; `<HtmlEmbed>` is no longer available to
+   pages and lives on inside `<Diagram>`.
+
+2. **The page shows only the Archify view.** `<Diagram>` renders the frame; the Mermaid is not
+   rendered on the page. Under the frame stay the title as its caption and **Open full screen**.
+
+3. **Markdown shows only the Mermaid.** The processed Markdown keeps `<Diagram>`'s children and
+   drops the tag (`filterElement`, `'children-only'`), so every Markdown surface (the
+   copy-Markdown action, `/<page>.md`, Markdown negotiation, `llms-full.txt`) carries the
+   Mermaid fence and never an Archify URL.
+
+4. **Every Mermaid diagram is a `<Diagram>`, wireframes included.** The build fails on a Mermaid
+   fence outside a `<Diagram>`, anywhere in `content/` except `content/docs/maintain/_templates/`
+   (templates show the shape; a copy must be wrapped before it builds). A wireframe's Archify
+   version is an `architecture` diagram drawn from its Mermaid: one per screen, its boxes placed
+   as the Mermaid rows, inside a labelled phone-screen region, at phone width. The four diagrams
+   without one get theirs in this change.
+
+5. **Where the files live.** Both files sit in `diagrams/<project-slug>/`: the candidate,
+   `<slug>.json`, and Archify's HTML, `<slug>.html`, byte for byte as `deliver` wrote it, so
+   `check --require-provenance` can run on the committed file. `public/diagrams/` goes. A
+   route, `src/app/diagrams/[project]/[file]/route.ts`, prerenders each at
+   `/diagrams/<project-slug>/<slug>.html`, with the site shell of decision 6, served with
+   ADR-0011's CSP `sandbox` header. The build fails on: an HTML without its JSON; a `src` with
+   no file; a diagram file no page uses; an Archify receipt (`*.delivery*.json`) in `diagrams/`
+   or `public/`.
+
+6. **The site shell**, `src/lib/diagram-shell.ts`, is added to every diagram as it is served,
+   so a new package's diagrams need nothing of their own:
+   - **In a frame** (`?frame=1`, set by `<Diagram>`): Archify's title and subtitle, notes rail
+     and its reveal button, theme and style buttons and the guide's credit line are hidden. The
+     diagram, its labels, Live/Still, Present, Export and the diagram controls stay. A direct
+     visit, through **Open full screen**, keeps Archify's title and notes.
+   - **Colours.** The page variables take the site's tokens for each theme (`--home-bg`,
+     `--home-panel`, `--home-line`, `--home-ink`, `--home-muted`, `--home-faint`), so the
+     diagram sits on the page's own ground. Nodes and arrows keep Archify's kind palette,
+     vibrant and meaningful. Diagrams are delivered with Archify's classic style (no
+     `visual_preset`), and the existing ones are delivered again that way.
+   - **Theme.** `<Diagram>` passes `?theme=` from the site's theme, and changes it when the
+     reader switches theme (the frame reloads from the browser cache).
+   - **Motion** starts Live: the shell turns Archify's motion on once after load, unless the
+     reader prefers reduced motion. The reader can switch to Still.
+   - **No inner scrolling.** The frame's height is set on the server from the diagram's
+     `viewBox`, plus room for the controls, as a CSS aspect ratio, so the page doesn't jump. The
+     shell then reports the exact content height to the page with `postMessage`. The page takes
+     it only from that frame (`event.source`), and only as a number within bounds. Page
+     scrolling passes over the frame. A wide diagram (`intrinsic-height`) scrolls sideways
+     inside the frame on phones, Archify's own containment.
+
+7. **The same for every repository.** `AGENTS.md` §8, `PROJECT_AGENTS.md` §4 and the templates
+   state the shape. The build checks run on every folder in `content/`.
+
+## Options considered
+
+| Concern | Option | Pros | Cons | Verdict |
+|---|---|---|---|---|
+| Trimming Archify | A — a shell added as the file is served | One place for every diagram; the committed file stays Archify's own | Depends on Archify's class names; re-checked on each Archify upgrade | Chosen |
+| Trimming Archify | B — Archify's `?embed=1` | No site code | No controls and no motion: not what the owner asked | Rejected |
+| Trimming Archify | C — edit each delivered file in the repository | No route | Breaks `check --require-provenance` on the committed file; repeated per file | Rejected |
+| Mermaid on the page | A — not shown | What the owner asked | The text version is one action away (Markdown), not on the page | Chosen (owner) |
+| Mermaid on the page | B — a closed "Text version" disclosure | Text on the page for those who want it | Not what the owner asked | Rejected |
+| Markdown | A — `filterElement`, `'children-only'` | Every Markdown surface at once, at build | Ties to fumadocs-mdx's option | Chosen |
+| Markdown | B — rewrite the text in `renderPage` | No build option | A regular expression over MDX | Rejected |
+| Frame height | A — from the `viewBox` on the server, refined by the shell's report | No jump; no inner scroll | A `postMessage` channel to validate | Chosen |
+| Frame height | B — fixed, as today | Simple | Scrolls or leaves empty space | Rejected |
+| Wireframes | A — one Archify file per screen | Each screen's picture where its Mermaid is | 37 files, about 30 MB; a page with 7 screens loads about 5.6 MB of frames as it scrolls | Chosen (owner) |
+| Wireframes | B — one per app flow | 8 files, about 6.5 MB | Screens apart from their states | Rejected (owner) |
+| Wireframes | C — stay as code | No new files | Code on the page | Rejected (owner) |
+| Enforcement | A — strict: every Mermaid diagram outside the templates | No page can skip it | The 4 diagrams without a view are drawn now | Chosen (owner) |
+| Enforcement | B — only the `<Diagram>` shape | Less work now | Bare Mermaid keeps showing as code | Rejected (owner) |
+| Colours | A — site ground, Archify's kind palette, classic style | Matches the site; colour carries meaning | Every existing diagram is delivered again | Chosen |
+| Colours | B — keep Archify's backgrounds | No shell colours | Doesn't match the site | Rejected |
+
+## Consequences
+
+**Positive**
+
+- A reader sees the diagram and its controls, at its own height, in the site's colours, moving.
+- Tools and LLMs get Mermaid text, never an iframe URL.
+- A consuming repository writes one `<Diagram>`; the rest is the site's.
+
+**Negative / accepted trade-offs**
+
+- About 41 new Archify files, roughly 34 MB more in the repository and the deployed output.
+- A page with many screens loads several frames as the reader scrolls.
+- Each diagram exists twice, Mermaid and Archify; both change in the same change.
+- The shell depends on Archify's markup. Its tests run against a committed Archify file, so an
+  upgrade that renames what the shell hides fails the tests.
+- The Mermaid text is not on the page. Archify's diagram is an accessible `svg` (`role="img"`,
+  title and description), and the frame has a title.
+
+## Content invariants
+
+- **1 (Private stays private).** Unchanged: a diagram of a private project never goes into
+  `diagrams/`.
+- **5 (Readable as Markdown).** Strengthened: every diagram's Markdown is its Mermaid.
+
+## Security considerations
+
+- **Isolation unchanged.** The shell's script runs inside the same sandboxed, opaque-origin
+  frame (no `allow-same-origin`), and direct visits keep the CSP `sandbox` header.
+- **`postMessage`.** The page accepts a message only when `event.source` is that frame's
+  window and the data is `{ type: 'archify-height', height }` with a finite height between
+  120 and 4000; anything else is ignored. The frame sends nothing but its height, and a
+  Present request (`{ type: 'archify-present' }`, no data) when it cannot go fullscreen; the
+  page answers it by opening that diagram's own URL, which it builds itself (implementation
+  notes).
+- **The route** serves only files matching `<project-slug>/<slug>.html` from `diagrams/`,
+  listed at build (`generateStaticParams`, no other paths). No request data is read.
+- **Nothing new leaves the system.** The shell adds no network call; the checks of ADR-0011
+  (no external resources, no network APIs, no local paths) run on each committed file.
+
+## Implementation notes
+
+- [x] `src/components/diagram.tsx` (`<Diagram>`, server: checks the `src` and title, reads the
+      size) with its client part `diagram-frame.tsx` for the theme and the height. `<HtmlEmbed>`
+      was folded into the frame rather than kept as a separate component; it is removed from
+      `src/components/mdx.tsx` and from the repository, and a page that still uses it fails the
+      build with the way forward.
+- [x] `src/lib/source.ts`: `includeProcessedMarkdown` with `filterElement` keeping
+      `<Diagram>`'s children (`markdownFilter` in `src/lib/remark-diagrams.ts`).
+- [x] The build check of decision 4 (`remarkDiagrams`, first among the remark plugins through
+      `applyMdxPreset`) and the file checks of decision 5 (`checkDiagrams`, run by the loader
+      plugin; a JSON without its HTML fails too).
+- [x] `src/app/diagrams/[project]/[file]/route.ts` (with `src/lib/diagram-files.ts`) and
+      `src/lib/diagram-shell.ts`. A diagram is wide, for the frame's minimum width, at Archify's
+      own ratio (1.55); the frame's first height is the `viewBox` ratio plus 10rem for the
+      controls, then the reported height.
+- [x] Every diagram moved to `diagrams/docs/` and delivered again in the classic style; Archify
+      views made for the 4 diagrams and the 37 wireframes; every page converted to
+      `<Diagram>`; the templates updated. Wireframe text is shortened with "…" where Archify
+      would draw it below about 11px (it draws a label on one line); the full text is in the
+      Mermaid. 49 diagrams in all, about 40 MB of HTML. Every file passes
+      `check --require-provenance`, holds no local path and calls no network API.
+- [x] Tests: the shell (what it hides, against a committed Archify file; the colours against
+      `global.css`; Live start and reduced motion; the height report, an open menu, a height
+      that answers itself, the toolbar's stacking, Present to fullscreen and its fallback), the
+      height bounds and the Present request, the
+      `<Diagram>` shape check (no fence, two fences, other content, a bare fence outside one, a
+      bare fence nested in another element, templates exempt, `<HtmlEmbed>`), the Markdown
+      output (the fence kept, the tag gone), `<Diagram>`'s frame, and the route's paths.
+- [x] Checked in Chrome on localhost (the built site, desktop and phone width, both themes).
+      Three faults found there and fixed in the shell and the frame:
+      - **Flicker.** Archify lifts its bottom dock and reserves room for it from the viewport
+        height, which in a frame is the frame: the frame answered its own height, about 16
+        times a second. In a frame the dock holds still and has fixed room, and past 8 changes
+        in 2 seconds the shell reports only growth until the frame's width changes.
+      - **Export menu under the diagram.** The frame's toolbar kept its stacking (`z-index`),
+        spans the frame so the menu opens inside it on phones, and the menu takes its own
+        height; the shell reports the open menu's bottom, so the frame grows to show it.
+      - **Present.** Archify's Present stage is the viewport's height, the frame's own. The
+        frame now has `allow="fullscreen"`, and the shell takes the stage to fullscreen;
+        leaving fullscreen leaves the stage. Where fullscreen is refused, the frame asks the
+        page (`archify-present`), which opens the diagram's own page with `?present=1`.
+      - **Theme.** A lazy frame did not always follow its changed `src` after hydration, and
+        stayed dark on a light page; the frame is now a new element per theme.
+      Real fullscreen could not be seen: the automated Chrome refuses fullscreen to any page
+      ("not granted", even at the top level). The fallback was seen working; the fullscreen
+      path is covered by tests.
+- [x] `bun run test`, `bun run types:check` and `bunx next build` pass.
+
+## Docs to update on implementation
+
+- [x] [`../app-flow/diagrams.mdx`](../app-flow/diagrams.mdx): Current;
+      `../app-flow/html-embeds.mdx` removed, its index row with it
+- [x] [`../prd/diagrams.mdx`](../prd/diagrams.mdx): Current
+- [x] [`../architecture/system.mdx`](../architecture/system.mdx),
+      [`../api/content-routes.mdx`](../api/content-routes.mdx),
+      [`../security/threat-model.mdx`](../security/threat-model.mdx),
+      [`../security/checklist.mdx`](../security/checklist.mdx)
+- [x] `AGENTS.md` §5, §8 and §10; `PROJECT_AGENTS.md` §3 and §4; `README.md`;
+      `.claude/agent-skills/INDEX.md` (the Archify override)
+- [x] `DESIGN.md` and `.impeccable/design.json`: the diagram frame
+- [x] [`./index.mdx`](./index.mdx): status on approval; ADR-0011's "Superseded by"

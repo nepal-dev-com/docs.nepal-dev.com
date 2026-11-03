@@ -1,0 +1,126 @@
+{
+  "schema_version": 2,
+  "diagram_type": "workflow",
+  "meta": {
+    "title": "App flow: the universe theme",
+    "subtitle": "One scale ladder: the Verse, the system, a planet, a page",
+    "quality_profile": "showcase",
+    "output": "universe-theme.html"
+  },
+  "lanes": [
+    {
+      "id": "in",
+      "label": "Arrives"
+    },
+    {
+      "id": "home",
+      "label": "Home page"
+    },
+    {
+      "id": "docs",
+      "label": "Docs pages"
+    }
+  ],
+  "mainPath": [
+    "system",
+    "planet",
+    "page"
+  ],
+  "nodes": [
+    {
+      "id": "ext",
+      "lane": "in",
+      "col": 3,
+      "type": "external",
+      "label": "Search, a link",
+      "sublabel": "or a registry"
+    },
+    {
+      "id": "verse",
+      "lane": "home",
+      "col": 0,
+      "type": "frontend",
+      "label": "Verse view",
+      "sublabel": "/#verse"
+    },
+    {
+      "id": "system",
+      "lane": "home",
+      "col": 1,
+      "type": "frontend",
+      "label": "System",
+      "sublabel": "home page"
+    },
+    {
+      "id": "planet",
+      "lane": "docs",
+      "col": 2,
+      "type": "frontend",
+      "label": "Planet",
+      "sublabel": "overview"
+    },
+    {
+      "id": "page",
+      "lane": "docs",
+      "col": 3,
+      "type": "frontend",
+      "label": "Page in an orbit",
+      "sublabel": "scale strip"
+    }
+  ],
+  "edges": [
+    {
+      "id": "arrive",
+      "from": "ext",
+      "to": "page",
+      "label": "opens a page",
+      "variant": "default"
+    },
+    {
+      "id": "zoomout",
+      "from": "system",
+      "to": "verse",
+      "label": "Zoom out to the Verse",
+      "variant": "default",
+      "role": "branch"
+    },
+    {
+      "id": "back",
+      "from": "verse",
+      "to": "system",
+      "label": "Back to the system",
+      "variant": "dashed",
+      "role": "return"
+    },
+    {
+      "id": "morph",
+      "from": "system",
+      "to": "planet",
+      "label": "planet card · morph",
+      "variant": "emphasis"
+    },
+    {
+      "id": "in",
+      "from": "planet",
+      "to": "page",
+      "label": "a page · zoom in",
+      "variant": "emphasis"
+    },
+    {
+      "id": "up1",
+      "from": "page",
+      "to": "planet",
+      "label": "strip: planet",
+      "variant": "dashed",
+      "role": "return"
+    },
+    {
+      "id": "up2",
+      "from": "planet",
+      "to": "system",
+      "label": "strip: System",
+      "variant": "dashed",
+      "role": "return"
+    }
+  ]
+}

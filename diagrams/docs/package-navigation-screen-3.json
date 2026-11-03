@@ -1,0 +1,83 @@
+{
+  "schema_version": 1,
+  "diagram_type": "architecture",
+  "meta": {
+    "title": "Screen 3 — Version menu",
+    "subtitle": "Wireframe at phone width, drawn from its Mermaid version · package navigation",
+    "output": "package-navigation-screen-3.html",
+    "animation": "trace",
+    "quality_profile": "showcase",
+    "legend": {
+      "entries": {
+        "backend": {
+          "label": "Control or link"
+        }
+      }
+    }
+  },
+  "components": [
+    {
+      "id": "cur",
+      "type": "backend",
+      "label": "v0.1",
+      "pos": [
+        40,
+        60
+      ],
+      "size": [
+        436,
+        70
+      ],
+      "sublabel": "0.1.4 · Latest ▾"
+    },
+    {
+      "id": "o1",
+      "type": "backend",
+      "label": "v0.1",
+      "pos": [
+        54,
+        172
+      ],
+      "size": [
+        408,
+        70
+      ],
+      "sublabel": "0.1.4 · Latest ✓"
+    },
+    {
+      "id": "o2",
+      "type": "backend",
+      "label": "dev",
+      "pos": [
+        54,
+        254
+      ],
+      "size": [
+        408,
+        70
+      ],
+      "sublabel": "0.2.0-dev.3 · In development"
+    }
+  ],
+  "boundaries": [
+    {
+      "kind": "region",
+      "label": "Phone screen · opened from the sidebar",
+      "wraps": [
+        "cur",
+        "o1",
+        "o2"
+      ],
+      "pad": 22
+    },
+    {
+      "kind": "region",
+      "label": "options",
+      "wraps": [
+        "o1",
+        "o2"
+      ],
+      "pad": 10
+    }
+  ]
+}

@@ -1,0 +1,150 @@
+{
+  "schema_version": 1,
+  "diagram_type": "architecture",
+  "meta": {
+    "title": "Screen 2 — Home page",
+    "subtitle": "Wireframe at phone width, drawn from its Mermaid version · community identity",
+    "output": "community-identity-screen-2.html",
+    "animation": "trace",
+    "quality_profile": "showcase",
+    "legend": {
+      "entries": {
+        "backend": {
+          "label": "Control or link"
+        },
+        "external": {
+          "label": "Content"
+        },
+        "frontend": {
+          "label": "Site chrome"
+        }
+      }
+    }
+  },
+  "components": [
+    {
+      "id": "hdr",
+      "type": "frontend",
+      "label": "▲ Nepal Dev Verse",
+      "pos": [
+        40,
+        60
+      ],
+      "size": [
+        212,
+        58
+      ]
+    },
+    {
+      "id": "search",
+      "type": "frontend",
+      "label": "⌕",
+      "pos": [
+        264,
+        60
+      ],
+      "size": [
+        100,
+        58
+      ]
+    },
+    {
+      "id": "menu",
+      "type": "frontend",
+      "label": "☰",
+      "pos": [
+        376,
+        60
+      ],
+      "size": [
+        100,
+        58
+      ]
+    },
+    {
+      "id": "system",
+      "type": "external",
+      "label": "The system",
+      "pos": [
+        40,
+        130
+      ],
+      "size": [
+        436,
+        70
+      ],
+      "sublabel": "the star labelled nepal-dev.com, orbits and planets"
+    },
+    {
+      "id": "line",
+      "type": "external",
+      "label": "Every package and project by Nepalese developers",
+      "pos": [
+        40,
+        212
+      ],
+      "size": [
+        436,
+        70
+      ],
+      "sublabel": "all over the world, documented to the version."
+    },
+    {
+      "id": "sub",
+      "type": "external",
+      "label": "Guides, APIs and release notes, read from each",
+      "pos": [
+        40,
+        294
+      ],
+      "size": [
+        436,
+        70
+      ],
+      "sublabel": "package's own source."
+    },
+    {
+      "id": "find",
+      "type": "frontend",
+      "label": "⌕ Search packages, projects and pages",
+      "pos": [
+        40,
+        376
+      ],
+      "size": [
+        436,
+        58
+      ]
+    },
+    {
+      "id": "zoom",
+      "type": "backend",
+      "label": "Zoom out to the Verse",
+      "pos": [
+        40,
+        446
+      ],
+      "size": [
+        436,
+        58
+      ]
+    }
+  ],
+  "boundaries": [
+    {
+      "kind": "region",
+      "label": "Phone screen · the top, at phone width",
+      "wraps": [
+        "hdr",
+        "search",
+        "menu",
+        "system",
+        "line",
+        "sub",
+        "find",
+        "zoom"
+      ],
+      "pad": 22
+    }
+  ]
+}

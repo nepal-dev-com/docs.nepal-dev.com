@@ -1,0 +1,51 @@
+---
+title: "App flows"
+description: "What a person sees and how they move through it, with one file per feature, written with every decision that changes the interface."
+---
+
+What a person sees and how they move through it — one file per feature, written with every ADR
+that changes the UI ([ADR-0008](../adr/ADR-0008-a-ui-change-ships-an-app-flow.mdx)).
+
+> **Living snapshots.** Edit in place so each file describes the system as it is right now. No
+> revision tables, no "previously X, now Y" — delete what is no longer true
+> ([ADR-0002](../adr/ADR-0002-living-design-documentation.mdx)).
+
+## Conventions
+
+- File name: `<feature-slug>.mdx`, matching the feature's PRD slug.
+- The flow as a Mermaid `flowchart` with its Archify view; one `block-beta` wireframe per
+  screen, **phone width first**, with its Archify view drawn from it (an `architecture`
+  diagram inside a phone-screen region). Each is a `<Diagram>` (ADR-0022).
+- Every screen lists its states: empty, loading, not found, refused, error, degraded, success.
+  *Degraded* is what the person sees when an external service (search, for one) is
+  unavailable: a clear notice, never a hang or a raw error.
+- Sample values are invented: an example package name, never a private project's.
+- Each page type names its Markdown entry point (`/<slug>.md`), so readers and tools can
+  take the content without the site.
+
+**Template:** [`../_templates/app-flow.mdx`](../_templates/app-flow.mdx)
+
+## Documents
+
+| Document | Status | ADR |
+|---|---|---|
+| [The ADR constellation](./adr-constellation.mdx) | Current | [ADR-0019](../adr/ADR-0019-adr-folders-show-as-a-constellation-in-the-sidebar.mdx) |
+| [Diagrams](./diagrams.mdx) | Current | [ADR-0022](../adr/ADR-0022-diagrams-show-archify-on-the-page-and-mermaid-in-markdown.mdx), [ADR-0011](../adr/ADR-0011-archify-diagrams-are-embedded-from-sandboxed-html.mdx) |
+| [Docs sidebars: orbit stations, the trajectory and the horizon](./docs-sidebars.mdx) | Current | [ADR-0018](../adr/ADR-0018-docs-pages-get-orbit-stations-a-trajectory-and-the-full-horizon.mdx) |
+| [GitHub profile chips](./github-profile-chips.mdx) | Current | [ADR-0020](../adr/ADR-0020-people-in-adrs-are-github-usernames-shown-as-profile-chips.mdx) |
+| [Multi-repository projects](./multi-repository-projects.mdx) | Current | [ADR-0024](../adr/ADR-0024-a-project-can-span-several-repositories.mdx) |
+| [One open station](./one-open-station.mdx) | Current | [ADR-0023](../adr/ADR-0023-sidebar-stations-open-one-at-a-time.mdx) |
+| [The overview's sidebar](./overview-sidebar.mdx) | Current | [ADR-0025](../adr/ADR-0025-the-overview-has-the-same-sidebar-as-its-tracks.mdx) |
+| [The sidebar's scale ladder](./sidebar-scale-ladder.mdx) | Current | [ADR-0027](../adr/ADR-0027-the-sidebar-is-a-scale-ladder-with-one-lifted-orbit.mdx) |
+| [The universe theme](./universe-theme.mdx) | Current | [ADR-0029](../adr/ADR-0029-the-verse-is-a-still-sky-you-zoom-through.mdx) |
+| [The living horizon](./living-horizon.mdx) | Current | [ADR-0030](../adr/ADR-0030-the-horizon-rises-over-the-page-and-its-sky-comes-alive.mdx) |
+| [The living hero](./living-hero.mdx) | Current | [ADR-0032](../adr/ADR-0032-the-heros-system-comes-alive.mdx) |
+| [The Horizon's closing line](./horizon-closing-line.mdx) | Current | [ADR-0033](../adr/ADR-0033-the-footer-says-you-have-reached-the-horizon.mdx) |
+| [Unknown paths](./unknown-paths.mdx) | Current | [ADR-0034](../adr/ADR-0034-the-proxy-answers-unknown-paths-with-a-true-404.mdx) |
+| [Search and sharing](./search-and-sharing.mdx) | Current | [ADR-0035](../adr/ADR-0035-every-page-is-ready-for-search-and-sharing.mdx) |
+| [The community identity](./community-identity.mdx) | Current | [ADR-0036](../adr/ADR-0036-the-site-is-nepal-dev-verse.mdx) |
+| [The Himalayan Horizon](./himalayan-horizon.mdx) | Current | [ADR-0037](../adr/ADR-0037-the-horizon-is-the-himalaya.mdx) |
+| [Home page](./home-page.mdx) | Current | [ADR-0017](../adr/ADR-0017-the-whole-site-is-one-solar-system.mdx), [ADR-0016](../adr/ADR-0016-home-search-is-the-fumadocs-dialog-and-private-projects-render-server-side.mdx), [ADR-0014](../adr/ADR-0014-home-page-is-a-search-first-release-map.mdx) |
+| [The solar system: marks, theme switch, planet header, footer, 404](./solar-system.mdx) | Current | [ADR-0017](../adr/ADR-0017-the-whole-site-is-one-solar-system.mdx) |
+| [Package and project navigation](./package-navigation.mdx) | Current | [ADR-0013](../adr/ADR-0013-packages-and-projects-share-one-catalogue-shape.mdx) |
+| [Site pages: root URLs, header and docs pages](./site-pages.mdx) | Current | [ADR-0017](../adr/ADR-0017-the-whole-site-is-one-solar-system.mdx), [ADR-0015](../adr/ADR-0015-every-entry-lives-at-the-root-in-one-shape-and-one-look.mdx) |

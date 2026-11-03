@@ -1,0 +1,252 @@
+import { describe, expect, test } from 'bun:test';
+import {
+  alpenglow,
+  cloudBands,
+  cloudPeriod,
+  farRange,
+  flagPole,
+  horizonStars,
+  lightSpots,
+  lightsFor,
+  midRange,
+  moon,
+  nearRange,
+  observatory,
+  planet,
+  rangeY,
+  ridgeY,
+  sceneScale,
+  snow,
+  starDisc,
+  summit,
+  traceFor,
+  twinklingCount,
+  worldView,
+  type Point,
+} from './horizon-sky';
+
+describe('the scene stars (ADR-0030 decision 2)', () => {
+  test('are the same on every build', () => {
+    expect(horizonStars()).toEqual(horizonStars());
+  });
+
+  test('keep the sixty stars, fourteen of them twinkling', () => {
+    const stars = horizonStars();
+    expect(stars).toHaveLength(60);
+    expect(stars.filter((star) => star.twinkle)).toHaveLength(twinklingCount);
+    expect(twinklingCount).toBe(14);
+  });
+
+  test('each twinkle takes 3 to 7 seconds and they start out of step', () => {
+    const twinkling = horizonStars().filter((star) => star.twinkle);
+    for (const star of twinkling) {
+      expect(star.twinkle!.duration).toBeGreaterThanOrEqual(3);
+      expect(star.twinkle!.duration).toBeLessThanOrEqual(7);
+      expect(star.twinkle!.delay).toBeLessThanOrEqual(0);
+    }
+    expect(new Set(twinkling.map((star) => star.twinkle!.delay)).size).toBeGreaterThan(7);
+  });
+
+  test('stay in the sky, above the horizon', () => {
+    for (const star of horizonStars()) {
+      expect(star.y).toBeLessThan(ridgeY(star.x));
+    }
+  });
+});
+
+describe('the ground (ADR-0037 decision 1)', () => {
+  test('is the top of the planet at the centre', () => {
+    expect(ridgeY(planet.cx)).toBe(planet.cy - planet.r);
+  });
+
+  test('falls away on both sides, the same either way', () => {
+    expect(ridgeY(300)).toBeGreaterThan(ridgeY(600));
+    expect(ridgeY(300)).toBeCloseTo(ridgeY(900), 6);
+  });
+});
+
+const inside = (points: Point[], x: number, y: number) => {
+  let hit = false;
+  for (let a = 0, b = points.length - 1; a < points.length; b = a++) {
+    const [pa, pb] = [points[a], points[b]];
+    if (pa.y > y !== pb.y > y && x < ((pb.x - pa.x) * (y - pa.y)) / (pb.y - pa.y) + pa.x) {
+      hit = !hit;
+    }
+  }
+  return hit;
+};
+
+describe('the range (ADR-0037 decision 1)', () => {
+  test('is the same on every build', () => {
+    expect(farRange()).toEqual(farRange());
+    expect(midRange()).toEqual(midRange());
+  });
+
+  test('has its summit at the centre, the highest point of all three ranges', () => {
+    const tops = [...farRange(), ...midRange(), ...nearRange].map((point) => point.y);
+    expect(summit.x).toBe(planet.cx);
+    expect(Math.min(...tops)).toBe(summit.y);
+  });
+
+  test('runs past both edges of the widest screen the world is drawn for', () => {
+    for (const range of [farRange(), midRange(), nearRange]) {
+      expect(range[0].x).toBeLessThanOrEqual(worldView.x);
+      expect(range.at(-1)!.x).toBeGreaterThanOrEqual(worldView.x + worldView.width);
+    }
+  });
+
+  test('leaves the risen star clear of the far and middle ranges', () => {
+    for (const range of [farRange(), midRange()]) {
+      expect(rangeY(range, starDisc.cx)).toBeGreaterThan(starDisc.cy + starDisc.r);
+    }
+  });
+
+  test('stands the moon directly above the star, as on the flag (ADR-0037 decision 6)', () => {
+    expect(moon.cx).toBe(starDisc.cx);
+    expect(moon.cy).toBeLessThan(starDisc.cy - starDisc.r);
+  });
+
+  test('lights only the side facing the star (ADR-0037 decision 4)', () => {
+    for (const face of alpenglow) {
+      const top = face.reduce((high, point) => (point.y < high.y ? point : high));
+      const right = face.filter((point) => point.x > top.x).length;
+      expect(right).toBeGreaterThan(face.length / 2);
+    }
+  });
+
+  test('carries the observatory on its left shoulder, nearly upright (ADR-0037 decision 9)', () => {
+    const { x, y, angle } = observatory();
+    expect(x).toBeLessThan(summit.x);
+    expect(y).toBeCloseTo(rangeY(nearRange, x), 6);
+    expect(Math.abs(angle)).toBeLessThanOrEqual(8);
+  });
+
+  test('flies the flag from the summit, inside the scene', () => {
+    expect(flagPole.x).toBe(summit.x);
+    expect(flagPole.foot).toBeGreaterThanOrEqual(summit.y);
+    expect(flagPole.top).toBeGreaterThan(0);
+  });
+});
+
+describe('the scene at every width (ADR-0037 decision 11)', () => {
+  // The world scales with the scene's height alone, so nothing is ever cropped from the top.
+  const widths = [320, 390, 860, 1412, 1920, 2560];
+
+  test('keeps the flag, the star and the moon on screen', () => {
+    for (const width of widths) {
+      const scale = sceneScale(width);
+      const half = width / 2 / scale;
+      expect(Math.abs(flagPole.x + 33 - planet.cx)).toBeLessThan(half);
+      expect(Math.abs(starDisc.cx + starDisc.r - planet.cx)).toBeLessThan(half);
+    }
+  });
+
+  test('stays big enough to read on a phone and fills the widest screen', () => {
+    expect(sceneScale(320)).toBeGreaterThan(0.6);
+    for (const width of widths) {
+      expect(worldView.width * sceneScale(width)).toBeGreaterThanOrEqual(width);
+    }
+  });
+});
+
+const entry = (slug: string, ring = 'npm', kind: 'package' | 'project' = 'package') => ({ slug, ring, kind }) as never;
+
+describe('the lights (ADR-0037 decision 7)', () => {
+  test('every spot stands on rock, clear of the snow and the red', () => {
+    for (const spot of lightSpots) {
+      expect(inside(nearRange, spot.x, spot.y)).toBe(true);
+      for (const patch of [...alpenglow, ...snow]) {
+        expect(inside(patch, spot.x, spot.y)).toBe(false);
+      }
+      expect(spot.y).toBeLessThan(ridgeY(spot.x) - 4);
+    }
+  });
+
+  test('no two spots touch', () => {
+    lightSpots.forEach((a, index) => {
+      for (const b of lightSpots.slice(index + 1)) {
+        expect(Math.hypot(a.x - b.x, a.y - b.y)).toBeGreaterThan(22);
+      }
+    });
+  });
+
+  test('every spot can be seen on the narrowest phone', () => {
+    const half = 320 / 2 / sceneScale(320);
+    for (const spot of lightSpots) {
+      expect(Math.abs(spot.x - planet.cx)).toBeLessThan(half);
+    }
+  });
+
+  test('an entry keeps its spot from build to build, whatever order it comes in', () => {
+    const a = lightsFor([entry('lodestar'), entry('docs'), entry('tidy')]);
+    const b = lightsFor([entry('tidy'), entry('lodestar'), entry('docs')]);
+    expect(a).toEqual(b);
+  });
+
+  test('two entries never share a spot', () => {
+    const many = Array.from({ length: lightSpots.length }, (_, index) => entry(`package-${index}`));
+    expect(new Set(lightsFor(many).map((light) => light.spot)).size).toBe(lightSpots.length);
+  });
+
+  test('past the number of spots, the rest are left to the planet row', () => {
+    const many = Array.from({ length: lightSpots.length + 5 }, (_, index) => entry(`package-${index}`));
+    expect(lightsFor(many)).toHaveLength(lightSpots.length);
+  });
+
+  test('no entries, no lights', () => {
+    expect(lightsFor([])).toEqual([]);
+  });
+
+  test('a trace runs from its light down into the ground', () => {
+    const [spot] = lightSpots;
+    const points = [...traceFor(spot).matchAll(/(-?[\d.]+) (-?[\d.]+)/g)].map((m) => Number(m[2]));
+    expect(points[0]).toBe(spot.y);
+    expect(points.at(-1)).toBeGreaterThan(ridgeY(spot.x));
+  });
+});
+
+describe('the lit clouds', () => {
+  test('are three bands, each repeating once across the strip so its loop is seamless', () => {
+    const bands = cloudBands();
+    expect(bands).toHaveLength(3);
+    for (const band of bands) {
+      const first = band.puffs.filter((puff) => puff.cx < cloudPeriod);
+      const second = band.puffs.filter((puff) => puff.cx >= cloudPeriod);
+      expect(second).toHaveLength(first.length);
+      second.forEach((puff, index) => {
+        expect(puff.cx - first[index].cx).toBeCloseTo(cloudPeriod, 6);
+        expect({ ...puff, cx: 0 }).toEqual({ ...first[index], cx: 0 });
+      });
+    }
+  });
+
+  test('keep every puff inside its period, so none is cut where the loop restarts', () => {
+    for (const band of cloudBands()) {
+      for (const puff of band.puffs.filter((item) => item.cx < cloudPeriod)) {
+        expect(puff.cx - puff.rx).toBeGreaterThanOrEqual(0);
+        expect(puff.cx + puff.rx).toBeLessThanOrEqual(cloudPeriod);
+      }
+    }
+  });
+
+  test('loop over 90, 140 and 200 seconds', () => {
+    expect(cloudBands().map((band) => band.duration)).toEqual([200, 140, 90]);
+  });
+
+  test("float below the risen star's disc, between the ranges (ADR-0037 decision 2)", () => {
+    const bottom = starDisc.cy + starDisc.r;
+    for (const band of cloudBands()) {
+      for (const puff of band.puffs) {
+        expect(puff.cy - puff.ry).toBeGreaterThan(bottom);
+      }
+    }
+  });
+
+  test('stay above the ground', () => {
+    for (const band of cloudBands()) {
+      for (const puff of band.puffs) {
+        expect(puff.cy + puff.ry).toBeLessThan(planet.cy - planet.r);
+      }
+    }
+  });
+});

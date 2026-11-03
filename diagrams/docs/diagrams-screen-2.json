@@ -1,0 +1,119 @@
+{
+  "schema_version": 1,
+  "diagram_type": "architecture",
+  "meta": {
+    "title": "Screen 2 — Full screen",
+    "subtitle": "Wireframe at phone width, drawn from its Mermaid version · diagrams",
+    "output": "diagrams-screen-2.html",
+    "animation": "trace",
+    "quality_profile": "showcase",
+    "legend": {
+      "entries": {
+        "backend": {
+          "label": "Control or link"
+        },
+        "external": {
+          "label": "Content"
+        },
+        "frontend": {
+          "label": "Site chrome"
+        }
+      }
+    }
+  },
+  "components": [
+    {
+      "id": "live",
+      "type": "backend",
+      "label": "● Live",
+      "pos": [
+        40,
+        60
+      ],
+      "size": [
+        100,
+        58
+      ]
+    },
+    {
+      "id": "present",
+      "type": "backend",
+      "label": "Present",
+      "pos": [
+        152,
+        60
+      ],
+      "size": [
+        100,
+        58
+      ]
+    },
+    {
+      "id": "export",
+      "type": "backend",
+      "label": "Export ▾",
+      "pos": [
+        264,
+        60
+      ],
+      "size": [
+        212,
+        58
+      ]
+    },
+    {
+      "id": "title",
+      "type": "frontend",
+      "label": "Request flow",
+      "pos": [
+        40,
+        130
+      ],
+      "size": [
+        436,
+        58
+      ]
+    },
+    {
+      "id": "canvas",
+      "type": "backend",
+      "label": "Parser → Router → Handler, full width",
+      "pos": [
+        40,
+        200
+      ],
+      "size": [
+        436,
+        58
+      ]
+    },
+    {
+      "id": "notes",
+      "type": "external",
+      "label": "Notes & index",
+      "pos": [
+        40,
+        270
+      ],
+      "size": [
+        436,
+        58
+      ]
+    }
+  ],
+  "boundaries": [
+    {
+      "kind": "region",
+      "label": "Phone screen · /diagrams/<project-slug>/<slug>.html",
+      "wraps": [
+        "live",
+        "present",
+        "export",
+        "title",
+        "canvas",
+        "notes"
+      ],
+      "pad": 22
+    }
+  ]
+}

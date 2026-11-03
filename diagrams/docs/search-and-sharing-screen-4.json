@@ -1,0 +1,108 @@
+{
+  "schema_version": 1,
+  "diagram_type": "architecture",
+  "meta": {
+    "title": "Screen 4 — A page's share image, at its fixed 1200 by 630",
+    "subtitle": "Wireframe at phone width, drawn from its Mermaid version · search and sharing",
+    "output": "search-and-sharing-screen-4.html",
+    "animation": "trace",
+    "quality_profile": "showcase",
+    "legend": {
+      "entries": {
+        "backend": {
+          "label": "Control or link"
+        },
+        "external": {
+          "label": "Content"
+        },
+        "frontend": {
+          "label": "Site chrome"
+        }
+      }
+    }
+  },
+  "components": [
+    {
+      "id": "brand",
+      "type": "frontend",
+      "label": "The brand mark and Nepal Dev Verse, top left, on",
+      "pos": [
+        40,
+        60
+      ],
+      "size": [
+        436,
+        70
+      ],
+      "sublabel": "the still dark star field"
+    },
+    {
+      "id": "kicker",
+      "type": "frontend",
+      "label": "The entry's planet mark",
+      "pos": [
+        40,
+        142
+      ],
+      "size": [
+        436,
+        70
+      ],
+      "sublabel": "lodestar · Use · v3.2 with its moon"
+    },
+    {
+      "id": "title",
+      "type": "frontend",
+      "label": "Install",
+      "pos": [
+        40,
+        224
+      ],
+      "size": [
+        436,
+        58
+      ]
+    },
+    {
+      "id": "desc",
+      "type": "backend",
+      "label": "Add lodestar to a React project and open the",
+      "pos": [
+        40,
+        294
+      ],
+      "size": [
+        436,
+        70
+      ],
+      "sublabel": "command palette with one hook."
+    },
+    {
+      "id": "domain",
+      "type": "external",
+      "label": "docs.nepal-dev.com",
+      "pos": [
+        40,
+        376
+      ],
+      "size": [
+        436,
+        58
+      ]
+    }
+  ],
+  "boundaries": [
+    {
+      "kind": "region",
+      "label": "Phone screen · A page's share image, at its fixed 1200 by 630",
+      "wraps": [
+        "brand",
+        "kicker",
+        "title",
+        "desc",
+        "domain"
+      ],
+      "pad": 22
+    }
+  ]
+}

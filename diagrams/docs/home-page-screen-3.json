@@ -1,0 +1,186 @@
+{
+  "schema_version": 1,
+  "diagram_type": "architecture",
+  "meta": {
+    "title": "Screen 3 — Planet cards",
+    "subtitle": "Wireframe at phone width, drawn from its Mermaid version · home page",
+    "output": "home-page-screen-3.html",
+    "animation": "trace",
+    "quality_profile": "showcase",
+    "legend": {
+      "entries": {
+        "backend": {
+          "label": "Control or link"
+        },
+        "external": {
+          "label": "Content"
+        }
+      }
+    }
+  },
+  "components": [
+    {
+      "id": "sky1",
+      "type": "backend",
+      "label": "sky: red planet, orbit v0.1 with full moon,",
+      "pos": [
+        54,
+        90
+      ],
+      "size": [
+        408,
+        70
+      ],
+      "sublabel": "dashed orbit dev with new moon"
+    },
+    {
+      "id": "n1",
+      "type": "external",
+      "label": "lodestar",
+      "pos": [
+        54,
+        172
+      ],
+      "size": [
+        408,
+        58
+      ]
+    },
+    {
+      "id": "k1",
+      "type": "external",
+      "label": "● npm package",
+      "pos": [
+        54,
+        242
+      ],
+      "size": [
+        408,
+        70
+      ],
+      "sublabel": "Command palette for React apps."
+    },
+    {
+      "id": "f1",
+      "type": "external",
+      "label": "Latest 0.1.4",
+      "pos": [
+        54,
+        324
+      ],
+      "size": [
+        408,
+        70
+      ],
+      "sublabel": "In development 0.2.0-dev.3"
+    },
+    {
+      "id": "l1",
+      "type": "backend",
+      "label": "[Use →]  Maintain  Demo",
+      "pos": [
+        54,
+        406
+      ],
+      "size": [
+        408,
+        58
+      ]
+    },
+    {
+      "id": "sky2",
+      "type": "external",
+      "label": "sky: violet planet, orbits v4.0",
+      "pos": [
+        54,
+        520
+      ],
+      "size": [
+        408,
+        70
+      ],
+      "sublabel": "v3.2 · v2.9 · dev"
+    },
+    {
+      "id": "n2",
+      "type": "external",
+      "label": "ledgerly",
+      "pos": [
+        54,
+        602
+      ],
+      "size": [
+        408,
+        58
+      ]
+    },
+    {
+      "id": "f2",
+      "type": "external",
+      "label": "Latest 4.0.1",
+      "pos": [
+        54,
+        672
+      ],
+      "size": [
+        408,
+        70
+      ],
+      "sublabel": "In development 4.1.0-dev.2 · Older v3.2, v2.9"
+    },
+    {
+      "id": "c3",
+      "type": "backend",
+      "label": "orbit-board — ringed planet, no moons",
+      "pos": [
+        40,
+        768
+      ],
+      "size": [
+        436,
+        70
+      ],
+      "sublabel": "Project · [Use →] Maintain"
+    }
+  ],
+  "boundaries": [
+    {
+      "kind": "region",
+      "label": "Phone screen · /#packages, /#projects",
+      "wraps": [
+        "sky1",
+        "n1",
+        "k1",
+        "f1",
+        "l1",
+        "sky2",
+        "n2",
+        "f2",
+        "c3"
+      ],
+      "pad": 22
+    },
+    {
+      "kind": "region",
+      "label": "card 1",
+      "wraps": [
+        "sky1",
+        "n1",
+        "k1",
+        "f1",
+        "l1"
+      ],
+      "pad": 10
+    },
+    {
+      "kind": "region",
+      "label": "card 2",
+      "wraps": [
+        "sky2",
+        "n2",
+        "f2"
+      ],
+      "pad": 10
+    }
+  ]
+}

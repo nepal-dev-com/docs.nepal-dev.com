@@ -1,0 +1,99 @@
+{
+  "schema_version": 1,
+  "diagram_type": "architecture",
+  "meta": {
+    "title": "Screen 3 — Moon picker",
+    "subtitle": "Wireframe at phone width, drawn from its Mermaid version · site pages",
+    "output": "site-pages-screen-3.html",
+    "animation": "trace",
+    "quality_profile": "showcase",
+    "legend": {
+      "entries": {
+        "backend": {
+          "label": "Control or link"
+        }
+      }
+    }
+  },
+  "components": [
+    {
+      "id": "cur",
+      "type": "backend",
+      "label": "full moon",
+      "pos": [
+        40,
+        60
+      ],
+      "size": [
+        436,
+        70
+      ],
+      "sublabel": "v1.4 · 1.4.2 · Latest ▾"
+    },
+    {
+      "id": "o1",
+      "type": "backend",
+      "label": "full moon",
+      "pos": [
+        54,
+        172
+      ],
+      "size": [
+        408,
+        70
+      ],
+      "sublabel": "v1.4 · 1.4.2 · Latest ✓"
+    },
+    {
+      "id": "o2",
+      "type": "backend",
+      "label": "dashed new moon",
+      "pos": [
+        54,
+        254
+      ],
+      "size": [
+        408,
+        70
+      ],
+      "sublabel": "dev · 2.0.0-dev.4 · In development"
+    },
+    {
+      "id": "o3",
+      "type": "backend",
+      "label": "crescent",
+      "pos": [
+        54,
+        336
+      ],
+      "size": [
+        408,
+        70
+      ],
+      "sublabel": "2024 LTS · 0.9.3 · Older version"
+    }
+  ],
+  "boundaries": [
+    {
+      "kind": "region",
+      "label": "Phone screen · opened from the sidebar",
+      "wraps": [
+        "cur",
+        "o1",
+        "o2",
+        "o3"
+      ],
+      "pad": 22
+    },
+    {
+      "kind": "region",
+      "label": "options",
+      "wraps": [
+        "o1",
+        "o2",
+        "o3"
+      ],
+      "pad": 10
+    }
+  ]
+}

@@ -1,0 +1,44 @@
+{
+  "schema_version": 1,
+  "diagram_type": "architecture",
+  "meta": {
+    "title": "Screen 2 — Closed station",
+    "subtitle": "Wireframe at phone width, drawn from its Mermaid version · adr constellation",
+    "output": "adr-constellation-screen-2.html",
+    "animation": "trace",
+    "quality_profile": "showcase",
+    "legend": {
+      "entries": {
+        "external": {
+          "label": "Content"
+        }
+      }
+    }
+  },
+  "components": [
+    {
+      "id": "head",
+      "type": "external",
+      "label": "○ Architecture Decision Records",
+      "pos": [
+        40,
+        60
+      ],
+      "size": [
+        436,
+        70
+      ],
+      "sublabel": "19 ▸"
+    }
+  ],
+  "boundaries": [
+    {
+      "kind": "region",
+      "label": "Phone screen · elsewhere in the track",
+      "wraps": [
+        "head"
+      ],
+      "pad": 22
+    }
+  ]
+}

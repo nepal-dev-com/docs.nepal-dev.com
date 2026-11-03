@@ -1,0 +1,158 @@
+---
+title: "ADR-0019 — ADR folders show as a constellation in the sidebar"
+description: "A folder named adr shows in the sidebar as a constellation, with one moon per decision phased by its status, in any package or project."
+---
+
+- **Status:** Approved
+- **Date:** 2026-11-01
+- **Deciders:** [@puncoz](https://github.com/puncoz)
+- **Approved by:** [@puncoz](https://github.com/puncoz)
+- **Approved on:** 2026-11-01
+- **Supersedes:** [ADR-0018](./ADR-0018-docs-pages-get-orbit-stations-a-trajectory-and-the-full-horizon.mdx)
+  decision 2 (in part: how an ADR folder's pages show inside its station)
+- **Superseded by:** —
+- **Design documents:** [`../app-flow/adr-constellation.mdx`](../app-flow/adr-constellation.mdx),
+  [`../prd/adr-constellation.mdx`](../prd/adr-constellation.mdx),
+  [`../app-flow/docs-sidebars.mdx`](../app-flow/docs-sidebars.mdx), `DESIGN.md`,
+  `PROJECT_AGENTS.md`
+
+## Context
+
+ADR-0018 made every sidebar folder an orbit station whose pages are rows on an arc. On this
+site's Maintain pages the Decisions station holds 18 ADRs, one 32px row each, so when it is open
+it takes about 600px of sidebar. It grows with every decision, and every package and project
+that keeps ADRs in its Maintain track will have the same problem.
+
+The owner chose (2026-11-01), from options with previews: a **constellation**, a compact grid
+of moons in place of the rows; applied to **ADR folders in every entry's docs**, not to long
+folders in general and not to this site alone.
+
+Facts this decision rests on:
+
+- Each folder node in the page tree carries `$ref.folder`, its path under `content/`
+  (`docs/maintain/adr` for this site's ADRs), read from the built page tree.
+- ADR titles start with their number, `ADR-NNNN — …` (the ADR template).
+- Every ADR states its status in its first lines, `- **Status:** Approved` (the ADR template).
+  The text fumadocs-mdx structures for search keeps that line, `**Status:** Approved`, so the
+  status is known at build time (read in the built `static.json`).
+
+## Decision
+
+1. **Which folders.** A folder whose own name is `adr` (the last segment of `$ref.folder`), in
+   any package's or project's docs, shows as a constellation. Every other folder stays an orbit
+   station as ADR-0018 decided. Consuming repositories get it by keeping their ADRs in
+   `maintain/adr/`; `PROJECT_AGENTS.md` says so.
+
+2. **The station's header stays**: orbit glyph, name, page count and chevron. It opens on any of
+   its pages and on its index page, and starts closed elsewhere.
+
+3. **The constellation.** Inside the open station, the folder's pages (its index excluded) are
+   a grid of moons in page order, oldest first, as many to a row as fit (about nine in the
+   268px sidebar, more in the phone drawer). Each moon is a link with a 24px target.
+   - **Its phase is its status**, the same language as version lines: **full** for Approved (in
+     force), a **dashed new moon** for Proposed (not yet in force), a **crescent** for
+     Superseded (an older decision), a hollow faint ring for Rejected or a page without a status
+     line.
+   - **The current page is the planet**: the teal planet with its glow, ringed in the ecosystem
+     colour.
+   - Each link's accessible name is its full title and status, "ADR-0016 — Home search is the
+     Fumadocs dialog…, Approved".
+
+4. **The readout.** Under the grid, one line shows the moon being pointed at or focused, its
+   number and title ("16 · Home search is the Fumadocs dialog, and private projects render
+   server-side", wrapping to two lines at most); with nothing pointed at, the current page's; on
+   the folder's index page, a summary ("18 decisions · 1 proposed"). The number comes from the
+   title's `ADR-NNNN`, or the page's place in the folder when the title has none.
+
+5. **Previous and next.** Under the readout, "← 15" and "17 →" link to the neighbouring pages,
+   with their titles as accessible names; each is left out at the ends and on the index page.
+
+6. **The register link.** "All 18 decisions →" links to the folder's index page, where the
+   full list is read. Left out when the folder has no index page.
+
+7. **A legend**, one 11px line under the register link: full "approved", dashed "proposed",
+   crescent "superseded", drawn with the same marks.
+
+8. **The status reaches the sidebar from the server.** The docs layout reads each ADR's status
+   from its structured text at build time and passes a map of page URL to status to the sidebar
+   through a client context, with the rest of the page. No request at run time.
+
+## Options considered
+
+| Concern | Option | Pros | Cons | Verdict |
+|---|---|---|---|---|
+| Display | A — constellation: a grid of moons, a readout, previous and next, the register | Constant height at 18 or 60 ADRs; the solar-system look; status at a glance | Other titles appear only on pointing or focus; reading every title happens on the register | Chosen (owner) |
+| Display | B — neighbours window: the current page and two either side, the rest folded | Titles readable | Familiar; still about seven rows; less distinctive | Rejected |
+| Display | C — register only: no pages listed in the sidebar | Shortest | Every jump goes through the index page | Rejected |
+| Scope | A — ADR folders in every entry's docs | Every project's decisions get it; no flag to learn | Recognised by folder name | Chosen (owner) |
+| Scope | B — any station over eight pages | Automatic for long references too | Titles hidden for folders that are read by title | Rejected |
+| Scope | C — folders that opt in through `meta.json` | Explicit | A schema change; each project must know the flag | Rejected |
+| Scope | D — this site's ADRs only | Smallest | Special-case code; no project benefits | Rejected |
+| Moon phase | A — the ADR's status, in the version lines' language | Status at a glance; one meaning for each phase: in force, not yet, older | Phases now mean status here and release state on lines | Chosen (owner) |
+| Moon phase | B — every moon the same | Simplest | The grid says nothing but position | Rejected |
+| Status source | A — the status line, read from the structured text at build | No change to how ADRs are written | Depends on the template's `**Status:**` line; a page without it shows the faint ring | Chosen |
+| Status source | B — a `status` field in each ADR's frontmatter | Explicit and validated | A schema change, and every existing ADR edited | Rejected |
+
+## Consequences
+
+**Positive**
+
+- The Decisions station stays about seven rows tall however many ADRs there are.
+- Each ADR's status shows in the sidebar.
+- Consuming repositories get the same with no configuration.
+
+**Negative / accepted trade-offs**
+
+- A reader scanning for an ADR by title points at moons or opens the register.
+- The status is read from a line of text; an ADR that drops the template's status line shows
+  the faint ring until fixed.
+- A folder named `adr` that is not decisions would be shown as a constellation.
+- One more custom piece of sidebar to keep in step with Fumadocs.
+
+## Content invariants
+
+Unchanged. The constellation is page chrome; the per-page Markdown and `llms.txt` don't include
+it, and every ADR is still listed on its folder's index page.
+
+## Security considerations
+
+None. This change touches no data, no endpoint and no secret. The status map is built from the
+same public pages it describes and sent with them; nothing new leaves the system.
+
+## Implementation notes
+
+- [x] `src/lib/adr-status.ts`: the status from a page's structured text, the number and short
+      title from its title, and whether a folder is named `adr`. Pure functions.
+- [x] `src/components/docs/adr-constellation.tsx` (client): the grid, readout, previous and
+      next, register link and legend; `OrbitStation` renders it for a folder named `adr`. Found
+      on implementation: a folder named `adr` that has sub-folders keeps the plain station, so
+      none of its pages are hidden.
+- [x] The status map: built in `src/app/(site)/layout.tsx` from every page in a folder named
+      `adr` (its index excluded), passed through `AdrStatusProvider` around the layout.
+- [x] The rejected or unknown ring is drawn in the constellation; `MoonPhase` is unchanged.
+- [x] `src/app/site.css`: constellation styles, with focus and reduced-motion rules. The readout
+      keeps two lines of height, so pointing at moons doesn't move the links under it. On touch
+      screens only focus sets the readout, so a tap opens the ADR.
+- [x] Tests (ADR-0007, runner ADR-0021): `src/lib/adr-status.test.ts`, each status, a
+      backticked status, no status line, another word, a title with and without `ADR-NNNN`, the
+      short title, folder detection. The constellation itself is a client component and is not
+      unit-tested (ADR-0021 decision 5).
+- [x] Checked in the built HTML: on ADR-0016 the Decisions station is a constellation of 19 moons
+      (7 approved, 12 proposed), ADR-0016 lit as the planet, the readout "16 · Home search is…",
+      previous and next, and "All 19 decisions"; on the register page the summary "19 decisions
+      · 12 proposed" with no previous or next; elsewhere the station starts closed. Not yet looked
+      at in a browser.
+- [ ] `bun run types:check` and `bunx next build` pass; `bun run lint` stays blocked
+      (typescript-eslint and TypeScript 7).
+
+## Docs to update on implementation
+
+- [x] [`../app-flow/adr-constellation.mdx`](../app-flow/adr-constellation.mdx) and
+      [`../prd/adr-constellation.mdx`](../prd/adr-constellation.mdx): status Current
+- [x] [`../app-flow/docs-sidebars.mdx`](../app-flow/docs-sidebars.mdx): screen 1 names the
+      exception
+- [x] [`../architecture/system.mdx`](../architecture/system.mdx): the new files
+- [x] `DESIGN.md` and `.impeccable/design.json`: the constellation component
+- [x] `AGENTS.md` §1, §5 and §10; `PROJECT_AGENTS.md`: keep ADRs in `maintain/adr/`, with the
+      template's status line
+- [x] [`./index.mdx`](./index.mdx): index row and status; ADR-0018's "Superseded by" header

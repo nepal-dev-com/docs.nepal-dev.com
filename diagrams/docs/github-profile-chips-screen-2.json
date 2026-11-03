@@ -1,0 +1,73 @@
+{
+  "schema_version": 1,
+  "diagram_type": "architecture",
+  "meta": {
+    "title": "Screen 2 — Page as Markdown",
+    "subtitle": "Wireframe at phone width, drawn from its Mermaid version · github profile chips",
+    "output": "github-profile-chips-screen-2.html",
+    "animation": "trace",
+    "quality_profile": "showcase",
+    "legend": {
+      "entries": {
+        "frontend": {
+          "label": "Site chrome"
+        }
+      }
+    }
+  },
+  "components": [
+    {
+      "id": "h",
+      "type": "frontend",
+      "label": "# ADR-0007 — Cache search results for an hour",
+      "pos": [
+        40,
+        60
+      ],
+      "size": [
+        436,
+        58
+      ]
+    },
+    {
+      "id": "line1",
+      "type": "frontend",
+      "label": "- **Deciders:**",
+      "pos": [
+        40,
+        130
+      ],
+      "size": [
+        436,
+        70
+      ],
+      "sublabel": "[@mira-k](https://github.com/mira-k)"
+    },
+    {
+      "id": "line2",
+      "type": "frontend",
+      "label": "- **Approved by:**",
+      "pos": [
+        40,
+        212
+      ],
+      "size": [
+        436,
+        70
+      ],
+      "sublabel": "[@mira-k](https://github.com/mira-k)"
+    }
+  ],
+  "boundaries": [
+    {
+      "kind": "region",
+      "label": "Phone screen · /<project-slug>/maintain/adr/ADR-0007-….md",
+      "wraps": [
+        "h",
+        "line1",
+        "line2"
+      ],
+      "pad": 22
+    }
+  ]
+}

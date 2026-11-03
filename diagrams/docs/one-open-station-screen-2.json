@@ -1,0 +1,174 @@
+{
+  "schema_version": 1,
+  "diagram_type": "architecture",
+  "meta": {
+    "title": "Screen 2 — Another station opened",
+    "subtitle": "Wireframe at phone width, drawn from its Mermaid version · one open station",
+    "output": "one-open-station-screen-2.html",
+    "animation": "trace",
+    "quality_profile": "showcase",
+    "legend": {
+      "entries": {
+        "backend": {
+          "label": "Control or link"
+        },
+        "external": {
+          "label": "Content"
+        }
+      }
+    }
+  },
+  "components": [
+    {
+      "id": "chip",
+      "type": "backend",
+      "label": "● lodestar",
+      "pos": [
+        40,
+        60
+      ],
+      "size": [
+        324,
+        58
+      ]
+    },
+    {
+      "id": "sw",
+      "type": "external",
+      "label": "☀ | ☾",
+      "pos": [
+        376,
+        60
+      ],
+      "size": [
+        100,
+        58
+      ]
+    },
+    {
+      "id": "moon",
+      "type": "backend",
+      "label": "full moon",
+      "pos": [
+        40,
+        130
+      ],
+      "size": [
+        436,
+        70
+      ],
+      "sublabel": "v0.1 · 0.1.4 · Latest ▾"
+    },
+    {
+      "id": "h1",
+      "type": "external",
+      "label": "◎ Get started",
+      "pos": [
+        40,
+        212
+      ],
+      "size": [
+        436,
+        70
+      ],
+      "sublabel": "2 ▸ (a row, holds the current page)"
+    },
+    {
+      "id": "h2",
+      "type": "external",
+      "label": "○ Reference",
+      "pos": [
+        40,
+        294
+      ],
+      "size": [
+        436,
+        70
+      ],
+      "sublabel": "3 ▸ (a row)"
+    },
+    {
+      "id": "h3",
+      "type": "backend",
+      "label": "◎ Guides",
+      "pos": [
+        54,
+        406
+      ],
+      "size": [
+        408,
+        70
+      ],
+      "sublabel": "4 ▾ (open, the one card)"
+    },
+    {
+      "id": "g1",
+      "type": "external",
+      "label": "∘ Theming",
+      "pos": [
+        54,
+        488
+      ],
+      "size": [
+        408,
+        58
+      ]
+    },
+    {
+      "id": "g2",
+      "type": "external",
+      "label": "∘ Keyboard shortcuts",
+      "pos": [
+        54,
+        558
+      ],
+      "size": [
+        408,
+        58
+      ]
+    },
+    {
+      "id": "g3",
+      "type": "external",
+      "label": "◦ Recipes",
+      "pos": [
+        54,
+        628
+      ],
+      "size": [
+        408,
+        70
+      ],
+      "sublabel": "3 ▸ (nested, closed)"
+    }
+  ],
+  "boundaries": [
+    {
+      "kind": "region",
+      "label": "Phone screen · the reader opens Guides on the same page",
+      "wraps": [
+        "chip",
+        "sw",
+        "moon",
+        "h1",
+        "h2",
+        "h3",
+        "g1",
+        "g2",
+        "g3"
+      ],
+      "pad": 22
+    },
+    {
+      "kind": "region",
+      "label": "card",
+      "wraps": [
+        "h3",
+        "g1",
+        "g2",
+        "g3"
+      ],
+      "pad": 10
+    }
+  ]
+}

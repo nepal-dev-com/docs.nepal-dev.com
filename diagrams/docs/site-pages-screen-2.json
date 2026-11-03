@@ -1,0 +1,213 @@
+{
+  "schema_version": 1,
+  "diagram_type": "architecture",
+  "meta": {
+    "title": "Screen 2 — Use page",
+    "subtitle": "Wireframe at phone width, drawn from its Mermaid version · site pages",
+    "output": "site-pages-screen-2.html",
+    "animation": "trace",
+    "quality_profile": "showcase",
+    "legend": {
+      "entries": {
+        "backend": {
+          "label": "Control or link"
+        },
+        "cloud": {
+          "label": "Notice or state"
+        },
+        "database": {
+          "label": "Code or Markdown"
+        },
+        "external": {
+          "label": "Content"
+        },
+        "frontend": {
+          "label": "Site chrome"
+        }
+      }
+    }
+  },
+  "components": [
+    {
+      "id": "hdr",
+      "type": "frontend",
+      "label": "▲ Nepal Dev Verse   ⌕ orrery ☰",
+      "pos": [
+        40,
+        60
+      ],
+      "size": [
+        436,
+        58
+      ]
+    },
+    {
+      "id": "chip",
+      "type": "backend",
+      "label": "● lodestar",
+      "pos": [
+        54,
+        160
+      ],
+      "size": [
+        303,
+        70
+      ],
+      "sublabel": "npm package"
+    },
+    {
+      "id": "track",
+      "type": "backend",
+      "label": "☀ | ☾",
+      "pos": [
+        369,
+        160
+      ],
+      "size": [
+        93,
+        58
+      ]
+    },
+    {
+      "id": "ver",
+      "type": "backend",
+      "label": "● v1.4",
+      "pos": [
+        54,
+        242
+      ],
+      "size": [
+        408,
+        70
+      ],
+      "sublabel": "1.4.2 · Latest ▾"
+    },
+    {
+      "id": "st",
+      "type": "backend",
+      "label": "◎ Get started",
+      "pos": [
+        54,
+        324
+      ],
+      "size": [
+        408,
+        70
+      ],
+      "sublabel": "2 ▾"
+    },
+    {
+      "id": "l1",
+      "type": "backend",
+      "label": "◉ Install",
+      "pos": [
+        54,
+        406
+      ],
+      "size": [
+        408,
+        58
+      ]
+    },
+    {
+      "id": "l2",
+      "type": "backend",
+      "label": "○ Commands",
+      "pos": [
+        54,
+        476
+      ],
+      "size": [
+        408,
+        58
+      ]
+    },
+    {
+      "id": "bar",
+      "type": "backend",
+      "label": "◔ Add the package",
+      "pos": [
+        40,
+        560
+      ],
+      "size": [
+        436,
+        70
+      ],
+      "sublabel": "4 min left ▾"
+    },
+    {
+      "id": "h1",
+      "type": "external",
+      "label": "Install",
+      "pos": [
+        40,
+        642
+      ],
+      "size": [
+        436,
+        58
+      ]
+    },
+    {
+      "id": "stated",
+      "type": "cloud",
+      "label": "● Documents lodestar 1.4.2",
+      "pos": [
+        40,
+        712
+      ],
+      "size": [
+        436,
+        58
+      ]
+    },
+    {
+      "id": "body",
+      "type": "database",
+      "label": "page content",
+      "pos": [
+        40,
+        782
+      ],
+      "size": [
+        436,
+        70
+      ],
+      "sublabel": "code in JetBrains Mono"
+    }
+  ],
+  "boundaries": [
+    {
+      "kind": "region",
+      "label": "Phone screen · /<slug>/use/<line>/<page>",
+      "wraps": [
+        "hdr",
+        "chip",
+        "track",
+        "ver",
+        "st",
+        "l1",
+        "l2",
+        "bar",
+        "h1",
+        "stated",
+        "body"
+      ],
+      "pad": 22
+    },
+    {
+      "kind": "region",
+      "label": "drawer",
+      "wraps": [
+        "chip",
+        "track",
+        "ver",
+        "st",
+        "l1",
+        "l2"
+      ],
+      "pad": 10
+    }
+  ]
+}

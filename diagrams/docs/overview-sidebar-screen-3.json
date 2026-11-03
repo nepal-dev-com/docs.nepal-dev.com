@@ -1,0 +1,144 @@
+{
+  "schema_version": 1,
+  "diagram_type": "architecture",
+  "meta": {
+    "title": "Screen 3 — Maintain-only overview",
+    "subtitle": "Wireframe at phone width, drawn from its Mermaid version · overview sidebar",
+    "output": "overview-sidebar-screen-3.html",
+    "animation": "trace",
+    "quality_profile": "showcase",
+    "legend": {
+      "entries": {
+        "backend": {
+          "label": "Control or link"
+        },
+        "external": {
+          "label": "Content"
+        }
+      }
+    }
+  },
+  "components": [
+    {
+      "id": "chip",
+      "type": "backend",
+      "label": "● Nepal Dev Verse Docs",
+      "pos": [
+        40,
+        60
+      ],
+      "size": [
+        436,
+        70
+      ],
+      "sublabel": "Project"
+    },
+    {
+      "id": "ov",
+      "type": "external",
+      "label": "◉ Overview (current, tinted)",
+      "pos": [
+        40,
+        142
+      ],
+      "size": [
+        436,
+        58
+      ]
+    },
+    {
+      "id": "p1",
+      "type": "backend",
+      "label": "○ Maintainer documentation",
+      "pos": [
+        40,
+        212
+      ],
+      "size": [
+        436,
+        58
+      ]
+    },
+    {
+      "id": "h1",
+      "type": "external",
+      "label": "○ ADRs",
+      "pos": [
+        54,
+        312
+      ],
+      "size": [
+        408,
+        70
+      ],
+      "sublabel": "25 ▸ (closed)"
+    },
+    {
+      "id": "h2",
+      "type": "external",
+      "label": "○ Architecture",
+      "pos": [
+        54,
+        438
+      ],
+      "size": [
+        408,
+        70
+      ],
+      "sublabel": "2 ▸ (closed)"
+    },
+    {
+      "id": "h3",
+      "type": "external",
+      "label": "○ App flows",
+      "pos": [
+        54,
+        564
+      ],
+      "size": [
+        408,
+        70
+      ],
+      "sublabel": "11 ▸ (closed)"
+    }
+  ],
+  "boundaries": [
+    {
+      "kind": "region",
+      "label": "Phone screen · the sidebar on /docs",
+      "wraps": [
+        "chip",
+        "ov",
+        "p1",
+        "h1",
+        "h2",
+        "h3"
+      ],
+      "pad": 22
+    },
+    {
+      "kind": "region",
+      "label": "station 1",
+      "wraps": [
+        "h1"
+      ],
+      "pad": 10
+    },
+    {
+      "kind": "region",
+      "label": "station 2",
+      "wraps": [
+        "h2"
+      ],
+      "pad": 10
+    },
+    {
+      "kind": "region",
+      "label": "station 3",
+      "wraps": [
+        "h3"
+      ],
+      "pad": 10
+    }
+  ]
+}

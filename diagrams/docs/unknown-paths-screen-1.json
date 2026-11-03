@@ -1,0 +1,125 @@
+{
+  "schema_version": 1,
+  "diagram_type": "architecture",
+  "meta": {
+    "title": "Screen 1 — Out of orbit",
+    "subtitle": "Wireframe at phone width, drawn from its Mermaid version · unknown paths",
+    "output": "unknown-paths-screen-1.html",
+    "animation": "trace",
+    "quality_profile": "showcase",
+    "legend": {
+      "entries": {
+        "backend": {
+          "label": "Control or link"
+        },
+        "external": {
+          "label": "Content"
+        },
+        "frontend": {
+          "label": "Site chrome"
+        },
+        "security": {
+          "label": "Error"
+        }
+      }
+    }
+  },
+  "components": [
+    {
+      "id": "draw",
+      "type": "external",
+      "label": "a planet that has left its dashed orbit around",
+      "pos": [
+        40,
+        60
+      ],
+      "size": [
+        436,
+        70
+      ],
+      "sublabel": "the star"
+    },
+    {
+      "id": "h1",
+      "type": "security",
+      "label": "This page drifted out of orbit.",
+      "pos": [
+        40,
+        142
+      ],
+      "size": [
+        436,
+        58
+      ]
+    },
+    {
+      "id": "help",
+      "type": "frontend",
+      "label": "It may have moved to another version or been",
+      "pos": [
+        40,
+        212
+      ],
+      "size": [
+        436,
+        70
+      ],
+      "sublabel": "renamed. Search for it, or start again from the system."
+    },
+    {
+      "id": "field",
+      "type": "frontend",
+      "label": "⌕  Search packages, projects and pages",
+      "pos": [
+        40,
+        294
+      ],
+      "size": [
+        436,
+        58
+      ]
+    },
+    {
+      "id": "back",
+      "type": "backend",
+      "label": "Back to the system →",
+      "pos": [
+        40,
+        364
+      ],
+      "size": [
+        436,
+        58
+      ]
+    },
+    {
+      "id": "foot",
+      "type": "frontend",
+      "label": "The Horizon footer",
+      "pos": [
+        40,
+        434
+      ],
+      "size": [
+        436,
+        70
+      ],
+      "sublabel": "You've reached the horizon. The Verse goes on."
+    }
+  ],
+  "boundaries": [
+    {
+      "kind": "region",
+      "label": "Phone screen · any unknown path, at phone width",
+      "wraps": [
+        "draw",
+        "h1",
+        "help",
+        "field",
+        "back",
+        "foot"
+      ],
+      "pad": 22
+    }
+  ]
+}

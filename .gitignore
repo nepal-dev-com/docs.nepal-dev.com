@@ -25,3 +25,10 @@ yarn-error.log*
 .vercel
 next-env.d.ts
 .idea
+
+# Agents
+.impeccable/config.local.json
+.impeccable/hook.cache.json
+.hallmark/
+.archify/
+.prototypes/

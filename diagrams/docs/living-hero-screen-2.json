@@ -1,0 +1,170 @@
+{
+  "schema_version": 1,
+  "diagram_type": "architecture",
+  "meta": {
+    "title": "Screen 2 — The living hero",
+    "subtitle": "Wireframe at phone width, drawn from its Mermaid version · living hero",
+    "output": "living-hero-screen-2.html",
+    "animation": "trace",
+    "quality_profile": "showcase",
+    "legend": {
+      "entries": {
+        "backend": {
+          "label": "Control or link"
+        },
+        "external": {
+          "label": "Content"
+        },
+        "frontend": {
+          "label": "Site chrome"
+        }
+      }
+    }
+  },
+  "components": [
+    {
+      "id": "header",
+      "type": "frontend",
+      "label": "Brand mark",
+      "pos": [
+        40,
+        60
+      ],
+      "size": [
+        436,
+        70
+      ],
+      "sublabel": "Nepal Dev Verse · Projects · llms.txt · GitHub · theme"
+    },
+    {
+      "id": "head",
+      "type": "external",
+      "label": "Every package and",
+      "pos": [
+        40,
+        142
+      ],
+      "size": [
+        212,
+        70
+      ],
+      "sublabel": "project by Nepalese…"
+    },
+    {
+      "id": "system",
+      "type": "external",
+      "label": "The system",
+      "pos": [
+        264,
+        142
+      ],
+      "size": [
+        212,
+        70
+      ],
+      "sublabel": "leans toward the pointer · a…"
+    },
+    {
+      "id": "sub",
+      "type": "external",
+      "label": "Guides, APIs and",
+      "pos": [
+        40,
+        224
+      ],
+      "size": [
+        212,
+        70
+      ],
+      "sublabel": "release notes"
+    },
+    {
+      "id": "orbits",
+      "type": "external",
+      "label": "Five orbits",
+      "pos": [
+        264,
+        224
+      ],
+      "size": [
+        212,
+        70
+      ],
+      "sublabel": "npm · Composer · PyPI · Go…"
+    },
+    {
+      "id": "search",
+      "type": "frontend",
+      "label": "⌕ Search packages,",
+      "pos": [
+        40,
+        306
+      ],
+      "size": [
+        212,
+        70
+      ],
+      "sublabel": "projects and pages ⌘K"
+    },
+    {
+      "id": "tip",
+      "type": "external",
+      "label": "Pointing at an orbit",
+      "pos": [
+        264,
+        306
+      ],
+      "size": [
+        212,
+        70
+      ],
+      "sublabel": "Go · No planets yet"
+    },
+    {
+      "id": "legend",
+      "type": "external",
+      "label": "Legend",
+      "pos": [
+        40,
+        388
+      ],
+      "size": [
+        212,
+        70
+      ],
+      "sublabel": "package · project · moon =…"
+    },
+    {
+      "id": "caption",
+      "type": "backend",
+      "label": "Telemetry",
+      "pos": [
+        264,
+        388
+      ],
+      "size": [
+        212,
+        70
+      ],
+      "sublabel": "1 planet · 4 orbits waiting…"
+    }
+  ],
+  "boundaries": [
+    {
+      "kind": "region",
+      "label": "Phone screen · /, on a wide screen",
+      "wraps": [
+        "header",
+        "head",
+        "system",
+        "sub",
+        "orbits",
+        "search",
+        "tip",
+        "legend",
+        "caption"
+      ],
+      "pad": 22
+    }
+  ]
+}

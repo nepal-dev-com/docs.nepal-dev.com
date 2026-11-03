@@ -1,0 +1,111 @@
+{
+  "schema_version": 2,
+  "diagram_type": "workflow",
+  "meta": {
+    "title": "App flow: the Horizon's closing line",
+    "subtitle": "From the end of any page into the Verse view",
+    "quality_profile": "showcase",
+    "output": "horizon-closing-line.html"
+  },
+  "lanes": [
+    {
+      "id": "foot",
+      "label": "The footer"
+    },
+    {
+      "id": "way",
+      "label": "On the way"
+    },
+    {
+      "id": "end",
+      "label": "Arrives"
+    }
+  ],
+  "mainPath": [
+    "line",
+    "home",
+    "verse"
+  ],
+  "nodes": [
+    {
+      "id": "line",
+      "lane": "foot",
+      "col": 0,
+      "type": "frontend",
+      "label": "End of any page",
+      "sublabel": "You've reached the horizon",
+      "width": 190
+    },
+    {
+      "id": "home",
+      "lane": "way",
+      "col": 1,
+      "type": "backend",
+      "label": "The home page",
+      "sublabel": "the page zooms out",
+      "width": 190
+    },
+    {
+      "id": "top",
+      "lane": "way",
+      "col": 2,
+      "type": "backend",
+      "label": "Back to the top",
+      "sublabel": "the camera eases out",
+      "width": 190
+    },
+    {
+      "id": "verse",
+      "lane": "end",
+      "col": 3,
+      "type": "frontend",
+      "label": "The Verse view",
+      "sublabel": "Back to the system returns",
+      "width": 190
+    },
+    {
+      "id": "site",
+      "lane": "foot",
+      "col": 3,
+      "type": "external",
+      "label": "puncoz.com",
+      "sublabel": "the maker's site",
+      "width": 190
+    }
+  ],
+  "edges": [
+    {
+      "id": "e1",
+      "from": "line",
+      "to": "home",
+      "label": "The Verse, on another page",
+      "variant": "emphasis"
+    },
+    {
+      "id": "e2",
+      "from": "line",
+      "to": "top",
+      "label": "The Verse, on the home page",
+      "variant": "default"
+    },
+    {
+      "id": "e3",
+      "from": "home",
+      "to": "verse",
+      "variant": "emphasis"
+    },
+    {
+      "id": "e4",
+      "from": "top",
+      "to": "verse",
+      "variant": "default"
+    },
+    {
+      "id": "e5",
+      "from": "line",
+      "to": "site",
+      "label": "Puncoz Nepal, in the credit",
+      "variant": "default"
+    }
+  ]
+}

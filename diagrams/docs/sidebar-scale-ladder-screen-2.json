@@ -1,0 +1,202 @@
+{
+  "schema_version": 1,
+  "diagram_type": "architecture",
+  "meta": {
+    "title": "Screen 2 — Another orbit opened",
+    "subtitle": "Wireframe at phone width, drawn from its Mermaid version · sidebar scale ladder",
+    "output": "sidebar-scale-ladder-screen-2.html",
+    "animation": "trace",
+    "quality_profile": "showcase",
+    "legend": {
+      "entries": {
+        "backend": {
+          "label": "Control or link"
+        },
+        "external": {
+          "label": "Content"
+        }
+      }
+    }
+  },
+  "components": [
+    {
+      "id": "chip",
+      "type": "backend",
+      "label": "◍ Nepal Dev Verse Docs",
+      "pos": [
+        40,
+        60
+      ],
+      "size": [
+        436,
+        70
+      ],
+      "sublabel": "Project"
+    },
+    {
+      "id": "ov",
+      "type": "external",
+      "label": "• Overview (landmark)",
+      "pos": [
+        40,
+        142
+      ],
+      "size": [
+        436,
+        58
+      ]
+    },
+    {
+      "id": "md",
+      "type": "backend",
+      "label": "• Maintainer documentation (landmark)",
+      "pos": [
+        40,
+        212
+      ],
+      "size": [
+        436,
+        58
+      ]
+    },
+    {
+      "id": "b1",
+      "type": "external",
+      "label": "DECISIONS ┈┈┈┈ belt",
+      "pos": [
+        40,
+        282
+      ],
+      "size": [
+        436,
+        58
+      ]
+    },
+    {
+      "id": "h1",
+      "type": "backend",
+      "label": "◎ ADRs",
+      "pos": [
+        54,
+        382
+      ],
+      "size": [
+        408,
+        70
+      ],
+      "sublabel": "25 ▾ (the one card)"
+    },
+    {
+      "id": "cst",
+      "type": "external",
+      "label": "constellation: 25 moons phased by status",
+      "pos": [
+        54,
+        464
+      ],
+      "size": [
+        408,
+        58
+      ]
+    },
+    {
+      "id": "rd",
+      "type": "external",
+      "label": "ADR-0027",
+      "pos": [
+        54,
+        534
+      ],
+      "size": [
+        408,
+        70
+      ],
+      "sublabel": "The sidebar is a scale ladder"
+    },
+    {
+      "id": "b2",
+      "type": "external",
+      "label": "DESIGN ┈┈┈┈ belt",
+      "pos": [
+        40,
+        630
+      ],
+      "size": [
+        436,
+        58
+      ]
+    },
+    {
+      "id": "o2",
+      "type": "backend",
+      "label": "○ Architecture",
+      "pos": [
+        40,
+        700
+      ],
+      "size": [
+        436,
+        70
+      ],
+      "sublabel": "1"
+    },
+    {
+      "id": "o3",
+      "type": "backend",
+      "label": "○ App flows",
+      "pos": [
+        40,
+        782
+      ],
+      "size": [
+        436,
+        70
+      ],
+      "sublabel": "11"
+    },
+    {
+      "id": "o4",
+      "type": "backend",
+      "label": "○ Product requirements",
+      "pos": [
+        40,
+        864
+      ],
+      "size": [
+        436,
+        70
+      ],
+      "sublabel": "6 (holds the page)"
+    }
+  ],
+  "boundaries": [
+    {
+      "kind": "region",
+      "label": "Phone screen · the reader opens ADRs on the same page",
+      "wraps": [
+        "chip",
+        "ov",
+        "md",
+        "b1",
+        "h1",
+        "cst",
+        "rd",
+        "b2",
+        "o2",
+        "o3",
+        "o4"
+      ],
+      "pad": 22
+    },
+    {
+      "kind": "region",
+      "label": "card",
+      "wraps": [
+        "h1",
+        "cst",
+        "rd"
+      ],
+      "pad": 10
+    }
+  ]
+}

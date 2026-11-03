@@ -10,3 +10,215 @@ html > body[data-scroll-locked] {
   margin-right: 0px !important;
   --removed-body-scroll-bar-size: 0px !important;
 }
+
+/* Site tokens on every page (ADR-0015 decision 7; star and night, ADR-0017 decision 13). Light first, then dark. */
+:root {
+  color-scheme: light;
+  --brand-rock: #162B3F;
+  --home-bg: #f6f7f9;
+  --home-bg-2: #eef0f4;
+  --home-panel: #ffffff;
+  --home-panel-2: #f1f3f7;
+  --home-line: #dde1e9;
+  --home-line-2: #c4cbd8;
+  --home-ink: #0d1016;
+  --home-muted: #4f586b;
+  --home-faint: #5f6880;
+  --home-accent: #077a63;
+  --home-accent-ink: #ffffff;
+  --home-accent-soft: rgb(7 122 99 / 0.1);
+  --home-npm: #d4382b;
+  --home-composer: #5b48e0;
+  --home-pypi: #9a6d00;
+  --home-go: #0a7fa6;
+  --home-cargo: #a8541c;
+  --home-other: #4f586b;
+  --home-project: #0d1016;
+  --home-star: #e08a00;
+  --home-star-glow: rgb(224 138 0 / 0.22);
+  --home-night: #dfe3ea;
+  --home-shadow: rgb(13 16 22 / 0.12);
+  --home-shadow-near: rgb(13 16 22 / 0.08);
+  --home-font-display: var(--font-home-display), var(--font-home-text), ui-sans-serif, system-ui, sans-serif;
+  --home-font-text: var(--font-home-text), ui-sans-serif, system-ui, sans-serif;
+  --home-font-data: var(--font-home-data), ui-monospace, 'SF Mono', Menlo, monospace;
+  --home-ease: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.dark {
+  color-scheme: dark;
+  --brand-rock: #3B7A9E;
+  --home-bg: #0a0c10;
+  --home-bg-2: #0f1218;
+  --home-panel: #141821;
+  --home-panel-2: #1a1f2a;
+  --home-line: #232937;
+  --home-line-2: #323a4c;
+  --home-ink: #e9ecf2;
+  --home-muted: #9ba4b6;
+  --home-faint: #7f889e;
+  --home-accent: #3ddbb6;
+  --home-accent-ink: #04120e;
+  --home-accent-soft: rgb(61 219 182 / 0.13);
+  --home-npm: #ff6f61;
+  --home-composer: #a394ff;
+  --home-pypi: #ffd166;
+  --home-go: #56cdf2;
+  --home-cargo: #f0a86a;
+  --home-other: #9ba4b6;
+  --home-project: #e9ecf2;
+  --home-star: #ffe2a8;
+  --home-star-glow: rgb(255 214 140 / 0.2);
+  --home-night: #1b2130;
+  --home-shadow: rgb(0 0 0 / 0.6);
+  --home-shadow-near: rgb(0 0 0 / 0.12);
+}
+
+/* Fumadocs' colours follow the site tokens, so docs pages share the home page's palette. */
+:root,
+.dark,
+.dark #nd-sidebar {
+  --color-fd-background: var(--home-bg);
+  --color-fd-foreground: var(--home-ink);
+  --color-fd-muted: var(--home-panel-2);
+  --color-fd-muted-foreground: var(--home-muted);
+  --color-fd-popover: var(--home-panel);
+  --color-fd-popover-foreground: var(--home-ink);
+  --color-fd-card: var(--home-panel);
+  --color-fd-card-foreground: var(--home-ink);
+  --color-fd-border: var(--home-line);
+  --color-fd-primary: var(--home-accent);
+  --color-fd-primary-foreground: var(--home-accent-ink);
+  --color-fd-secondary: var(--home-panel-2);
+  --color-fd-secondary-foreground: var(--home-ink);
+  --color-fd-accent: var(--home-accent-soft);
+  --color-fd-accent-foreground: var(--home-ink);
+  --color-fd-ring: var(--home-accent);
+}
+
+body {
+  font-family: var(--home-font-text);
+  -webkit-font-smoothing: antialiased;
+}
+
+code,
+kbd,
+pre,
+samp {
+  font-family: var(--home-font-data);
+  font-variant-numeric: tabular-nums;
+}
+
+/* The still sky (ADR-0029 decision 3): behind every page, cleared from the content column. */
+.verse-sky {
+  --sky-clear: 600px;
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  overflow: hidden;
+  pointer-events: none;
+  mask-image: linear-gradient(
+    to right,
+    #000 calc(50% - var(--sky-clear) - 100px),
+    transparent calc(50% - var(--sky-clear)),
+    transparent calc(50% + var(--sky-clear)),
+    #000 calc(50% + var(--sky-clear) + 100px)
+  );
+}
+
+/* The notebook layout is 97rem wide, wider than the home page's column. */
+:root:has(.site-header[data-docs]) .verse-sky {
+  --sky-clear: 786px;
+}
+
+.verse-sky svg {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+:root:not(.dark) .verse-sky,
+:root:not(.dark) .header-sky {
+  opacity: 0.6;
+}
+
+@media print {
+  .verse-sky,
+  .header-sky {
+    display: none;
+  }
+}
+
+/* Zooming along the scale ladder and the planet morph (ADR-0029 decisions 6 and 7). */
+::view-transition {
+  pointer-events: none;
+}
+
+::view-transition-group(.morph) {
+  animation-duration: 350ms;
+  animation-timing-function: var(--home-ease);
+}
+
+::view-transition-old(.zoom-in) {
+  animation:
+    160ms ease-in both verse-fade reverse,
+    350ms var(--home-ease) both verse-to-large;
+}
+
+::view-transition-new(.zoom-in) {
+  animation:
+    220ms ease-out 120ms both verse-fade,
+    350ms var(--home-ease) both verse-from-small;
+}
+
+::view-transition-old(.zoom-out) {
+  animation:
+    160ms ease-in both verse-fade reverse,
+    350ms var(--home-ease) both verse-to-small;
+}
+
+::view-transition-new(.zoom-out) {
+  animation:
+    220ms ease-out 120ms both verse-fade,
+    350ms var(--home-ease) both verse-from-large;
+}
+
+@keyframes verse-fade {
+  from {
+    opacity: 0;
+  }
+}
+
+@keyframes verse-from-small {
+  from {
+    scale: 0.98;
+  }
+}
+
+@keyframes verse-from-large {
+  from {
+    scale: 1.02;
+  }
+}
+
+@keyframes verse-to-large {
+  to {
+    scale: 1.02;
+  }
+}
+
+@keyframes verse-to-small {
+  to {
+    scale: 0.98;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-old(*),
+  ::view-transition-new(*),
+  ::view-transition-group(*) {
+    animation-duration: 0s !important;
+    animation-delay: 0s !important;
+  }
+}

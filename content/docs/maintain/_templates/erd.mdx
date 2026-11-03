@@ -1,0 +1,53 @@
+---
+title: "ERD — <system or feature subset>"
+description: "Replace this with one or two plain sentences, about 160 characters at most, saying what the page is for."
+---
+
+- **Status:** Draft
+- **Last updated:** YYYY-MM-DD
+- **Related ADRs:** ADR-NNNN
+
+> Snapshot of the system as it stands today. Edit in place; never record what changed.
+
+## Diagram
+
+Draw this diagram with Archify too. In a copy, wrap the fence in
+`<Diagram src="/diagrams/<project-slug>/<slug>.html" title="…">` … `</Diagram>`, with nothing else
+inside: the page shows the Archify view and its Markdown the Mermaid. Outside the templates, a
+bare Mermaid fence fails the build (ADR-0022).
+
+```mermaid
+erDiagram
+  PROJECT ||--o{ VERSION : "has"
+  PROJECT {
+    text slug PK
+    text visibility "public | private"
+  }
+  VERSION {
+    text project_slug FK
+    text version "semver"
+  }
+```
+
+## Entities
+
+### `<ENTITY>`
+
+| Column | Type | Null | Notes |
+|---|---|---|---|
+
+**Indexes:** …
+**Invariants:** rules the store or application guarantees (uniqueness, required references,
+allowed values).
+
+## Relationships
+
+| From | To | Cardinality | On delete |
+|---|---|---|---|
+
+## Sensitive fields
+
+Classification per [`../security/data-classification.mdx`](../security/data-classification.mdx).
+
+| Field | Classification | Protection |
+|---|---|---|

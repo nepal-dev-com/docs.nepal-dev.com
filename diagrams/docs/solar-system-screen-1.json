@@ -1,0 +1,59 @@
+{
+  "schema_version": 1,
+  "diagram_type": "architecture",
+  "meta": {
+    "title": "Screen 1 — Theme switch",
+    "subtitle": "Wireframe at phone width, drawn from its Mermaid version · solar system",
+    "output": "solar-system-screen-1.html",
+    "animation": "trace",
+    "quality_profile": "showcase",
+    "legend": {
+      "entries": {
+        "frontend": {
+          "label": "Site chrome"
+        }
+      }
+    }
+  },
+  "components": [
+    {
+      "id": "dark",
+      "type": "frontend",
+      "label": "Dark, the night side…",
+      "pos": [
+        40,
+        60
+      ],
+      "size": [
+        212,
+        70
+      ],
+      "sublabel": "name: Switch to day side…"
+    },
+    {
+      "id": "light",
+      "type": "frontend",
+      "label": "Light, the day side…",
+      "pos": [
+        264,
+        60
+      ],
+      "size": [
+        212,
+        70
+      ],
+      "sublabel": "name: Switch to night side…"
+    }
+  ],
+  "boundaries": [
+    {
+      "kind": "region",
+      "label": "Phone screen · the header, every page",
+      "wraps": [
+        "dark",
+        "light"
+      ],
+      "pad": 22
+    }
+  ]
+}

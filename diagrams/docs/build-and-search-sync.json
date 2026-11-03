@@ -1,0 +1,129 @@
+{
+  "schema_version": 1,
+  "diagram_type": "sequence",
+  "meta": {
+    "title": "Build and search sync",
+    "subtitle": "bun run build: next build, then the records pushed to Algolia",
+    "quality_profile": "showcase",
+    "animation": "trace",
+    "output": "build-and-search-sync.html"
+  },
+  "participants": [
+    {
+      "id": "owner",
+      "type": "external",
+      "label": "Owner",
+      "sublabel": "runs the command"
+    },
+    {
+      "id": "next",
+      "type": "backend",
+      "label": "next build",
+      "sublabel": "Fumadocs MDX"
+    },
+    {
+      "id": "out",
+      "type": "database",
+      "label": ".next/ output",
+      "sublabel": "build files"
+    },
+    {
+      "id": "sync",
+      "type": "backend",
+      "label": "sync-content.ts",
+      "sublabel": "Node"
+    },
+    {
+      "id": "algolia",
+      "type": "cloud",
+      "label": "Algolia",
+      "sublabel": "index document"
+    }
+  ],
+  "segments": [
+    {
+      "from": 150,
+      "to": 262,
+      "label": "Build"
+    },
+    {
+      "from": 272,
+      "to": 475,
+      "label": "Sync"
+    }
+  ],
+  "messages": [
+    {
+      "id": "run",
+      "from": "owner",
+      "to": "next",
+      "y": 165,
+      "label": "bun run build",
+      "variant": "emphasis"
+    },
+    {
+      "id": "write",
+      "from": "next",
+      "to": "out",
+      "y": 200,
+      "label": "compile content/; pages, Markdown, OG, static.json",
+      "variant": "emphasis"
+    },
+    {
+      "id": "done",
+      "from": "next",
+      "to": "owner",
+      "y": 240,
+      "label": "build done",
+      "variant": "return"
+    },
+    {
+      "id": "second",
+      "from": "owner",
+      "to": "sync",
+      "y": 285,
+      "label": "same command, second step",
+      "variant": "default"
+    },
+    {
+      "id": "glob",
+      "from": "sync",
+      "to": "out",
+      "y": 320,
+      "label": "glob static.json.body",
+      "variant": "default"
+    },
+    {
+      "id": "records",
+      "from": "out",
+      "to": "sync",
+      "y": 355,
+      "label": "records",
+      "variant": "return"
+    },
+    {
+      "id": "push",
+      "from": "sync",
+      "to": "algolia",
+      "y": 390,
+      "label": "sync with ALGOLIA_WRITE_KEY",
+      "variant": "security"
+    },
+    {
+      "id": "ok",
+      "from": "algolia",
+      "to": "sync",
+      "y": 425,
+      "label": "ok",
+      "variant": "return"
+    },
+    {
+      "id": "updated",
+      "from": "sync",
+      "to": "owner",
+      "y": 460,
+      "label": "search updated: N records",
+      "variant": "return"
+    }
+  ]
+}

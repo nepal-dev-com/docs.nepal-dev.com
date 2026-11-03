@@ -1,0 +1,64 @@
+---
+title: "PRD — multi-repository projects"
+description: "What a project made of several repositories needs: one place for its documentation, with each repository writing only its own part."
+---
+
+- **Status:** Current
+- **Last updated:** 2026-11-01
+- **Related ADRs:** [ADR-0024](../adr/ADR-0024-a-project-can-span-several-repositories.mdx)
+
+> Snapshot of the system as it stands today. Edit in place; never record what changed.
+
+## Problem
+
+A project made of several repositories, such as a frontend, a backend and an API, has nowhere
+to put its documentation: an entry has one folder written by one repository, and one
+repository link. Several repositories writing one folder would edit the same files.
+
+## Goal
+
+- A project of any number of repositories is one entry: one overview, one planet, one search
+  scope.
+- Each repository documents itself in its own folders, without touching another's.
+- Readers see which repositories make up the project, and reach each one.
+- Projects keep at most a `dev` line and one released line.
+
+## Non-goals
+
+- Versions per repository.
+- Private repositories or private projects (they wait for their own ADR, AGENTS.md §6.1).
+- Checking which repository wrote a file.
+
+## User stories
+
+| # | Story | Acceptance criteria |
+|---|---|---|
+| US-1 | As a **reader**, I want **to see a project's repositories on its overview**, so that **I know what it is made of and where its code lives**. | - Given a project with `repositories`, when I open its overview, then the planet header links each repository by name, primary first.<br />- Given a repository without a `url`, then its name shows without a link.<br />- The fact sheet lists *Repositories*. |
+| US-2 | As a **reader**, I want **each repository's pages together in the sidebar**, so that **I find the frontend's pages without reading the backend's**. | - Given `use/frontend/`, when I open the Use track, then *Frontend* is a station.<br />- Pages about the whole project sit beside the repository stations.<br />- One station is open at a time (ADR-0023). |
+| US-3 | As a **reader on the home page**, I want **to see that a project has several repositories**, so that **I know its scale before opening it**. | - The planet card reads *Project · 3 repositories*. |
+| US-4 | As a **repository's agent**, I want **a folder only my repository edits**, so that **my changes never collide with another repository's**. | - `PROJECT_AGENTS.md` names the folders a non-primary repository edits: `use/<id>/`, `maintain/<id>/` and `diagrams/<slug>/<id>-*`.<br />- The primary repository edits the shared files. |
+| US-5 | As a **maintainer**, I want **the build to refuse a wrong catalogue**, so that **a mistake never publishes**. | - Given no primary, two primaries, a duplicate or reserved id, an `http` URL, one repository only, `repositories` on a package, or both `repository` and `repositories`, when the site builds, then it fails naming the file. |
+| US-6 | As a **maintainer of a project**, I want **only dev and the released line**, so that **the project's docs describe what runs now**. | - Given a project with `use/dev/` and one `latest` line, the build passes.<br />- Given a `legacy` line in a project, it fails.<br />- Packages keep their older lines. |
+
+## Rules and edge cases
+
+- `id` is the folder name: lowercase letters, digits and hyphens; not `dev`, `latest`, `adr`
+  or a line's segment.
+- A repository folder's station title is the repository's `name`, unless its `meta.json` sets
+  one.
+- A repository with nothing for readers has no `use/<id>/`; one with nothing for maintainers
+  has no `maintain/<id>/`.
+- With lines, each line holds the repository folders: `use/dev/frontend/`,
+  `use/<line>/frontend/`. A release copies `use/dev/` whole and replaces the released line;
+  old links redirect to the new line.
+- A one-repository project keeps `repository`; nothing about it changes but the line rule.
+- Diagrams of a non-primary repository are named `diagrams/<slug>/<id>-<slug>.html`.
+
+## Out of scope for now
+
+- A repository filter in search.
+- Showing which repository a page came from on the page itself, beyond its breadcrumb.
+
+## Open questions
+
+None.

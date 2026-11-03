@@ -1,0 +1,158 @@
+{
+  "schema_version": 1,
+  "diagram_type": "architecture",
+  "meta": {
+    "title": "Screen 1 — Current station open",
+    "subtitle": "Wireframe at phone width, drawn from its Mermaid version · one open station",
+    "output": "one-open-station-screen-1.html",
+    "animation": "trace",
+    "quality_profile": "showcase",
+    "legend": {
+      "entries": {
+        "backend": {
+          "label": "Control or link"
+        },
+        "external": {
+          "label": "Content"
+        }
+      }
+    }
+  },
+  "components": [
+    {
+      "id": "chip",
+      "type": "backend",
+      "label": "● lodestar",
+      "pos": [
+        40,
+        60
+      ],
+      "size": [
+        324,
+        58
+      ]
+    },
+    {
+      "id": "sw",
+      "type": "external",
+      "label": "☀ | ☾",
+      "pos": [
+        376,
+        60
+      ],
+      "size": [
+        100,
+        58
+      ]
+    },
+    {
+      "id": "moon",
+      "type": "backend",
+      "label": "full moon",
+      "pos": [
+        40,
+        130
+      ],
+      "size": [
+        436,
+        70
+      ],
+      "sublabel": "v0.1 · 0.1.4 · Latest ▾"
+    },
+    {
+      "id": "h1",
+      "type": "backend",
+      "label": "◎ Get started",
+      "pos": [
+        54,
+        242
+      ],
+      "size": [
+        408,
+        70
+      ],
+      "sublabel": "2 ▾ (open, the one card)"
+    },
+    {
+      "id": "p1",
+      "type": "external",
+      "label": "◉ Install (probe, tinted)",
+      "pos": [
+        54,
+        324
+      ],
+      "size": [
+        408,
+        58
+      ]
+    },
+    {
+      "id": "p2",
+      "type": "external",
+      "label": "∘ Commands",
+      "pos": [
+        54,
+        394
+      ],
+      "size": [
+        408,
+        58
+      ]
+    },
+    {
+      "id": "h2",
+      "type": "external",
+      "label": "○ Reference",
+      "pos": [
+        40,
+        478
+      ],
+      "size": [
+        436,
+        70
+      ],
+      "sublabel": "3 ▸ (closed, a row)"
+    },
+    {
+      "id": "h3",
+      "type": "external",
+      "label": "○ Guides",
+      "pos": [
+        40,
+        560
+      ],
+      "size": [
+        436,
+        70
+      ],
+      "sublabel": "4 ▸ (closed, a row)"
+    }
+  ],
+  "boundaries": [
+    {
+      "kind": "region",
+      "label": "Phone screen · the sidebar on /lodestar/use/v0.1/install",
+      "wraps": [
+        "chip",
+        "sw",
+        "moon",
+        "h1",
+        "p1",
+        "p2",
+        "h2",
+        "h3"
+      ],
+      "pad": 22
+    },
+    {
+      "kind": "region",
+      "label": "card",
+      "wraps": [
+        "h1",
+        "p1",
+        "p2"
+      ],
+      "pad": 10
+    }
+  ]
+}

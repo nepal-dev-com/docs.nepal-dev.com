@@ -1,0 +1,837 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-11-01T00:00:00Z",
+  "title": "Design System: Nepal Dev Verse",
+  "extensions": {
+    "scope": "The whole site: tokens on :root (light) and .dark (dark) in src/app/global.css as --home-*, mapped onto Fumadocs colours; header, theme switch, planet header, notices, the sidebar's planet row and orbit stations, the trajectory and Horizon footer in src/app/site.css; home sections and the 404 in src/app/(home)/home.css; planet and moon marks drawn by src/components/planet.tsx. Docs pages use the Fumadocs notebook layout under the shared header.",
+    "colorMeta": {
+      "signal-teal": {
+        "role": "primary",
+        "displayName": "Signal Teal (dark)",
+        "tonalRamp": [
+          "oklch(15% 0.064 175)",
+          "oklch(25% 0.087 175)",
+          "oklch(36% 0.109 175)",
+          "oklch(48% 0.129 175)",
+          "oklch(60% 0.132 175)",
+          "oklch(72% 0.112 175)",
+          "oklch(84% 0.089 175)",
+          "oklch(95% 0.064 175)"
+        ]
+      },
+      "signal-teal-light": {
+        "role": "primary",
+        "displayName": "Signal Teal (light)",
+        "tonalRamp": [
+          "oklch(15% 0.064 175)",
+          "oklch(25% 0.087 175)",
+          "oklch(36% 0.109 175)",
+          "oklch(48% 0.129 175)",
+          "oklch(60% 0.132 175)",
+          "oklch(72% 0.112 175)",
+          "oklch(84% 0.089 175)",
+          "oklch(95% 0.064 175)"
+        ]
+      },
+      "signal-teal-soft": {
+        "role": "primary",
+        "displayName": "Teal Wash (dark)",
+        "tonalRamp": [
+          "oklch(15% 0.064 175)",
+          "oklch(25% 0.087 175)",
+          "oklch(36% 0.109 175)",
+          "oklch(48% 0.129 175)",
+          "oklch(60% 0.132 175)",
+          "oklch(72% 0.112 175)",
+          "oklch(84% 0.089 175)",
+          "oklch(95% 0.064 175)"
+        ]
+      },
+      "signal-teal-soft-light": {
+        "role": "primary",
+        "displayName": "Teal Wash (light)",
+        "tonalRamp": [
+          "oklch(15% 0.064 175)",
+          "oklch(25% 0.087 175)",
+          "oklch(36% 0.109 175)",
+          "oklch(48% 0.129 175)",
+          "oklch(60% 0.132 175)",
+          "oklch(72% 0.112 175)",
+          "oklch(84% 0.089 175)",
+          "oklch(95% 0.064 175)"
+        ]
+      },
+      "signal-teal-ink": {
+        "role": "primary",
+        "displayName": "Teal Ink (dark)",
+        "tonalRamp": [
+          "oklch(15% 0.018 175)",
+          "oklch(25% 0.025 175)",
+          "oklch(36% 0.031 175)",
+          "oklch(48% 0.037 175)",
+          "oklch(60% 0.038 175)",
+          "oklch(72% 0.032 175)",
+          "oklch(84% 0.026 175)",
+          "oklch(95% 0.018 175)"
+        ]
+      },
+      "signal-teal-ink-light": {
+        "role": "primary",
+        "displayName": "Teal Ink (light)",
+        "tonalRamp": [
+          "oklch(15% 0.018 175)",
+          "oklch(25% 0.025 175)",
+          "oklch(36% 0.031 175)",
+          "oklch(48% 0.037 175)",
+          "oklch(60% 0.038 175)",
+          "oklch(72% 0.032 175)",
+          "oklch(84% 0.026 175)",
+          "oklch(95% 0.018 175)"
+        ]
+      },
+      "eco-npm": {
+        "role": "secondary",
+        "displayName": "npm Coral (dark)",
+        "tonalRamp": [
+          "oklch(15% 0.078 28)",
+          "oklch(25% 0.106 28)",
+          "oklch(36% 0.132 28)",
+          "oklch(48% 0.157 28)",
+          "oklch(60% 0.161 28)",
+          "oklch(72% 0.136 28)",
+          "oklch(84% 0.108 28)",
+          "oklch(95% 0.078 28)"
+        ]
+      },
+      "eco-npm-light": {
+        "role": "secondary",
+        "displayName": "npm Coral (light)",
+        "tonalRamp": [
+          "oklch(15% 0.078 28)",
+          "oklch(25% 0.106 28)",
+          "oklch(36% 0.132 28)",
+          "oklch(48% 0.157 28)",
+          "oklch(60% 0.161 28)",
+          "oklch(72% 0.136 28)",
+          "oklch(84% 0.108 28)",
+          "oklch(95% 0.078 28)"
+        ]
+      },
+      "eco-composer": {
+        "role": "secondary",
+        "displayName": "Composer Violet (dark)",
+        "tonalRamp": [
+          "oklch(15% 0.078 285)",
+          "oklch(25% 0.106 285)",
+          "oklch(36% 0.132 285)",
+          "oklch(48% 0.157 285)",
+          "oklch(60% 0.161 285)",
+          "oklch(72% 0.136 285)",
+          "oklch(84% 0.108 285)",
+          "oklch(95% 0.078 285)"
+        ]
+      },
+      "eco-composer-light": {
+        "role": "secondary",
+        "displayName": "Composer Violet (light)",
+        "tonalRamp": [
+          "oklch(15% 0.078 285)",
+          "oklch(25% 0.106 285)",
+          "oklch(36% 0.132 285)",
+          "oklch(48% 0.157 285)",
+          "oklch(60% 0.161 285)",
+          "oklch(72% 0.136 285)",
+          "oklch(84% 0.108 285)",
+          "oklch(95% 0.078 285)"
+        ]
+      },
+      "eco-pypi": {
+        "role": "secondary",
+        "displayName": "PyPI Gold (dark)",
+        "tonalRamp": [
+          "oklch(15% 0.069 85)",
+          "oklch(25% 0.093 85)",
+          "oklch(36% 0.116 85)",
+          "oklch(48% 0.138 85)",
+          "oklch(60% 0.142 85)",
+          "oklch(72% 0.120 85)",
+          "oklch(84% 0.096 85)",
+          "oklch(95% 0.069 85)"
+        ]
+      },
+      "eco-pypi-light": {
+        "role": "secondary",
+        "displayName": "PyPI Gold (light)",
+        "tonalRamp": [
+          "oklch(15% 0.069 85)",
+          "oklch(25% 0.093 85)",
+          "oklch(36% 0.116 85)",
+          "oklch(48% 0.138 85)",
+          "oklch(60% 0.142 85)",
+          "oklch(72% 0.120 85)",
+          "oklch(84% 0.096 85)",
+          "oklch(95% 0.069 85)"
+        ]
+      },
+      "eco-go": {
+        "role": "secondary",
+        "displayName": "Go Cyan (dark)",
+        "tonalRamp": [
+          "oklch(15% 0.055 225)",
+          "oklch(25% 0.075 225)",
+          "oklch(36% 0.093 225)",
+          "oklch(48% 0.111 225)",
+          "oklch(60% 0.113 225)",
+          "oklch(72% 0.096 225)",
+          "oklch(84% 0.077 225)",
+          "oklch(95% 0.055 225)"
+        ]
+      },
+      "eco-go-light": {
+        "role": "secondary",
+        "displayName": "Go Cyan (light)",
+        "tonalRamp": [
+          "oklch(15% 0.055 225)",
+          "oklch(25% 0.075 225)",
+          "oklch(36% 0.093 225)",
+          "oklch(48% 0.111 225)",
+          "oklch(60% 0.113 225)",
+          "oklch(72% 0.096 225)",
+          "oklch(84% 0.077 225)",
+          "oklch(95% 0.055 225)"
+        ]
+      },
+      "eco-cargo": {
+        "role": "secondary",
+        "displayName": "Cargo Amber (dark)",
+        "tonalRamp": [
+          "oklch(15% 0.060 55)",
+          "oklch(25% 0.081 55)",
+          "oklch(36% 0.101 55)",
+          "oklch(48% 0.120 55)",
+          "oklch(60% 0.123 55)",
+          "oklch(72% 0.104 55)",
+          "oklch(84% 0.083 55)",
+          "oklch(95% 0.060 55)"
+        ]
+      },
+      "eco-cargo-light": {
+        "role": "secondary",
+        "displayName": "Cargo Amber (light)",
+        "tonalRamp": [
+          "oklch(15% 0.060 55)",
+          "oklch(25% 0.081 55)",
+          "oklch(36% 0.101 55)",
+          "oklch(48% 0.120 55)",
+          "oklch(60% 0.123 55)",
+          "oklch(72% 0.104 55)",
+          "oklch(84% 0.083 55)",
+          "oklch(95% 0.060 55)"
+        ]
+      },
+      "graphite-ground": {
+        "role": "neutral",
+        "displayName": "Graphite Ground (dark)",
+        "tonalRamp": [
+          "oklch(15% 0.007 265)",
+          "oklch(25% 0.009 265)",
+          "oklch(36% 0.012 265)",
+          "oklch(48% 0.014 265)",
+          "oklch(60% 0.014 265)",
+          "oklch(72% 0.012 265)",
+          "oklch(84% 0.010 265)",
+          "oklch(95% 0.007 265)"
+        ]
+      },
+      "graphite-ground-light": {
+        "role": "neutral",
+        "displayName": "Graphite Ground (light)",
+        "tonalRamp": [
+          "oklch(15% 0.007 265)",
+          "oklch(25% 0.009 265)",
+          "oklch(36% 0.012 265)",
+          "oklch(48% 0.014 265)",
+          "oklch(60% 0.014 265)",
+          "oklch(72% 0.012 265)",
+          "oklch(84% 0.010 265)",
+          "oklch(95% 0.007 265)"
+        ]
+      },
+      "graphite-ground-2": {
+        "role": "neutral",
+        "displayName": "Graphite Ground 2 (dark)",
+        "tonalRamp": [
+          "oklch(15% 0.007 265)",
+          "oklch(25% 0.009 265)",
+          "oklch(36% 0.012 265)",
+          "oklch(48% 0.014 265)",
+          "oklch(60% 0.014 265)",
+          "oklch(72% 0.012 265)",
+          "oklch(84% 0.010 265)",
+          "oklch(95% 0.007 265)"
+        ]
+      },
+      "graphite-ground-2-light": {
+        "role": "neutral",
+        "displayName": "Graphite Ground 2 (light)",
+        "tonalRamp": [
+          "oklch(15% 0.007 265)",
+          "oklch(25% 0.009 265)",
+          "oklch(36% 0.012 265)",
+          "oklch(48% 0.014 265)",
+          "oklch(60% 0.014 265)",
+          "oklch(72% 0.012 265)",
+          "oklch(84% 0.010 265)",
+          "oklch(95% 0.007 265)"
+        ]
+      },
+      "graphite-panel": {
+        "role": "neutral",
+        "displayName": "Graphite Panel (dark)",
+        "tonalRamp": [
+          "oklch(15% 0.009 265)",
+          "oklch(25% 0.012 265)",
+          "oklch(36% 0.016 265)",
+          "oklch(48% 0.018 265)",
+          "oklch(60% 0.019 265)",
+          "oklch(72% 0.016 265)",
+          "oklch(84% 0.013 265)",
+          "oklch(95% 0.009 265)"
+        ]
+      },
+      "graphite-panel-light": {
+        "role": "neutral",
+        "displayName": "Graphite Panel (light)",
+        "tonalRamp": [
+          "oklch(15% 0.009 265)",
+          "oklch(25% 0.012 265)",
+          "oklch(36% 0.016 265)",
+          "oklch(48% 0.018 265)",
+          "oklch(60% 0.019 265)",
+          "oklch(72% 0.016 265)",
+          "oklch(84% 0.013 265)",
+          "oklch(95% 0.009 265)"
+        ]
+      },
+      "graphite-panel-2": {
+        "role": "neutral",
+        "displayName": "Graphite Panel 2 (dark)",
+        "tonalRamp": [
+          "oklch(15% 0.009 265)",
+          "oklch(25% 0.012 265)",
+          "oklch(36% 0.016 265)",
+          "oklch(48% 0.018 265)",
+          "oklch(60% 0.019 265)",
+          "oklch(72% 0.016 265)",
+          "oklch(84% 0.013 265)",
+          "oklch(95% 0.009 265)"
+        ]
+      },
+      "graphite-panel-2-light": {
+        "role": "neutral",
+        "displayName": "Graphite Panel 2 (light)",
+        "tonalRamp": [
+          "oklch(15% 0.009 265)",
+          "oklch(25% 0.012 265)",
+          "oklch(36% 0.016 265)",
+          "oklch(48% 0.018 265)",
+          "oklch(60% 0.019 265)",
+          "oklch(72% 0.016 265)",
+          "oklch(84% 0.013 265)",
+          "oklch(95% 0.009 265)"
+        ]
+      },
+      "graphite-line": {
+        "role": "neutral",
+        "displayName": "Graphite Line (dark)",
+        "tonalRamp": [
+          "oklch(15% 0.011 265)",
+          "oklch(25% 0.016 265)",
+          "oklch(36% 0.019 265)",
+          "oklch(48% 0.023 265)",
+          "oklch(60% 0.024 265)",
+          "oklch(72% 0.020 265)",
+          "oklch(84% 0.016 265)",
+          "oklch(95% 0.011 265)"
+        ]
+      },
+      "graphite-line-light": {
+        "role": "neutral",
+        "displayName": "Graphite Line (light)",
+        "tonalRamp": [
+          "oklch(15% 0.011 265)",
+          "oklch(25% 0.016 265)",
+          "oklch(36% 0.019 265)",
+          "oklch(48% 0.023 265)",
+          "oklch(60% 0.024 265)",
+          "oklch(72% 0.020 265)",
+          "oklch(84% 0.016 265)",
+          "oklch(95% 0.011 265)"
+        ]
+      },
+      "graphite-line-2": {
+        "role": "neutral",
+        "displayName": "Graphite Line 2 (dark)",
+        "tonalRamp": [
+          "oklch(15% 0.011 265)",
+          "oklch(25% 0.016 265)",
+          "oklch(36% 0.019 265)",
+          "oklch(48% 0.023 265)",
+          "oklch(60% 0.024 265)",
+          "oklch(72% 0.020 265)",
+          "oklch(84% 0.016 265)",
+          "oklch(95% 0.011 265)"
+        ]
+      },
+      "graphite-line-2-light": {
+        "role": "neutral",
+        "displayName": "Graphite Line 2 (light)",
+        "tonalRamp": [
+          "oklch(15% 0.011 265)",
+          "oklch(25% 0.016 265)",
+          "oklch(36% 0.019 265)",
+          "oklch(48% 0.023 265)",
+          "oklch(60% 0.024 265)",
+          "oklch(72% 0.020 265)",
+          "oklch(84% 0.016 265)",
+          "oklch(95% 0.011 265)"
+        ]
+      },
+      "frost-ink": {
+        "role": "neutral",
+        "displayName": "Frost Ink (dark)",
+        "tonalRamp": [
+          "oklch(15% 0.005 265)",
+          "oklch(25% 0.006 265)",
+          "oklch(36% 0.008 265)",
+          "oklch(48% 0.009 265)",
+          "oklch(60% 0.009 265)",
+          "oklch(72% 0.008 265)",
+          "oklch(84% 0.006 265)",
+          "oklch(95% 0.005 265)"
+        ]
+      },
+      "frost-ink-light": {
+        "role": "neutral",
+        "displayName": "Frost Ink (light)",
+        "tonalRamp": [
+          "oklch(15% 0.005 265)",
+          "oklch(25% 0.006 265)",
+          "oklch(36% 0.008 265)",
+          "oklch(48% 0.009 265)",
+          "oklch(60% 0.009 265)",
+          "oklch(72% 0.008 265)",
+          "oklch(84% 0.006 265)",
+          "oklch(95% 0.005 265)"
+        ]
+      },
+      "steel-muted": {
+        "role": "neutral",
+        "displayName": "Steel Muted (dark)",
+        "tonalRamp": [
+          "oklch(15% 0.014 265)",
+          "oklch(25% 0.019 265)",
+          "oklch(36% 0.023 265)",
+          "oklch(48% 0.028 265)",
+          "oklch(60% 0.028 265)",
+          "oklch(72% 0.024 265)",
+          "oklch(84% 0.019 265)",
+          "oklch(95% 0.014 265)"
+        ]
+      },
+      "steel-muted-light": {
+        "role": "neutral",
+        "displayName": "Steel Muted (light)",
+        "tonalRamp": [
+          "oklch(15% 0.014 265)",
+          "oklch(25% 0.019 265)",
+          "oklch(36% 0.023 265)",
+          "oklch(48% 0.028 265)",
+          "oklch(60% 0.028 265)",
+          "oklch(72% 0.024 265)",
+          "oklch(84% 0.019 265)",
+          "oklch(95% 0.014 265)"
+        ]
+      },
+      "steel-faint": {
+        "role": "neutral",
+        "displayName": "Steel Faint (dark)",
+        "tonalRamp": [
+          "oklch(15% 0.014 265)",
+          "oklch(25% 0.019 265)",
+          "oklch(36% 0.023 265)",
+          "oklch(48% 0.028 265)",
+          "oklch(60% 0.028 265)",
+          "oklch(72% 0.024 265)",
+          "oklch(84% 0.019 265)",
+          "oklch(95% 0.014 265)"
+        ]
+      },
+      "steel-faint-light": {
+        "role": "neutral",
+        "displayName": "Steel Faint (light)",
+        "tonalRamp": [
+          "oklch(15% 0.014 265)",
+          "oklch(25% 0.019 265)",
+          "oklch(36% 0.023 265)",
+          "oklch(48% 0.028 265)",
+          "oklch(60% 0.028 265)",
+          "oklch(72% 0.024 265)",
+          "oklch(84% 0.019 265)",
+          "oklch(95% 0.014 265)"
+        ]
+      },
+      "shadow": {
+        "role": "neutral",
+        "displayName": "Shadow (dark)",
+        "tonalRamp": [
+          "oklch(15% 0.000 265)",
+          "oklch(25% 0.000 265)",
+          "oklch(36% 0.000 265)",
+          "oklch(48% 0.000 265)",
+          "oklch(60% 0.000 265)",
+          "oklch(72% 0.000 265)",
+          "oklch(84% 0.000 265)",
+          "oklch(95% 0.000 265)"
+        ]
+      },
+      "shadow-light": {
+        "role": "neutral",
+        "displayName": "Shadow (light)",
+        "tonalRamp": [
+          "oklch(15% 0.000 265)",
+          "oklch(25% 0.000 265)",
+          "oklch(36% 0.000 265)",
+          "oklch(48% 0.000 265)",
+          "oklch(60% 0.000 265)",
+          "oklch(72% 0.000 265)",
+          "oklch(84% 0.000 265)",
+          "oklch(95% 0.000 265)"
+        ]
+      },
+      "star": {
+        "role": "secondary",
+        "displayName": "Star (dark)"
+      },
+      "star-light": {
+        "role": "secondary",
+        "displayName": "Star (light)"
+      },
+      "night": {
+        "role": "neutral",
+        "displayName": "Night (dark)"
+      },
+      "night-light": {
+        "role": "neutral",
+        "displayName": "Night (light)"
+      }
+    },
+    "typographyMeta": {
+      "display": {
+        "displayName": "Display",
+        "purpose": "Hero headline only."
+      },
+      "headline": {
+        "displayName": "Headline",
+        "purpose": "Section headings."
+      },
+      "title": {
+        "displayName": "Title",
+        "purpose": "Page title inside a preview window."
+      },
+      "wordmark": {
+        "displayName": "Wordmark",
+        "purpose": "Brand name in the header."
+      },
+      "lead": {
+        "displayName": "Lead",
+        "purpose": "Hero subline."
+      },
+      "body": {
+        "displayName": "Body",
+        "purpose": "Base reading text and section ledes."
+      },
+      "body-sm": {
+        "displayName": "Body small",
+        "purpose": "Row descriptions, preview bodies, nav."
+      },
+      "label": {
+        "displayName": "Label",
+        "purpose": "Legend."
+      },
+      "search-input": {
+        "displayName": "Search input",
+        "purpose": "The hero search button text; 16px under 860px."
+      },
+      "data": {
+        "displayName": "Data",
+        "purpose": "Package names; JetBrains Mono for data only."
+      },
+      "data-sm": {
+        "displayName": "Data small",
+        "purpose": "Tags, terminal tabs, keys, version labels."
+      }
+    },
+    "shadows": [
+      {
+        "name": "search-lift",
+        "value": "0 22px 60px -22px var(--home-shadow), 0 2px 6px var(--home-shadow-near)",
+        "purpose": "Search button at rest."
+      },
+      {
+        "name": "search-focus",
+        "value": "0 24px 70px -20px var(--home-shadow), 0 0 0 4px var(--home-accent-soft)",
+        "purpose": "Search button on keyboard focus."
+      },
+      {
+        "name": "window",
+        "value": "0 30px 80px -30px var(--home-shadow)",
+        "purpose": "Preview and terminal windows."
+      },
+      {
+        "name": "tooltip",
+        "value": "0 18px 40px -16px var(--home-shadow)",
+        "purpose": "Orbit tooltip."
+      },
+      {
+        "name": "knob",
+        "value": "0 2px 8px var(--home-shadow)",
+        "purpose": "Segmented control knob."
+      }
+    ],
+    "motion": [
+      {
+        "name": "home-ease",
+        "value": "cubic-bezier(0.16, 1, 0.3, 1)",
+        "purpose": "The single ease for every transition on the page."
+      },
+      {
+        "name": "orbit",
+        "value": "inner ring ~100s per revolution; 15% speed under pointer",
+        "purpose": "The one authored, continuous moment; paused off-screen, static under reduced motion."
+      },
+      {
+        "name": "reveal",
+        "value": "0.8s rise 18px + blur 4px to 0, once",
+        "purpose": "Section parts entering; only after scripts run; none under reduced motion."
+      },
+      {
+        "name": "rail-draw",
+        "value": "1.6s stroke-dashoffset, once",
+        "purpose": "Released span of a version rail."
+      },
+      {
+        "name": "track-crossfade",
+        "value": "0.3s opacity and 6px blur, 0.45s 8px rise",
+        "purpose": "Track preview body switch."
+      },
+      {
+        "name": "knob-slide",
+        "value": "0.45s transform",
+        "purpose": "Segmented control knob."
+      },
+      {
+        "name": "theme-phase",
+        "duration": "0.4s",
+        "easing": "home-ease",
+        "purpose": "The theme switch planet: shadow sweep and ring tilt; instant under reduced motion."
+      }
+    ],
+    "breakpoints": [
+      {
+        "name": "single-column",
+        "value": "860px",
+        "purpose": "At or below: one column, header nav, keyboard hints and map legend hidden."
+      }
+    ]
+  },
+  "components": [
+    {
+      "name": "Search button",
+      "kind": "button",
+      "refersTo": "search-bar",
+      "description": "The hero's one large control: a button shaped like a field that opens the site's Fumadocs search dialog.",
+      "html": "<button type=\"button\" class=\"ds-bar\"><svg class=\"ds-bar-icon\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\"><circle cx=\"11\" cy=\"11\" r=\"7\"/><path d=\"m20 20-3.5-3.5\"/></svg><span class=\"ds-ph\">Search packages, projects and pages</span><kbd class=\"ds-kbd\">⌘K</kbd></button>",
+      "css": ".ds-bar{display:flex;align-items:center;gap:12px;width:min(720px,100%);min-height:64px;padding:8px 14px 8px 20px;font:inherit;color:inherit;text-align:left;background:var(--home-panel);border:1px solid var(--home-line-2);border-radius:14px;box-shadow:0 22px 60px -22px var(--home-shadow),0 2px 6px var(--home-shadow-near);cursor:pointer;transition:border-color .2s,box-shadow .3s var(--home-ease),transform .3s var(--home-ease)}.ds-bar:hover{border-color:color-mix(in srgb,var(--home-accent) 55%,var(--home-line-2));transform:translateY(-1px)}.ds-bar:focus-visible{outline:0;border-color:var(--home-accent);box-shadow:0 24px 70px -20px var(--home-shadow),0 0 0 4px var(--home-accent-soft)}.ds-bar-icon{width:18px;height:18px;flex:none;color:var(--home-muted)}.ds-ph{flex:1;font:400 18px var(--home-font-text);color:var(--home-faint)}.ds-kbd{padding:2px 7px;font:12px var(--home-font-data);color:var(--home-muted);background:var(--home-bg-2);border:1px solid var(--home-line-2);border-bottom-width:2px;border-radius:6px}"
+    },
+    {
+      "name": "Ghost button",
+      "kind": "button",
+      "refersTo": "button-ghost",
+      "description": "Quiet bordered button, used for GitHub in the header.",
+      "html": "<a class=\"ds-ghost\" href=\"#\"><svg viewBox=\"0 0 24 24\"><path d=\"M15 22v-4a4.8 4.8 0 0 0-1-3.5c3 0 6-2 6-5.5.08-1.25-.27-2.48-1-3.5.28-1.15.28-2.35 0-3.5 0 0-1 0-3 1.5-2.64-.5-5.36-.5-8 0C6 2 5 2 5 2c-.3 1.15-.3 2.35 0 3.5A5.4 5.4 0 0 0 4 9c0 3.5 3 5.5 6 5.5-.39.49-.68 1.05-.85 1.65-.17.6-.22 1.23-.15 1.85v4\"/></svg>GitHub</a>",
+      "css": ".ds-ghost{display:inline-flex;align-items:center;gap:8px;font:14px var(--home-font-text);color:var(--home-muted);padding:6px 10px;border:1px solid var(--home-line);border-radius:8px;text-decoration:none;transition:color .2s,border-color .2s}.ds-ghost:hover{color:var(--home-ink);border-color:var(--home-line-2)}.ds-ghost:focus-visible{outline:2px solid var(--home-accent);outline-offset:2px}.ds-ghost svg{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:1.75;stroke-linecap:round;stroke-linejoin:round}"
+    },
+    {
+      "name": "Window",
+      "kind": "card",
+      "refersTo": "window",
+      "description": "Framed preview with a chrome bar; hosts the track preview and the terminal.",
+      "html": "<div class=\"ds-window\"><div class=\"ds-chrome\"><i></i><i></i><i></i><span>terminal</span></div><pre class=\"ds-term\"><span class=\"ds-prompt\">$ </span><span class=\"ds-cmd\">curl -s https://example.com/llms.txt | head -6</span>\n# Nepal Dev Verse\n<span class=\"ds-prompt\">$ </span><span class=\"ds-cursor\"></span></pre></div>",
+      "css": ".ds-window{overflow:hidden;background:var(--home-panel);border:1px solid var(--home-line-2);border-radius:14px;box-shadow:0 30px 80px -30px var(--home-shadow)}.ds-chrome{display:flex;align-items:center;gap:8px;padding:12px 14px;font:12px var(--home-font-data);color:var(--home-faint);border-bottom:1px solid var(--home-line)}.ds-chrome i{width:10px;height:10px;background:var(--home-line-2);border-radius:50%}.ds-chrome span{margin-left:10px}.ds-term{margin:0;padding:18px 20px;font:13.5px/1.75 var(--home-font-data);color:var(--home-muted);white-space:pre-wrap}.ds-prompt{color:var(--home-accent)}.ds-cmd{color:var(--home-ink)}.ds-cursor{display:inline-block;width:8px;height:16px;vertical-align:-3px;background:var(--home-accent);animation:ds-blink 1.1s steps(1) infinite}@keyframes ds-blink{50%{opacity:0}}@media (prefers-reduced-motion:reduce){.ds-cursor{animation:none}}"
+    },
+    {
+      "name": "Header",
+      "kind": "nav",
+      "description": "Sticky translucent header: the brand mark and wordmark, muted links, ghost GitHub button, with a band of the still sky between the links and the buttons.",
+      "html": "<header class=\"ds-header\"><a class=\"ds-brand\" href=\"#\"><svg class=\"ds-mark\" viewBox=\"0 0 32 32\" aria-hidden=\"true\"><rect x=\"14.7\" y=\"1\" width=\"1\" height=\"11\" rx=\"0.4\" fill=\"var(--brand-rock, #162B3F)\"/><path d=\"M15.7 1.3 25.3 6.3H19.9L24.7 11.55H15.7Z\" fill=\"#D2193B\" stroke=\"#1F468D\" stroke-width=\"0.5\" stroke-linejoin=\"round\"/><path d=\"M.6 29.6 6.4 20.4 9.4 15.4 12 18 15.2 11 19.8 17 24 13.8 31.4 29.6Z\" fill=\"var(--brand-rock, #162B3F)\"/><path d=\"M17.1 13.5 19.8 17 25 25.2 28 29.6H24.4L18.3 20.6 16.9 18Z\" fill=\"#D2193B\"/><path d=\"M15.2 11 18 14.7 16.9 14.3 16.3 16.7 15 15 13.8 16.9 13.4 15 12.2 16Z\" fill=\"#F9FBFB\"/></svg>Nepal Dev Verse</a><nav><a href=\"#\">Projects</a><a href=\"#\">llms.txt</a></nav><span style=\"flex:1\"></span></header>",
+      "css": ".ds-header{display:flex;align-items:center;gap:28px;height:60px;padding:0 24px;background:color-mix(in srgb,var(--home-bg) 80%,transparent);backdrop-filter:saturate(1.4) blur(12px);border-bottom:1px solid var(--home-line)}.ds-brand{display:flex;align-items:center;gap:10px;font:600 17px var(--home-font-display);letter-spacing:-.01em;color:var(--home-ink);text-decoration:none}.ds-mark{width:24px;height:24px;flex:none}.ds-header nav{display:flex;gap:22px;font:14px var(--home-font-text)}.ds-header nav a{color:var(--home-muted);text-decoration:none}.ds-header nav a:hover{color:var(--home-ink)}.ds-header a:focus-visible{outline:2px solid var(--home-accent);outline-offset:2px;border-radius:6px}"
+    },
+    {
+      "name": "Scale strip",
+      "kind": "nav",
+      "description": "Above every docs page in place of the breadcrumb (ADR-0029): each level of the ladder from the Verse to the page with its 14px mark, muted links divided by faint chevrons, the current level in Frost Ink 500. On phones only the parent level, with a back chevron, and the page.",
+      "html": "<nav class=\"ds-strip\" aria-label=\"Scale\"><ol><li><a href=\"#\"><svg viewBox=\"-8 -8 16 16\" aria-hidden=\"true\"><circle r=\"3.4\" fill=\"var(--home-star)\"/></svg>System</a></li><li><a href=\"#\"><svg viewBox=\"-8 -8 16 16\" aria-hidden=\"true\"><circle r=\"4.5\" fill=\"var(--home-npm)\"/></svg>lodestar</a></li><li><a href=\"#\"><svg viewBox=\"-8 -8 16 16\" aria-hidden=\"true\"><circle r=\"3\" fill=\"var(--home-star)\"/></svg>Use <span class=\"ds-line\">v0.1</span></a></li><li><span aria-current=\"page\">Forms</span></li></ol></nav>",
+      "css": ".ds-strip ol{display:flex;flex-wrap:wrap;align-items:center;gap:4px 6px;margin:0;padding:0;list-style:none;font:400 13px/1.4 var(--home-font-text);color:var(--home-muted)}.ds-strip li{display:flex;align-items:center;gap:6px}.ds-strip li+li::before{content:'\\203A';color:var(--home-faint)}.ds-strip a{display:inline-flex;align-items:center;gap:6px;padding:2px 4px;border-radius:6px;color:inherit;text-decoration:none}.ds-strip a:hover{color:var(--home-ink)}.ds-strip svg{width:14px;height:14px}.ds-line{font:400 12px var(--home-font-data);color:var(--home-faint)}.ds-strip [aria-current]{font-weight:500;color:var(--home-ink)}"
+    },
+    {
+      "name": "Verse control",
+      "kind": "button",
+      "description": "The home page system's one control (ADR-0029): a ghost button, Zoom out to the Verse / Back to the system, with the caption The Verse · one system so far fading in beside it in the Verse view.",
+      "html": "<div class=\"ds-verse\"><p>The Verse · one system so far</p><button type=\"button\">Back to the system</button></div>",
+      "css": ".ds-verse{display:flex;align-items:center;gap:14px}.ds-verse p{margin:0;font:400 12.5px var(--home-font-data);color:var(--home-faint)}.ds-verse button{padding:6px 10px;font:400 13.5px var(--home-font-text);color:var(--home-muted);background:color-mix(in srgb,var(--home-bg) 72%,transparent);border:1px solid var(--home-line);border-radius:8px;cursor:pointer}.ds-verse button:hover{color:var(--home-ink);border-color:var(--home-line-2)}"
+    },
+    {
+      "name": "Orbit (the one open card)",
+      "kind": "nav",
+      "refersTo": "orbit-station",
+      "description": "A docs sidebar folder on the scale ladder (ADR-0027): closed, a plain row with a 12px ring, the name and the page count; open, the sidebar's one card, a planet inside its ring, its pages as satellites (6px dots) on one outward-bowing arc, the current page as the teal probe. Top-level pages above it are landmarks; separators are belts. One orbit is open at a time at each level.",
+      "html": "<div class=\"ds-belt\">Design</div><div class=\"ds-orbit-row\"><svg viewBox=\"-8 -8 16 16\" aria-hidden=\"true\"><circle r=\"5.2\" class=\"ds-ring\"/></svg><span>Reference</span><b>3</b></div><div class=\"ds-station\"><div class=\"ds-station-head\"><svg viewBox=\"-8 -8 16 16\" aria-hidden=\"true\"><circle r=\"5.2\" class=\"ds-ring ds-ring-cur\"/><circle r=\"2.3\" class=\"ds-ring-planet\"/></svg><span>Get started</span><b>2</b></div><a class=\"ds-moon\" href=\"#\" aria-current=\"page\"><i style=\"left:8px\"></i>Install</a><a class=\"ds-moon\" href=\"#\"><i style=\"left:10.5px\"></i>Commands</a></div>",
+      "css": ".ds-belt{display:flex;align-items:center;gap:8px;width:240px;margin:0 0 4px;font:600 11px var(--home-font-text);letter-spacing:.08em;text-transform:uppercase;color:var(--home-faint)}.ds-belt::after{content:'';flex:1;border-top:1px dotted var(--home-line-2)}.ds-orbit-row,.ds-station-head{display:flex;align-items:center;gap:10px;min-height:34px;padding:7px 9px;font:500 14px var(--home-font-text);color:var(--home-ink)}.ds-orbit-row{width:240px}.ds-orbit-row svg,.ds-station-head svg{width:12px;height:12px;overflow:visible}.ds-ring{fill:none;stroke:var(--home-faint);stroke-width:1.5}.ds-ring-cur{stroke:var(--home-npm)}.ds-ring-planet{fill:var(--home-npm)}.ds-orbit-row span,.ds-station-head span{flex:1}.ds-orbit-row b,.ds-station-head b{font:500 11.5px var(--home-font-data);color:var(--home-faint)}.ds-station{width:240px;margin-top:6px;padding:0 4px 6px;background:var(--home-panel);border:1px solid color-mix(in srgb,var(--home-npm) 45%,var(--home-line));border-radius:12px}.ds-moon{position:relative;display:flex;align-items:center;min-height:32px;padding:6px 8px 6px 30px;font:13.5px var(--home-font-text);color:var(--home-muted);border-radius:8px;text-decoration:none}.ds-moon i{position:absolute;top:calc(50% - 3px);width:6px;height:6px;border-radius:50%;background:var(--home-panel);box-shadow:inset 0 0 0 1.4px var(--home-line-2)}.ds-moon[aria-current]{font-weight:500;color:var(--home-ink);background:color-mix(in srgb,var(--home-npm) 10%,transparent)}.ds-moon[aria-current] i{width:9px;height:9px;top:calc(50% - 4.5px);background:var(--home-accent);box-shadow:0 0 0 3px color-mix(in srgb,var(--home-accent) 22%,transparent)}"
+    },
+    {
+      "name": "ADR constellation",
+      "kind": "nav",
+      "refersTo": "constellation",
+      "description": "A folder named adr inside its open station: one moon per ADR phased by status (full approved, dashed proposed, crescent superseded), the current ADR as the teal planet, a two-line readout, previous and next, and the register link.",
+      "html": "<div class=\"ds-const\"><ol><li><i class=\"full\"></i></li><li><i class=\"dash\"></i></li><li><i class=\"dash\"></i></li><li><i class=\"full\"></i></li><li><i class=\"now\"></i></li><li><i class=\"full\"></i></li><li><i class=\"dash\"></i></li></ol><p><b>16</b>Home search is the Fumadocs dialog</p><nav><a href=\"#\">← 15</a><a href=\"#\">17 →</a></nav><a class=\"ds-all\" href=\"#\">All 19 decisions →</a></div>",
+      "css": ".ds-const{display:grid;gap:10px;width:226px;padding:4px 10px 11px;background:var(--home-panel);border:1px solid var(--home-line);border-radius:12px}.ds-const ol{display:grid;grid-template-columns:repeat(auto-fill,24px);gap:2px;margin:0;padding:0;list-style:none}.ds-const li{display:grid;place-items:center;width:24px;height:24px}.ds-const i{width:12px;height:12px;border-radius:50%}.ds-const .full{background:var(--home-accent)}.ds-const .dash{border:1.2px dashed var(--home-muted)}.ds-const .now{background:var(--home-accent);box-shadow:0 0 0 2px var(--home-panel),0 0 0 3.5px var(--home-npm)}.ds-const p{margin:0;font:12.5px/1.4 var(--home-font-text);color:var(--home-muted)}.ds-const b{margin-right:6px;font:500 12.5px var(--home-font-data);color:var(--home-ink)}.ds-const nav{display:flex;justify-content:space-between;font:500 12.5px var(--home-font-data)}.ds-const nav a{color:var(--home-muted);text-decoration:none}.ds-all{font:500 12.5px var(--home-font-text);color:var(--home-accent);text-decoration:none}"
+    },
+    {
+      "name": "Profile chip",
+      "kind": "link",
+      "refersTo": "profile-chip",
+      "description": "A GitHub profile link, [@user](https://github.com/user), as an inline pill: a 20px round avatar loaded live from GitHub over the username's initial, then @user. Used for ADR deciders and approvers (ADR-0020).",
+      "html": "<p class=\"ds-people\">Deciders: <a class=\"ds-chip\" href=\"#\"><span>M</span>@mira-k</a></p>",
+      "css": ".ds-people{margin:0;font:14px/1.6 var(--home-font-text);color:var(--home-muted)}.ds-chip{display:inline-flex;align-items:center;gap:6px;min-height:24px;padding:1px 9px 1px 2px;vertical-align:middle;font-weight:500;color:var(--home-ink);text-decoration:none;background:var(--home-panel);border:1px solid var(--home-line);border-radius:12px}.ds-chip:hover{border-color:var(--home-line-2)}.ds-chip span{display:inline-grid;place-items:center;width:20px;height:20px;font-size:11px;font-weight:600;color:var(--home-muted);background:var(--home-panel-2);border-radius:50%}"
+    },
+    {
+      "name": "Trajectory",
+      "kind": "nav",
+      "refersTo": "trajectory",
+      "description": "\"On this page\": the headings on one curved path, read stretch solid teal, the rest dashed, a probe planet riding at the reading position, the minutes left in the header.",
+      "html": "<div class=\"ds-traj\"><div class=\"ds-traj-head\"><b>On this page</b><span>4 min left</span></div><svg width=\"28\" height=\"96\" aria-hidden=\"true\"><path d=\"M6 13 C2 20 2 30 6 37\" class=\"ds-tr-read\"/><path d=\"M6 37 C6 49 18 49 18 61 C14 68 14 78 18 85\" class=\"ds-tr-ahead\"/><circle cx=\"7\" cy=\"46\" r=\"5\" class=\"ds-tr-halo\"/><circle cx=\"7\" cy=\"46\" r=\"3.4\" class=\"ds-tr-probe\"/></svg><ol><li class=\"read\">Add the package</li><li class=\"read\">Render a palette</li><li class=\"sub\">Props</li><li class=\"sub\">Events</li></ol></div>",
+      "css": ".ds-traj{position:relative;width:240px;font:13px/1.45 var(--home-font-text);color:var(--home-muted)}.ds-traj-head{display:flex;justify-content:space-between;margin-bottom:14px}.ds-traj-head b{font-weight:500;color:var(--home-ink)}.ds-traj-head span{font:500 12px var(--home-font-data);color:var(--home-faint)}.ds-traj svg{position:absolute;left:0;top:32px;overflow:visible}.ds-tr-read{fill:none;stroke:var(--home-accent);stroke-width:1.6}.ds-tr-ahead{fill:none;stroke:var(--home-line-2);stroke-width:1.2;stroke-dasharray:3 4}.ds-tr-halo{fill:var(--home-accent);opacity:.22}.ds-tr-probe{fill:var(--home-accent)}.ds-traj ol{margin:0;padding:0;list-style:none}.ds-traj li{padding:5px 0 5px 22px}.ds-traj li.read{color:var(--home-ink)}.ds-traj li.sub{padding-left:34px}"
+    },
+    {
+      "name": "Theme switch",
+      "kind": "button",
+      "refersTo": "theme-switch",
+      "description": "A small orrery: a tilted orbit, a star-coloured sun and a planet with a teal lit face. In light the sun is in front and the face fully lit; in dark the sun moves behind and a crescent remains.",
+      "html": "<button type=\"button\" class=\"ds-theme\" aria-label=\"Switch to day side (light theme)\"><svg viewBox=\"-16 -16 32 32\" aria-hidden=\"true\"><defs><mask id=\"ds-shade\" maskUnits=\"userSpaceOnUse\" x=\"-10\" y=\"-10\" width=\"20\" height=\"20\"><rect x=\"-10\" y=\"-10\" width=\"20\" height=\"20\" fill=\"#fff\"/><circle class=\"ds-shade\" r=\"6.9\" fill=\"#000\"/></mask></defs><ellipse class=\"ds-orbit\" rx=\"13\" ry=\"5\" transform=\"rotate(-18)\"/><g class=\"ds-sun\"><circle r=\"2.4\"/></g><circle class=\"ds-night\" r=\"6.6\"/><circle class=\"ds-day\" r=\"6.6\" mask=\"url(#ds-shade)\"/></svg></button>",
+      "css": ".ds-theme{display:inline-flex;align-items:center;justify-content:center;width:40px;height:36px;padding:0;background:none;border:1px solid var(--home-line);border-radius:8px;cursor:pointer}.ds-theme svg{width:32px;height:32px;overflow:visible}.ds-orbit{fill:none;stroke:var(--home-line-2)}.ds-sun{transform:translate(-10.2px,5px);transition:transform .5s var(--home-ease)}.ds-sun circle{fill:var(--home-star)}.ds-night{fill:var(--home-night);stroke:var(--home-muted);stroke-width:.9}.ds-day{fill:var(--home-accent)}.ds-shade{transform:translate(16px,-4px);transition:transform .5s var(--home-ease)}.dark .ds-sun{transform:translate(4.5px,-5.6px) scale(.85)}.dark .ds-shade{transform:translate(-2.4px,2.4px)}"
+    },
+    {
+      "name": "Planet card",
+      "kind": "card",
+      "refersTo": "planet-card",
+      "description": "One per package or project: a sky drawing the planet with a labelled moon per version line, then the name, kind, description, fact sheet and Use / Maintain links.",
+      "html": "<article class=\"ds-planet\"><div class=\"ds-sky\"><svg viewBox=\"0 0 330 168\" aria-hidden=\"true\"><ellipse cx=\"165\" cy=\"90.7\" rx=\"44\" ry=\"15\" transform=\"rotate(-12 165 90.7)\" fill=\"none\" stroke=\"var(--home-line-2)\"/><circle cx=\"165\" cy=\"90.7\" r=\"17\" fill=\"var(--home-npm)\"/><circle cx=\"199\" cy=\"72\" r=\"4.2\" fill=\"var(--home-accent)\"/><text x=\"208\" y=\"75.6\" font-size=\"10.5\" font-family=\"JetBrains Mono, monospace\" fill=\"var(--home-muted)\">v0.1</text></svg></div><div class=\"ds-facts\"><h3>lodestar</h3><p>npm package</p><dl><dt>Latest</dt><dd>0.1.4</dd></dl><a class=\"ds-go\" href=\"#\">Use</a></div></article>",
+      "css": ".ds-planet{display:grid;max-width:340px;background:var(--home-panel);border:1px solid var(--home-line);border-radius:14px;overflow:hidden}.ds-sky{height:168px;background:var(--home-bg-2);border-bottom:1px solid var(--home-line)}.ds-sky svg{width:100%;height:100%}.ds-facts{display:flex;flex-direction:column;gap:8px;padding:20px 22px 22px}.ds-facts h3{margin:0;font:500 20px var(--home-font-data);color:var(--home-ink)}.ds-facts p{margin:0;font-size:13px;color:var(--home-muted)}.ds-facts dl{display:grid;grid-template-columns:auto 1fr;gap:4px 16px;margin:0;font-size:13px}.ds-facts dt{color:var(--home-faint)}.ds-facts dd{margin:0;font:12.5px var(--home-font-data);color:var(--home-ink)}.ds-go{align-self:flex-start;padding:6px 11px;font-size:13.5px;color:var(--home-accent-ink);background:var(--home-accent);border-radius:8px;text-decoration:none}"
+    },
+    {
+      "name": "Private card",
+      "kind": "card",
+      "refersTo": "private-card",
+      "description": "A private project beyond the belt: a night planet on a dashed orbit, the name with a lock, a description and who it is for, in a dashed card.",
+      "html": "<article class=\"ds-priv\"><svg viewBox=\"-28 -28 56 56\" aria-hidden=\"true\"><ellipse rx=\"25\" ry=\"8\" transform=\"rotate(-18)\" fill=\"none\" stroke=\"var(--home-line-2)\" stroke-dasharray=\"2 3\"/><circle r=\"13\" fill=\"var(--home-night)\" stroke=\"var(--home-line-2)\"/></svg><div><h3>harbor-ops</h3><p>Operations dashboard for a shipping client.</p><small>client · Use, Maintain</small></div></article>",
+      "css": ".ds-priv{display:grid;grid-template-columns:56px 1fr;gap:14px;max-width:320px;padding:18px;background:var(--home-bg-2);border:1px dashed var(--home-line-2);border-radius:14px}.ds-priv svg{width:56px;height:56px}.ds-priv h3{margin:0;font:500 16px var(--home-font-data);color:var(--home-ink)}.ds-priv p{margin:2px 0 0;font-size:14px;color:var(--home-muted)}.ds-priv small{display:block;margin-top:8px;font:12px var(--home-font-data);color:var(--home-faint)}"
+    },
+    {
+      "name": "Diagram",
+      "kind": "figure",
+      "refersTo": "diagram",
+      "description": "A diagram's Archify view in a sandboxed frame the width of the text column, fitted to its height, on the page's ground, with the caption and Open full screen under it. Kind colours stay vivid; the trace starts Live unless reduced motion (ADR-0022).",
+      "html": "<figure class=\"ds-diagram\"><div class=\"ds-diagram-frame\"><span class=\"ds-node ds-a\">Parser</span><span class=\"ds-arrow\"></span><span class=\"ds-node ds-b\">Router</span></div><figcaption><span>Request flow</span><a href=\"#\">Open full screen ↗</a></figcaption></figure>",
+      "css": ".ds-diagram{margin:0}.ds-diagram-frame{display:flex;align-items:center;justify-content:center;gap:12px;min-height:140px;background:var(--home-bg);border:1px solid var(--home-line);border-radius:12px}.ds-node{padding:10px 14px;font:12px var(--home-font-data);color:var(--home-ink);border:1.5px solid;border-radius:8px}.ds-a{border-color:#22d3ee;background:color-mix(in srgb,#22d3ee 14%,transparent)}.ds-b{border-color:#34d399;background:color-mix(in srgb,#34d399 14%,transparent)}.ds-arrow{width:40px;height:2px;background:#34d399}.ds-diagram figcaption{display:flex;justify-content:space-between;margin-top:8px;font:13px var(--home-font-text);color:var(--home-muted)}.ds-diagram figcaption a{font-weight:500;color:var(--home-accent);text-decoration:none}"
+    }
+  ],
+  "narrative": {
+    "northStar": "One Solar System",
+    "overview": "The site is one small solar system, calm graphite space with one moving part. The star is the community, nepal-dev.com. Each ecosystem is an orbit; a package is a solid planet in its ecosystem's colour, its night side shaded away from the star; a project is a ringed planet. Each documented version line is a moon: full for the latest release, a crescent for an older one, a dashed new moon for `dev`. A planet's day side is Use, its night side Maintain. The home page's hero is the system itself, turning slowly beside the headline and the large search button; every later surface (cards, the planet header, the sidebar, the notices, the footer, the 404) reuses the same marks without explaining them again.\n\nThe surface is cool, technical and quiet: near-black graphite (dark is the default theme) or cool paper in light, hairline borders, one teal accent, a warm star, and colour reserved for the ecosystems. Density is moderate: generous section gaps, tight facts inside a card. Depth is soft and rare; only things that float (the search button, windows, the tooltip) lift off the ground.",
+    "keyCharacteristics": [
+      "Graphite neutrals with a single signal-teal accent and a warm star; ecosystem hues mark shapes, never text.",
+      "Three faces with fixed jobs: Bricolage Grotesque for display, Onest for reading and controls, JetBrains Mono for data only.",
+      "One metaphor carrying real data: planets are entries, moons are version lines, sides are tracks.",
+      "One authored motion moment, the turning system, and one living sky where every page ends; everything else is a short, single response.",
+      "Every state readable without scripts and without motion."
+    ],
+    "rules": [
+      {
+        "name": "The One Signal Rule",
+        "body": "Teal is the only accent. If something needs to stand out and it is not focus, the latest release, the current page, the lit face or a forward link, it gets weight or size, not colour. The star is light, not an accent: it lights things and is never a control's colour.",
+        "section": "colors"
+      },
+      {
+        "name": "The Shapes, Not Words Rule",
+        "body": "Ecosystem hues fill planets, moons and strokes. Text beside them is always Frost Ink, Steel Muted or Steel Faint, and every coloured mark has a text equivalent (the planet's name and kind, a legend label, or the card that restates the system).",
+        "section": "colors"
+      },
+      {
+        "name": "The Token-Only Surface Rule",
+        "body": "The browser's own surfaces (selection, caret, scrollbar, focus ring), the SVG marks and the canvas read their colours from the tokens; the canvas re-reads them when the theme changes.",
+        "section": "colors"
+      },
+      {
+        "name": "The Data Voice Rule",
+        "body": "JetBrains Mono is for package names, versions, URLs, commands, code and counts, nothing else. Headings, buttons with words on them and prose stay in Onest or Bricolage.",
+        "section": "typography"
+      },
+      {
+        "name": "The Tight Display Rule",
+        "body": "Display and headline faces track negative (-0.04em to -0.01em, never tighter than -0.04em) and balance their lines; text faces keep default tracking.",
+        "section": "typography"
+      },
+      {
+        "name": "The Places, Not Controls Rule",
+        "body": "Space words name places, never controls (ADR-0029). Search, Overview, Use, Maintain, On this page, version names, Back to top and the search button's text keep their plain names. The solar system speaks only where the site describes itself: empty states, hints, the scale strip's Verse and System, the Verse view, the 404 and the footer, and always beside a plain sentence that says what is true.",
+        "section": "typography"
+      },
+      {
+        "name": "The Float-Only Rule",
+        "body": "A surface gets a shadow only if it sits over something or frames a window. Cards lift 2px on hover by transform, not by shadow.",
+        "section": "elevation"
+      },
+      {
+        "name": "The Mark Means Rule",
+        "body": "A ring means project, a full moon the latest release, a crescent an older release, a dashed new moon `dev`, a lock private. Never use any of them for decoration.",
+        "section": "shapes"
+      },
+      {
+        "name": "The One Orbit Rule",
+        "body": "The system is the only continuous motion. New motion is a single, short response to arrival or input, never a second loop. Three exceptions: a diagram's Archify trace (ADR-0022); the Horizon's sky, whose slow loops run only while the footer is on screen, never behind text, and stop under reduced motion (ADR-0030); and the hero's comet, every 20 to 30 seconds, right of the text and below the header, never under reduced motion or in the Verse view (ADR-0032).",
+        "section": "components"
+      },
+      {
+        "name": "The Visible-By-Default Rule",
+        "body": "Content is hidden for an entrance only after scripts run; with no scripts or with reduced motion, everything is already in place.",
+        "section": "components"
+      }
+    ],
+    "dos": [
+      "Do take every colour from the `--home-*` tokens, in both themes, including canvas strokes, SVG marks, selection, caret, scrollbar and focus.",
+      "Do keep text on Frost Ink, Steel Muted or Steel Faint; check new pairs against Graphite Ground and Graphite Panel at 4.5:1 or more.",
+      "Do draw planets, moons, suns, locks and phases from `src/components/planet.tsx` or as inline SVG; give each a text equivalent.",
+      "Do use the marks with their one meaning on every page: ring for project, full moon for latest, crescent for older, dashed new moon for `dev`, sun for Use, moon for Maintain.",
+      "Do use JetBrains Mono for package names, versions, URLs, commands, code and counts, with tabular numerals.",
+      "Do ship a reduced-motion state and a no-script state with every new animation."
+    ],
+    "donts": [
+      "Don't set text in an ecosystem colour or the star colour, or let colour alone distinguish an ecosystem.",
+      "Don't add a second accent or a second continuous animation.",
+      "Don't use emoji or text glyphs as icons; draw the mark.",
+      "Don't put a shadow on a surface that does not float or frame a window.",
+      "Don't use monospace for headings, prose or button labels."
+    ]
+  }
+}

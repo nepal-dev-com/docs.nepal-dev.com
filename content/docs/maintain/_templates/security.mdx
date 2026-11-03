@@ -1,0 +1,43 @@
+---
+title: "Security — <feature>"
+description: "Replace this with one or two plain sentences, about 160 characters at most, saying what the page is for."
+---
+
+- **Status:** Draft
+- **Last updated:** YYYY-MM-DD
+- **Related ADRs:** ADR-NNNN
+
+> Snapshot of the system as it stands today. Edit in place; never record what changed.
+
+## Attack surface introduced
+
+What this feature adds that did not exist before: routes, inputs, published surfaces, stored
+data, secrets, integrations, build steps.
+
+## Data handled
+
+| Data | Classification | Stored where | Sent where |
+|---|---|---|---|
+
+Classification per [`data-classification.mdx`](../security/data-classification.mdx). If a level is unclear,
+**ask** — never assign one by assumption (ADR-0004).
+
+## Threats and controls
+
+| # | Threat | How it would be exploited | Control |
+|---|---|---|---|
+| T1 | | | |
+
+## Authorization
+
+Who may do what, and **where the check happens server-side**. Cross-reference
+`content/docs/maintain/rbac/<slug>.mdx` rather than restating it.
+
+## What is logged
+
+Which actions produce a log or audit record, and confirmation that none carries a secret or
+private content.
+
+## Residual risk
+
+What is knowingly not defended against, and why that is acceptable. Accepted by whom.

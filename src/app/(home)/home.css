@@ -1,0 +1,1169 @@
+.home {
+  min-height: 100vh;
+  color: var(--home-ink);
+  font: 400 16px/1.6 var(--home-font-text);
+  caret-color: var(--home-accent);
+  scrollbar-color: var(--home-line-2) var(--home-bg);
+  -webkit-font-smoothing: antialiased;
+}
+
+.home ::selection {
+  background: var(--home-accent);
+  color: var(--home-accent-ink);
+}
+
+.home a {
+  color: inherit;
+  text-decoration: none;
+}
+
+.home :focus-visible {
+  outline: 2px solid var(--home-accent);
+  outline-offset: 2px;
+  border-radius: 6px;
+}
+
+.home code,
+.home kbd,
+.home pre {
+  font-family: var(--home-font-data);
+  font-variant-numeric: tabular-nums;
+}
+
+.home code {
+  font-size: 0.92em;
+}
+
+.home h1,
+.home h2,
+.home h3 {
+  margin: 0;
+}
+
+.home .wrap {
+  max-width: 1180px;
+  margin: 0 auto;
+  padding: 0 24px;
+}
+
+.home .sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+/* Hero: the system, with the text and search beside it (ADR-0017 decision 2) */
+
+.verse-target {
+  position: absolute;
+  top: 0;
+}
+
+.home .hero {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  min-height: min(860px, 94svh);
+  overflow: hidden;
+  border-bottom: 1px solid var(--home-line);
+}
+
+.home .orbit {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  cursor: crosshair;
+}
+
+/* A still nebula behind the system, kept off the text column; it moves only with the pointer's lean (ADR-0032 decision 8). */
+.home .orbit-nebula {
+  --nebula-teal: 4%;
+  --nebula-star: 3%;
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(
+      var(--nebula-r) calc(var(--nebula-r) * 0.55) at calc(var(--star-x) - var(--nebula-r) * 0.18) calc(var(--star-y) - var(--nebula-r) * 0.08),
+      color-mix(in srgb, var(--home-accent) var(--nebula-teal), transparent),
+      transparent 70%
+    ),
+    radial-gradient(
+      calc(var(--nebula-r) * 0.8) calc(var(--nebula-r) * 0.45) at var(--star-x) var(--star-y),
+      color-mix(in srgb, var(--home-star) var(--nebula-star), transparent),
+      transparent 70%
+    );
+  mask-image: linear-gradient(to right, transparent 50%, #000 62%);
+  translate: var(--nebula-x, 0) var(--nebula-y, 0);
+  transform-origin: var(--star-x) var(--star-y);
+  transition: scale 1.2s var(--home-ease);
+}
+
+.dark .home .orbit-nebula {
+  --nebula-teal: 8%;
+  --nebula-star: 6%;
+}
+
+.home .hero:has(.orbit[data-verse]) .orbit-nebula {
+  scale: 0.4;
+}
+
+.home .orbit-tip {
+  position: absolute;
+  z-index: 4;
+  min-width: 180px;
+  padding: 10px 12px;
+  font-size: 13px;
+  background: var(--home-panel);
+  border: 1px solid var(--home-line-2);
+  border-radius: 10px;
+  box-shadow: 0 18px 40px -16px var(--home-shadow);
+  opacity: 0;
+  transform: translateY(4px);
+  pointer-events: none;
+  transition: opacity 0.15s, transform 0.2s var(--home-ease);
+}
+
+.home .orbit-tip.on {
+  opacity: 1;
+  transform: none;
+}
+
+.home .orbit-tip b {
+  font: 500 14px var(--home-font-data);
+}
+
+.home .orbit-tip p {
+  margin: 2px 0 0;
+  color: var(--home-muted);
+}
+
+.home .orbit-tip small {
+  display: block;
+  margin-top: 6px;
+  font-size: 12px;
+  color: var(--home-faint);
+}
+
+/* The Verse view's control and caption (ADR-0029 decision 5). */
+.home .orbit[data-verse] {
+  cursor: zoom-in;
+}
+
+.home .orbit-zoom-row {
+  position: absolute;
+  z-index: 3;
+  right: max(24px, calc(50% - 566px));
+  bottom: 28px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.home .orbit-caption {
+  margin: 0;
+  font: 400 12.5px var(--home-font-data);
+  color: var(--home-faint);
+}
+
+.home .orbit-caption:not(:empty) {
+  animation: orbit-caption-in 0.6s var(--home-ease) 0.4s both;
+}
+
+@keyframes orbit-caption-in {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+}
+
+.home .orbit-zoom {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 10px;
+  font: 400 13.5px var(--home-font-text);
+  color: var(--home-muted);
+  background: color-mix(in srgb, var(--home-bg) 72%, transparent);
+  border: 1px solid var(--home-line);
+  border-radius: 8px;
+  cursor: pointer;
+  transition: color 0.2s, border-color 0.2s;
+}
+
+.home .orbit-zoom:hover {
+  color: var(--home-ink);
+  border-color: var(--home-line-2);
+}
+
+.home .orbit-zoom:focus-visible {
+  outline: 2px solid var(--home-accent);
+  outline-offset: 2px;
+}
+
+.home .orbit-zoom svg {
+  width: 15px;
+  height: 15px;
+  flex: none;
+}
+
+.home .hero-content {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  width: 100%;
+  pointer-events: none;
+}
+
+.home .hero-content > * {
+  pointer-events: auto;
+}
+
+.home .hero h1 {
+  max-width: 19ch;
+  font: 700 clamp(1.85rem, 1.5rem + 2.1vw, 3.4rem) / 1.04 var(--home-font-display);
+  letter-spacing: -0.04em;
+  text-wrap: balance;
+}
+
+.home .hero h1 em {
+  font-style: normal;
+  color: var(--home-muted);
+}
+
+.home .hero-sub {
+  max-width: 44ch;
+  margin: 18px 0 0;
+  font-size: clamp(1rem, 0.95rem + 0.3vw, 1.15rem);
+  color: var(--home-muted);
+  text-wrap: balance;
+}
+
+.home .legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 16px;
+  margin-top: 22px;
+  font-size: 12.5px;
+  color: var(--home-muted);
+}
+
+.home .legend > span {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+}
+
+.home .legend svg {
+  width: 14px;
+  height: 14px;
+  overflow: visible;
+}
+
+.home .noscript-link {
+  margin-top: 36px;
+  padding: 14px 22px;
+  font-weight: 500;
+  background: var(--home-panel);
+  border: 1px solid var(--home-line-2);
+  border-radius: 12px;
+}
+
+.home .hero-search {
+  position: relative;
+  width: min(520px, 100%);
+  margin-top: 32px;
+  text-align: left;
+}
+
+.home .bar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-height: 60px;
+  padding: 8px 14px 8px 18px;
+  font: inherit;
+  color: inherit;
+  text-align: left;
+  background: var(--home-panel);
+  border: 1px solid var(--home-line-2);
+  border-radius: 14px;
+  box-shadow: 0 22px 60px -22px var(--home-shadow), 0 2px 6px var(--home-shadow-near);
+  cursor: pointer;
+  transition: border-color 0.2s, box-shadow 0.3s var(--home-ease), transform 0.3s var(--home-ease);
+}
+
+.home .bar:hover {
+  border-color: color-mix(in srgb, var(--home-accent) 55%, var(--home-line-2));
+  transform: translateY(-1px);
+}
+
+.home .bar:focus-visible {
+  outline: 0;
+  border-color: var(--home-accent);
+  box-shadow: 0 24px 70px -20px var(--home-shadow), 0 0 0 4px var(--home-accent-soft);
+}
+
+.home .bar-icon {
+  width: 18px;
+  height: 18px;
+  flex: none;
+  color: var(--home-muted);
+}
+
+.home .bar-placeholder {
+  flex: 1;
+  font: 400 17px var(--home-font-text);
+  color: var(--home-faint);
+}
+
+.home kbd {
+  padding: 2px 7px;
+  font-size: 12px;
+  color: var(--home-muted);
+  background: var(--home-bg-2);
+  border: 1px solid var(--home-line-2);
+  border-bottom-width: 2px;
+  border-radius: 6px;
+}
+
+/* Sections */
+
+.home .section {
+  padding-top: 112px;
+}
+
+.home .section-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: end;
+  justify-content: space-between;
+  gap: 24px;
+  margin-bottom: 32px;
+}
+
+.home .section-head h2 {
+  max-width: 18ch;
+  font: 650 clamp(1.8rem, 1.3rem + 1.6vw, 2.6rem) / 1.08 var(--home-font-display);
+  letter-spacing: -0.03em;
+  text-wrap: balance;
+}
+
+.home .section-head p {
+  max-width: 46ch;
+  margin: 0;
+  color: var(--home-muted);
+}
+
+/* Planet cards (ADR-0017 decision 3) */
+
+.home .planets {
+  padding-top: 96px;
+}
+
+.home .planet-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(330px, 100%), 1fr));
+  gap: 20px;
+}
+
+.home .planets-empty {
+  margin: 0;
+  padding: 28px 4px;
+  color: var(--home-muted);
+}
+
+.home .planet {
+  --eco: var(--home-faint);
+  position: relative;
+  display: grid;
+  grid-template-rows: auto 1fr;
+  scroll-margin-top: 84px;
+  overflow: hidden;
+  background: var(--home-panel);
+  border: 1px solid var(--home-line);
+  border-radius: 14px;
+  transition: border-color 0.25s, transform 0.4s var(--home-ease);
+}
+
+.home .planet:hover {
+  border-color: color-mix(in srgb, var(--eco) 50%, var(--home-line-2));
+  transform: translateY(-2px);
+}
+
+.home .planet-sky {
+  height: 168px;
+  background:
+    radial-gradient(120% 90% at 85% 0%, color-mix(in srgb, var(--eco) 14%, transparent), transparent 60%),
+    var(--home-bg-2);
+  border-bottom: 1px solid var(--home-line);
+}
+
+.home .planet-sky svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.home .planet-moons {
+  transform-box: view-box;
+  transform-origin: 50% 54%;
+  transition: transform 0.9s var(--home-ease);
+}
+
+.home .planet:hover .planet-moons {
+  transform: rotate(-8deg);
+}
+
+.home .planet-facts {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 20px 22px 22px;
+}
+
+.home .planet-facts h3 {
+  font: 500 20px var(--home-font-data);
+  letter-spacing: -0.02em;
+  overflow-wrap: anywhere;
+}
+
+.home .planet-facts h3 a::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+}
+
+.home .planet-facts h3 a:hover {
+  color: var(--home-accent);
+}
+
+.home .planet-kind {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0;
+  font-size: 13px;
+  color: var(--home-muted);
+}
+
+.home .planet-kind .planet-mark {
+  width: 16px;
+  height: 16px;
+}
+
+.home .planet-desc {
+  margin: 0;
+  font-size: 14.5px;
+  color: var(--home-muted);
+}
+
+.home .planet-links {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: auto;
+  padding-top: 8px;
+}
+
+.home .planet-links a {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 11px;
+  font-size: 13.5px;
+  font-weight: 500;
+  color: var(--home-muted);
+  border: 1px solid var(--home-line);
+  border-radius: 8px;
+  transition: color 0.2s, border-color 0.2s;
+}
+
+.home .planet-links a:hover {
+  color: var(--home-ink);
+  border-color: var(--home-line-2);
+}
+
+.home .planet-links a[data-primary] {
+  color: var(--home-accent-ink);
+  background: var(--home-accent);
+  border-color: var(--home-accent);
+}
+
+.home .planet-links svg {
+  width: 14px;
+  height: 14px;
+}
+
+/* Beyond the belt: private projects (ADR-0017 decision 4) */
+
+.home .private {
+  scroll-margin-top: 84px;
+}
+
+.home .belt {
+  height: 70px;
+  margin-top: 96px;
+}
+
+.home .belt svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.home .private-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: end;
+  justify-content: space-between;
+  gap: 16px;
+  margin: 18px 0 24px;
+}
+
+.home .private-head h2 {
+  font: 650 clamp(1.6rem, 1.2rem + 1.2vw, 2.2rem) / 1.1 var(--home-font-display);
+  letter-spacing: -0.03em;
+}
+
+.home .private-head p {
+  max-width: 46ch;
+  margin: 0;
+  color: var(--home-muted);
+}
+
+.home .priv-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(260px, 100%), 1fr));
+  gap: 14px;
+}
+
+.home .priv {
+  position: relative;
+  display: grid;
+  grid-template-columns: 56px 1fr;
+  align-items: start;
+  gap: 14px;
+  padding: 18px;
+  background: var(--home-bg-2);
+  border: 1px dashed var(--home-line-2);
+  border-radius: 14px;
+  transition: border-color 0.2s;
+}
+
+.home .priv:hover {
+  border-color: var(--home-muted);
+}
+
+.home .priv-planet {
+  width: 56px;
+  height: 56px;
+}
+
+.home .priv h3 {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font: 500 16px var(--home-font-data);
+}
+
+.home .priv h3 a::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+}
+
+.home .priv-lock {
+  width: 13px;
+  height: 13px;
+  color: var(--home-faint);
+}
+
+.home .priv p {
+  margin: 2px 0 0;
+  font-size: 14px;
+  color: var(--home-muted);
+}
+
+.home .priv small {
+  display: block;
+  margin-top: 8px;
+  font: 12px var(--home-font-data);
+  color: var(--home-faint);
+}
+
+.home .priv-empty {
+  display: grid;
+  grid-template-columns: 120px 1fr;
+  align-items: center;
+  gap: 20px;
+  padding: 24px;
+  border: 1px dashed var(--home-line-2);
+  border-radius: 14px;
+}
+
+.home .priv-empty svg {
+  width: 120px;
+  height: 70px;
+}
+
+.home .priv-empty p {
+  margin: 0;
+  font-size: 14.5px;
+  color: var(--home-muted);
+}
+
+.home .priv-empty b {
+  display: block;
+  font-weight: 600;
+  color: var(--home-ink);
+}
+
+/* Two sides of every planet (ADR-0017 decision 5) */
+
+.home .sides {
+  display: grid;
+  grid-template-columns: 1fr 120px 1fr;
+  overflow: hidden;
+  border: 1px solid var(--home-line);
+  border-radius: 14px;
+}
+
+.home .side {
+  padding: 26px;
+}
+
+.home .side-day {
+  background: var(--home-panel);
+}
+
+.home .side-night {
+  background: var(--home-bg-2);
+}
+
+.home .side h3 {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+  font: 650 1.3rem var(--home-font-display);
+  letter-spacing: -0.02em;
+}
+
+.home .side h3 svg {
+  width: 18px;
+  height: 18px;
+}
+
+.home .side-day h3 svg {
+  color: var(--home-star);
+}
+
+.home .side-night h3 svg {
+  color: var(--home-muted);
+}
+
+.home .side h3 span {
+  font: 400 12px var(--home-font-data);
+  letter-spacing: 0;
+  color: var(--home-faint);
+}
+
+.home .side > p {
+  margin: 6px 0 0;
+  font-size: 14.5px;
+  color: var(--home-muted);
+}
+
+.home .side ul {
+  display: grid;
+  gap: 2px;
+  margin: 18px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.home .side li a {
+  display: block;
+  padding: 8px 10px;
+  font-size: 14.5px;
+  border-radius: 8px;
+  transition: background-color 0.2s;
+}
+
+.home .side li a:hover {
+  background: var(--home-panel-2);
+}
+
+.home .terminator {
+  display: grid;
+  place-items: center;
+  background: linear-gradient(90deg, var(--home-panel) 50%, var(--home-bg-2) 50%);
+}
+
+.home .terminator svg {
+  width: 96px;
+  height: 96px;
+}
+
+.home .window {
+  overflow: hidden;
+  background: var(--home-panel);
+  border: 1px solid var(--home-line-2);
+  border-radius: 14px;
+  box-shadow: 0 30px 80px -30px var(--home-shadow);
+}
+
+.home .chrome {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 14px;
+  font: 12px var(--home-font-data);
+  color: var(--home-faint);
+  border-bottom: 1px solid var(--home-line);
+}
+
+.home .chrome i {
+  width: 10px;
+  height: 10px;
+  background: var(--home-line-2);
+  border-radius: 50%;
+}
+
+.home .chrome span {
+  margin-left: 10px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Every moon, released or not (ADR-0017 decision 6) */
+
+.home .moon-list {
+  border-top: 1px solid var(--home-line);
+}
+
+.home .moon-row {
+  display: grid;
+  grid-template-columns: 150px 1fr;
+  align-items: center;
+  gap: 24px;
+  padding: 18px 4px;
+  border-bottom: 1px solid var(--home-line);
+}
+
+.home .moon-row h3 {
+  font: 500 15px var(--home-font-data);
+}
+
+.home .moon-row h3 a:hover {
+  color: var(--home-accent);
+}
+
+.home .moon-track {
+  position: relative;
+  display: flex;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  overflow-x: auto;
+}
+
+.home .moon-track::before {
+  content: '';
+  position: absolute;
+  top: 14px;
+  left: 14px;
+  right: 14px;
+  border-top: 1px solid var(--home-line-2);
+}
+
+.home .moon-track li {
+  flex: 1;
+  min-width: 96px;
+}
+
+.home .moon-track a {
+  position: relative;
+  display: grid;
+  justify-items: center;
+  gap: 6px;
+  padding: 0 4px;
+  text-align: center;
+}
+
+.home .moon-track .moon-phase {
+  width: 28px;
+  height: 28px;
+  background: var(--home-bg);
+  border-radius: 50%;
+}
+
+.home .moon-track b {
+  font: 500 12.5px var(--home-font-data);
+}
+
+.home .moon-track li[data-channel='latest'] b {
+  color: var(--home-accent);
+}
+
+.home .moon-track small {
+  font: 12px var(--home-font-data);
+  color: var(--home-faint);
+}
+
+.home .moon-track a:hover b {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.home .moon-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+  margin-top: 18px;
+  font-size: 13px;
+  color: var(--home-muted);
+}
+
+.home .moon-legend span {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.home .moon-legend .moon-phase {
+  width: 16px;
+  height: 16px;
+}
+
+/* Read it anywhere */
+
+.home .anywhere {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+}
+
+.home .terminal {
+  min-height: 300px;
+  margin: 0;
+  padding: 18px 20px;
+  overflow-x: auto;
+  font-size: 13.5px;
+  line-height: 1.75;
+  color: var(--home-muted);
+  white-space: pre-wrap;
+}
+
+.home .terminal .prompt {
+  color: var(--home-accent);
+}
+
+.home .terminal .command {
+  color: var(--home-ink);
+}
+
+.home .cursor {
+  display: inline-block;
+  width: 8px;
+  height: 16px;
+  vertical-align: -3px;
+  background: var(--home-accent);
+  animation: home-blink 1.1s steps(1) infinite;
+}
+
+@keyframes home-blink {
+  50% {
+    opacity: 0;
+  }
+}
+
+.home .anywhere-term {
+  display: grid;
+  gap: 14px;
+  align-content: start;
+}
+
+.home .anywhere-full {
+  margin: 0;
+  font-size: 14px;
+  color: var(--home-muted);
+}
+
+.home .anywhere-full a {
+  font-family: var(--home-font-data);
+  color: var(--home-ink);
+  text-decoration: underline;
+  text-decoration-color: var(--home-line-2);
+  text-underline-offset: 3px;
+}
+
+.home .anywhere-full a:hover {
+  text-decoration-color: var(--home-accent);
+}
+
+.home .term-tabs {
+  display: flex;
+  gap: 2px;
+  margin-left: 10px;
+  overflow-x: auto;
+}
+
+.home .term-tabs button {
+  padding: 3px 9px;
+  font: 12px var(--home-font-data);
+  color: var(--home-faint);
+  white-space: nowrap;
+  background: none;
+  border: 1px solid transparent;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: color 0.2s, border-color 0.2s, background 0.2s;
+}
+
+.home .term-tabs button:hover {
+  color: var(--home-ink);
+}
+
+.home .term-tabs button[aria-selected='true'] {
+  color: var(--home-ink);
+  background: var(--home-bg-2);
+  border-color: var(--home-line-2);
+}
+
+.home .assist {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 14px;
+  padding: 28px;
+  background: var(--home-bg-2);
+  border: 1px solid var(--home-line);
+  border-radius: 14px;
+}
+
+.home .assist h3 {
+  font: 650 1.35rem / 1.15 var(--home-font-display);
+  letter-spacing: -0.02em;
+}
+
+.home .assist p {
+  margin: 0;
+  max-width: 44ch;
+  color: var(--home-muted);
+}
+
+.home .assist p b {
+  font-weight: 500;
+  color: var(--home-ink);
+}
+
+.home .assist-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 6px;
+}
+
+.home .assist-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: auto;
+  padding-top: 10px;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--home-accent);
+}
+
+.home .assist-link svg {
+  width: 15px;
+  height: 15px;
+  transition: transform 0.2s var(--home-ease);
+}
+
+.home .assist-link:hover svg {
+  transform: translateX(3px);
+}
+
+/* Out of orbit: the 404 (ADR-0017 decision 11) */
+
+.home .lost {
+  display: grid;
+  justify-items: center;
+  align-content: center;
+  gap: 16px;
+  min-height: 64svh;
+  padding-top: 64px;
+  padding-bottom: 32px;
+  text-align: center;
+}
+
+.home .lost-drawing {
+  width: min(420px, 100%);
+  height: auto;
+}
+
+.home .lost h1 {
+  max-width: 18ch;
+  font: 700 clamp(2rem, 1.5rem + 2vw, 3.2rem) / 1.05 var(--home-font-display);
+  letter-spacing: -0.035em;
+  text-wrap: balance;
+}
+
+.home .lost > p {
+  max-width: 46ch;
+  margin: 0;
+  color: var(--home-muted);
+}
+
+.home .lost .hero-search {
+  width: min(460px, 100%);
+  margin-top: 8px;
+}
+
+.home .lost-back {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-weight: 500;
+  color: var(--home-accent);
+}
+
+.home .lost-back svg {
+  width: 15px;
+  height: 15px;
+}
+
+/* Entrances: only once scripts run, so content is visible without them */
+
+.home .reveal:not(.in) {
+  opacity: 0;
+  transform: translateY(18px);
+  filter: blur(4px);
+}
+
+.home .reveal {
+  transition: opacity 0.8s var(--home-ease), transform 0.8s var(--home-ease), filter 0.8s var(--home-ease);
+}
+
+@media (scripting: none) {
+  .home .orbit-zoom-row {
+    display: none;
+  }
+
+  .home .reveal:not(.in) {
+    opacity: 1;
+    transform: none;
+    filter: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .home .reveal,
+  .home .reveal:not(.in) {
+    opacity: 1;
+    transform: none;
+    filter: none;
+    transition: none;
+  }
+
+  .home .cursor {
+    animation: none;
+  }
+
+  .home .orbit-caption:not(:empty) {
+    animation: none;
+  }
+
+  .home .orbit-nebula {
+    transition: none;
+  }
+
+  .home .planet,
+  .home .planet-moons,
+  .home .bar,
+  .home .assist-link svg {
+    transition: none;
+  }
+}
+
+@media (max-width: 860px) {
+  .home .bar kbd,
+  .home .legend {
+    display: none;
+  }
+
+  .home .hero {
+    align-items: flex-end;
+    min-height: auto;
+    padding: 334px 0 40px;
+  }
+
+  .home .orbit-nebula {
+    bottom: auto;
+    height: 310px;
+    mask-image: linear-gradient(to bottom, #000 80%, transparent);
+  }
+
+  .home .orbit-zoom-row {
+    top: 262px;
+    right: 16px;
+    bottom: auto;
+    flex-direction: column-reverse;
+    align-items: flex-end;
+    gap: 6px;
+  }
+
+  .home .hero h1 {
+    max-width: none;
+  }
+
+  .home .hero-search {
+    width: 100%;
+  }
+
+  .home .bar {
+    min-height: 56px;
+  }
+
+  .home .bar-placeholder {
+    font-size: 16px;
+  }
+
+  .home .sides,
+  .home .anywhere {
+    grid-template-columns: 1fr;
+  }
+
+  .home .terminator {
+    display: none;
+  }
+
+  .home .moon-row {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+
+  .home .priv-empty {
+    grid-template-columns: 1fr;
+  }
+
+  .home .section {
+    padding-top: 88px;
+  }
+
+  .home .planets {
+    padding-top: 64px;
+  }
+}

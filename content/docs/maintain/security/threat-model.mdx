@@ -1,0 +1,89 @@
+---
+title: "Threat model — puncoz-packages-docs"
+description: "What could go wrong on this site, what is at risk, and how each threat is handled, with private documentation as the main concern."
+---
+
+- **Status:** Current
+- **Last updated:** 2026-11-01
+- **Related ADRs:** ADR-0005, [ADR-0016](../adr/ADR-0016-home-search-is-the-fumadocs-dialog-and-private-projects-render-server-side.mdx),
+  [ADR-0017](../adr/ADR-0017-the-whole-site-is-one-solar-system.mdx),
+  [ADR-0011](../adr/ADR-0011-archify-diagrams-are-embedded-from-sandboxed-html.mdx),
+  [ADR-0022](../adr/ADR-0022-diagrams-show-archify-on-the-page-and-mermaid-in-markdown.mdx),
+  [ADR-0020](../adr/ADR-0020-people-in-adrs-are-github-usernames-shown-as-profile-chips.mdx)
+
+> Snapshot of the system as it stands today. Edit in place; never record what changed.
+
+## Current attack surface
+
+The site is static pages built from `content/`, one folder per package or project at
+`/<slug>/…`, served with their Markdown, `llms.txt` / `llms-full.txt`, share images and `static.json`, plus Algolia
+search ([`../architecture/system.mdx`](../architecture/system.mdx)). Every page is prerendered
+(Cache Components, ADR-0016); none reads cookies or headers. There is no sign-in, no database
+and no user input beyond the search box. The home page's Private projects group is public
+static markup listing three invented projects from `src/components/home/private-projects.ts`
+(ADR-0017 decision 4); it holds no private data.
+
+| Surface | Present | Detail |
+|---|---|---|
+| Authentication / sessions | No | — |
+| Route handlers | Yes | Markdown, `llms.txt`, `llms-full.txt`, share images, `static.json`, `robots.txt`, `sitemap.xml`, the manifest, the Apple icon, the Archify diagrams under `/diagrams/` — all public, all static ([`../api/content-routes.mdx`](../api/content-routes.mdx), [`../api/crawler-routes.mdx`](../api/crawler-routes.mdx)) |
+| User input of any kind | Yes | The search query, sent from the browser straight to Algolia; the `Accept` header, read by `src/proxy.ts`; the request's path, compared by `src/proxy.ts` with a fixed list and never echoed |
+| Database or persistence | No | Content is files; the search index is a build output |
+| Files / uploads | No uploads | Archify diagrams in `diagrams/`: generated script, committed by the owner, served with the site shell's added script and style, run in a sandboxed frame and served with a CSP `sandbox` header. The frame sends the page one message, its height, which the page takes only from that frame's window and only as a number from 120 to 4000 (ADR-0011, ADR-0022, [`../api/content-routes.mdx`](../api/content-routes.mdx)) |
+| Secrets / environment variables | Yes | Three Algolia variables, listed in [`secrets.mdx`](./secrets.mdx) |
+| Third-party integrations | Yes | Algolia (search). GitHub serves the avatar in each profile chip to the reader's browser, without a referrer (ADR-0020). The page actions' Open in ChatGPT, Claude, Cursor and Scira links, on docs pages and the home page, send a public page's URL to that service when the reader clicks one. The fonts are fetched by `next/font` at build time and served from the site's own origin |
+| Logging / audit trail | No | The sync script prints a record count |
+
+Each ADR that adds a surface updates this table in the same change.
+
+## Assets to protect
+
+| # | Asset | Harm if exposed or corrupted |
+|---|---|---|
+| A1 | Private project documentation | Architecture, internal APIs, hostnames or client names published and crawled; cannot be recalled |
+| A2 | `ALGOLIA_WRITE_KEY` | Anyone can replace or wipe the search index, or plant pages in it |
+| A3 | Integrity of published package docs | A wrong install command or a tampered example is copied into other people's projects |
+| A4 | Unfixed security findings | Published in these maintainer pages before the fix, they are an attack plan; they go to the owner, not into these pages (ADR-0002) |
+| A5 | The owner's identity and reputation | Pages or search results that appear to be the owner's but are not |
+
+## Adversaries to design for
+
+| Adversary | Goal | Typical path |
+|---|---|---|
+| Anyone on the internet | Read private documentation | The site, `llms-full.txt`, `static.json`, or the search index with the public search-only key |
+| Crawlers and LLM scrapers | Collect everything published | `llms.txt` / `llms-full.txt`, the Markdown routes — intended for public content, indiscriminate for private |
+| Someone holding a leaked write key | Deface or poison search | Direct writes to the Algolia index |
+| A malicious contribution or dependency | Tamper with content or the build | A changed example, a compromised package in the build |
+
+## Trust boundaries
+
+Crossed today, each in [`../dfd/system.mdx`](../dfd/system.mdx):
+
+| Boundary | Carries |
+|---|---|
+| Build ↔ Algolia | Every page's search record, with the write key |
+| Browser ↔ Algolia | Search queries and results, with the search-only key |
+| Browser ↔ GitHub | Avatar requests for profile chips: the reader's IP address and user agent, no page address |
+| Site ↔ public | Every page on every surface |
+
+Anticipated, each documented by the ADR that introduces it:
+
+| Boundary | Will carry |
+|---|---|
+| Repository ↔ host | The build and its environment variables |
+| Site ↔ authentication provider | Reader identity, if private docs are served from this site |
+| Site ↔ analytics | Page views, if analytics is adopted |
+
+## Accepted risks
+
+| Risk | Why accepted | Guard |
+|---|---|---|
+| GitHub sees which IP addresses load which avatars, so it can tell that someone read a page naming that user (A5 for readers' privacy). | The owner chose live avatars over a committed copy or an image proxy (ADR-0020). | `referrerpolicy="no-referrer"`; avatars load lazily, only when the chip is near the viewport. |
+| The avatar is whatever the GitHub account sets, shown on the site. | It is that person's own profile picture, shown at 20px as decoration. | The chip's name and link come from the page, not from GitHub. |
+| A future Archify release adds a network call or an external resource to the generated diagrams; the sandbox does not block outgoing requests. | Diagrams are made with Archify by the owner's standing choice; Archify 3.2.0 makes none. | Each upgrade needs the owner's yes, and its HTML is scanned before it is published (checklist, Archify). |
+| The private projects list (`src/components/home/private-projects.ts`) is the one place in code where a private project's name is typed. Someone may later replace an invented name with a real client's, publishing it on the home page and to crawlers (A1). | The owner chose to show invented private projects on the live site (ADR-0017). | The file's comment says only invented names belong there until the private-documentation ADR; a real name there breaks invariant 1. The list is never sent to search, `llms.txt` or `static.json`. |
+| Visitors take the invented private projects as real, and their links return the 404 (A5). | The owner's decision, ADR-0017. | Replacing the list is a one-file change. |
+
+## Incidents
+
+None.

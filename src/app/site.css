@@ -1,0 +1,2206 @@
+/* One header on every page (ADR-0015 decision 8). */
+
+.site-header {
+  position: sticky;
+  top: 0;
+  z-index: 40;
+  background: color-mix(in srgb, var(--home-bg) 80%, transparent);
+  backdrop-filter: saturate(1.4) blur(12px);
+  border-bottom: 1px solid transparent;
+  color: var(--home-ink);
+  font: 400 14px/1.4 var(--home-font-text);
+  transition: border-color 0.3s;
+}
+
+.site-header.scrolled,
+.site-header[data-docs] {
+  border-bottom-color: var(--home-line);
+}
+
+.site-header[data-docs] {
+  grid-area: header;
+  top: var(--fd-docs-row-1, 0px);
+}
+
+.site-header a {
+  color: inherit;
+  text-decoration: none;
+}
+
+.site-header :focus-visible {
+  outline: 2px solid var(--home-accent);
+  outline-offset: 2px;
+  border-radius: 6px;
+}
+
+/* The header's band of sky, cleared from the brand, the links and the buttons (ADR-0029). */
+.header-sky {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+  mask-image: linear-gradient(
+    to right,
+    #000 calc(50% - 630px),
+    transparent calc(50% - 590px),
+    transparent calc(50% - 150px),
+    #000 calc(50% - 70px),
+    #000 calc(50% + 300px),
+    transparent calc(50% + 380px),
+    transparent calc(50% + 590px),
+    #000 calc(50% + 630px)
+  );
+}
+
+.site-header[data-docs] .header-sky {
+  mask-image: linear-gradient(
+    to right,
+    transparent 440px,
+    #000 520px,
+    #000 calc(100% - 580px),
+    transparent calc(100% - 500px)
+  );
+}
+
+.site-header .header-sky svg {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  width: 2560px;
+  height: 60px;
+  transform: translateX(-50%);
+}
+
+.site-header-row {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  height: 60px;
+  max-width: 1180px;
+  margin: 0 auto;
+  padding: 0 24px;
+}
+
+.site-header[data-docs] .site-header-row {
+  max-width: none;
+}
+
+.site-brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font: 600 17px var(--home-font-display);
+  letter-spacing: -0.01em;
+  white-space: nowrap;
+}
+
+.site-mark {
+  width: 28px;
+  height: 28px;
+  flex: none;
+}
+
+.site-nav {
+  display: flex;
+  gap: 22px;
+  color: var(--home-muted);
+}
+
+.site-nav a:hover {
+  color: var(--home-ink);
+}
+
+.site-spacer {
+  flex: 1;
+}
+
+.site-search {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  width: 240px;
+  height: 36px;
+  padding: 0 8px 0 12px;
+  border: 1px solid var(--home-line);
+  border-radius: 8px;
+  background: var(--home-panel);
+  color: var(--home-faint);
+  font: inherit;
+  cursor: pointer;
+  transition: border-color 0.2s, color 0.2s;
+}
+
+.site-search:hover {
+  border-color: var(--home-line-2);
+  color: var(--home-muted);
+}
+
+.site-search kbd {
+  margin-left: auto;
+  font: 12px var(--home-font-data);
+  color: var(--home-muted);
+  border: 1px solid var(--home-line);
+  border-radius: 6px;
+  padding: 1px 6px;
+}
+
+.site-ghost {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--home-muted);
+  padding: 6px 10px;
+  border: 1px solid var(--home-line);
+  border-radius: 8px;
+  transition: color 0.2s, border-color 0.2s;
+}
+
+.site-ghost:hover {
+  color: var(--home-ink);
+  border-color: var(--home-line-2);
+}
+
+.site-header svg {
+  width: 16px;
+  height: 16px;
+  flex: none;
+}
+
+.site-ghost svg {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.75;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+/* Theme switch: a small orrery, the day side and night side of a planet (ADR-0017 decision 9) */
+
+.site-theme {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 36px;
+  flex: none;
+  padding: 0;
+  background: none;
+  border: 1px solid var(--home-line);
+  border-radius: 8px;
+  cursor: pointer;
+  transition: border-color 0.2s;
+}
+
+.site-theme:hover {
+  border-color: var(--home-line-2);
+}
+
+.site-header .site-theme svg {
+  width: 32px;
+  height: 32px;
+  overflow: visible;
+}
+
+.site-theme-orbit {
+  fill: none;
+  stroke: var(--home-line-2);
+  stroke-width: 1.1;
+  transition: stroke 0.2s;
+}
+
+.site-theme:hover .site-theme-orbit {
+  stroke: var(--home-muted);
+}
+
+.site-theme-sun {
+  transform: translate(-10.2px, 5px);
+  transition: transform 0.5s var(--home-ease), opacity 0.5s var(--home-ease);
+}
+
+.site-theme-sun circle {
+  fill: var(--home-star);
+}
+
+.site-theme-sun path {
+  stroke: var(--home-star);
+  stroke-width: 1.2;
+  stroke-linecap: round;
+}
+
+.site-theme-night {
+  fill: var(--home-night);
+  stroke: var(--home-muted);
+  stroke-width: 0.9;
+}
+
+.site-theme-day {
+  fill: var(--home-accent);
+}
+
+.site-theme-shade {
+  transform: translate(16px, -4px);
+  transition: transform 0.5s var(--home-ease);
+}
+
+.dark .site-theme-sun {
+  transform: translate(4.5px, -5.6px) scale(0.85);
+  opacity: 0.9;
+}
+
+.dark .site-theme-shade {
+  transform: translate(-2.4px, 2.4px);
+}
+
+.site-theme-tip {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  padding: 4px 8px;
+  font: 12px var(--home-font-text);
+  color: var(--home-ink);
+  white-space: nowrap;
+  background: var(--home-panel);
+  border: 1px solid var(--home-line-2);
+  border-radius: 6px;
+  opacity: 0;
+  transform: translateY(-3px);
+  pointer-events: none;
+  transition: opacity 0.15s, transform 0.2s var(--home-ease);
+}
+
+.site-theme:hover .site-theme-tip,
+.site-theme:focus-visible .site-theme-tip {
+  opacity: 1;
+  transform: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .site-theme-sun,
+  .site-theme-shade,
+  .site-theme-tip {
+    transition: none;
+  }
+}
+
+@media (hover: none) {
+  .site-theme-tip {
+    display: none;
+  }
+}
+
+.site-menu {
+  display: none;
+  width: 36px;
+  height: 36px;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--home-line);
+  border-radius: 8px;
+  color: var(--home-muted);
+  background: none;
+  cursor: pointer;
+}
+
+@media (max-width: 860px) {
+  .site-header-row {
+    gap: 10px;
+    padding: 0 16px;
+  }
+
+  /* Only the gap between the wordmark and the buttons; the narrowest phones have none. */
+  .header-sky,
+  .site-header[data-docs] .header-sky {
+    mask-image: linear-gradient(
+      to right,
+      transparent 190px,
+      #000 240px,
+      #000 calc(100% - 250px),
+      transparent calc(100% - 210px)
+    );
+  }
+
+  .site-nav,
+  .site-ghost-label,
+  .site-search-label,
+  .site-search kbd {
+    display: none;
+  }
+
+  .site-search {
+    width: 36px;
+    padding: 0;
+    justify-content: center;
+  }
+
+  .site-ghost {
+    padding: 9px;
+  }
+
+  .site-menu {
+    display: inline-flex;
+  }
+}
+
+/* Docs pages: the home page's type, quietly (ADR-0015 decision 7). */
+
+/* The active link's teal on a 10% teal wash falls below 4.5:1 on the page colour; the panel keeps it above. */
+#nd-sidebar-mobile {
+  background: var(--home-panel);
+}
+
+#nd-page h1,
+#nd-page h2,
+#nd-page h3 {
+  font-family: var(--home-font-display);
+  letter-spacing: -0.02em;
+}
+
+#nd-page h1 {
+  font-weight: 600;
+  line-height: 1.1;
+}
+
+
+/* Shared marks: planets and moon phases (ADR-0017 decision 1) */
+
+.planet-mark,
+.moon-phase {
+  flex: none;
+  overflow: visible;
+}
+
+.planet-label {
+  font-family: var(--home-font-data);
+  fill: var(--home-muted);
+}
+
+/* Planet header on each overview (ADR-0017 decision 10) */
+
+.pkg-hero {
+  --eco: var(--home-faint);
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 280px;
+  align-items: center;
+  gap: 20px;
+  padding: 24px 26px;
+  overflow: hidden;
+  border: 1px solid var(--home-line);
+  border-radius: 14px;
+  background:
+    radial-gradient(60% 120% at 100% 50%, color-mix(in srgb, var(--eco) 12%, transparent), transparent 70%),
+    var(--home-panel);
+}
+
+.pkg-text {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  min-width: 0;
+}
+
+.pkg-kind {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0;
+  font: 13px var(--home-font-text);
+  color: var(--home-muted);
+}
+
+.pkg-kind .planet-mark {
+  width: 18px;
+  height: 18px;
+}
+
+.pkg-name {
+  margin: 0;
+  font: 500 clamp(1.6rem, 1.2rem + 1.4vw, 2.3rem) / 1.1 var(--home-font-data);
+  letter-spacing: -0.03em;
+  color: var(--home-ink);
+  overflow-wrap: anywhere;
+}
+
+.pkg-desc {
+  margin: 0;
+  max-width: 56ch;
+  color: var(--home-muted);
+}
+
+.fact-sheet {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 4px 16px;
+  margin: 2px 0 0;
+  font-size: 13px;
+}
+
+.fact-sheet dt {
+  color: var(--home-faint);
+}
+
+.fact-sheet dd {
+  margin: 0;
+  font: 12.5px var(--home-font-data);
+  color: var(--home-ink);
+}
+
+.fact-sheet dd.dim {
+  color: var(--home-muted);
+}
+
+.pkg-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 4px;
+}
+
+.pkg-links a {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  border: 1px solid var(--home-line);
+  border-radius: 8px;
+  font-size: 14px;
+  color: var(--home-ink);
+  text-decoration: none;
+  transition: border-color 0.2s, background-color 0.2s;
+}
+
+.pkg-links a:hover {
+  border-color: var(--home-line-2);
+  background: var(--home-panel-2);
+}
+
+.pkg-links a[data-primary] {
+  background: var(--home-accent);
+  border-color: var(--home-accent);
+  color: var(--home-accent-ink);
+}
+
+.pkg-links a[data-primary]:hover {
+  background: color-mix(in srgb, var(--home-accent) 88%, var(--home-ink));
+}
+
+/* A repository without a URL is named, not linked (ADR-0024). */
+.pkg-links .pkg-link-plain {
+  display: inline-flex;
+  align-items: center;
+  padding: 6px 12px;
+  border: 1px dashed var(--home-line);
+  border-radius: 8px;
+  font-size: 14px;
+  color: var(--home-muted);
+}
+
+.pkg-links svg {
+  width: 15px;
+  height: 15px;
+}
+
+.pkg-system {
+  width: 100%;
+  height: auto;
+}
+
+@media (max-width: 720px) {
+  .pkg-hero {
+    grid-template-columns: 1fr;
+    padding: 20px;
+  }
+
+  .pkg-system {
+    max-height: 190px;
+  }
+}
+
+/* Version line and notices: the line's moon (ADR-0017 decision 10) */
+
+.version-line {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0;
+  font-size: 14px;
+  color: var(--home-muted);
+}
+
+.version-line .moon-phase {
+  width: 14px;
+  height: 14px;
+}
+
+.version-notice {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 12px 14px;
+  font-size: 14px;
+  color: var(--home-ink);
+  background: var(--home-bg-2);
+  border: 1px solid var(--home-line-2);
+  border-radius: 10px;
+}
+
+.version-notice .moon-phase {
+  width: 22px;
+  height: 22px;
+  margin-top: 1px;
+}
+
+.version-notice p {
+  margin: 0;
+}
+
+.version-notice b {
+  font-weight: 600;
+}
+
+.version-notice a {
+  font-weight: 500;
+  color: var(--home-accent);
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+
+/* Sidebar: the planet row and orbit stations (ADR-0018 decisions 1 and 2) */
+
+#nd-sidebar,
+#nd-sidebar-mobile {
+  --eco: var(--home-accent);
+}
+
+:is(#nd-sidebar, #nd-sidebar-mobile):has(.planet-banner[data-ring='npm']) {
+  --eco: var(--home-npm);
+}
+
+:is(#nd-sidebar, #nd-sidebar-mobile):has(.planet-banner[data-ring='composer']) {
+  --eco: var(--home-composer);
+}
+
+:is(#nd-sidebar, #nd-sidebar-mobile):has(.planet-banner[data-ring='pypi']) {
+  --eco: var(--home-pypi);
+}
+
+:is(#nd-sidebar, #nd-sidebar-mobile):has(.planet-banner[data-ring='go']) {
+  --eco: var(--home-go);
+}
+
+:is(#nd-sidebar, #nd-sidebar-mobile):has(.planet-banner[data-ring='cargo']) {
+  --eco: var(--home-cargo);
+}
+
+/* Fumadocs puts its version menu before the banner; the planet comes first. */
+.planet-banner {
+  order: -1;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.planet-chip {
+  display: flex;
+  flex: 1;
+  min-width: 0;
+  align-items: center;
+  gap: 9px;
+  padding: 7px 10px;
+  color: var(--home-ink);
+  background: var(--home-bg-2);
+  border: 1px solid var(--home-line);
+  border-radius: 10px;
+  transition: border-color 0.2s;
+}
+
+.planet-chip:hover {
+  border-color: var(--home-line-2);
+}
+
+.planet-chip .planet-mark {
+  flex: none;
+  width: 24px;
+  height: 24px;
+}
+
+.planet-chip span {
+  min-width: 0;
+}
+
+.planet-chip b,
+.planet-chip small {
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.planet-chip b {
+  font: 500 14px var(--home-font-data);
+}
+
+.planet-chip small {
+  font-size: 11.5px;
+  color: var(--home-faint);
+}
+
+.planet-sides {
+  display: flex;
+  flex: none;
+  gap: 2px;
+  padding: 3px;
+  background: var(--home-bg-2);
+  border: 1px solid var(--home-line);
+  border-radius: 10px;
+}
+
+.planet-sides a {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  color: var(--home-muted);
+  border-radius: 7px;
+  transition: color 0.2s, background-color 0.2s;
+}
+
+.planet-sides a:hover {
+  color: var(--home-ink);
+}
+
+.planet-sides a:focus-visible {
+  outline: 2px solid var(--home-accent);
+  outline-offset: 1px;
+}
+
+.planet-sides a[aria-current] {
+  color: var(--home-ink);
+  background: var(--home-panel);
+  box-shadow: 0 1px 4px var(--home-shadow-near);
+}
+
+.planet-sides svg {
+  width: 16px;
+  height: 16px;
+}
+
+.planet-sides a[aria-current] .side-sun {
+  color: var(--home-star);
+}
+
+.planet-side-tip {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  z-index: 30;
+  padding: 4px 8px;
+  font: 400 12px var(--home-font-text);
+  white-space: nowrap;
+  color: var(--home-ink);
+  background: var(--home-panel);
+  border: 1px solid var(--home-line);
+  border-radius: 7px;
+  box-shadow: 0 4px 12px var(--home-shadow);
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(-2px);
+  transition: opacity 0.15s, transform 0.15s;
+}
+
+@media (hover: hover) {
+  .planet-sides a:hover .planet-side-tip {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.planet-sides a:focus-visible .planet-side-tip {
+  opacity: 1;
+  transform: none;
+}
+
+#nd-sidebar .moon-phase,
+#nd-sidebar-mobile .moon-phase {
+  width: 100%;
+  height: 100%;
+  padding: 2px;
+}
+
+.station[data-level='1'] {
+  margin-block: 1px;
+  border: 1px solid transparent;
+  border-radius: 12px;
+  transition: background-color 0.25s, border-color 0.25s, margin 0.25s;
+}
+
+/* Only the open orbit is a card (ADR-0027 decision 2). */
+.station[data-level='1'][data-open] {
+  margin-block: 6px;
+  background: var(--home-panel);
+  border-color: var(--home-line);
+}
+
+.station[data-level='1'][data-open][data-current] {
+  border-color: color-mix(in srgb, var(--eco) 45%, var(--home-line));
+}
+
+.station[data-level='2'] {
+  position: relative;
+}
+
+.station-head {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  min-height: 34px;
+  padding: 7px 9px;
+  font: 500 14px/1.35 var(--home-font-text);
+  text-align: start;
+  color: var(--home-ink);
+  border-radius: 10px;
+  transition: background-color 0.15s, color 0.15s;
+}
+
+.station-head:hover {
+  background: var(--home-bg-2);
+}
+
+.station[data-open] > .station-head:hover {
+  background: transparent;
+}
+
+.station-head:focus-visible,
+.orbit-item:focus-visible {
+  outline: 2px solid var(--home-accent);
+  outline-offset: -2px;
+}
+
+.station-head[data-active='true'] .station-name {
+  color: var(--home-accent);
+}
+
+.station-head svg[data-icon] {
+  flex: none;
+  width: 14px;
+  height: 14px;
+  margin-inline-start: 0;
+  color: var(--home-faint);
+}
+
+.station[data-level='2'] > .station-head,
+.station[data-level='3'] > .station-head,
+.orbit-link[data-level='2'],
+.orbit-link[data-level='3'] {
+  min-height: 32px;
+  padding-inline-start: 30px;
+  font-size: 13.5px;
+  border-radius: 8px;
+}
+
+.station[data-level='3'] > .station-head {
+  color: var(--home-muted);
+}
+
+.orbit-link[data-active='true'] {
+  background: color-mix(in srgb, var(--eco) 10%, transparent);
+}
+
+.orbit-ring {
+  flex: none;
+  width: 12px;
+  height: 12px;
+  overflow: visible;
+}
+
+:is(.station[data-level='2'] > .station-head, .orbit-link[data-level='2']) .orbit-ring {
+  width: 10px;
+  height: 10px;
+}
+
+.orbit-ring-path {
+  fill: none;
+  stroke: var(--home-faint);
+  stroke-width: 1.5;
+  transition: stroke 0.25s;
+}
+
+.orbit-ring-planet {
+  fill: var(--home-ink);
+  opacity: 0;
+  transform: scale(0.4);
+  transform-origin: 0 0;
+  transition: opacity 0.2s, transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.station[data-current] > .station-head .orbit-ring-path {
+  stroke: var(--eco);
+}
+
+.station[data-open] > .station-head .orbit-ring-planet {
+  opacity: 1;
+  transform: none;
+}
+
+.station[data-current][data-open] > .station-head .orbit-ring-planet {
+  fill: var(--eco);
+}
+
+.station-name {
+  min-width: 0;
+  flex: 1;
+}
+
+.station-count {
+  flex: none;
+  min-width: 18px;
+  font: 500 11.5px/1.5 var(--home-font-data);
+  font-variant-numeric: tabular-nums;
+  text-align: end;
+  color: var(--home-faint);
+}
+
+.station-moons {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  padding: 0 4px 6px;
+}
+
+.station[data-level='2'] .station-moons {
+  padding: 0 0 2px 22px;
+}
+
+.station[data-level='3'] .station-moons {
+  padding: 0 0 2px 14px;
+}
+
+.orbit-item {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 32px;
+  padding: 6px 8px 6px 30px;
+  font: 400 13.5px/1.35 var(--home-font-text);
+  color: var(--home-muted);
+  border-radius: 8px;
+  transition: color 0.15s, background-color 0.15s;
+}
+
+/* Top-level pages are landmarks, the largest rows below the planet (ADR-0027 decision 4). */
+.orbit-item[data-body='landmark'] {
+  min-height: 36px;
+  padding-inline-start: 30px;
+  font: 500 14.5px/1.35 var(--home-font-text);
+  color: var(--home-ink);
+}
+
+.orbit-item:hover {
+  color: var(--home-ink);
+  background: var(--home-bg-2);
+}
+
+.orbit-item[data-active='true'] {
+  font-weight: 500;
+  color: var(--home-ink);
+  background: color-mix(in srgb, var(--eco) 10%, transparent);
+}
+
+.orbit-arc {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 24px;
+  height: 100%;
+  overflow: visible;
+  pointer-events: none;
+}
+
+.orbit-arc path {
+  fill: none;
+  stroke: var(--home-line-2);
+  stroke-width: 1.2;
+}
+
+.orbit-dot {
+  position: absolute;
+  top: calc(50% - 3px);
+  left: calc(var(--dot-x) - 3px);
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--home-panel);
+  box-shadow: inset 0 0 0 1.4px var(--home-line-2);
+  transition: background-color 0.15s, box-shadow 0.15s;
+}
+
+.orbit-item[data-body='landmark'] .orbit-dot {
+  top: calc(50% - 4px);
+  left: calc(var(--dot-x) - 4px);
+  width: 8px;
+  height: 8px;
+  background: var(--home-faint);
+  box-shadow: none;
+}
+
+.orbit-item:hover .orbit-dot {
+  background: var(--home-line-2);
+}
+
+.orbit-item[data-body='landmark']:hover .orbit-dot {
+  background: var(--home-muted);
+}
+
+.orbit-item[data-active='true'] .orbit-dot,
+.orbit-item[data-body='landmark'][data-active='true'] .orbit-dot {
+  top: calc(50% - 4.5px);
+  left: calc(var(--dot-x) - 4.5px);
+  width: 9px;
+  height: 9px;
+  background: var(--home-accent);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--home-accent) 22%, transparent);
+}
+
+.orbit-name {
+  min-width: 0;
+}
+
+/* A separator is a belt (ADR-0027 decision 5). */
+.orbit-separator {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 18px 9px 4px;
+  font: 600 11px/1.4 var(--home-font-text);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--home-faint);
+}
+
+.orbit-separator::after {
+  content: '';
+  flex: 1;
+  border-top: 1px dotted var(--home-line-2);
+}
+
+/* An ADR folder's station as a constellation (ADR-0019) */
+
+.constellation {
+  display: grid;
+  gap: 10px;
+  padding: 2px 10px 11px;
+}
+
+.constellation-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, 24px);
+  gap: 2px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.constellation-grid a {
+  display: grid;
+  place-items: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 6px;
+  transition: background-color 0.15s;
+}
+
+.constellation-grid a:hover {
+  background: var(--home-bg-2);
+}
+
+.constellation-grid a:focus-visible,
+.constellation-steps a:focus-visible,
+.constellation-all:focus-visible {
+  outline: 2px solid var(--home-accent);
+  outline-offset: 1px;
+  border-radius: 6px;
+}
+
+:is(#nd-sidebar, #nd-sidebar-mobile) .constellation-grid .moon-phase {
+  width: 12px;
+  height: 12px;
+  padding: 0;
+}
+
+.constellation-planet {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: var(--home-accent);
+  box-shadow: 0 0 0 2px var(--home-panel), 0 0 0 3.5px var(--eco);
+}
+
+.constellation-readout {
+  display: -webkit-box;
+  min-height: calc(2 * 1.4 * 12.5px);
+  margin: 0;
+  overflow: hidden;
+  font: 400 12.5px/1.4 var(--home-font-text);
+  color: var(--home-muted);
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+}
+
+.constellation-readout b {
+  margin-inline-end: 6px;
+  font: 500 12.5px var(--home-font-data);
+  color: var(--home-ink);
+}
+
+.constellation-summary {
+  color: var(--home-faint);
+}
+
+.constellation-steps {
+  display: flex;
+  justify-content: space-between;
+}
+
+.constellation-steps a,
+.constellation-all {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font: 500 12.5px var(--home-font-data);
+  color: var(--home-muted);
+  transition: color 0.15s;
+}
+
+.constellation-steps a:hover,
+.constellation-all:hover {
+  color: var(--home-accent);
+}
+
+.constellation-all {
+  justify-self: start;
+  font-family: var(--home-font-text);
+  color: var(--home-accent);
+}
+
+.constellation-steps svg,
+.constellation-all svg {
+  width: 13px;
+  height: 13px;
+}
+
+.constellation-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 10px;
+  margin: 0;
+  font: 400 11px var(--home-font-text);
+  color: var(--home-faint);
+}
+
+.constellation-legend span {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+:is(#nd-sidebar, #nd-sidebar-mobile) .constellation-legend .moon-phase {
+  width: 10px;
+  height: 10px;
+  padding: 0;
+}
+
+.constellation-empty {
+  margin: 0;
+  padding: 0 10px 10px;
+  font-size: 12.5px;
+  color: var(--home-faint);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .constellation-grid a,
+  .constellation-steps a,
+  .constellation-all {
+    transition: none;
+  }
+}
+
+/* "On this page": the trajectory and its probe (ADR-0018 decision 3) */
+
+.trajectory-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 14px;
+}
+
+.trajectory-head h3 {
+  margin: 0;
+  font: 500 13px var(--home-font-text);
+  color: var(--home-ink);
+}
+
+.trajectory-head span,
+.trajectory-bar-time {
+  font: 500 12px var(--home-font-data);
+  font-variant-numeric: tabular-nums;
+  color: var(--home-faint);
+}
+
+.trajectory-scroll {
+  min-height: 0;
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: var(--home-line-2) transparent;
+}
+
+.trajectory {
+  position: relative;
+}
+
+.trajectory-path {
+  position: absolute;
+  top: 0;
+  left: 0;
+  overflow: visible;
+  pointer-events: none;
+}
+
+.trajectory-ahead {
+  fill: none;
+  stroke: var(--home-line-2);
+  stroke-width: 1.2;
+  stroke-dasharray: 3 4;
+}
+
+.trajectory-read {
+  fill: none;
+  stroke: var(--home-accent);
+  stroke-width: 1.6;
+  stroke-linecap: round;
+}
+
+.trajectory-probe {
+  position: absolute;
+  top: -6px;
+  left: -6px;
+  width: 12px;
+  height: 12px;
+  pointer-events: none;
+}
+
+.trajectory-probe svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+
+.trajectory-probe-halo {
+  fill: var(--home-accent);
+  opacity: 0.22;
+}
+
+.trajectory-probe-body {
+  fill: var(--home-accent);
+}
+
+.trajectory-probe-shade {
+  fill: var(--home-ink);
+  opacity: 0.32;
+}
+
+.trajectory ol {
+  display: flex;
+  flex-direction: column;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+/* Before scripts measure the path: one dashed line through the dots. */
+.trajectory:not([data-ready]) ol {
+  background: repeating-linear-gradient(to bottom, var(--home-line-2) 0 3px, transparent 3px 7px) 5.4px 14px /
+    1.2px calc(100% - 28px) no-repeat;
+}
+
+.trajectory li a {
+  position: relative;
+  display: block;
+  padding: 5px 0 5px calc(var(--x) + 16px);
+  font: 400 13px/1.45 var(--home-font-text);
+  color: var(--home-muted);
+  text-decoration: none;
+  transition: color 0.15s;
+}
+
+.trajectory li a:hover {
+  color: var(--home-ink);
+}
+
+.trajectory li a:focus-visible {
+  outline: 2px solid var(--home-accent);
+  outline-offset: 1px;
+  border-radius: 6px;
+}
+
+.trajectory li[data-state='current'] a {
+  font-weight: 500;
+  color: var(--home-ink);
+}
+
+.trajectory-dot {
+  position: absolute;
+  top: calc(5px + 0.725em - 3px);
+  left: calc(var(--x) - 3px);
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--color-fd-background);
+  box-shadow: inset 0 0 0 1.3px var(--home-line-2);
+}
+
+.trajectory li:is([data-state='read'], [data-state='current']) .trajectory-dot {
+  background: var(--home-accent);
+  box-shadow: none;
+}
+
+.trajectory-empty {
+  margin: 0;
+  font-size: 13px;
+  color: var(--home-faint);
+}
+
+.trajectory-top {
+  display: inline-flex;
+  align-self: flex-start;
+  align-items: center;
+  gap: 6px;
+  margin-top: 14px;
+  padding: 4px 0;
+  font: 500 12.5px var(--home-font-text);
+  color: var(--home-muted);
+  background: none;
+  border: 0;
+  cursor: pointer;
+  transition: color 0.15s;
+}
+
+.trajectory-top:hover {
+  color: var(--home-accent);
+}
+
+.trajectory-top svg {
+  width: 13px;
+  height: 13px;
+}
+
+.trajectory-bar {
+  background: color-mix(in srgb, var(--color-fd-background) 86%, transparent);
+  border-bottom: 1px solid var(--home-line);
+  backdrop-filter: blur(8px);
+  transition: box-shadow 0.2s;
+}
+
+.trajectory-bar[data-open] {
+  background: var(--color-fd-background);
+  box-shadow: 0 10px 24px var(--home-shadow);
+}
+
+.trajectory-bar-trigger {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  height: 40px;
+  padding: 0 16px;
+  font: 400 13.5px var(--home-font-text);
+  text-align: start;
+  color: var(--home-muted);
+  background: none;
+  border: 0;
+}
+
+.trajectory-bar-trigger:focus-visible {
+  outline: 2px solid var(--home-accent);
+  outline-offset: -2px;
+}
+
+.trajectory-ring {
+  flex: none;
+  width: 20px;
+  height: 20px;
+  overflow: visible;
+}
+
+.trajectory-ring-track {
+  fill: none;
+  stroke: var(--home-line-2);
+  stroke-width: 1.5;
+}
+
+.trajectory-ring-read {
+  fill: none;
+  stroke: var(--home-accent);
+  stroke-width: 1.8;
+  stroke-linecap: round;
+}
+
+.trajectory-ring-probe {
+  fill: var(--home-accent);
+}
+
+.trajectory-bar-title {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: var(--home-ink);
+}
+
+.trajectory-bar-title[data-muted] {
+  color: var(--home-faint);
+}
+
+.trajectory-bar-chevron {
+  flex: none;
+  width: 16px;
+  height: 16px;
+  transition: transform 0.2s;
+}
+
+.trajectory-bar[data-open] .trajectory-bar-chevron {
+  transform: rotate(180deg);
+}
+
+.trajectory-sheet {
+  max-height: 50vh;
+  overflow-y: auto;
+  padding: 4px 16px 16px;
+}
+
+@media (min-width: 768px) {
+  .trajectory-bar-trigger {
+    padding: 0 24px;
+  }
+
+  .trajectory-sheet {
+    padding: 4px 24px 16px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .station[data-level='1'],
+  .station-head,
+  .orbit-ring-path,
+  .orbit-ring-planet,
+  .orbit-item,
+  .orbit-dot,
+  .planet-side-tip,
+  .trajectory-bar,
+  .trajectory-bar-chevron {
+    transition: none;
+  }
+
+  .station-body {
+    transition: none !important;
+  }
+}
+
+/* The Horizon footer (ADR-0017 decision 8, ADR-0030) */
+
+.horizon {
+  /* White clouds vanish on the light sky; a cool grey body keeps their shape (ADR-0030 decision 4). */
+  --cloud-top: color-mix(in srgb, var(--home-faint) 45%, var(--home-bg));
+  --cloud-under: color-mix(in srgb, var(--home-star) 55%, var(--home-bg));
+  /* Dawn: the logo's navy on a warm sky. The red and the flag are the same in both themes (ADR-0037). */
+  --range-far: #b4c5d3;
+  --range-mid: #7b97ad;
+  --range-near: #1f3f5a;
+  --range-snow: #fbfdfe;
+  --range-trace: #55bfc3;
+  --horizon-pole: #14324d;
+  --sun-glow: 0.85;
+  --horizon-warm: #ff9d7a;
+  --horizon-moon: var(--home-faint);
+  --horizon-sky: color-mix(in srgb, #ff9d7a 18%, transparent);
+  position: relative;
+  margin-top: 44px;
+  padding-top: 96px;
+  overflow: hidden;
+  color: var(--home-ink);
+  font: 400 15px/1.6 var(--home-font-text);
+  /* The dusk edge: whatever runs into the footer sinks into its ground (ADR-0030 decision 1). */
+  background: linear-gradient(transparent, var(--home-bg) 96px);
+  isolation: isolate;
+  view-timeline: --horizon block;
+}
+
+.dark .horizon {
+  --cloud-top: var(--home-line-2);
+  --cloud-under: var(--home-star);
+  --range-far: #223245;
+  --range-mid: #1a2736;
+  --range-near: #141f2c;
+  --range-snow: #e6ecf2;
+  --range-trace: #3ddbb6;
+  --horizon-pole: var(--home-ink);
+  --sun-glow: 0.6;
+  --horizon-moon: var(--home-ink);
+  --horizon-sky: color-mix(in srgb, #ff9d7a 7%, transparent);
+}
+
+/* Above the docs sidebar and the trajectory, under the header (z-index 40). */
+.site-header[data-docs] ~ .horizon {
+  z-index: 30;
+}
+
+.horizon a,
+.horizon button {
+  color: inherit;
+  text-decoration: none;
+}
+
+.horizon :focus-visible {
+  outline: 2px solid var(--home-accent);
+  outline-offset: 3px;
+  border-radius: 6px;
+}
+
+.horizon-closing {
+  position: relative;
+  z-index: 2;
+  max-width: 22ch;
+  margin: 0 auto;
+  padding: 0 16px;
+  text-align: center;
+  font: 650 clamp(1.7rem, 1.2rem + 2vw, 3rem) / 1.08 var(--home-font-display);
+  letter-spacing: -0.035em;
+  text-wrap: balance;
+}
+
+.horizon-closing span {
+  display: block;
+}
+
+.horizon-closing a {
+  padding-bottom: 2px;
+  background: linear-gradient(var(--home-star), var(--home-star)) 0 100% / 100% 2px no-repeat;
+}
+
+/* `sceneScale` in horizon-sky.ts holds the same numbers (ADR-0037 decision 11). */
+.horizon-scene {
+  position: relative;
+  height: clamp(230px, 28vw, 360px);
+  margin-top: -6px;
+  container-type: size;
+  background: linear-gradient(transparent 15%, var(--horizon-sky) 80%);
+}
+
+.horizon-scene > svg,
+.horizon-clouds {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+/* Centred, as wide as its height asks, and running off both sides of any screen. */
+.horizon-scene > .horizon-world {
+  inset: 0 auto auto 50%;
+  width: auto;
+  height: 100%;
+  max-width: none;
+  aspect-ratio: 3600 / 330;
+  transform: translateX(-50%);
+}
+
+.horizon-stars circle {
+  fill: var(--home-faint);
+}
+
+.horizon-stars {
+  opacity: 0.7;
+}
+
+.dark .horizon-stars {
+  opacity: 1;
+}
+
+.horizon-twinkle {
+  animation: horizon-twinkle var(--twinkle) ease-in-out var(--delay) infinite alternate;
+}
+
+.horizon-scene > .horizon-shooting {
+  position: absolute;
+  inset: auto;
+  width: 160px;
+  height: 60px;
+  opacity: 0;
+  animation: horizon-shoot var(--cycle) linear var(--delay) infinite;
+  will-change: transform, opacity;
+}
+
+.horizon-scene > .horizon-shooting-a {
+  top: 3%;
+  left: 76%;
+}
+
+.horizon-scene > .horizon-shooting-b {
+  top: 10%;
+  left: 22%;
+}
+
+/* As tall as the scene, so a band's height matches the world's; sliding it by half its width moves it
+   exactly one period, so the loop is seamless. */
+.horizon-cloud-band {
+  position: absolute;
+  bottom: 0;
+  left: calc(50% - max(50cqw, 181.82cqh));
+  width: max(200cqw, 727.27cqh);
+  height: 100cqh;
+  animation: horizon-drift var(--drift) linear infinite;
+  will-change: transform;
+}
+
+.horizon-cloud-band:nth-child(1) {
+  opacity: 0.45;
+}
+
+.horizon-cloud-band:nth-child(2) {
+  opacity: 0.65;
+}
+
+.horizon-cloud-band:nth-child(3) {
+  opacity: 0.85;
+}
+
+/* The star's light falls off with distance; the clouds fade toward the scene's sides. */
+.horizon-clouds {
+  mask-image: radial-gradient(ellipse 70% 120% at 50% 100%, #000 45%, rgb(0 0 0 / 0.45) 85%);
+}
+
+.horizon-moon {
+  fill: var(--horizon-moon);
+  opacity: 0.85;
+}
+
+.horizon-star-disc {
+  fill: var(--home-star);
+}
+
+.horizon-far path {
+  fill: var(--range-far);
+}
+
+.horizon-mid path {
+  fill: var(--range-mid);
+}
+
+.horizon-near .horizon-rock {
+  fill: var(--range-near);
+}
+
+.horizon-near .horizon-snow {
+  fill: var(--range-snow);
+}
+
+/* The logo's red: the star's light on the sunward faces (ADR-0037 decision 4). */
+.horizon-near .horizon-alpenglow {
+  fill: #d2193b;
+  opacity: 0.92;
+}
+
+.horizon-ground-fill {
+  fill: var(--home-bg-2);
+  stroke: var(--home-accent);
+  stroke-width: 1.2;
+  stroke-opacity: 0.55;
+}
+
+.horizon-trace {
+  fill: none;
+  stroke: var(--range-trace);
+  stroke-width: 1.5;
+  stroke-linejoin: round;
+  opacity: 0.7;
+}
+
+/* The rock is dark in both themes, so a light's colour is lifted on the light theme's navy. */
+.horizon-light {
+  --light-lit: color-mix(in srgb, var(--light) 50%, #fff);
+}
+
+.dark .horizon-light {
+  --light-lit: var(--light);
+}
+
+.horizon-light-halo {
+  fill: var(--light-lit);
+  opacity: 0.2;
+  transform-box: fill-box;
+  transform-origin: center;
+  transition:
+    opacity 0.25s,
+    transform 0.25s;
+}
+
+.horizon-light-core {
+  fill: var(--range-near);
+  stroke: var(--light-lit);
+  stroke-width: 2;
+}
+
+/* Hovering or focusing an entry in the planet row brightens its light: no script, no slug in the CSS. */
+.horizon:has(.horizon-planets a[data-spot='0']:is(:hover, :focus-visible)) .horizon-light[data-spot='0'] .horizon-light-halo,
+.horizon:has(.horizon-planets a[data-spot='1']:is(:hover, :focus-visible)) .horizon-light[data-spot='1'] .horizon-light-halo,
+.horizon:has(.horizon-planets a[data-spot='2']:is(:hover, :focus-visible)) .horizon-light[data-spot='2'] .horizon-light-halo,
+.horizon:has(.horizon-planets a[data-spot='3']:is(:hover, :focus-visible)) .horizon-light[data-spot='3'] .horizon-light-halo,
+.horizon:has(.horizon-planets a[data-spot='4']:is(:hover, :focus-visible)) .horizon-light[data-spot='4'] .horizon-light-halo,
+.horizon:has(.horizon-planets a[data-spot='5']:is(:hover, :focus-visible)) .horizon-light[data-spot='5'] .horizon-light-halo,
+.horizon:has(.horizon-planets a[data-spot='6']:is(:hover, :focus-visible)) .horizon-light[data-spot='6'] .horizon-light-halo,
+.horizon:has(.horizon-planets a[data-spot='7']:is(:hover, :focus-visible)) .horizon-light[data-spot='7'] .horizon-light-halo,
+.horizon:has(.horizon-planets a[data-spot='8']:is(:hover, :focus-visible)) .horizon-light[data-spot='8'] .horizon-light-halo,
+.horizon:has(.horizon-planets a[data-spot='9']:is(:hover, :focus-visible)) .horizon-light[data-spot='9'] .horizon-light-halo,
+.horizon:has(.horizon-planets a[data-spot='10']:is(:hover, :focus-visible)) .horizon-light[data-spot='10'] .horizon-light-halo,
+.horizon:has(.horizon-planets a[data-spot='11']:is(:hover, :focus-visible)) .horizon-light[data-spot='11'] .horizon-light-halo,
+.horizon:has(.horizon-planets a[data-spot='12']:is(:hover, :focus-visible)) .horizon-light[data-spot='12'] .horizon-light-halo,
+.horizon:has(.horizon-planets a[data-spot='13']:is(:hover, :focus-visible)) .horizon-light[data-spot='13'] .horizon-light-halo,
+.horizon:has(.horizon-planets a[data-spot='14']:is(:hover, :focus-visible)) .horizon-light[data-spot='14'] .horizon-light-halo,
+.horizon:has(.horizon-planets a[data-spot='15']:is(:hover, :focus-visible)) .horizon-light[data-spot='15'] .horizon-light-halo {
+  opacity: 0.75;
+  transform: scale(1.5);
+}
+
+.horizon-pole {
+  fill: var(--horizon-pole);
+}
+
+/* The flag stands raised unless HorizonAwake has lowered it out of sight, so it can never rest part-way
+   up its pole: that would mean mourning (ADR-0037 decision 5). */
+.horizon-flag {
+  transform-box: fill-box;
+  transform-origin: 0 100%;
+}
+
+.horizon-flag-cloth {
+  transform-box: fill-box;
+  transform-origin: 0 50%;
+  animation: horizon-wave 7s ease-in-out infinite alternate;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .horizon[data-lowered]:not([data-summit]) .horizon-flag {
+    transform: translateY(26px) scale(0.28, 0.5);
+  }
+
+  .horizon[data-summit] .horizon-flag {
+    transition: transform 1.2s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+}
+
+.horizon-observatory {
+  fill: var(--range-near);
+}
+
+.horizon-observatory .horizon-scope {
+  stroke: var(--home-faint);
+  stroke-width: 1.2;
+  stroke-linecap: round;
+}
+
+.horizon-observatory .horizon-slit {
+  fill: var(--home-star);
+  opacity: 0.7;
+}
+
+.horizon-observatory .horizon-dome-lit {
+  fill: none;
+  stroke: var(--home-star);
+  stroke-opacity: 0.45;
+}
+
+.horizon-observatory .horizon-window {
+  fill: var(--home-star);
+}
+
+/* Loops sleep until HorizonAwake sees the footer on screen; without scripts the scene is still. */
+.horizon:not([data-awake]) .h-loop {
+  animation-play-state: paused;
+}
+
+@keyframes horizon-wave {
+  from {
+    transform: skewY(-1.6deg) scaleX(1);
+  }
+  to {
+    transform: skewY(1.6deg) scaleX(0.97);
+  }
+}
+
+@keyframes horizon-twinkle {
+  from {
+    opacity: 0.25;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes horizon-shoot {
+  0% {
+    opacity: 0;
+    transform: translate(0, 0);
+  }
+  1.5% {
+    opacity: 1;
+  }
+  7% {
+    opacity: 0;
+    transform: translate(-220px, 76px);
+  }
+  100% {
+    opacity: 0;
+    transform: translate(-220px, 76px);
+  }
+}
+
+@keyframes horizon-drift {
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+@keyframes horizon-rise {
+  from {
+    transform: translateY(100px);
+  }
+}
+
+@keyframes horizon-glow-face {
+  from {
+    opacity: 0;
+  }
+}
+
+@keyframes horizon-glow {
+  from {
+    opacity: 0.35;
+  }
+}
+
+@keyframes horizon-set {
+  to {
+    translate: 0 24px;
+  }
+}
+
+/* The star rises and the docs sidebar and trajectory set, in step with the scroll. Without
+   scroll-driven animations the star stands risen and the dusk edge simply covers them. */
+@supports (animation-timeline: view()) {
+  :root {
+    timeline-scope: --horizon;
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .horizon-rise {
+      animation: horizon-rise linear both;
+      animation-timeline: --horizon;
+      animation-range: entry 15% entry 95%;
+    }
+
+    .horizon-glow {
+      animation: horizon-glow linear both;
+      animation-timeline: --horizon;
+      animation-range: entry 15% entry 95%;
+    }
+
+    .horizon-near .horizon-alpenglow {
+      animation: horizon-glow-face linear both;
+      animation-timeline: --horizon;
+      animation-range: entry 25% entry 95%;
+    }
+  }
+
+  @media (prefers-reduced-motion: no-preference) and (min-width: 768px) {
+    .site-header[data-docs] ~ [class*='[grid-area:sidebar]'],
+    .site-header[data-docs] ~ #nd-toc {
+      animation: horizon-set linear both;
+      animation-timeline: --horizon;
+      animation-range: entry 0% entry 60%;
+    }
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .horizon .h-loop {
+    animation: none;
+  }
+
+  .horizon-scene > .horizon-shooting {
+    display: none;
+  }
+}
+
+.horizon-surface {
+  position: relative;
+  z-index: 2;
+  display: grid;
+  justify-items: center;
+  gap: 22px;
+  margin-top: -1px;
+  padding: 10px 16px 40px;
+  text-align: center;
+  background: var(--home-bg-2);
+}
+
+.horizon-planets {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 10px 26px;
+}
+
+.horizon-planets a {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font: 500 14px var(--home-font-data);
+  transition: color 0.2s;
+}
+
+.horizon-planets a:hover {
+  color: var(--home-accent);
+}
+
+.horizon-planets .planet-mark {
+  width: 18px;
+  height: 18px;
+}
+
+.horizon-links {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  gap: 8px 22px;
+  font-size: 14px;
+  color: var(--home-muted);
+}
+
+.horizon-links a,
+.horizon-links button {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 0;
+  font: inherit;
+  background: none;
+  border: 0;
+  cursor: pointer;
+  transition: color 0.2s;
+}
+
+.horizon-links a:hover,
+.horizon-links button:hover {
+  color: var(--home-ink);
+}
+
+.horizon-links svg {
+  width: 14px;
+  height: 14px;
+}
+
+.horizon-links kbd {
+  padding: 1px 6px;
+  font: 11.5px var(--home-font-data);
+  color: var(--home-muted);
+  background: var(--home-bg);
+  border: 1px solid var(--home-line-2);
+  border-radius: 6px;
+}
+
+.horizon small {
+  font-size: 13px;
+  color: var(--home-faint);
+}
+
+.horizon-credit {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  text-wrap: balance;
+}
+
+.horizon-credit .brand-mark {
+  width: 24px;
+  height: 24px;
+  flex: none;
+}
+
+.horizon small a {
+  color: var(--home-muted);
+  text-decoration: underline;
+  text-decoration-color: var(--home-line-2);
+  text-underline-offset: 3px;
+}
+
+/* Below the sidebar, the page and its table of contents in the notebook layout's grid. */
+#nd-notebook-layout > .horizon {
+  grid-column: 1 / -1;
+  grid-row: 4;
+}
+
+/* Diagrams: the Archify view at its own height on the page's ground (ADR-0022) */
+
+.diagram {
+  container-type: inline-size;
+  margin: 1.5rem 0;
+  --diagram-reserve: 10rem;
+}
+
+.diagram iframe {
+  display: block;
+  width: 100%;
+  height: calc(100cqw * var(--diagram-ratio) + var(--diagram-reserve));
+  border: 1px solid var(--home-line);
+  border-radius: 12px;
+  background: var(--home-bg);
+}
+
+.diagram[data-wide] iframe {
+  height: calc(max(100cqw, 720px) * var(--diagram-ratio) + var(--diagram-reserve));
+}
+
+.diagram figcaption {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 4px 16px;
+  margin-top: 8px;
+  font-size: 13px;
+  color: var(--home-muted);
+}
+
+.diagram figcaption a {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  min-height: 24px;
+  font-weight: 500;
+  color: var(--home-accent);
+  text-decoration: none;
+}
+
+.diagram figcaption a:hover {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.diagram figcaption a:focus-visible {
+  outline: 2px solid var(--home-accent);
+  outline-offset: 2px;
+  border-radius: 6px;
+}
+
+.diagram figcaption svg {
+  width: 14px;
+  height: 14px;
+}
+
+/* GitHub profile links as chips: the avatar, loaded live, over the username's initial (ADR-0020) */
+
+.profile-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 24px;
+  padding: 1px 9px 1px 2px;
+  vertical-align: middle;
+  font-weight: 500;
+  color: var(--home-ink);
+  text-decoration: none;
+  background: var(--home-panel);
+  border: 1px solid var(--home-line);
+  border-radius: 12px;
+  transition: border-color 0.2s;
+}
+
+.profile-chip:hover {
+  border-color: var(--home-line-2);
+}
+
+.profile-chip:hover .profile-chip-name {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.profile-chip:focus-visible {
+  outline: 2px solid var(--home-accent);
+  outline-offset: 2px;
+}
+
+.profile-chip-avatar {
+  position: relative;
+  display: inline-grid;
+  place-items: center;
+  flex: none;
+  width: 20px;
+  height: 20px;
+  overflow: hidden;
+  font-size: 11px;
+  font-weight: 600;
+  line-height: 1;
+  color: var(--home-muted);
+  background: var(--home-panel-2);
+  border-radius: 50%;
+}
+
+.profile-chip-avatar img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  object-fit: cover;
+  border-radius: 50%;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .profile-chip {
+    transition: none;
+  }
+}
+
+/* The scale strip above every docs page (ADR-0029 decision 4). */
+.scale-strip {
+  margin: 0 0 14px;
+  font: 400 13px/1.4 var(--home-font-text);
+  color: var(--home-muted);
+}
+
+.scale-strip ol {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px 6px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.scale-strip li {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+}
+
+.scale-strip a,
+.scale-here {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+  padding: 2px 4px;
+  border-radius: 6px;
+}
+
+.scale-strip a {
+  color: inherit;
+  text-decoration: none;
+  transition: color 0.2s;
+}
+
+.scale-strip a:hover {
+  color: var(--home-ink);
+}
+
+.scale-strip a:focus-visible {
+  outline: 2px solid var(--home-accent);
+  outline-offset: 1px;
+}
+
+.scale-strip [aria-current='page'] .scale-here {
+  font-weight: 500;
+  color: var(--home-ink);
+}
+
+.scale-mark,
+.scale-strip .planet-mark,
+.scale-strip .moon-phase {
+  width: 14px;
+  height: 14px;
+  flex: none;
+}
+
+.scale-strip li[data-kind='side'] .scale-mark {
+  color: var(--home-star);
+}
+
+.scale-strip li[data-kind='orbit'] .scale-mark {
+  color: var(--home-faint);
+}
+
+.scale-line {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  margin-left: 2px;
+  font: 400 12px var(--home-font-data);
+  font-variant-numeric: tabular-nums;
+  color: var(--home-faint);
+}
+
+.scale-line .moon-phase {
+  width: 12px;
+  height: 12px;
+}
+
+.scale-sep {
+  width: 12px;
+  height: 12px;
+  flex: none;
+  color: var(--home-faint);
+}
+
+.scale-back {
+  display: none;
+  width: 14px;
+  height: 14px;
+  flex: none;
+}
+
+/* On phones: the parent level with a back arrow, then the page (ADR-0029 decision 4). */
+@media (max-width: 720px) {
+  .scale-strip ol {
+    flex-wrap: nowrap;
+  }
+
+  .scale-strip li:not([data-parent]):not([aria-current]) {
+    display: none;
+  }
+
+  .scale-strip li[data-parent] .scale-sep {
+    display: none;
+  }
+
+  .scale-strip li[data-parent] .scale-back {
+    display: block;
+  }
+
+  .scale-strip li[aria-current] .scale-here span {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+}

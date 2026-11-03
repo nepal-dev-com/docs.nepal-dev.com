@@ -1,0 +1,87 @@
+---
+title: "Security audit checklist"
+description: "The full security audits run before the first public deployment and each release, including the checks for each adopted tool."
+---
+
+- **Status:** Current
+- **Last updated:** 2026-11-01
+- **Related ADRs:** ADR-0005, ADR-0011
+
+> Snapshot of the system as it stands today. Edit in place; never record what changed.
+
+The per-change check lives in `AGENTS.md` §9. The audits below run in full **before the first
+internet-reachable deployment** and **before each release** of the site. Findings are
+reported as: what it is · where it is · how it would be exploited · the fix. Fix data exposure
+and unauthorized access first, abuse and logic flaws second.
+
+## Audit 1 — Secret leak prevention
+
+- [ ] `grep` the tree and git history for keys, tokens, connection strings, private keys.
+- [ ] Every variable the code reads is in [`secrets.mdx`](./secrets.mdx) and `.env.example`.
+- [ ] No `NEXT_PUBLIC_*` carries a secret; inspect the client bundle for each one.
+- [ ] Build output, error pages and `content/` examples contain no secret or real token.
+
+## Audit 2 — Private content exposure
+
+- [ ] Every page in `content/` belongs to a public package or project, or is handled as
+      its private-documentation ADR requires.
+- [ ] For each private page: absent from (or protected on) the rendered site, the Markdown
+      route, `llms.txt`, `llms-full.txt`, `static.json`, the share image route, `sitemap.xml`,
+      each page's structured data and the search index. Check each surface on the deployed site, not only in code.
+- [ ] Query the live Algolia index with the public search-only key; confirm it returns only
+      Public records.
+- [ ] "View on GitHub" links point only at a repository whose visibility matches the page.
+- [ ] No client name, internal hostname or personal data in any page, example or screenshot.
+
+## Audit 3 — Pre-deploy production
+
+- [ ] The publishing build refuses to run without its secrets and without `SITE_URL`.
+- [ ] `SITE_URL` is set on the production host and on no preview; `robots.txt` names the sitemap on
+      production and disallows everything on a preview.
+- [ ] The host clones the repository in full, so `lastmod` is true (ADR-0035).
+- [ ] The 404's one-year `s-maxage` (ADR-0034) does not outlive a deploy in the host's cache.
+- [ ] TLS everywhere.
+- [ ] Security headers set (CSP, frame-ancestors, referrer policy) and verified.
+- [ ] Placeholder settings replaced: `appName` and `gitConfig` in `src/lib/shared.ts`.
+
+## Audit 4 — Content integrity
+
+- [ ] Install commands, package names and versions on each package page match the published
+      package's manifest.
+- [ ] Examples run against the version the page documents.
+- [ ] Dependencies are pinned through `bun.lock`; no unreviewed dependency in the build.
+
+## Audit 5 — Attacker's perspective
+
+- [ ] Request every page of a private project through each machine-readable route and the
+      `Accept: text/markdown` negotiation.
+- [ ] Try to write to the Algolia index with the search-only key; confirm it is refused.
+- [ ] Search for terms that appear only in private content; confirm no results.
+
+## Tool-specific checks
+
+### Algolia
+
+- [ ] `NEXT_PUBLIC_ALGOLIA_SEARCH_KEY` is a search-only key, with no write or admin ACL.
+- [ ] `ALGOLIA_WRITE_KEY` is scoped to the `document` index only, and held only in local
+      `.env.local` and the host's secret store.
+- [ ] The index contains exactly the Public pages of the last build, and nothing else.
+
+### Archify diagrams (ADR-0011, ADR-0022)
+
+- [ ] Every file in `diagrams/` is `<project-slug>/<slug>.html` or `.json`, in pairs, nothing is
+      in `public/diagrams/`, and no `*.delivery*.json` is in `diagrams/` or `public/` (the build
+      checks all three).
+- [ ] No published diagram holds a local path (`/Users/`, `/home/`, `/private/`), a secret, an
+      internal hostname, or anything about a private project.
+- [ ] The HTML loads no external script, stylesheet, font or image and calls no network API
+      (`fetch`, `XMLHttpRequest`, `WebSocket`, `sendBeacon`). Run again after every Archify
+      upgrade.
+- [ ] The deployed site serves `/diagrams/…` with
+      `Content-Security-Policy: sandbox allow-scripts allow-downloads`, and every embed frame
+      has `sandbox="allow-scripts allow-downloads"` without `allow-same-origin`.
+- [ ] The site shell (`src/lib/diagram-shell.ts`) adds no network call and posts only
+      `{ type: 'archify-height', height }` and `{ type: 'archify-present' }`; `<Diagram>`
+      accepts them only from its own frame's window, a height only within 120 to 4000, and on
+      a Present request opens only that diagram's own URL, built by the page.
+- [ ] Embed frames delegate fullscreen (`allow="fullscreen"`) and nothing else.

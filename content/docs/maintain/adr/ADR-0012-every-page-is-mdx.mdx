@@ -1,0 +1,82 @@
+---
+title: "ADR-0012 — Every page in content/docs is MDX"
+description: "Every documentation page is an MDX file written as Markdown first, so a page can use a component only where it does something Markdown cannot."
+---
+
+- **Status:** Approved
+- **Date:** 2026-10-31
+- **Deciders:** [@puncoz](https://github.com/puncoz)
+- **Approved by:** [@puncoz](https://github.com/puncoz), by direct instruction ("change all content/docs to mdx
+  supported pages, so that components can be used when required")
+- **Approved on:** 2026-10-31
+- **Supersedes:** [ADR-0002](./ADR-0002-living-design-documentation.mdx) decision 4 (pages are
+  `.md`)
+- **Superseded by:** —
+- **Design documents:** `AGENTS.md` §8 (*Format of a page*), `PROJECT_AGENTS.md` §4
+
+## Context
+
+Pages in the Documentation project were `.md`. `fumadocs-mdx` compiles a file as plain
+Markdown unless its name ends in `.mdx` (`const format = filePath.endsWith(".mdx") ? "mdx" : "md"`),
+so a `.md` page cannot use a component. Embedding prototypes and diagrams in pages (ADR-0011)
+needs components, and so may later package pages. The owner asked for every page to support
+them.
+
+## Decision
+
+1. **Every page under `content/docs/` is `.mdx`.** New pages and templates are `.mdx`; links
+   between pages name the `.mdx` file (`./adr/index.mdx`).
+2. **Pages stay Markdown first.** A component is used only where it does something Markdown
+   cannot. The components available are those registered in `src/components/mdx.tsx`; adding
+   one is a site change with its own ADR.
+3. **MDX syntax rules in prose:** a `<slug>`-style placeholder goes in backticks or is escaped
+   (`\<slug>`); void tags are closed (`<br />`); comments are `{/* … */}`. Code blocks and
+   frontmatter are unaffected.
+
+## Options considered
+
+| Option | Pros | Cons | Verdict |
+|---|---|---|---|
+| A — every page `.mdx` | One format; any page can take a component without a rename later | `<` and `{` in prose must be escaped | Chosen (owner's instruction) |
+| B — `.mdx` only for pages that use a component | Plain Markdown stays the default | Two formats; renaming a page changes every link to it | Rejected |
+| C — keep `.md`, add a remark plugin for embeds | No renames | Custom build code; components still unavailable elsewhere | Rejected |
+
+## Consequences
+
+**Positive**
+
+- Any page can use a registered component.
+- One page format for this site and for consuming repositories.
+
+**Negative / accepted trade-offs**
+
+- Prose must follow MDX syntax; a stray `<word>` or `{` breaks the build. The build catches it.
+- In the Markdown surfaces, an escaped placeholder appears as `\<what changes>`, which renders
+  correctly as Markdown.
+
+## Content invariants
+
+- **5 (Readable as Markdown).** Kept: the per-page Markdown and `llms-full.txt` are generated
+  from the processed MDX. A component's Markdown fallback is the job of the ADR that adds it.
+
+## Security considerations
+
+None — this change renames files and escapes text. It adds no endpoint, data or secret. MDX
+can run code at build time, but only code in this repository's pages, which are reviewed.
+
+## Implementation notes
+
+- [x] All 45 `.md` pages under `content/docs/` renamed to `.mdx`.
+- [x] Two placeholders escaped in `_templates/adr.mdx`; `<br>` closed in `_templates/prd.mdx`.
+- [x] Every relative link and every `content/docs/…` path in pages, `AGENTS.md`, `README.md`,
+      `PROJECT_AGENTS.md` and `.claude/agent-skills/` updated to `.mdx`. URLs such as
+      `/docs/<page>.md` are routes, not files, and are unchanged.
+- [x] `bunx next build`: no unresolved `.md` or `.mdx` links in the rendered pages.
+- Tests: a build check that no `.md` file exists under `content/docs/` belongs with the test
+  runner chosen under ADR-0007. Until then, the build itself is the check.
+
+## Docs to update on implementation
+
+- [x] `AGENTS.md` §8, *Format of a page*
+- [x] `PROJECT_AGENTS.md` §4, format
+- [x] [`./index.mdx`](./index.mdx): index row, next free number

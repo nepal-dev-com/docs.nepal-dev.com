@@ -1,0 +1,179 @@
+{
+  "schema_version": 1,
+  "diagram_type": "architecture",
+  "meta": {
+    "title": "Screen 1 — The Horizon",
+    "subtitle": "Wireframe at phone width, drawn from its Mermaid version · himalayan horizon",
+    "output": "himalayan-horizon-screen-1.html",
+    "animation": "trace",
+    "quality_profile": "showcase",
+    "legend": {
+      "entries": {
+        "external": {
+          "label": "Content"
+        },
+        "frontend": {
+          "label": "Site chrome"
+        }
+      }
+    }
+  },
+  "components": [
+    {
+      "id": "closing",
+      "type": "external",
+      "label": "You've reached the horizon. The Verse goes on.",
+      "pos": [
+        40,
+        60
+      ],
+      "size": [
+        436,
+        58
+      ]
+    },
+    {
+      "id": "moon",
+      "type": "external",
+      "label": "Stars and shooting stars",
+      "pos": [
+        40,
+        130
+      ],
+      "size": [
+        436,
+        70
+      ],
+      "sublabel": "a still crescent moon above the star"
+    },
+    {
+      "id": "flag",
+      "type": "external",
+      "label": "The flag on the summit",
+      "pos": [
+        40,
+        212
+      ],
+      "size": [
+        212,
+        58
+      ]
+    },
+    {
+      "id": "star",
+      "type": "external",
+      "label": "The star, right of the",
+      "pos": [
+        264,
+        212
+      ],
+      "size": [
+        212,
+        70
+      ],
+      "sublabel": "summit"
+    },
+    {
+      "id": "peak",
+      "type": "external",
+      "label": "The summit",
+      "pos": [
+        40,
+        294
+      ],
+      "size": [
+        436,
+        70
+      ],
+      "sublabel": "snow, its right face red with alpenglow"
+    },
+    {
+      "id": "sea",
+      "type": "external",
+      "label": "A sea of cloud between the ranges",
+      "pos": [
+        40,
+        376
+      ],
+      "size": [
+        436,
+        58
+      ]
+    },
+    {
+      "id": "rock",
+      "type": "external",
+      "label": "The near rock",
+      "pos": [
+        40,
+        446
+      ],
+      "size": [
+        436,
+        70
+      ],
+      "sublabel": "traces climb to one light per entry"
+    },
+    {
+      "id": "planets",
+      "type": "external",
+      "label": "Planet row",
+      "pos": [
+        40,
+        528
+      ],
+      "size": [
+        436,
+        70
+      ],
+      "sublabel": "Nepal Dev Verse Docs"
+    },
+    {
+      "id": "links",
+      "type": "frontend",
+      "label": "Search",
+      "pos": [
+        40,
+        610
+      ],
+      "size": [
+        436,
+        70
+      ],
+      "sublabel": "llms.txt · llms-full.txt · GitHub · Back to orbit"
+    },
+    {
+      "id": "credit",
+      "type": "external",
+      "label": "▲ Part of nepal-dev.com. Made with ❤️ by Puncoz",
+      "pos": [
+        40,
+        692
+      ],
+      "size": [
+        436,
+        70
+      ],
+      "sublabel": "Nepal."
+    }
+  ],
+  "boundaries": [
+    {
+      "kind": "region",
+      "label": "Phone screen · the end of any page, at phone width",
+      "wraps": [
+        "closing",
+        "moon",
+        "flag",
+        "star",
+        "peak",
+        "sea",
+        "rock",
+        "planets",
+        "links",
+        "credit"
+      ],
+      "pad": 22
+    }
+  ]
+}

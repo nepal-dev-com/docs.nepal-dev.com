@@ -1,0 +1,105 @@
+{
+  "schema_version": 1,
+  "diagram_type": "architecture",
+  "meta": {
+    "title": "Screen 1 — Header",
+    "subtitle": "Wireframe at phone width, drawn from its Mermaid version · community identity",
+    "output": "community-identity-screen-1.html",
+    "animation": "trace",
+    "quality_profile": "showcase",
+    "legend": {
+      "entries": {
+        "backend": {
+          "label": "Control or link"
+        },
+        "frontend": {
+          "label": "Site chrome"
+        }
+      }
+    }
+  },
+  "components": [
+    {
+      "id": "mark",
+      "type": "frontend",
+      "label": "▲ Summit-and-flag mark",
+      "pos": [
+        40,
+        60
+      ],
+      "size": [
+        212,
+        70
+      ],
+      "sublabel": "Nepal Dev Verse"
+    },
+    {
+      "id": "search",
+      "type": "frontend",
+      "label": "⌕",
+      "pos": [
+        264,
+        60
+      ],
+      "size": [
+        100,
+        58
+      ]
+    },
+    {
+      "id": "menu",
+      "type": "frontend",
+      "label": "☰",
+      "pos": [
+        376,
+        60
+      ],
+      "size": [
+        100,
+        58
+      ]
+    },
+    {
+      "id": "tab",
+      "type": "backend",
+      "label": "browser tab",
+      "pos": [
+        40,
+        142
+      ],
+      "size": [
+        436,
+        70
+      ],
+      "sublabel": "Install — lodestar — Nepal Dev Verse"
+    },
+    {
+      "id": "scale",
+      "type": "frontend",
+      "label": "Scale strip",
+      "pos": [
+        40,
+        224
+      ],
+      "size": [
+        436,
+        70
+      ],
+      "sublabel": "the Verse mark stays only here, for the Verse level"
+    }
+  ],
+  "boundaries": [
+    {
+      "kind": "region",
+      "label": "Phone screen · every page",
+      "wraps": [
+        "mark",
+        "search",
+        "menu",
+        "tab",
+        "scale"
+      ],
+      "pad": 22
+    }
+  ]
+}

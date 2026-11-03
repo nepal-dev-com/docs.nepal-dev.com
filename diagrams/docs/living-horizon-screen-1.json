@@ -1,0 +1,136 @@
+{
+  "schema_version": 1,
+  "diagram_type": "architecture",
+  "meta": {
+    "title": "Screen 1 — The Horizon",
+    "subtitle": "Wireframe at phone width, drawn from its Mermaid version · living horizon",
+    "output": "living-horizon-screen-1.html",
+    "animation": "trace",
+    "quality_profile": "showcase",
+    "legend": {
+      "entries": {
+        "external": {
+          "label": "Content"
+        },
+        "frontend": {
+          "label": "Site chrome"
+        }
+      }
+    }
+  },
+  "components": [
+    {
+      "id": "closing",
+      "type": "external",
+      "label": "You've reached the horizon. The Verse goes on.",
+      "pos": [
+        40,
+        60
+      ],
+      "size": [
+        436,
+        58
+      ]
+    },
+    {
+      "id": "stars",
+      "type": "external",
+      "label": "Twinkling stars",
+      "pos": [
+        40,
+        130
+      ],
+      "size": [
+        436,
+        70
+      ],
+      "sublabel": "☄ a shooting star now and then"
+    },
+    {
+      "id": "clouds",
+      "type": "external",
+      "label": "Lit clouds",
+      "pos": [
+        40,
+        212
+      ],
+      "size": [
+        436,
+        70
+      ],
+      "sublabel": "three bands drifting, warm undersides"
+    },
+    {
+      "id": "ridge",
+      "type": "external",
+      "label": "⌂ observatory on the shoulder",
+      "pos": [
+        40,
+        294
+      ],
+      "size": [
+        436,
+        70
+      ],
+      "sublabel": "☀ the star rising · ⚑ the flag · the range"
+    },
+    {
+      "id": "planets",
+      "type": "external",
+      "label": "lodestar",
+      "pos": [
+        40,
+        376
+      ],
+      "size": [
+        436,
+        70
+      ],
+      "sublabel": "Nepal Dev Verse Docs"
+    },
+    {
+      "id": "links",
+      "type": "frontend",
+      "label": "Search ⌘K",
+      "pos": [
+        40,
+        458
+      ],
+      "size": [
+        436,
+        70
+      ],
+      "sublabel": "llms.txt · llms-full.txt · GitHub · Back to top ↑"
+    },
+    {
+      "id": "credit",
+      "type": "external",
+      "label": "Part of nepal-dev.com. Made with ❤️ by Puncoz",
+      "pos": [
+        40,
+        540
+      ],
+      "size": [
+        436,
+        70
+      ],
+      "sublabel": "Nepal."
+    }
+  ],
+  "boundaries": [
+    {
+      "kind": "region",
+      "label": "Phone screen · the end of any page, at phone width",
+      "wraps": [
+        "closing",
+        "stars",
+        "clouds",
+        "ridge",
+        "planets",
+        "links",
+        "credit"
+      ],
+      "pad": 22
+    }
+  ]
+}

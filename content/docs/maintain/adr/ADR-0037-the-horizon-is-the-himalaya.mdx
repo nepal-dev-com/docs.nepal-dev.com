@@ -1,0 +1,167 @@
+---
+title: "ADR-0037 — The Horizon is the Himalaya"
+description: "The footer's bare curve becomes a range rising out of cloud, with alpenglow from the rising star, the flag raised on arrival and a light for every entry."
+---
+
+- **Status:** Approved
+- **Date:** 2026-11-03
+- **Deciders:** [@puncoz](https://github.com/puncoz)
+- **Approved by:** [@puncoz](https://github.com/puncoz)
+- **Approved on:** 2026-11-03
+- **Supersedes:** [ADR-0030](./ADR-0030-the-horizon-rises-over-the-page-and-its-sky-comes-alive.mdx) decision 2
+  (in part: the aurora and rim, the clouds' place, the star's place and the observatory's place) and decision 4
+  (in part: the light theme's scene)
+- **Superseded by:** —
+- **Design documents:** [`../app-flow/himalayan-horizon.mdx`](../app-flow/himalayan-horizon.mdx), `DESIGN.md`
+
+## Context
+
+- The owner asked to see what the logo's mountains and flag could do in the Horizon, creatively. It depends
+  on [ADR-0036](./ADR-0036-the-site-is-nepal-dev-verse.mdx), and can be approved or refused without touching it.
+- Every page ends with the Horizon (ADR-0030): stars, an aurora on the rim of a bare curved planet, shooting
+  stars, the star rising with the scroll, three cloud bands and an observatory. The closing line above it says
+  *You've reached the horizon* (ADR-0033). Nothing in it is about Nepal.
+- Three things in the logo and the flag already fit this site's language:
+  - **The flag holds a moon above a sun.** The sidebar's Use is a sun and Maintain a moon, and each version line
+    is a moon. The site's own marks are on the flag.
+  - **The logo's red face reads as light.** Red on a peak's sunward side is what alpenglow looks like.
+  - **The logo's circuit traces end in ringed nodes,** much like this site's planet marks.
+- What the code does now, read from `horizon-sky.ts` and `site.css`: the scene is 170 to 260px tall, in layers on one
+  1200 by 260 view with `xMidYMax slice`. At a very wide screen that crops the top of the view, and at 1920px it would
+  cut off a flag at the summit. So the summit and flag can't simply be added to that layer.
+- A still sketch was drawn outside the repository to check that it reads, in both themes and at phone width.
+
+## Decision
+
+1. **The range stands on the planet's edge.** The curve stays, and three ranges rise from it, back to front: a far one
+   in haze, a middle one and a near one with the summit at the centre and two shoulders, drawn from the logo's
+   silhouette. It is still a planet seen from its edge, and its highest mountains are the ones the site is named for.
+2. **The peaks rise out of a sea of cloud.** The three existing cloud bands keep their timing and move between the
+   ranges, so the middle range wades through them and the near one stands in front. It is the view from above the
+   clouds that anyone who has flown past these mountains knows.
+3. **The light comes from the star.** It rises with the scroll as it does now, just right of the summit, so everything
+   lit is lit from the right.
+4. **Alpenglow: the logo's red is the star's light.** As the star rises, in step with the scroll, the red on the
+   sunward faces of the summit and the second peak fades in from nothing to the logo's red. Scrolling back fades it
+   out. Only its opacity changes.
+5. **The flag is raised when you arrive.** When 40% of the footer is in view, the flag runs up its pole from the summit
+   over about 1.2 seconds, once per page view, and then waves slowly.
+   - **It is not tied to the scroll, because a flag left part-way up its pole means mourning.** It is either on its way
+     up or at the top.
+   - It is drawn from the logo's flag, in its own colours in both themes, and is never recoloured, cropped, or placed
+     under text or cloud.
+6. **The sky repeats the flag.** A thin, still crescent moon stands directly above the star, in the same order as the
+   flag's emblems: moon over sun. Nothing points it out, and it is there for anyone who notices.
+7. **Every entry is a light on the mountain.** The logo's traces climb the near rock, one per public entry, each ending
+   in a ringed light in that entry's ecosystem colour, seeded from its slug so it stays in place. The mountain lights up
+   as the community documents more. Today it has one light.
+   - **The planet row is still the way in.** The scene stays `aria-hidden`. Hovering or focusing an entry's link in the
+     row brightens its light, through CSS only.
+   - The lights use a fixed set of spots on the rock. Past that number, the rest appear only in the planet row.
+   - The invented private projects get no light.
+8. **The aurora and the rim glow go.** Auroras are not a Himalayan sky, and with the alpenglow, the flag and the warm
+   glow they would be one colour too many. The site's teal lives on in the traces. The stars, their twinkling and the
+   shooting stars stay.
+9. **The observatory moves** to the near range's left shoulder, its telescope turned toward the star.
+10. **Light theme: the same scene at dawn.** The sky washes warm toward the ranges, the rock is the logo's navy, and the
+    far ranges are pale blue. The red and the flag do not change.
+11. **The summit and the flag are never cropped, at any width.** The near range has its own layer, anchored at the bottom
+    centre and scaled to fit, while the far and middle ranges run wider and fall off the edges. The scene grows to fit
+    them, and its height is settled by measuring at 320px, 390px, 860px, 1412px, 1920px and 2560px.
+12. **The rules of motion hold** (ADR-0030 decision 3). Only transform and opacity animate, in CSS, with no library. The
+    flag's wave is a new, slow loop in the Horizon's exception to *The One Orbit Rule*, and runs only while the footer is
+    on screen. Under reduced motion, with no scripts, or with no scroll-driven animations: the star stands risen, the
+    alpenglow is full, and the flag stands raised and still.
+13. **The sun and moon in the sidebar become the flag's.** `track-switch.tsx`'s two icons take the flag's forms: a sun
+    with twelve rays and a crescent moon. It is a small change, and it ties the two sides of every planet to the flag.
+14. **Unchanged:** the closing line, *You've reached the horizon. The Verse goes on.*; the dusk edge; the planet row; the
+    link row; every URL and Markdown surface. No dependency is added.
+
+## Options considered
+
+| Concern | Option | Pros | Cons | Verdict |
+|---|---|---|---|---|
+| Scene | The range on the planet's edge, with cloud, alpenglow, flag and lights | Joins the logo to the space theme; grows with the community | The most work; more layers to keep light | Proposed |
+| Scene | Only a ridge silhouette and a flag replacing the curve | Quick | Looks like a clip-art swap; nothing means anything | Rejected |
+| Scene | The full logo artwork in the footer | Faithful | Reads as a sticker; its wordmark and outline fail on the dark ground (ADR-0036) | Rejected |
+| Flag | Raised once on arrival | Marks reaching the end, and never rests part-way | A small script threshold beside `HorizonAwake` | Proposed |
+| Flag | Raised in step with the scroll | No script, the same as the star | Can rest at half-mast, which means mourning | Rejected |
+| Flag | Standing still, always | The simplest | Misses the one moment that makes the footer memorable | Rejected |
+| Community | A light per entry on the rock | The picture grows as people join | A second mark for each entry to keep in step | Proposed |
+| Community | A climber or trail that moves | Playful | A second moving focus, and it would tire on every page's end | Rejected |
+| Aurora | Removed | Fewer colours and two fewer blurred layers | Drops something the owner approved in ADR-0030 | Proposed |
+| Aurora | Kept, dimmed | Keeps ADR-0030 whole | Not a Himalayan sky; competes with the alpenglow | Rejected |
+| Prayer flags along a ridge | Left out | Avoids using a sacred object as decoration | Loses a very Himalayan image; the owner may overrule it | Rejected |
+| Closing line | Unchanged | Still true, and ADR-0033 was just settled | Says nothing of the summit | Proposed |
+| Closing line | "You've reached the summit. The Verse goes on." | Fits the picture | Loses the word the footer is named for | Rejected |
+| Share images | Unchanged here | ADR-0035's design stands, and this stays reviewable | Shared links don't show the range | Left for a later ADR |
+
+## Consequences
+
+**Positive**
+
+- The end of every page becomes the site's signature, and only this site could have it: the flag's own emblems in the
+  sky, its colour on the snow, the community's lights on the rock.
+- The footer now shows the community grow, with no copy and no counter.
+
+**Negative / accepted trade-offs**
+
+- **The scene gets taller**, so every page's footer takes more room.
+- With one entry, the light on the mountain looks modest until more arrive.
+- More drawn geometry in every page's HTML, so it is checked with the Horizon's cost in mind: the blurred aurora and rim
+  layers go, and the ranges are flat fills.
+- A national flag carries meaning. It is drawn exactly and treated with care (decision 5), and the owner reviews the
+  drawing before it ships.
+- Peaks are drawn from the logo, not from any real view, so no peak is named or claimed.
+
+## Content invariants
+
+None is touched. The footer is not part of any Markdown surface. §6.1: the lights come only from public catalogue entries,
+which are already on the page; the invented private projects are never drawn.
+
+## Security considerations
+
+None beyond this: this change touches no endpoint and no secret, and reads only public catalogue fields. The scene is
+static inline SVG with no user input.
+
+## Implementation notes
+
+- [x] `src/lib/horizon-sky.ts`, pure and tested: the three ranges, the snow and red faces, the flag's place, the moon, and
+  the lights' fixed spots and seeded assignment.
+- [x] `src/components/horizon-footer.tsx`: the layers, with `entries` passed to the scene. A `src/components/horizon-flag.tsx`
+  drawn from the logo's flag paths. `src/components/horizon-awake.tsx`: the arrival threshold, setting `data-summit`.
+- [x] `src/app/site.css`: the scene's height, the alpenglow on `--horizon`, the flag's raise and wave, the lights through
+  `:has`, both themes, reduced motion. `src/components/docs/track-switch.tsx`: the two icons.
+- [x] Tests (ADR-0007): every light stands on rock and no two collide; the same slug gets the same spot; more entries than
+  spots draw no extra light; no private project is drawn; the summit and flag fit at every measured width; the scene
+  renders with no entries; the flag stands raised without scripts. `HorizonAwake`'s threshold and the CSS are not
+  unit-tested; checked in Chrome instead.
+- [x] Looked at, in Chrome on localhost against `bunx next build`: both themes at the widths of decision 11; the flag raised
+  once, and on a page short enough that the footer shows at load; reduced motion; a planet link lighting its node; the dusk
+  edge over the docs sidebar; a temporary folder with several entries, removed afterwards.
+- [x] Departures found while building, each smaller than the decision it serves:
+  - the flag lives in `src/components/nepal-flag.tsx`, shared with the brand mark, not a `horizon-flag.tsx`, and is redrawn
+    by hand because the logo's flag is 83 auto-traced paths;
+  - arrival is measured on 40% of `.horizon-scene`, not of the footer, because the scene's top holds the flag;
+  - a page whose summit already shows at load keeps the flag raised with no animation, measured on the 404 with 45% of
+    the scene in view;
+  - sixteen light spots; past them an entry has no light, though its link stays in the planet row;
+  - the scene is `clamp(230px, 28vw, 360px)` tall;
+  - the observatory stands on a flat top added to the left shoulder at x=395, in the rock's colour, because at x=372 it hung
+    over the ridge and a 320px screen cut it in half;
+  - the larger red face ends in a point rather than a flat foot.
+- [x] Measured in Chrome against `bunx next build`: light and dark at about 1412px; light at 320px, 390px and 860px (in same-origin
+  frames, because the window would not shrink), with no sideways scroll. The window also measured 2371px wide, where the scene
+  is 360px tall. 1920px and 2560px were not looked at separately. The flag lowered, then raised, on reaching the footer. A
+  focused planet link lit only its own node, with eight entries from temporary folders `content/zz-temp-a` to `g`, removed
+  afterwards. The dusk edge took the docs sidebar. The reduced-motion rules were read from the built CSS rather than seen.
+
+- [x] `bun run test`, `bun run types:check` and `bunx next build` pass; `bun run lint` is reported while it stays blocked.
+
+## Docs to update on implementation
+
+- [x] [`../app-flow/himalayan-horizon.mdx`](../app-flow/himalayan-horizon.mdx): Current;
+  [`../app-flow/living-horizon.mdx`](../app-flow/living-horizon.mdx) with its Archify views.
+- [x] `DESIGN.md`: the Horizon footer, *The One Orbit Rule*, the track switch. `.impeccable/design.json`.
+- [x] `AGENTS.md` §1 and §5, [`../architecture/system.mdx`](../architecture/system.mdx).
+- [x] "Superseded by" in ADR-0030; [`./index.mdx`](./index.mdx).

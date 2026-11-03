@@ -1,0 +1,122 @@
+{
+  "schema_version": 1,
+  "diagram_type": "architecture",
+  "meta": {
+    "title": "Screen 3 — The system",
+    "subtitle": "Wireframe at phone width, drawn from its Mermaid version · universe theme",
+    "output": "universe-theme-screen-3.html",
+    "animation": "trace",
+    "quality_profile": "showcase",
+    "legend": {
+      "entries": {
+        "backend": {
+          "label": "Control or link"
+        },
+        "external": {
+          "label": "Content"
+        },
+        "frontend": {
+          "label": "Site chrome"
+        }
+      }
+    }
+  },
+  "components": [
+    {
+      "id": "mark",
+      "type": "frontend",
+      "label": "Brand mark",
+      "pos": [
+        40,
+        60
+      ],
+      "size": [
+        324,
+        70
+      ],
+      "sublabel": "Nepal Dev Verse"
+    },
+    {
+      "id": "menu",
+      "type": "frontend",
+      "label": "☰",
+      "pos": [
+        376,
+        60
+      ],
+      "size": [
+        100,
+        58
+      ]
+    },
+    {
+      "id": "system",
+      "type": "external",
+      "label": "The turning system",
+      "pos": [
+        40,
+        142
+      ],
+      "size": [
+        436,
+        70
+      ],
+      "sublabel": "star, orbits, planets, moons"
+    },
+    {
+      "id": "zoom",
+      "type": "backend",
+      "label": "Zoom out to the Verse ↘",
+      "pos": [
+        40,
+        224
+      ],
+      "size": [
+        436,
+        58
+      ]
+    },
+    {
+      "id": "head",
+      "type": "external",
+      "label": "Every package and project by Nepalese developers",
+      "pos": [
+        40,
+        294
+      ],
+      "size": [
+        436,
+        70
+      ],
+      "sublabel": "all over the world, documented to the version"
+    },
+    {
+      "id": "search",
+      "type": "frontend",
+      "label": "Search packages, projects and pages",
+      "pos": [
+        40,
+        376
+      ],
+      "size": [
+        436,
+        58
+      ]
+    }
+  ],
+  "boundaries": [
+    {
+      "kind": "region",
+      "label": "Phone screen · the home page's hero, with the zoom control (stage 2)",
+      "wraps": [
+        "mark",
+        "menu",
+        "system",
+        "zoom",
+        "head",
+        "search"
+      ],
+      "pad": 22
+    }
+  ]
+}

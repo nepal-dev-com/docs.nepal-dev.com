@@ -1,0 +1,228 @@
+---
+title: "ADR-0013 — Packages and projects share one catalogue shape: two tracks, version lines and demos"
+description: "Packages and projects declare one catalogue entry, with a Use track, a Maintain track and version lines, so every entry is built the same way."
+---
+
+- **Status:** Approved
+- **Date:** 2026-10-31
+- **Deciders:** [@puncoz](https://github.com/puncoz)
+- **Approved by:** [@puncoz](https://github.com/puncoz)
+- **Approved on:** 2026-10-31
+- **Supersedes:** —
+- **Superseded by:** [ADR-0024](./ADR-0024-a-project-can-span-several-repositories.mdx) (in part:
+  decision 4's last sentence, a project has at most `dev` and one released line)
+- **Design documents:** [`../app-flow/package-navigation.mdx`](../app-flow/package-navigation.mdx),
+  [`../state/package-version-lifecycle.mdx`](../state/package-version-lifecycle.mdx),
+  [`../prd/home-page.mdx`](../prd/home-page.mdx), `../architecture/system.mdx`,
+  `../dfd/system.mdx`, `PROJECT_AGENTS.md`
+
+## Context
+
+ADR-0010 gives every package and project a root folder, `content/docs/<project-slug>/`, but
+leaves open what goes inside it (`AGENTS.md` §1). The home page (ADR-0014) lists the whole
+collection, so it needs that answer first. Four facts shape it:
+
+- **Packages have versions.** A package can have several released versions in use and an
+  unreleased one in progress. Invariant 3 requires every package page to say which version it
+  documents.
+- **Two kinds of reader.** People who use a package or project need install steps, guides and
+  APIs. The people who maintain it need architecture, local setup, testing and the release
+  process. The owner decided on 2026-10-31 that each project has both, as two tracks.
+- **Demos.** Some packages, npm ones in particular, need a working demo next to their docs.
+- **Private projects.** The site will hold private projects behind sign-in (WorkOS, in a later
+  ADR). The owner decided on 2026-10-31 that a signed-out visitor sees nothing of them: no name,
+  no count, no placeholder.
+
+What Fumadocs does today, read from the installed source:
+
+- `getSidebarTabs` (`fumadocs-ui/dist/components/sidebar/tabs`) turns every folder with
+  `root: true`, nested ones included, into one entry in a single flat switcher. It cannot show
+  package → version → track as levels.
+- `DocsLayout` takes any `tree` and an explicit `tabs` list or `false`
+  (`fumadocs-ui/dist/layouts/docs/index.d.ts`), so a package route can be given only its own
+  subtree and its own switches.
+- `meta.json` files are validated by `metaSchema` in `src/lib/source.ts`, which can be extended.
+
+## Decision
+
+1. **Every root folder declares a catalogue entry** in its `meta.json`, validated by an
+   extended `metaSchema`:
+
+   ```json
+   {
+     "title": "lodestar",
+     "description": "Keyboard-first command palette for React.",
+     "root": true,
+     "catalog": {
+       "kind": "package",
+       "ecosystem": "npm",
+       "visibility": "public",
+       "repository": "https://github.com/example/lodestar",
+       "registry": "https://www.npmjs.com/package/lodestar",
+       "featured": false
+     }
+   }
+   ```
+
+   `kind` is `package` or `project`. `ecosystem` is required for packages: `npm`, `composer`,
+   `pypi`, `go`, `cargo` or `other`. `visibility` accepts only `public` until the
+   private-documentation ADR adds `private`, so the build **fails** on a private entry instead
+   of publishing it. `featured` puts a package with a demo forward on the home page. The
+   Documentation project has no `catalog` and is not listed.
+
+2. **Two tracks in every root folder:** `use/` and `maintain/`. Use is for people using the
+   package or project: install, guides, API, demo. Maintain is for the people who look after
+   it: architecture, local setup, tests, releasing, contributing, its own decisions. A track may
+   be missing; the switch then hides it. For a public package or project both tracks are
+   public. For a private project both will be private.
+
+3. **A package's Use track has one folder per documented major version, called a line:**
+   `use/v3/`, `use/v2/`, and `use/next/` for an unreleased major. Each line's `meta.json` sets
+   `version` (the exact version it documents, read from the package's manifest, such as
+   `3.2.0` or `4.0.0-beta.3`) and `channel`: `latest`, `next` or `legacy`. A released package
+   has exactly one `latest` line and at most one `next`. A package with only `next` is
+   unreleased. The lifecycle is in
+   [`../state/package-version-lifecycle.mdx`](../state/package-version-lifecycle.mdx).
+
+4. **The Maintain track is not versioned.** It describes the repository's default branch.
+   Projects are unversioned by default: their `use/` holds pages directly. A project that ships
+   releases may use lines like a package.
+
+5. **URLs follow the folders:** `/docs/<slug>` is the overview (the root folder's
+   `index.mdx`); `/docs/<slug>/use/<line>/…` and `/docs/<slug>/maintain/…` are the tracks.
+   `/docs/<slug>/use/latest/…` is a stable alias that redirects to the line marked `latest`, so
+   READMEs and registry pages can link without going stale. The redirect lives in
+   `src/proxy.ts`, which already rewrites `/docs/…` paths.
+
+6. **Navigation inside a package is scoped.** On package and project routes, `DocsLayout`
+   receives only the current track and line as its tree. The top of the sidebar holds a track
+   switch (Use | Maintain) and a version menu that keeps the reader on the same page when it
+   exists in the chosen line. Pages in a `next` line open with an "Unreleased" banner and pages
+   in a `legacy` line with an "Older version" banner. Each banner names the exact version and
+   links to the same page in `latest`. The site-wide switcher of root folders is replaced by the
+   home page catalogue and search; the Documentation project keeps its default layout.
+
+7. **Demos are pages in a line,** `use/<line>/demo.mdx`, that embed a self-contained HTML file
+   built by the package's own repository, through ADR-0011's sandboxed embed. The file lives at
+   `public/demos/<slug>/<line>/index.html`, so each line demos the version it documents. This
+   decision depends on ADR-0011. Until ADR-0011 is approved, no demo is published.
+
+8. **Search and `llms.txt` carry the shape.** Each Algolia record gains `package`, `kind`,
+   `ecosystem`, `track`, `line` and `channel`. Search ranks `latest` and Maintain pages first
+   and labels `next` and `legacy` results. Each page's Markdown opens with the version it
+   documents. `llms.txt` lists every line, labelled.
+
+9. **The build checks the shape** and fails on: a missing or invalid `catalog`; a `private`
+   entry; two `latest` or two `next` lines; released lines without a `latest`; a line without a
+   `version`.
+
+Decisions 2 and the signed-out rule in *Context* are the owner's (2026-10-31). Decisions 1, 3–9
+are proposed here for the owner to confirm.
+
+## Options considered
+
+| Concern | Option | Pros | Cons | Verdict |
+|---|---|---|---|---|
+| Audiences | A — two tracks per root folder | One place per project; a reader switches tracks without losing context | Each folder has two trees to keep current | Chosen (owner) |
+| Audiences | B — tracks, Maintain always private | Internal notes never public | Outside contributors can't read how to contribute or release | Rejected (owner) |
+| Audiences | C — a separate signed-in maintainer hub | Works across projects | A project's two kinds of docs live apart | Rejected (owner) |
+| Versions | A — a folder per major line, plus `next` | Matches semver: pages change at majors; Fumadocs needs nothing new; a line can be deleted cleanly | Minor-version differences inside a line are noted in the text | Proposed |
+| Versions | B — a folder per exact version | Every release exactly preserved | Dozens of near-identical copies; search full of duplicates | Rejected |
+| Versions | C — latest only, older versions from git tags at build time | No copies in the tree | A build step that checks out tags; consumers can't edit old lines in place | Rejected |
+| Versions | D — a separate content source per version | Strong isolation | One `defineDocs` per version; heavy for a few packages | Rejected |
+| Maintain versioning | A — unversioned, the default branch | Maintainers work on the default branch; one copy | Releasing notes for an old line live in that line's Use pages or the changelog | Proposed |
+| Maintain versioning | B — versioned like Use | Exact for old branches | Duplicates rarely changing pages | Rejected |
+| Demos | A — HTML built by the package repo, sandboxed embed (ADR-0011) | Each line demos its own version; the site takes no dependency on the package; isolated from the site | Depends on ADR-0011; each package repo must build a demo file | Proposed |
+| Demos | B — the package as a site dependency, demo as an MDX component | Shares the site's React | A dependency (and an ADR) per package and version; versions collide in one `node_modules` | Rejected |
+| Demos | C — third-party sandboxes (StackBlitz, CodeSandbox) | No build work here | A third party on every demo page; slow; needs a DFD crossing and an ADR | Rejected |
+| Stable links | A — `use/latest/…` alias redirect | README links never go stale | One more rule in `src/proxy.ts` | Proposed |
+| Stable links | B — none | Nothing to build | Links to `v2` pages break when `v2` is removed | Rejected |
+| Navigation | A — scoped `DocsLayout` per package with track switch and version menu | Matches the shape; uses `tree` and `tabs` Fumadocs already accepts | Custom sidebar header to build | Proposed |
+| Navigation | B — default flat switcher with nested `root: true` folders | No code | Every track and line becomes a separate entry in one long list | Rejected |
+
+## Consequences
+
+**Positive**
+
+- Every package and project reads the same way (product principle 2), and the home page can
+  list them from data instead of hand-written links.
+- Unreleased docs can be published early without misleading anyone: the banner and the label in
+  search say so.
+- A private entry cannot be published by mistake: the schema rejects it.
+
+**Negative / accepted trade-offs**
+
+- Consuming repositories must follow the folder shape; `PROJECT_AGENTS.md` changes with this ADR.
+- Releasing a major means renaming `next` to `v<major>` and moving `latest` in one change.
+- Sidebar header, version menu, banners, alias redirect and build checks are new code.
+- Demos wait for ADR-0011.
+
+## Content invariants
+
+- **1 Private stays private:** kept, and enforced by the build (decision 1, decision 9). Nothing
+  private enters `content/docs/` until its own ADR.
+- **2 Checked against the code:** each line's `version` is read from the package's manifest
+  by the consuming repository.
+- **3 Every package page states its version:** the line's `version` is shown in the page
+  header, in the banner and in the Markdown version.
+- **4 Examples run:** each example belongs to a line and runs against that line's version.
+- **5 Readable as Markdown:** unchanged; lines and tracks are ordinary pages.
+
+## Security considerations
+
+- **Private content.** The schema accepts `public` only. The future private-documentation
+  ADR must keep private entries out of the build output, the search index, `llms.txt`,
+  `static.json`, per-page Markdown and Open Graph images, and return the same 404 for an
+  unknown and a private URL to a signed-out visitor, so a URL does not confirm a project exists.
+- **Search records.** The new fields (`package`, `kind`, `ecosystem`, `track`, `line`,
+  `channel`) are public metadata about public pages; nothing else is added. Readable by anyone
+  with the search-only key, like every record.
+- **Demos.** Third-party code built by a package repository runs only inside ADR-0011's
+  sandboxed frame, with no access to the site's origin, cookies or storage.
+- **Alias redirect.** It maps `use/latest` to a line folder name from the build's page tree,
+  never to a value taken from the request, so it cannot be turned into an open redirect.
+
+## Implementation notes
+
+- [x] Extend `metaSchema` with `catalog`, `version` and `channel`: `src/lib/catalog-schema.ts`,
+      a Standard Schema around Fumadocs' `metaSchema`, used by `src/lib/source.ts`.
+- [x] A catalogue helper in `src/lib/` that reads root folders into typed entries (kind,
+      ecosystem, lines, tracks, demo) for the home page, search and navigation:
+      `src/lib/catalog.ts`.
+- [x] Scoped `DocsLayout` for package and project routes: track switch, version menu, banners.
+      Typed root folders from `src/lib/catalog-plugin.ts`; `src/components/docs/`.
+- [x] `src/proxy.ts`: the `use/latest` alias and the redirects for removed lines
+      (`src/lib/catalog-routes.ts`).
+- [x] Search records in `src/app/static.json/route.ts`: the new fields, and a scope `tag` per
+      page. **Ranking is not applied**: it needs a change to the live index settings, which waits
+      for the owner.
+- [x] `llms.txt` and per-page Markdown: the version line.
+- [x] Build checks (decision 9), in the loader plugin; the build fails with one line per
+      problem, naming the file.
+- [x] Tests — manual checks until ADR-0007 picks a runner:
+      - `bunx next build` with sample content (three entries, kept out of `content/docs/`)
+        passes. Each failure stops it with its message: two `latest` lines, a `private`
+        entry, a root folder without `catalog`, a line without `version`, `legacy` without
+        `latest`, and a package without `ecosystem`.
+      - Two `next` lines, a line without `channel`, a non-https URL and line order were
+        checked against the functions with a throwaway `bun test` script outside the
+        repository: 6 tests, 32 assertions, all passing.
+      - On `bunx next start`: `use/latest/…` and `.md` give 307 to the latest line, a removed
+        line (`v9/…`) gives 307 to the same path in latest, real pages give 200, and an unknown
+        package gives 404. Markdown starts with the "Documents" line; `llms.txt` labels lines;
+        `static.json` carries the tags.
+- [ ] `bun run lint`, `bun run types:check` and `bunx next build` pass. Type check and build
+      pass. **Lint does not run**: `typescript-eslint` does not support TypeScript 7. This
+      predates this ADR, and fixing it needs its own ADR.
+
+## Docs to update on implementation
+
+- [x] [`../app-flow/package-navigation.mdx`](../app-flow/package-navigation.mdx) — to match the build
+- [x] [`../state/package-version-lifecycle.mdx`](../state/package-version-lifecycle.mdx)
+- [x] `../architecture/system.mdx` — the catalogue helper and scoped layout
+- [x] `../dfd/system.mdx` — the new search record fields
+- [x] `../api/` — `llms.txt`, per-page Markdown and `static.json` contracts
+- [x] `PROJECT_AGENTS.md` and `AGENTS.md` §1, §6, §10 — the folder shape consumers follow
+- [x] `README.md` — project structure
+- [x] [`./index.mdx`](./index.mdx) — index row, next free number
+- [x] [`./index.mdx`](./index.mdx) — status on approval

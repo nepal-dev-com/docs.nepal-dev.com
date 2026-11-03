@@ -1,0 +1,159 @@
+{
+  "schema_version": 1,
+  "diagram_type": "architecture",
+  "meta": {
+    "title": "Screen 1 — Overview",
+    "subtitle": "Wireframe at phone width, drawn from its Mermaid version · overview sidebar",
+    "output": "overview-sidebar-screen-1.html",
+    "animation": "trace",
+    "quality_profile": "showcase",
+    "legend": {
+      "entries": {
+        "backend": {
+          "label": "Control or link"
+        },
+        "external": {
+          "label": "Content"
+        }
+      }
+    }
+  },
+  "components": [
+    {
+      "id": "chip",
+      "type": "backend",
+      "label": "● lodestar",
+      "pos": [
+        40,
+        60
+      ],
+      "size": [
+        324,
+        58
+      ]
+    },
+    {
+      "id": "sw",
+      "type": "external",
+      "label": "☀ current",
+      "pos": [
+        376,
+        60
+      ],
+      "size": [
+        100,
+        70
+      ],
+      "sublabel": "| ☾"
+    },
+    {
+      "id": "moon",
+      "type": "backend",
+      "label": "full moon",
+      "pos": [
+        40,
+        142
+      ],
+      "size": [
+        436,
+        70
+      ],
+      "sublabel": "v0.1 · 0.1.4 · Latest ▾"
+    },
+    {
+      "id": "ov",
+      "type": "external",
+      "label": "◉ Overview (current, tinted)",
+      "pos": [
+        40,
+        224
+      ],
+      "size": [
+        436,
+        58
+      ]
+    },
+    {
+      "id": "h1",
+      "type": "external",
+      "label": "○ Get started",
+      "pos": [
+        54,
+        324
+      ],
+      "size": [
+        408,
+        70
+      ],
+      "sublabel": "2 ▸ (closed)"
+    },
+    {
+      "id": "h2",
+      "type": "external",
+      "label": "○ Reference",
+      "pos": [
+        54,
+        450
+      ],
+      "size": [
+        408,
+        70
+      ],
+      "sublabel": "3 ▸ (closed)"
+    },
+    {
+      "id": "h3",
+      "type": "external",
+      "label": "○ Guides",
+      "pos": [
+        54,
+        576
+      ],
+      "size": [
+        408,
+        70
+      ],
+      "sublabel": "4 ▸ (closed)"
+    }
+  ],
+  "boundaries": [
+    {
+      "kind": "region",
+      "label": "Phone screen · the sidebar on /lodestar",
+      "wraps": [
+        "chip",
+        "sw",
+        "moon",
+        "ov",
+        "h1",
+        "h2",
+        "h3"
+      ],
+      "pad": 22
+    },
+    {
+      "kind": "region",
+      "label": "station 1",
+      "wraps": [
+        "h1"
+      ],
+      "pad": 10
+    },
+    {
+      "kind": "region",
+      "label": "station 2",
+      "wraps": [
+        "h2"
+      ],
+      "pad": 10
+    },
+    {
+      "kind": "region",
+      "label": "station 3",
+      "wraps": [
+        "h3"
+      ],
+      "pad": 10
+    }
+  ]
+}

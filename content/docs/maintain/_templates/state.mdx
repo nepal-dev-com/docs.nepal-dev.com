@@ -1,0 +1,39 @@
+---
+title: "State machine — <entity>"
+description: "Replace this with one or two plain sentences, about 160 characters at most, saying what the page is for."
+---
+
+- **Status:** Draft
+- **Last updated:** YYYY-MM-DD
+- **Related ADRs:** ADR-NNNN
+
+> Snapshot of the system as it stands today. Edit in place; never record what changed.
+
+## Diagram
+
+Draw this diagram with Archify too. In a copy, wrap the fence in
+`<Diagram src="/diagrams/<project-slug>/<slug>.html" title="…">` … `</Diagram>`, with nothing else
+inside: the page shows the Archify view and its Markdown the Mermaid. Outside the templates, a
+bare Mermaid fence fails the build (ADR-0022).
+
+```mermaid
+stateDiagram-v2
+  [*] --> Draft
+  Draft --> Published: publish
+  Published --> Deprecated: deprecate
+  Deprecated --> [*]
+```
+
+## States
+
+| State | Meaning | Who can see it |
+|---|---|---|
+
+## Transitions
+
+| From | To | Trigger | Guard | Side effects |
+|---|---|---|---|---|
+
+## Terminal states
+
+Which states are final, and what remains possible from them (read, redirect, archive).

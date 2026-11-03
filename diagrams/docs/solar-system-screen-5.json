@@ -1,0 +1,106 @@
+{
+  "schema_version": 1,
+  "diagram_type": "architecture",
+  "meta": {
+    "title": "Screen 5 — Horizon footer",
+    "subtitle": "Wireframe at phone width, drawn from its Mermaid version · solar system",
+    "output": "solar-system-screen-5.html",
+    "animation": "trace",
+    "quality_profile": "showcase",
+    "legend": {
+      "entries": {
+        "external": {
+          "label": "Content"
+        },
+        "frontend": {
+          "label": "Site chrome"
+        }
+      }
+    }
+  },
+  "components": [
+    {
+      "id": "close",
+      "type": "external",
+      "label": "You've reached the horizon. The Verse goes on.",
+      "pos": [
+        40,
+        60
+      ],
+      "size": [
+        436,
+        58
+      ]
+    },
+    {
+      "id": "scene",
+      "type": "external",
+      "label": "The Himalaya",
+      "pos": [
+        40,
+        130
+      ],
+      "size": [
+        436,
+        70
+      ],
+      "sublabel": "twinkling stars, shooting stars, the star rising, clouds, the…"
+    },
+    {
+      "id": "planets",
+      "type": "external",
+      "label": "● lodestar  ● ledgerly  ● pykettle  ○ orbit-board",
+      "pos": [
+        40,
+        212
+      ],
+      "size": [
+        436,
+        70
+      ],
+      "sublabel": "○ Nepal Dev Verse Docs"
+    },
+    {
+      "id": "links",
+      "type": "frontend",
+      "label": "Search ⌘K",
+      "pos": [
+        40,
+        294
+      ],
+      "size": [
+        436,
+        70
+      ],
+      "sublabel": "llms.txt · llms-full.txt · GitHub · Back to orbit"
+    },
+    {
+      "id": "credit",
+      "type": "external",
+      "label": "Part of nepal-dev.com. Made with ❤️ by Puncoz",
+      "pos": [
+        40,
+        376
+      ],
+      "size": [
+        436,
+        70
+      ],
+      "sublabel": "Nepal."
+    }
+  ],
+  "boundaries": [
+    {
+      "kind": "region",
+      "label": "Phone screen · every page",
+      "wraps": [
+        "close",
+        "scene",
+        "planets",
+        "links",
+        "credit"
+      ],
+      "pad": 22
+    }
+  ]
+}

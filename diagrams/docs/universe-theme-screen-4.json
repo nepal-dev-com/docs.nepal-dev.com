@@ -1,0 +1,149 @@
+{
+  "schema_version": 1,
+  "diagram_type": "architecture",
+  "meta": {
+    "title": "Screen 4 — The Verse view",
+    "subtitle": "Wireframe at phone width, drawn from its Mermaid version · universe theme",
+    "output": "universe-theme-screen-4.html",
+    "animation": "trace",
+    "quality_profile": "showcase",
+    "legend": {
+      "entries": {
+        "external": {
+          "label": "Content"
+        },
+        "frontend": {
+          "label": "Site chrome"
+        }
+      }
+    }
+  },
+  "components": [
+    {
+      "id": "mark",
+      "type": "frontend",
+      "label": "Brand mark",
+      "pos": [
+        40,
+        60
+      ],
+      "size": [
+        324,
+        70
+      ],
+      "sublabel": "Nepal Dev Verse"
+    },
+    {
+      "id": "menu",
+      "type": "frontend",
+      "label": "☰",
+      "pos": [
+        376,
+        60
+      ],
+      "size": [
+        100,
+        58
+      ]
+    },
+    {
+      "id": "sky1",
+      "type": "external",
+      "label": "· wide sky ·",
+      "pos": [
+        40,
+        142
+      ],
+      "size": [
+        436,
+        58
+      ]
+    },
+    {
+      "id": "sys",
+      "type": "external",
+      "label": "✦ nepal-dev.com",
+      "pos": [
+        40,
+        212
+      ],
+      "size": [
+        436,
+        70
+      ],
+      "sublabel": "the system, small and turning"
+    },
+    {
+      "id": "belt",
+      "type": "external",
+      "label": "·",
+      "pos": [
+        40,
+        294
+      ],
+      "size": [
+        436,
+        70
+      ],
+      "sublabel": "asteroid belt · ·"
+    },
+    {
+      "id": "far",
+      "type": "external",
+      "label": "◐ harbor-ops ◐ fieldnote ◐ tessera",
+      "pos": [
+        40,
+        376
+      ],
+      "size": [
+        436,
+        70
+      ],
+      "sublabel": "dim and far"
+    },
+    {
+      "id": "back",
+      "type": "external",
+      "label": "Back to the system ↖",
+      "pos": [
+        40,
+        458
+      ],
+      "size": [
+        436,
+        58
+      ]
+    },
+    {
+      "id": "cap",
+      "type": "external",
+      "label": "The Verse",
+      "pos": [
+        40,
+        528
+      ],
+      "size": [
+        436,
+        70
+      ],
+      "sublabel": "one system so far"
+    }
+  ],
+  "boundaries": [
+    {
+      "kind": "region",
+      "label": "Phone screen · the home page zoomed out, or opened at /#verse (stage 2)",
+      "wraps": [
+        "mark",
+        "menu",
+        "sky1",
+        "sys",
+        "belt",
+        "far",
+        "back",
+        "cap"
+      ],
+      "pad": 22
+    }
+  ]
+}

@@ -1,0 +1,152 @@
+---
+title: "API — Machine-readable content routes"
+description: "The contracts of the routes tools read: per-page Markdown, llms.txt, llms-full.txt, Open Graph images, search records and the proxy's redirects."
+---
+
+- **Status:** Current
+- **Last updated:** 2026-11-01
+- **Related ADRs:** [ADR-0013](../adr/ADR-0013-packages-and-projects-share-one-catalogue-shape.mdx),
+  [ADR-0015](../adr/ADR-0015-every-entry-lives-at-the-root-in-one-shape-and-one-look.mdx),
+  [ADR-0011](../adr/ADR-0011-archify-diagrams-are-embedded-from-sandboxed-html.mdx)
+
+> Snapshot of the system as it stands today. Edit in place; never record what changed.
+
+All of these are prerendered at build time (they read no request data, ADR-0016), need no
+authentication, and
+return **every page in `content/`**. None filters anything out. Pages live at the root,
+`/<slug>/…` (ADR-0015). `src/proxy.ts` handles line redirects and Markdown on paths whose first
+segment is a catalogued slug, and answers any path that is not a page with a 404 (ADR-0034).
+
+## Endpoints
+
+| Method | Path | Purpose | Auth |
+|---|---|---|---|
+| GET | `/<package>/use/latest/<path>` | 307 to the same path in the line marked `latest`, or in `dev` when nothing is released (also with `.md`) | None |
+| GET | `/<package>/use/<segment>/<path>` for a line that does not exist | 307 to the same path in `latest` (or `dev`); 404 there if the page doesn't exist | None |
+| GET | Any other path that is not a page or a site route | 404 with the whole out-of-orbit page (rewritten by `src/proxy.ts` to `/_not-found`; the address does not change) | None |
+| GET | `/<page>.md` | One page as Markdown (rewritten by `src/proxy.ts`) | None |
+| GET | `/<page>` with `Accept` preferring Markdown | One page as Markdown (rewritten by `src/proxy.ts`) | None |
+| GET | `/llms.mdx/<slug>/content.md` | One page as Markdown | None |
+| GET | `/llms.txt` | Index of every page | None |
+| GET | `/llms-full.txt` | Every page's Markdown, concatenated | None |
+| GET | `/og/<slug>/image.png` | A page's share image, see [`./crawler-routes.mdx`](./crawler-routes.mdx) | None |
+| GET | `/static.json` | Every page as an Algolia search record | None |
+| GET | `/diagrams/<project-slug>/<slug>.html` | One Archify diagram, a static file from `public/`, served sandboxed | None |
+
+---
+
+### `GET /llms.mdx/<slug>/content.md`
+
+**Purpose.** The processed Markdown of one page, headed `# <title> (<url>)`. A page in a
+package's version line follows the heading with `> Documents <package> <version> (<line name>, <latest | in development | older version>).`,
+such as `> Documents lodestar 0.1.4 (v0.1, latest).`
+
+**Authorisation.** Public. Nothing keeps private content out — see `AGENTS.md` §6.1.
+
+**Responses**
+
+| Status | Meaning | Body |
+|---|---|---|
+| 200 | Page found | Markdown, `Content-Type: text/markdown` |
+| 404 | No such page | Next.js not-found page |
+
+**Notes.** `/<page>.md`, and `/<page>` when the request prefers Markdown, are
+rewritten here by `src/proxy.ts`; the second adds `Vary: Accept`.
+
+---
+
+### `GET /llms.txt` and `GET /llms-full.txt`
+
+**Purpose.** `llms.txt` lists every page; `llms-full.txt` returns all of their Markdown in one
+response. Both come from `docsLlms` in `src/lib/source.ts`. In `llms.txt`, each version line
+is named with its line name, version and channel, such as `v4.0 — 4.0.1, latest` or
+`dev — 5.0.0-dev, in development`.
+
+**Authorisation.** Public.
+
+**Responses**
+
+| Status | Meaning | Body |
+|---|---|---|
+| 200 | Always | Plain text |
+
+---
+
+### `GET /og/<slug>/image.png`
+
+**Purpose.** A page's share image, showing its entry, track, line, title, description and the site's
+name. [`./crawler-routes.mdx`](./crawler-routes.mdx) has the details and the home page's image.
+
+**Authorisation.** Public.
+
+**Responses**
+
+| Status | Meaning | Body |
+|---|---|---|
+| 200 | Page found | PNG |
+| 404 | No such page | Next.js not-found page |
+
+---
+
+### `GET /static.json`
+
+**Purpose.** Every page as an Algolia `DocumentRecord`, from `toDocuments(source)`. The
+build reads this route's output and pushes it to the index (`scripts/sync-content.ts`).
+
+**Fields added here (ADR-0013 decision 8).** `tag` is the page's scope, the index's one facet:
+`<package>`, `<package>:maintain`, `<package>:use` or `<package>:use:<segment>` for catalogue
+pages (`ledgerly:use:3.x-lts`, `docs:maintain`), and `site` for anything outside an entry. The home page's
+search filters on it. Catalogue pages also carry `extra_data` with `package`, `kind`,
+`ecosystem`, `track`, `line` (the line's name) and `channel`; these reach the index, but the current index
+settings neither retrieve nor rank on them. Ranking `latest` and Maintain pages first needs an
+index settings change, which is publishing and waits for the owner.
+
+**Authorisation.** Public — it is served by the deployed site as well as read by the build.
+
+**Responses**
+
+| Status | Meaning | Body |
+|---|---|---|
+| 200 | Always | JSON array of records |
+
+## `GET /diagrams/<project-slug>/<slug>.html`
+
+One Archify diagram: the file at `diagrams/<project-slug>/<slug>.html`, exactly as Archify's
+`deliver` wrote it, with the site shell added (`src/lib/diagram-shell.ts`, ADR-0022). Prerendered
+by `src/app/diagrams/[project]/[file]/route.ts` for every file listed at build; no other path is
+served and no request data is read. `<Diagram>` frames it with `?frame=1&theme=…`;
+**Open full screen** links to it with `?theme=…` only. The frame carries `allow="fullscreen"`.
+
+**Query.** Read by the shell's script in the browser, never by the server: `frame=1` hides
+Archify's title, subtitle, notes rail, theme and style buttons and credit, and reports the
+content height to the embedding page with `postMessage({ type: 'archify-height', height })`,
+including an open toolbar menu. Present takes the frame to fullscreen; where fullscreen is
+refused, the frame posts `{ type: 'archify-present' }` and the page opens
+`<src>?theme=…&present=1` itself. `theme=light|dark` sets the theme before first paint and
+`present=1` opens Archify's Present stage (both Archify's own parameters).
+
+**Headers.** `Content-Security-Policy: sandbox allow-scripts allow-downloads`, set for
+`/diagrams/:path*` in `next.config.mjs`, so a direct visit runs the diagram's script in an
+opaque origin, as the embedding frame does (`sandbox="allow-scripts allow-downloads"`, no
+`allow-same-origin`).
+
+**Authorisation.** Public. Everything in `diagrams/` is published; no diagram of a private
+project goes there.
+
+**Not indexed.** The files are not in `static.json`, the search index or `llms.txt`. A page's
+Markdown carries the diagram's Mermaid fence, never the `<Diagram>` tag or the file's URL.
+
+**Build checks** (`src/lib/remark-diagrams.ts` as each page compiles; `src/lib/diagrams.ts`, run
+by the loader plugin in `src/lib/diagrams-plugin.ts`; and `<Diagram>` itself): a Mermaid fence
+outside a `<Diagram>` (templates excepted), a `<Diagram>` without a plain `src` and `title` or
+without exactly one Mermaid fence, a `src` that is not `/diagrams/<project-slug>/<slug>.html` or
+has no file, an HTML without its JSON (or the reverse), an HTML no page uses, any file in
+`public/diagrams/`, and an Archify receipt (`*.delivery*.json`) in `diagrams/` or `public/` each
+fail the build.
+
+**Responses**
+
+| Status | Meaning | Body |
+|---|---|---|
+| 200 | File found | HTML, `Content-Type: text/html` |
+| 404 | Not a listed file, including the JSON sources | The site's not-found page |

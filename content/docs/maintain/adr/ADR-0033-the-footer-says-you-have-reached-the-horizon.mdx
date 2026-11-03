@@ -1,0 +1,126 @@
+---
+title: "ADR-0033 — The footer says you've reached the horizon"
+description: "The footer's closing line becomes \"You've reached the horizon. The Verse goes on.\", and The Verse links to the Verse view."
+---
+
+- **Status:** Approved
+- **Date:** 2026-11-03
+- **Deciders:** [@puncoz](https://github.com/puncoz)
+- **Approved by:** [@puncoz](https://github.com/puncoz)
+- **Approved on:** 2026-11-03
+- **Supersedes:** [ADR-0017](./ADR-0017-the-whole-site-is-one-solar-system.mdx) decision 8 (in
+  part: the words and the link of the closing line)
+- **Superseded by:** [ADR-0036](./ADR-0036-the-site-is-nepal-dev-verse.mdx) (in part: decision 3, the credit's words)
+- **Design documents:** [`../app-flow/horizon-closing-line.mdx`](../app-flow/horizon-closing-line.mdx),
+  [`../app-flow/living-horizon.mdx`](../app-flow/living-horizon.mdx), `DESIGN.md`
+
+## Context
+
+- Every page ends with the Horizon footer. Its large closing line reads "Everything here orbits
+  one maker: Puncoz Nepal", with the name linked to `https://puncoz.com` (ADR-0017 decision 8).
+- The owner wants the line rewritten, better and more about the Verse. Since ADR-0028 and
+  ADR-0029 the site is the Puncoz Verse, but the line speaks only of a maker and says nothing
+  of the Verse, or of the horizon drawn right under it.
+- The wording is quoted in an approved decision, so changing it takes this ADR, though it is copy.
+- What was measured in Chrome with the new words, on the development server:
+  - **The line breaks mid-sentence.** The closing line has `max-width: 22ch` and
+    `text-wrap: balance`, which gives "You've reached the / horizon. The Verse goes on." Each
+    sentence fits on its own line: at 48px the first is 565px wide in 638px of room, and at the
+    smallest size, 27.2px, 330px in a 390px screen's 358px.
+  - **A plain link to `/#verse` does nothing visible on the home page.** The hash changes and
+    the Verse view opens, but the reader stays at the bottom of the page: 1772px down before the
+    click and after it. The Verse view is in the hero, out of sight.
+
+## Decision
+
+1. **The closing line reads, on two lines: "You've reached the horizon. The Verse goes on."**
+   Each sentence is its own line. On a screen too narrow for one, it wraps within itself.
+2. **"The Verse" is the link**, to `/#verse`, with the star-coloured underline the name has today.
+3. **The maker's name leaves the closing line and stays in the credit** under the footer's links,
+   unchanged: "Packages and projects by Puncoz Nepal", linked to `https://puncoz.com`. That
+   credit is also the plain sentence beside the space words (*The Places, Not Controls Rule*).
+4. **The link always shows the Verse view:**
+   - from another page, it goes to the home page's Verse view with the zoom out, as the scale
+     strip's *Verse* does;
+   - on the home page, it returns to the top of the page and opens the Verse view there, with no
+     history entry, as *Zoom out to the Verse* does; under reduced motion it jumps;
+   - *Back to the system* then works as it always has.
+5. **Unchanged:** the scene, the planet row, the footer's links, *Back to orbit* and *Back to
+   top*, the type and the width of the closing line.
+
+## Options considered
+
+| Option | Pros | Cons | Verdict |
+|---|---|---|---|
+| "You've reached the horizon. The Verse goes on." | Says where the reader is, matches the drawn horizon, and leads somewhere | The name leaves the large line; the link needs care on the home page | Chosen (owner) |
+| "One Verse, one star: Puncoz Nepal." | The shortest; keeps the name large | About who made it, not where the reader is | Rejected |
+| "Every world in this Verse circles one star: Puncoz Nepal." | The closest to today's line | Three lines on most screens | Rejected |
+| "The Verse is young. One star so far: Puncoz Nepal." | Honest; echoes the Verse view's caption | Hints that other makers may join, and "young" will date | Rejected |
+| Home page link: a plain link | No script | The Verse view opens out of sight, as measured above | Rejected |
+| Home page link: `id="verse"` on the hero, so the browser scrolls there | Almost no code | Lands 61px down the page, as measured, with the hero's top under the header, and would also move the page when `/#verse` is opened directly | Rejected |
+
+## Consequences
+
+**Positive**
+
+- The line says something true on every page, and the footer gains a way into the Verse.
+
+**Negative / accepted trade-offs**
+
+- The maker's name is no longer large at the end of each page; it is in the small credit.
+- A small client component is added to the footer for the link.
+- Without scripts the home page has no Verse view, so there the link changes only the URL. From
+  other pages it still reaches the home page.
+
+## Content invariants
+
+None is touched. The footer is not part of any Markdown surface, and the line names nothing
+private.
+
+## Security considerations
+
+None. This change touches no data, no endpoint and no secret. The new link is a fixed internal
+path, and the existing link to `https://puncoz.com` stays in the credit.
+
+## Implementation notes
+
+- [x] `src/components/horizon-footer.tsx`: the closing line's words, one element per sentence, as
+  `HorizonClosing`; the credit as `HorizonCredit`, so both can be rendered in a test.
+- [x] `src/components/footer-actions.tsx`: a `VerseLink` client component (decision 4), using
+  `verseFragment` and the `zoomOut` transition type. On the home page its `onNavigate` cancels the
+  navigation, returns to the top and opens the view. Cmd and Ctrl clicks still open a new tab.
+- [x] `src/components/home/orbit-map.tsx`: not changed. The link tells the system through its
+  existing `hashchange` listener.
+- [x] `src/app/site.css`: each sentence a block.
+- [x] `src/app/(home)/page.tsx` and `home.css`, found while checking: an empty `id="verse"`
+  target at the very top of the document. From a docs page or the 404 the link first landed
+  1212px and 1967px down the home page, because Next.js keeps the scroll position for a hash with
+  no target (`layout-router.js`). At y=0 the target does not move the page when `/#verse` is
+  opened directly, unlike the `id` on the hero rejected above. It also takes the scale strip's
+  *Verse* to the top, and without scripts this link now returns to the top of the home page, so
+  it does more there than the Consequences above say.
+- [x] Tests (ADR-0007, ADR-0021), in `src/components/horizon-footer.test.tsx`: the closing line's
+  words, its one link to `/#verse`, the credit's link to the owner, each sentence a block, and the
+  hash target at the top. `VerseLink`'s click is not unit-tested; checked in Chrome instead,
+  against `bunx next build`:
+  - the two lines at about 1412px, 390px and 320px (the last two in a same-origin frame, because
+    the browser window would not shrink), where 320px wraps the first sentence within itself,
+    with no sideways scroll; the light theme at all three and the dark at 1412px;
+  - from a docs page, and from the 404, to the Verse view at the top;
+  - from the bottom of the home page to the Verse view at the top, with no history entry;
+  - `/#verse` opened directly, still at the top; *Back to the system* afterwards;
+  - reduced motion in the code: the scroll jumps and the view changes at once.
+- [x] `bun run test`, `bun run types:check` and `bunx next build` pass; `bun run lint` is reported
+  while it stays blocked.
+
+## Docs to update on implementation
+
+- [x] [`../app-flow/horizon-closing-line.mdx`](../app-flow/horizon-closing-line.mdx): Current.
+- [x] The line in the wireframes, with their Archify pairs:
+  [`../app-flow/living-horizon.mdx`](../app-flow/living-horizon.mdx),
+  [`../app-flow/solar-system.mdx`](../app-flow/solar-system.mdx),
+  [`../app-flow/docs-sidebars.mdx`](../app-flow/docs-sidebars.mdx); and the table in
+  [`../app-flow/universe-theme.mdx`](../app-flow/universe-theme.mdx), with the footer as a way
+  into the Verse.
+- [x] `DESIGN.md`: the Horizon footer and the zoom in Motion.
+- [x] ADR-0017's "Superseded by" line, and [`./index.mdx`](./index.mdx): index row and status.

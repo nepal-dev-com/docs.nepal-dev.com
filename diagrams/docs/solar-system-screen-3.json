@@ -1,0 +1,91 @@
+{
+  "schema_version": 1,
+  "diagram_type": "architecture",
+  "meta": {
+    "title": "Screen 3 — Sidebar top",
+    "subtitle": "Wireframe at phone width, drawn from its Mermaid version · solar system",
+    "output": "solar-system-screen-3.html",
+    "animation": "trace",
+    "quality_profile": "showcase",
+    "legend": {
+      "entries": {
+        "backend": {
+          "label": "Control or link"
+        },
+        "external": {
+          "label": "Content"
+        }
+      }
+    }
+  },
+  "components": [
+    {
+      "id": "chip",
+      "type": "backend",
+      "label": "● lodestar",
+      "pos": [
+        40,
+        60
+      ],
+      "size": [
+        324,
+        70
+      ],
+      "sublabel": "npm package"
+    },
+    {
+      "id": "sw",
+      "type": "external",
+      "label": "☀ | ☾",
+      "pos": [
+        376,
+        60
+      ],
+      "size": [
+        100,
+        58
+      ]
+    },
+    {
+      "id": "moon",
+      "type": "backend",
+      "label": "full moon",
+      "pos": [
+        40,
+        142
+      ],
+      "size": [
+        436,
+        70
+      ],
+      "sublabel": "v0.1 · 0.1.4 · Latest ▾"
+    },
+    {
+      "id": "st",
+      "type": "backend",
+      "label": "◎ Get started",
+      "pos": [
+        40,
+        224
+      ],
+      "size": [
+        436,
+        70
+      ],
+      "sublabel": "2 ▾ — the open station"
+    }
+  ],
+  "boundaries": [
+    {
+      "kind": "region",
+      "label": "Phone screen · inside a package or project",
+      "wraps": [
+        "chip",
+        "sw",
+        "moon",
+        "st"
+      ],
+      "pad": 22
+    }
+  ]
+}

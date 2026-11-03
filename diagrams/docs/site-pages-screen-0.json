@@ -1,0 +1,100 @@
+{
+  "schema_version": 1,
+  "diagram_type": "architecture",
+  "meta": {
+    "title": "Screen 0 — Header",
+    "subtitle": "Wireframe at phone width, drawn from its Mermaid version · site pages",
+    "output": "site-pages-screen-0.html",
+    "animation": "trace",
+    "quality_profile": "showcase",
+    "legend": {
+      "entries": {
+        "frontend": {
+          "label": "Site chrome"
+        }
+      }
+    }
+  },
+  "components": [
+    {
+      "id": "mark",
+      "type": "frontend",
+      "label": "▲ Nepal Dev",
+      "pos": [
+        40,
+        60
+      ],
+      "size": [
+        137,
+        70
+      ],
+      "sublabel": "Verse"
+    },
+    {
+      "id": "search",
+      "type": "frontend",
+      "label": "⌕",
+      "pos": [
+        189,
+        60
+      ],
+      "size": [
+        63,
+        58
+      ]
+    },
+    {
+      "id": "gh",
+      "type": "frontend",
+      "label": "GitHub",
+      "pos": [
+        264,
+        60
+      ],
+      "size": [
+        63,
+        58
+      ]
+    },
+    {
+      "id": "theme",
+      "type": "frontend",
+      "label": "orrery",
+      "pos": [
+        339,
+        60
+      ],
+      "size": [
+        63,
+        58
+      ]
+    },
+    {
+      "id": "menu",
+      "type": "frontend",
+      "label": "☰",
+      "pos": [
+        413,
+        60
+      ],
+      "size": [
+        63,
+        58
+      ]
+    }
+  ],
+  "boundaries": [
+    {
+      "kind": "region",
+      "label": "Phone screen · on every page",
+      "wraps": [
+        "mark",
+        "search",
+        "gh",
+        "theme",
+        "menu"
+      ],
+      "pad": 22
+    }
+  ]
+}
