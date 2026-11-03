@@ -25,7 +25,8 @@ updating this file is part of that change.
 
 **puncoz-packages-docs** is **Nepal Dev Verse**, the documentation platform for everything
 Nepalese developers all over the world build and publish, part of
-[nepal-dev.com](https://nepal-dev.com) (ADR-0036). Its owner and maintainer is Puncoz Nepal. It holds:
+[nepal-dev.com](https://nepal-dev.com) (ADR-0036). Its owner is nepal-dev.com. Puncoz Nepal maintains it and acts for the owner: in this
+file, *the owner* reviews, approves and decides through `puncoz` (ADR-0039). It holds:
 
 - **Open-source packages and libraries** — npm packages, PHP / Composer packages, and packages
   and libraries for any other ecosystem.
@@ -128,8 +129,8 @@ before the repository owner approves it.** The full decision is
    one, are ready for review.
 3. **Revise** in place while the owner has feedback — status stays `Proposed`.
    **People in an ADR are GitHub usernames**, written as a profile link:
-   `[@puncoz](https://github.com/puncoz)` in `Deciders` and `Approved by`. The owner's is
-   `puncoz`. If anyone else decides or approves and their username is not known, ask for it.
+   `[@puncoz](https://github.com/puncoz)` in `Deciders` and `Approved by`. The person who approves for
+   the owner is `puncoz`. If anyone else decides or approves and their username is not known, ask for it.
    The site shows such a link as a chip with the person's avatar (ADR-0020).
 4. **On explicit approval only:** set `Status: Approved`, fill `Approved by: [@puncoz](https://github.com/puncoz)` (the approver's GitHub username)
    and `Approved on: <date>`, update the index row, *then* implement.

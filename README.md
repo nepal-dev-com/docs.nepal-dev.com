@@ -1,13 +1,12 @@
-# puncoz-packages-docs
+# Nepal Dev Verse
 
-> Nepal Dev Verse: one place for the documentation of everything Nepalese developers all over the
-> world build, open-source packages and libraries across ecosystems, and public and private
-> projects. Part of [nepal-dev.com](https://nepal-dev.com).
+> One place for the documentation of everything Nepalese developers all over the world build:
+> open-source packages and libraries across ecosystems, and public and private projects. Part of
+> [nepal-dev.com](https://nepal-dev.com).
 
-**Status:** the site is **Nepal Dev Verse**; its own documentation is **Nepal Dev Verse Docs** (ADR-0036). The catalogue shape, root addresses, one site-wide
-look with a light/dark switch, nepal-dev.com's mark, the Himalayan Horizon at the end of every page (ADR-0037), a still sky on every page, the scale strip, the Verse view and the planet morph (ADR-0029), and the home page's release map are built; no package or project
-is documented yet besides this site itself, so the home page shows its empty states.
-· **Owner:** [Puncoz Nepal](https://puncoz.com)
+- **Status:** the site is built, and its own documentation, **Nepal Dev Verse Docs**, is the only
+  entry so far, so the home page shows its empty states.
+- **Repository:** [`nepal-dev-com/docs.nepal-dev.com`](https://github.com/nepal-dev-com/docs.nepal-dev.com)
 
 ---
 
@@ -39,15 +38,16 @@ packages and projects are planets, version lines are moons, Use and Maintain are
 and night sides. The home page
 ([ADR-0014](content/docs/maintain/adr/ADR-0014-home-page-is-a-search-first-release-map.mdx),
 [ADR-0016](content/docs/maintain/adr/ADR-0016-home-search-is-the-fumadocs-dialog-and-private-projects-render-server-side.mdx))
-is that system beside the site's search, then a planet card for every package and project, and
-private projects beyond an asteroid belt. On docs pages
+is that system beside the site's search, with a zoom out to the wider Verse (ADR-0029), then a
+planet card for every package and project, and private projects beyond an asteroid belt, shown
+with invented names. Every page ends with the Himalayan Horizon footer (ADR-0037). On docs pages
 ([ADR-0018](content/docs/maintain/adr/ADR-0018-docs-pages-get-orbit-stations-a-trajectory-and-the-full-horizon.mdx))
 the sidebar is a scale ladder (ADR-0027): top-level pages, grouped sections, and only the open section as a card, one open at a time (ADR-0023); an overview has the
 same sidebar as its Use pages (or Maintain pages), with *Overview* first in every track (ADR-0025); and "On this page" is a curved
 trajectory with a probe at your reading position and the minutes left.
 
 How private project documentation is kept away from the public site is still open, and demos
-wait for ADR-0011. Until the private-documentation ADR is approved, **no private project content
+wait for their own ADR. Until the private-documentation ADR is approved, **no private project content
 goes into `content/`**: everything there is published to the site, the search index and
 `llms.txt`, and the build refuses a catalogue entry that is not `public`.
 
@@ -75,7 +75,7 @@ goes into `content/`**: everything there is published to the site, the search in
 ## Getting started
 
 Requires [Bun](https://bun.sh), and a Node.js that runs TypeScript files directly (the search
-sync script runs on Node; the owner's machine has v24).
+sync script runs on Node, and v24 is known to work).
 
 1. **Install.**
 
@@ -83,9 +83,11 @@ sync script runs on Node; the owner's machine has v24).
    bun install
    ```
 
-2. **Configure.** Copy `.env.example` to `.env.local` and fill in `SITE_URL` (the site's public
-   address; without it every page is `noindex`) and the three Algolia variables, described in [`content/docs/maintain/security/secrets.mdx`](content/docs/maintain/security/secrets.mdx).
-   `.env.local` is gitignored; never commit it.
+2. **Configure.** Copy `.env.example` to `.env.local` and fill in `SITE_URL` and the three Algolia
+   variables, described in [`content/docs/maintain/security/secrets.mdx`](content/docs/maintain/security/secrets.mdx).
+   `SITE_URL` is the site's public address, `https://docs.nepal-dev.com` (ADR-0036). Without it
+   every page is `noindex` and `bun run build` refuses to publish. `.env.local` is gitignored;
+   never commit it.
 
 3. **Run.**
 
@@ -137,7 +139,7 @@ Open [http://localhost:3000](http://localhost:3000). The docs are at `/docs`.
 │           ├── security/    # threat model, classification, secrets, audit checklist
 │           └── _templates/  # a starting point for each document type
 ├── src/
-│   ├── proxy.ts         # version-line redirects and Markdown versions of pages
+│   ├── proxy.ts         # version-line redirects, Markdown versions of pages, and the 404 for unknown paths
 │   ├── app/             # home, every page at /<slug>/…, llms.txt, share images, robots, sitemap, search records, tokens
 │   ├── components/      # site header, MDX components, search dialog, docs/ (scale strip, hero, track switch, version banners), home/
 │   └── lib/             # content loader, catalogue schema and checks, search client, site settings
@@ -161,7 +163,8 @@ Like every other page, it is published.
 ## How we work
 
 **Every feature and functional change starts with an ADR, and no implementation begins until
-the repository owner has approved it.**
+the repository owner has approved it.** The owner is nepal-dev.com, which approves through its
+maintainer.
 
 1. Write an ADR in [`content/docs/maintain/adr/`](content/docs/maintain/adr/index.mdx) from
    [`_templates/adr.mdx`](content/docs/maintain/_templates/adr.mdx) with `Status: Proposed`, alongside the design
@@ -172,8 +175,12 @@ the repository owner has approved it.**
    in the same pass. Nothing is committed by agents; the owner reviews and commits.
 
 An approved ADR's decision is never rewritten; a change of mind is a new ADR that supersedes it.
+The one exception was a single rewording of the site's earlier names (ADR-0038).
 Design documents work the opposite way: they are **living snapshots**, edited in place.
 Writing a package's pages within the approved content conventions needs no ADR.
+
+Every decision and its status is listed in the
+[ADR index](content/docs/maintain/adr/index.mdx).
 
 Anything genuinely undetermined is raised as a question with options and a recommendation,
 not settled by assumption ([ADR-0004](content/docs/maintain/adr/ADR-0004-ask-never-guess.mdx)).
@@ -224,46 +231,3 @@ threat model, data classification, secrets inventory and audit checklist live in
 > **If a secret is ever committed, rotate it immediately.** Removing it from the working tree,
 > or from git history, is not enough. Treat any value that was pushed as compromised from that
 > moment. The same holds for private content: once published or indexed, treat it as public.
-
-### Decisions
-
-| ADR | Title | Status |
-|---|---|---|
-| [0001](content/docs/maintain/adr/ADR-0001-adr-driven-development-workflow.mdx) | Every change starts with an approved ADR | Approved |
-| [0002](content/docs/maintain/adr/ADR-0002-living-design-documentation.mdx) | Design documents are living snapshots, published as this site's Maintain track | Approved |
-| [0003](content/docs/maintain/adr/ADR-0003-code-comment-policy.mdx) | Comments explain why; every branch takes a block | Approved |
-| [0004](content/docs/maintain/adr/ADR-0004-ask-never-guess.mdx) | Resolve ambiguity by asking, never by guessing | Approved |
-| [0005](content/docs/maintain/adr/ADR-0005-security-as-a-standing-practice.mdx) | Security and privacy are a standing practice | Approved |
-| [0006](content/docs/maintain/adr/ADR-0006-agent-skills-are-advisory.mdx) | Agent skills are advisory; this repository's documentation is binding | Approved |
-| [0007](content/docs/maintain/adr/ADR-0007-tests-are-part-of-every-change.mdx) | Tests are part of every change | Approved |
-| [0008](content/docs/maintain/adr/ADR-0008-a-ui-change-ships-an-app-flow.mdx) | A UI change ships an app flow, drawn in Mermaid | Approved |
-| [0009](content/docs/maintain/adr/ADR-0009-trusted-agent-skills-are-vendored.mdx) | Trusted agent skills are vendored in `.claude/agent-skills/`, routed by an index | Approved |
-| [0010](content/docs/maintain/adr/ADR-0010-projects-document-themselves-through-a-submodule.mdx) | Projects document themselves here through a git submodule, one folder each | Approved |
-| [0011](content/docs/maintain/adr/ADR-0011-archify-diagrams-are-embedded-from-sandboxed-html.mdx) | Archify diagrams are embedded in pages from sandboxed HTML files | Approved |
-| [0012](content/docs/maintain/adr/ADR-0012-every-page-is-mdx.mdx) | Every page in `content/docs` is MDX | Approved |
-| [0013](content/docs/maintain/adr/ADR-0013-packages-and-projects-share-one-catalogue-shape.mdx) | Packages and projects share one catalogue shape: two tracks, version lines and demos | Approved |
-| [0014](content/docs/maintain/adr/ADR-0014-home-page-is-a-search-first-release-map.mdx) | The home page is a search-first map of every release | Approved |
-| [0015](content/docs/maintain/adr/ADR-0015-every-entry-lives-at-the-root-in-one-shape-and-one-look.mdx) | Every package and project lives at the root, in one shape and one look | Approved |
-| [0016](content/docs/maintain/adr/ADR-0016-home-search-is-the-fumadocs-dialog-and-private-projects-render-server-side.mdx) | Home search is the Fumadocs dialog, and private projects render server-side | Approved |
-| [0017](content/docs/maintain/adr/ADR-0017-the-whole-site-is-one-solar-system.mdx) | The whole site is one solar system | Approved |
-| [0018](content/docs/maintain/adr/ADR-0018-docs-pages-get-orbit-stations-a-trajectory-and-the-full-horizon.mdx) | Docs pages get orbit stations, a trajectory and the full horizon | Approved |
-| [0019](content/docs/maintain/adr/ADR-0019-adr-folders-show-as-a-constellation-in-the-sidebar.mdx) | ADR folders show as a constellation in the sidebar | Approved |
-| [0020](content/docs/maintain/adr/ADR-0020-people-in-adrs-are-github-usernames-shown-as-profile-chips.mdx) | People in ADRs are GitHub usernames, shown as profile chips | Approved |
-| [0021](content/docs/maintain/adr/ADR-0021-tests-run-with-bun-test.mdx) | Tests run with Bun's built-in test runner | Approved |
-| [0022](content/docs/maintain/adr/ADR-0022-diagrams-show-archify-on-the-page-and-mermaid-in-markdown.mdx) | Diagrams show their Archify view on the page and their Mermaid in Markdown | Approved |
-| [0023](content/docs/maintain/adr/ADR-0023-sidebar-stations-open-one-at-a-time.mdx) | Sidebar stations open one at a time | Approved |
-| [0024](content/docs/maintain/adr/ADR-0024-a-project-can-span-several-repositories.mdx) | A project can span several repositories | Approved |
-| [0025](content/docs/maintain/adr/ADR-0025-the-overview-has-the-same-sidebar-as-its-tracks.mdx) | The overview has the same sidebar as its tracks | Approved |
-| [0026](content/docs/maintain/adr/ADR-0026-the-moon-picker-on-an-overview-opens-a-lines-first-page.mdx) | The moon picker on an overview opens a line's first page | Approved |
-| [0027](content/docs/maintain/adr/ADR-0027-the-sidebar-is-a-scale-ladder-with-one-lifted-orbit.mdx) | The sidebar is a scale ladder with one lifted orbit | Approved |
-| [0028](content/docs/maintain/adr/ADR-0028-the-site-gets-its-first-verse-name.mdx) | The site gets its first Verse name | Approved |
-| [0029](content/docs/maintain/adr/ADR-0029-the-verse-is-a-still-sky-you-zoom-through.mdx) | The Verse is a still sky you zoom through | Approved |
-| [0030](content/docs/maintain/adr/ADR-0030-the-horizon-rises-over-the-page-and-its-sky-comes-alive.mdx) | The horizon rises over the page, and its sky comes alive | Approved |
-| [0031](content/docs/maintain/adr/ADR-0031-the-sidebar-sets-without-dimming.mdx) | The sidebar sets without dimming | Approved |
-| [0032](content/docs/maintain/adr/ADR-0032-the-heros-system-comes-alive.mdx) | The hero's system comes alive | Approved |
-| [0033](content/docs/maintain/adr/ADR-0033-the-footer-says-you-have-reached-the-horizon.mdx) | The footer says you've reached the horizon | Approved |
-| [0034](content/docs/maintain/adr/ADR-0034-the-proxy-answers-unknown-paths-with-a-true-404.mdx) | The proxy answers unknown paths with a true 404 | Approved |
-| [0035](content/docs/maintain/adr/ADR-0035-every-page-is-ready-for-search-and-sharing.mdx) | Every page is ready for search and sharing | Approved |
-| [0036](content/docs/maintain/adr/ADR-0036-the-site-is-nepal-dev-verse.mdx) | The site is Nepal Dev Verse, part of nepal-dev.com | Approved |
-| [0037](content/docs/maintain/adr/ADR-0037-the-horizon-is-the-himalaya.mdx) | The Horizon is the Himalaya | Approved |
-| [0038](content/docs/maintain/adr/ADR-0038-earlier-names-leave-the-pages-and-the-github-link-follows-the-move.mdx) | Earlier names leave the pages, and the GitHub link follows the move | Approved |

@@ -1,0 +1,74 @@
+---
+title: "ADR-0039 — nepal-dev.com owns the site, and @puncoz approves for it"
+description: "The site's owner is nepal-dev.com. The maker still maintains it and approves its ADRs as @puncoz, and the footer's credit stays."
+---
+
+- **Status:** Approved
+- **Date:** 2026-11-03
+- **Deciders:** [@puncoz](https://github.com/puncoz)
+- **Approved by:** [@puncoz](https://github.com/puncoz)
+- **Approved on:** 2026-11-03
+- **Supersedes:** [ADR-0036](./ADR-0036-the-site-is-nepal-dev-verse.mdx) decision 12 (in part: who is named as
+  the owner in the working documents)
+- **Superseded by:** —
+- **Design documents:** none; this changes who is named, not how the site works
+
+## Context
+
+ADR-0036 made the site part of nepal-dev.com, and decision 12 kept the maker as the owner in the working
+documents. On 2026-11-03 the owner said that the owner is nepal-dev.com, and chose to keep approving decisions
+personally. The working documents use "the owner" throughout for whoever reviews and approves, so that role
+needs a person even though an organisation owns the site. An ADR's `Deciders` and `Approved by` take a GitHub
+username (ADR-0020).
+
+## Decision
+
+1. **The site's owner is nepal-dev.com.** `AGENTS.md`, `PROJECT_AGENTS.md`, `PRODUCT.md` and `README.md` say so.
+2. **The maker still maintains the site and acts for the owner.** In the working documents, "the owner" reviews,
+   approves and decides through `puncoz`. `Deciders` and `Approved by` stay `[@puncoz](https://github.com/puncoz)`
+   (ADR-0020).
+3. **Nothing else moves.** The footer's credit and its link (ADR-0036 decision 9), existing ADRs and the ADR gate
+   stay as they are.
+
+## Options considered
+
+| Option | Pros | Cons | Verdict |
+|---|---|---|---|
+| nepal-dev.com owns; `@puncoz` approves | True to the owner's words; the gate keeps a named person | "The owner" now means someone acting for an organisation | Chosen (owner) |
+| nepal-dev.com also approves, through its GitHub account | One name for both | An organisation account in the ADR chips, unchecked; a change to who passes the gate | Rejected (owner) |
+| Change the README only | Smallest change | The working documents contradict the owner | Rejected (owner) |
+
+## Consequences
+
+**Positive**
+
+- The documents agree with the site, which already names nepal-dev.com as its community and publisher.
+
+**Negative / accepted trade-offs**
+
+- A later change of who approves needs its own ADR.
+
+## Content invariants
+
+None touched.
+
+## Security considerations
+
+None. This touches no data, endpoint or secret. Authority over private or public decisions stays with the same
+person (ADR-0004, ADR-0005), and `puncoz` is already public as a GitHub username (ADR-0020).
+
+## Implementation notes
+
+No app flow (ADR-0008): nothing a reader sees changes.
+
+- [x] `AGENTS.md` §1 and §2, `PROJECT_AGENTS.md`, `PRODUCT.md`, `README.md` (decisions 1 and 2).
+- [x] "Superseded by" in ADR-0036.
+- [x] Tests (ADR-0007): each working document names nepal-dev.com as the owner, and none still names the maker
+      as owner and maintainer.
+- [x] `bun run test`, `bun run types:check` and `bunx next build` pass, and the lint failure is reported while it
+      stands.
+
+## Docs to update on implementation
+
+- [x] `content/docs/maintain/security/data-classification.mdx`: who `puncoz` approves for
+- [x] `content/docs/maintain/adr/index.mdx`: this ADR's row and the next free number
