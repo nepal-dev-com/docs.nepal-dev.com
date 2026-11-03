@@ -171,9 +171,9 @@ describe('the closing line (ADR-0033)', () => {
 describe('the credit (ADR-0036 decision 9)', () => {
   const credit = renderToStaticMarkup(<HorizonCredit />);
 
-  test('says the site is part of nepal-dev.com, and who made it with love', () => {
+  test('says the site is part of nepal-dev.com, and who made it, with a heart', () => {
     expect(credit.replace(/<svg[\s\S]*?<\/svg>/, '').replace(/<[^>]+>/g, '').trim()).toBe(
-      'Part of nepal-dev.com. Made with love by Puncoz Nepal.',
+      'Part of nepal-dev.com. Made with ❤️ by Puncoz Nepal.',
     );
   });
 
