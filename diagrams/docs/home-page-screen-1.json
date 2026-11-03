@@ -22,7 +22,7 @@
     {
       "id": "word",
       "type": "external",
-      "label": "◎ Puncoz Verse",
+      "label": "▲ Nepal Dev Verse",
       "pos": [
         40,
         60
@@ -71,12 +71,12 @@
         436,
         70
       ],
-      "sublabel": "Puncoz Nepal, orbits npm · Composer · PyPI · projects, planets…"
+      "sublabel": "nepal-dev.com, orbits npm · Composer · PyPI · Go · projects…"
     },
     {
       "id": "h1",
       "type": "external",
-      "label": "Every package and project, documented to the",
+      "label": "Every package and project by Nepalese developers",
       "pos": [
         40,
         224
@@ -85,7 +85,7 @@
         436,
         70
       ],
-      "sublabel": "version."
+      "sublabel": "all over the world, documented to the version."
     },
     {
       "id": "sub",

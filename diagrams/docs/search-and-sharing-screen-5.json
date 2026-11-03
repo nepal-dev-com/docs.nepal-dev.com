@@ -22,7 +22,7 @@
     {
       "id": "brand",
       "type": "frontend",
-      "label": "The Verse mark and Puncoz Verse, top left, on the",
+      "label": "The brand mark and Nepal Dev Verse, top left, on",
       "pos": [
         40,
         60
@@ -31,43 +31,43 @@
         436,
         70
       ],
-      "sublabel": "still dark star field"
+      "sublabel": "the still dark star field"
     },
     {
       "id": "line",
       "type": "external",
-      "label": "Every package and project,",
+      "label": "Every package and",
       "pos": [
         40,
         142
       ],
       "size": [
         212,
-        152
+        70
       ],
-      "sublabel": "documented to the version."
+      "sublabel": "project by Nepalese…"
     },
     {
       "id": "system",
       "type": "external",
-      "label": "On the right: the star, its",
+      "label": "On the right: the star,",
       "pos": [
         264,
         142
       ],
       "size": [
         212,
-        152
+        70
       ],
-      "sublabel": "orbits and planets, clear of the text"
+      "sublabel": "its orbits and a planet on…"
     },
     {
       "id": "domain",
       "type": "external",
-      "label": "docs.puncoz.com",
+      "label": "docs.nepal-dev.com",
       "pos": [
         40,
-        306
+        224
       ],
       "size": [
         436,

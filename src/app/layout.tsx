@@ -7,7 +7,7 @@ import SearchDialog from '@/components/search';
 import { Sky } from '@/components/sky';
 import { cn } from '@/lib/cn';
 import { siteUrl } from '@/lib/seo';
-import { appName, owner } from '@/lib/shared';
+import { appName, community } from '@/lib/shared';
 
 // Fetched at build time and served from the site; one type system on every page (ADR-0015).
 const display = Bricolage_Grotesque({ subsets: ['latin'], variable: '--font-home-display', axes: ['opsz'] });
@@ -18,9 +18,9 @@ const data = JetBrains_Mono({ subsets: ['latin'], variable: '--font-home-data' }
 export const metadata: Metadata = {
   ...(siteUrl ? { metadataBase: siteUrl } : {}),
   applicationName: appName,
-  authors: [{ name: owner.name, url: owner.url }],
-  creator: owner.name,
-  publisher: owner.name,
+  authors: [{ name: community.name, url: community.url }],
+  creator: community.name,
+  publisher: community.name,
 };
 
 export const viewport: Viewport = {

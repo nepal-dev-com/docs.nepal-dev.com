@@ -96,8 +96,8 @@
 }
 
 .site-mark {
-  width: 24px;
-  height: 24px;
+  width: 28px;
+  height: 28px;
   flex: none;
 }
 
@@ -1421,7 +1421,17 @@
   /* White clouds vanish on the light sky; a cool grey body keeps their shape (ADR-0030 decision 4). */
   --cloud-top: color-mix(in srgb, var(--home-faint) 45%, var(--home-bg));
   --cloud-under: color-mix(in srgb, var(--home-star) 55%, var(--home-bg));
-  --aurora: 0.5;
+  /* Dawn: the logo's navy on a warm sky. The red and the flag are the same in both themes (ADR-0037). */
+  --range-far: #b4c5d3;
+  --range-mid: #7b97ad;
+  --range-near: #1f3f5a;
+  --range-snow: #fbfdfe;
+  --range-trace: #55bfc3;
+  --horizon-pole: #14324d;
+  --sun-glow: 0.85;
+  --horizon-warm: #ff9d7a;
+  --horizon-moon: var(--home-faint);
+  --horizon-sky: color-mix(in srgb, #ff9d7a 18%, transparent);
   position: relative;
   margin-top: 44px;
   padding-top: 96px;
@@ -1437,7 +1447,15 @@
 .dark .horizon {
   --cloud-top: var(--home-line-2);
   --cloud-under: var(--home-star);
-  --aurora: 1;
+  --range-far: #223245;
+  --range-mid: #1a2736;
+  --range-near: #141f2c;
+  --range-snow: #e6ecf2;
+  --range-trace: #3ddbb6;
+  --horizon-pole: var(--home-ink);
+  --sun-glow: 0.6;
+  --horizon-moon: var(--home-ink);
+  --horizon-sky: color-mix(in srgb, #ff9d7a 7%, transparent);
 }
 
 /* Above the docs sidebar and the trajectory, under the header (z-index 40). */
@@ -1478,11 +1496,13 @@
   background: linear-gradient(var(--home-star), var(--home-star)) 0 100% / 100% 2px no-repeat;
 }
 
+/* `sceneScale` in horizon-sky.ts holds the same numbers (ADR-0037 decision 11). */
 .horizon-scene {
   position: relative;
-  height: clamp(170px, 22vw, 260px);
+  height: clamp(230px, 28vw, 360px);
   margin-top: -6px;
   container-type: size;
+  background: linear-gradient(transparent 15%, var(--horizon-sky) 80%);
 }
 
 .horizon-scene > svg,
@@ -1491,6 +1511,16 @@
   inset: 0;
   width: 100%;
   height: 100%;
+}
+
+/* Centred, as wide as its height asks, and running off both sides of any screen. */
+.horizon-scene > .horizon-world {
+  inset: 0 auto auto 50%;
+  width: auto;
+  height: 100%;
+  max-width: none;
+  aspect-ratio: 3600 / 330;
+  transform: translateX(-50%);
 }
 
 .horizon-stars circle {
@@ -1509,23 +1539,6 @@
   animation: horizon-twinkle var(--twinkle) ease-in-out var(--delay) infinite alternate;
 }
 
-.horizon-aurora {
-  opacity: 0.4;
-  transform-origin: 50% 85%;
-  animation: horizon-breathe 9s ease-in-out infinite alternate;
-  will-change: transform, opacity;
-}
-
-.horizon-aurora g {
-  opacity: var(--aurora);
-}
-
-.horizon-rim-glow {
-  opacity: 0.8;
-  animation: horizon-rim 9s ease-in-out infinite alternate;
-  will-change: opacity;
-}
-
 .horizon-scene > .horizon-shooting {
   position: absolute;
   inset: auto;
@@ -1537,23 +1550,23 @@
 }
 
 .horizon-scene > .horizon-shooting-a {
-  top: 4%;
-  left: 66%;
+  top: 3%;
+  left: 76%;
 }
 
 .horizon-scene > .horizon-shooting-b {
-  top: 14%;
-  left: 28%;
+  top: 10%;
+  left: 22%;
 }
 
-/* Sized to the viewBox the other layers show (scale = max(width / 1200, height / 260)), so sliding
-   a band by half its width moves it exactly one period and the loop is seamless. */
+/* As tall as the scene, so a band's height matches the world's; sliding it by half its width moves it
+   exactly one period, so the loop is seamless. */
 .horizon-cloud-band {
   position: absolute;
   bottom: 0;
-  left: calc(50% - max(50cqw, 230.77cqh));
-  width: max(200cqw, 923.08cqh);
-  height: max(21.667cqw, 100cqh);
+  left: calc(50% - max(50cqw, 181.82cqh));
+  width: max(200cqw, 727.27cqh);
+  height: 100cqh;
   animation: horizon-drift var(--drift) linear infinite;
   will-change: transform;
 }
@@ -1572,15 +1585,130 @@
 
 /* The star's light falls off with distance; the clouds fade toward the scene's sides. */
 .horizon-clouds {
-  mask-image: radial-gradient(ellipse 60% 120% at 50% 100%, #000 35%, rgb(0 0 0 / 0.3) 80%);
+  mask-image: radial-gradient(ellipse 70% 120% at 50% 100%, #000 45%, rgb(0 0 0 / 0.45) 85%);
+}
+
+.horizon-moon {
+  fill: var(--horizon-moon);
+  opacity: 0.85;
+}
+
+.horizon-star-disc {
+  fill: var(--home-star);
+}
+
+.horizon-far path {
+  fill: var(--range-far);
+}
+
+.horizon-mid path {
+  fill: var(--range-mid);
+}
+
+.horizon-near .horizon-rock {
+  fill: var(--range-near);
+}
+
+.horizon-near .horizon-snow {
+  fill: var(--range-snow);
+}
+
+/* The logo's red: the star's light on the sunward faces (ADR-0037 decision 4). */
+.horizon-near .horizon-alpenglow {
+  fill: #d2193b;
+  opacity: 0.92;
+}
+
+.horizon-ground-fill {
+  fill: var(--home-bg-2);
+  stroke: var(--home-accent);
+  stroke-width: 1.2;
+  stroke-opacity: 0.55;
+}
+
+.horizon-trace {
+  fill: none;
+  stroke: var(--range-trace);
+  stroke-width: 1.5;
+  stroke-linejoin: round;
+  opacity: 0.7;
+}
+
+/* The rock is dark in both themes, so a light's colour is lifted on the light theme's navy. */
+.horizon-light {
+  --light-lit: color-mix(in srgb, var(--light) 50%, #fff);
+}
+
+.dark .horizon-light {
+  --light-lit: var(--light);
+}
+
+.horizon-light-halo {
+  fill: var(--light-lit);
+  opacity: 0.2;
+  transform-box: fill-box;
+  transform-origin: center;
+  transition:
+    opacity 0.25s,
+    transform 0.25s;
+}
+
+.horizon-light-core {
+  fill: var(--range-near);
+  stroke: var(--light-lit);
+  stroke-width: 2;
+}
+
+/* Hovering or focusing an entry in the planet row brightens its light: no script, no slug in the CSS. */
+.horizon:has(.horizon-planets a[data-spot='0']:is(:hover, :focus-visible)) .horizon-light[data-spot='0'] .horizon-light-halo,
+.horizon:has(.horizon-planets a[data-spot='1']:is(:hover, :focus-visible)) .horizon-light[data-spot='1'] .horizon-light-halo,
+.horizon:has(.horizon-planets a[data-spot='2']:is(:hover, :focus-visible)) .horizon-light[data-spot='2'] .horizon-light-halo,
+.horizon:has(.horizon-planets a[data-spot='3']:is(:hover, :focus-visible)) .horizon-light[data-spot='3'] .horizon-light-halo,
+.horizon:has(.horizon-planets a[data-spot='4']:is(:hover, :focus-visible)) .horizon-light[data-spot='4'] .horizon-light-halo,
+.horizon:has(.horizon-planets a[data-spot='5']:is(:hover, :focus-visible)) .horizon-light[data-spot='5'] .horizon-light-halo,
+.horizon:has(.horizon-planets a[data-spot='6']:is(:hover, :focus-visible)) .horizon-light[data-spot='6'] .horizon-light-halo,
+.horizon:has(.horizon-planets a[data-spot='7']:is(:hover, :focus-visible)) .horizon-light[data-spot='7'] .horizon-light-halo,
+.horizon:has(.horizon-planets a[data-spot='8']:is(:hover, :focus-visible)) .horizon-light[data-spot='8'] .horizon-light-halo,
+.horizon:has(.horizon-planets a[data-spot='9']:is(:hover, :focus-visible)) .horizon-light[data-spot='9'] .horizon-light-halo,
+.horizon:has(.horizon-planets a[data-spot='10']:is(:hover, :focus-visible)) .horizon-light[data-spot='10'] .horizon-light-halo,
+.horizon:has(.horizon-planets a[data-spot='11']:is(:hover, :focus-visible)) .horizon-light[data-spot='11'] .horizon-light-halo,
+.horizon:has(.horizon-planets a[data-spot='12']:is(:hover, :focus-visible)) .horizon-light[data-spot='12'] .horizon-light-halo,
+.horizon:has(.horizon-planets a[data-spot='13']:is(:hover, :focus-visible)) .horizon-light[data-spot='13'] .horizon-light-halo,
+.horizon:has(.horizon-planets a[data-spot='14']:is(:hover, :focus-visible)) .horizon-light[data-spot='14'] .horizon-light-halo,
+.horizon:has(.horizon-planets a[data-spot='15']:is(:hover, :focus-visible)) .horizon-light[data-spot='15'] .horizon-light-halo {
+  opacity: 0.75;
+  transform: scale(1.5);
+}
+
+.horizon-pole {
+  fill: var(--horizon-pole);
+}
+
+/* The flag stands raised unless HorizonAwake has lowered it out of sight, so it can never rest part-way
+   up its pole: that would mean mourning (ADR-0037 decision 5). */
+.horizon-flag {
+  transform-box: fill-box;
+  transform-origin: 0 100%;
+}
+
+.horizon-flag-cloth {
+  transform-box: fill-box;
+  transform-origin: 0 50%;
+  animation: horizon-wave 7s ease-in-out infinite alternate;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .horizon[data-lowered]:not([data-summit]) .horizon-flag {
+    transform: translateY(26px) scale(0.28, 0.5);
+  }
+
+  .horizon[data-summit] .horizon-flag {
+    transition: transform 1.2s cubic-bezier(0.16, 1, 0.3, 1);
+  }
 }
 
 .horizon-observatory {
-  fill: color-mix(in srgb, var(--home-ink) 72%, var(--home-bg));
-}
-
-.dark .horizon-observatory {
-  fill: var(--home-bg);
+  fill: var(--range-near);
 }
 
 .horizon-observatory .horizon-scope {
@@ -1609,29 +1737,18 @@
   animation-play-state: paused;
 }
 
+@keyframes horizon-wave {
+  from {
+    transform: skewY(-1.6deg) scaleX(1);
+  }
+  to {
+    transform: skewY(1.6deg) scaleX(0.97);
+  }
+}
+
 @keyframes horizon-twinkle {
   from {
     opacity: 0.25;
-  }
-  to {
-    opacity: 1;
-  }
-}
-
-@keyframes horizon-breathe {
-  from {
-    opacity: 0.25;
-    transform: scaleY(0.92);
-  }
-  to {
-    opacity: 0.55;
-    transform: scaleY(1.06);
-  }
-}
-
-@keyframes horizon-rim {
-  from {
-    opacity: 0.6;
   }
   to {
     opacity: 1;
@@ -1664,7 +1781,13 @@
 
 @keyframes horizon-rise {
   from {
-    transform: translateY(40px);
+    transform: translateY(100px);
+  }
+}
+
+@keyframes horizon-glow-face {
+  from {
+    opacity: 0;
   }
 }
 
@@ -1698,6 +1821,12 @@
       animation: horizon-glow linear both;
       animation-timeline: --horizon;
       animation-range: entry 15% entry 95%;
+    }
+
+    .horizon-near .horizon-alpenglow {
+      animation: horizon-glow-face linear both;
+      animation-timeline: --horizon;
+      animation-range: entry 25% entry 95%;
     }
   }
 
@@ -1802,6 +1931,19 @@
 .horizon small {
   font-size: 13px;
   color: var(--home-faint);
+}
+
+.horizon-credit {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  text-wrap: balance;
+}
+
+.horizon-credit .brand-mark {
+  width: 24px;
+  height: 24px;
+  flex: none;
 }
 
 .horizon small a {

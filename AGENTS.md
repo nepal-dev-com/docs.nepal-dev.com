@@ -23,8 +23,9 @@ updating this file is part of that change.
 
 ## 1. What this project is
 
-**puncoz-packages-docs** is the documentation site for everything its owner, Puncoz Nepal,
-builds and publishes:
+**puncoz-packages-docs** is **Nepal Dev Verse**, the documentation platform for everything
+Nepalese developers all over the world build and publish, part of
+[nepal-dev.com](https://nepal-dev.com) (ADR-0036). Its owner and maintainer is Puncoz Nepal. It holds:
 
 - **Open-source packages and libraries** — npm packages, PHP / Composer packages, and packages
   and libraries for any other ecosystem.
@@ -33,7 +34,7 @@ builds and publishes:
 It is a [Fumadocs](https://fumadocs.dev) site on Next.js. Every page a reader sees is a file in
 `content/`, and every package or project is a folder there, `content/<slug>/`, published at
 `/<slug>` ([ADR-0015](content/docs/maintain/adr/ADR-0015-every-entry-lives-at-the-root-in-one-shape-and-one-look.mdx)).
-This site is one project among them: **Puncoz Verse Docs**, slug `docs`, at `content/docs/`. Its own
+This site is one project among them: **Nepal Dev Verse Docs**, slug `docs`, at `content/docs/`. Its own
 decisions and design documents are its Maintain track, `content/docs/maintain/`, published at
 `/docs/maintain` (§8).
 
@@ -47,8 +48,8 @@ decisions and design documents are its Maintain track, `content/docs/maintain/`,
   maintainer documentation is
   [`content/docs/maintain/index.mdx`](content/docs/maintain/index.mdx).
 
-**Current state:** the site is named **Puncoz Verse** (`appName` in `src/lib/shared.ts`,
-ADR-0028), its own documentation is **Puncoz Verse Docs**, and it links to GitHub
+**Current state:** the site is named **Nepal Dev Verse** (`appName` in `src/lib/shared.ts`,
+ADR-0036), its own documentation is **Nepal Dev Verse Docs**, and it links to GitHub
 `puncoz-official/docs`. **No package or project is documented
 yet** besides the site itself, so the home page shows its empty states.
 
@@ -61,7 +62,7 @@ yet** besides the site itself, so the home page shows its empty states.
   each a folder in each track, `use/<id>/` and `maintain/<id>/` (ADR-0024).
 - **The build checks the shape.** Line redirects, version banners, scoped sidebars, search
   fields and `llms.txt` labels all come from it.
-- **The whole site is one solar system** (ADR-0015, ADR-0017, ADR-0018). The star is the maker; a package
+- **The whole site is one solar system** (ADR-0015, ADR-0017, ADR-0018). The star is nepal-dev.com, the community (ADR-0036); a package
   is a solid planet, a project a ringed one; each version line is a moon (full = latest,
   crescent = older, dashed new moon = `dev`); Use and Maintain are a planet's day and night
   sides. The marks are drawn by `src/components/planet.tsx` and mean the same on every page.
@@ -70,8 +71,8 @@ yet** besides the site itself, so the home page shows its empty states.
   controls: Search, Overview, Use, Maintain, On this page and version names keep their plain
   names, and a space word always stands beside a plain sentence (DESIGN.md, *The Places, Not
   Controls Rule*). Every page stands on one still star field, never behind
-  text, and shares the site header (the Verse mark and wordmark, nav, GitHub, the orrery theme
-  switch; a search button on docs pages), the tokens and fonts, and the full Horizon footer: a closing line whose *The Verse* opens the Verse view (ADR-0033), and a living dusk sky (twinkling stars, an aurora, shooting stars, lit clouds, the star rising with the scroll, an observatory on the ridge) whose loops run only while it is on screen, rising over the docs sidebar and trajectory as they set into its dusk edge (ADR-0030). Docs pages use the
+  text, and shares the site header (the brand mark, nepal-dev.com's mountain and flag, and wordmark, nav, GitHub, the orrery theme
+  switch; a search button on docs pages), the tokens and fonts, and the full Horizon footer: a closing line whose *The Verse* opens the Verse view (ADR-0033), a living sky (twinkling stars, shooting stars, lit clouds, the star rising with the scroll) whose loops run only while it is on screen, rising over the docs sidebar and trajectory as they set into its dusk edge (ADR-0030), the Himalaya under it (ADR-0037: three ranges, alpenglow, the flag raised once on arrival, one light per entry, an observatory on the shoulder), and the credit "Part of nepal-dev.com. Made with love by Puncoz Nepal.". Docs pages use the
   Fumadocs notebook layout: the scale strip above every page in place of Fumadocs' breadcrumb
   (Verse ▸ System ▸ planet ▸ side and moon ▸ orbits ▸ page; going up zooms out); a planet header
   on each overview, its planet morphing from the home page's card; in the sidebar the planet row
@@ -264,9 +265,9 @@ What is installed **today** (verified from `package.json`, `node_modules` and th
 | Content source | `defineDocs` from `fumadocs-mdx/macro` in `src/lib/source.ts`, reading `content/`; no `source.config.ts`; generated files in `.source/` (gitignored) |
 | Catalogue | `src/lib/catalog-schema.ts` (meta schema with `catalog`, `name`, `version`, `channel`), `src/lib/catalog-plugin.ts` (build checks, line names and URL segments, typed roots), `src/lib/catalog.ts` (entries for pages and the home page), `src/lib/catalog-routes.ts` (line redirects and known paths in the proxy) — ADR-0013, ADR-0015, ADR-0034 |
 | Routes | `/` is `src/app/(home)/`; every page is `src/app/(site)/(docs)/[...slug]/` at `/<slug>/…` (`docsRoute` is `''` in `src/lib/shared.ts`); `src/proxy.ts` leaves the site's routes alone, handles line redirects and Markdown on catalogued paths, and rewrites any other unknown path to `/_not-found` with a 404; `src/lib/known-paths.ts` holds the routes and the list of paths, and a new top-level route or `public/` file must be added there (a test compares them); the build fails if the list differs from the pages — ADR-0015, ADR-0034. **The docs layout stays below `(site)`, in `(docs)`:** Turbopack hangs the root `not-found.tsx` on the children of a first-layer route group, inside that group's layout, so a layout directly in `(site)` would stand around the 404 |
-| Look | Tokens on `:root` and `.dark` in `src/app/global.css`, mapped onto Fumadocs' `--color-fd-*`; site header, orrery theme switch (`src/components/theme-switch.tsx`, `useTheme` from `fumadocs-ui/provider/base`), docs typography, planet header, notices, planet row, orbit stations, trajectory and Horizon footer in `src/app/site.css`; planet and moon marks in `src/components/planet.tsx`; the Verse mark in `src/components/verse-mark.tsx` and the site icon `src/app/icon.svg`; the still sky in `src/components/sky.tsx` from `src/lib/sky.ts`, styled in `global.css` and `site.css`; the zoom: `src/components/zoom-page.tsx` (`ZoomPage` in each page, `PlanetMorph` on the card's and the planet header's planet), the transition types in `src/lib/zoom.ts`, their CSS in `global.css` (ADR-0029); fonts Bricolage Grotesque, Onest and JetBrains Mono through `next/font/google` in `src/app/layout.tsx`; light/dark through next-themes (dark by default); visual system in `DESIGN.md` — ADR-0015, ADR-0017, ADR-0018, ADR-0029 |
+| Look | Tokens on `:root` and `.dark` in `src/app/global.css`, mapped onto Fumadocs' `--color-fd-*`; site header, orrery theme switch (`src/components/theme-switch.tsx`, `useTheme` from `fumadocs-ui/provider/base`), docs typography, planet header, notices, planet row, orbit stations, trajectory and Horizon footer in `src/app/site.css`; planet and moon marks in `src/components/planet.tsx`; the brand mark in `src/components/brand-mark.tsx`, its flag in `src/components/nepal-flag.tsx` with `src/lib/flag.ts`, the logo as supplied in `assets/nepal-dev-logo.svg` (not served), the site icon `src/app/icon.svg` (ADR-0036); the Verse's place mark in `src/components/verse-mark.tsx`; the still sky in `src/components/sky.tsx` from `src/lib/sky.ts`, styled in `global.css` and `site.css`; the zoom: `src/components/zoom-page.tsx` (`ZoomPage` in each page, `PlanetMorph` on the card's and the planet header's planet), the transition types in `src/lib/zoom.ts`, their CSS in `global.css` (ADR-0029); fonts Bricolage Grotesque, Onest and JetBrains Mono through `next/font/google` in `src/app/layout.tsx`; light/dark through next-themes (dark by default); visual system in `DESIGN.md` — ADR-0015, ADR-0017, ADR-0018, ADR-0029 |
 | Home page | `src/app/(home)/` and `src/components/home/`; the Verse view in `orbit-map.tsx` with `src/lib/verse-view.ts`, its hash target at the very top of `(home)/page.tsx` (ADR-0033); the living system's geometry, comet and telemetry in `src/lib/hero-sky.ts` (ADR-0032); styles in `src/app/(home)/home.css` (also the 404's) — ADR-0014, ADR-0016, ADR-0017, ADR-0029, ADR-0032 |
-| Docs pages | Fumadocs notebook layout in `src/app/(site)/(docs)/layout.tsx`, header `src/components/site-header.tsx` (shared with the home page), `src/components/docs/` (the scale strip in `scale-strip.tsx` with `src/lib/scale-strip.ts`, rendered first in the page with Fumadocs' breadcrumb off, docs header, planet header, the planet row in `track-switch.tsx` with `src/lib/overview-sidebar.ts`, orbit stations in `orbit-station.tsx` passed as `sidebar.components`, the ADR constellation in `adr-constellation.tsx` with `src/lib/adr-status.ts`, the trajectory in `trajectory-toc.tsx` passed as `slots.toc` from the page, version notice), moon icons on the version menu, `src/lib/trajectory.ts` and `src/lib/reading-time.ts` (geometry, time left, reading time), `src/components/horizon-footer.tsx` below every page, its scene from `src/lib/horizon-sky.ts` and its loops woken by `src/components/horizon-awake.tsx` (ADR-0030), — ADR-0015, ADR-0017, ADR-0018, ADR-0019, ADR-0029 |
+| Docs pages | Fumadocs notebook layout in `src/app/(site)/(docs)/layout.tsx`, header `src/components/site-header.tsx` (shared with the home page), `src/components/docs/` (the scale strip in `scale-strip.tsx` with `src/lib/scale-strip.ts`, rendered first in the page with Fumadocs' breadcrumb off, docs header, planet header, the planet row in `track-switch.tsx` with `src/lib/overview-sidebar.ts`, orbit stations in `orbit-station.tsx` passed as `sidebar.components`, the ADR constellation in `adr-constellation.tsx` with `src/lib/adr-status.ts`, the trajectory in `trajectory-toc.tsx` passed as `slots.toc` from the page, version notice), moon icons on the version menu, `src/lib/trajectory.ts` and `src/lib/reading-time.ts` (geometry, time left, reading time), `src/components/horizon-footer.tsx` below every page, its scene from `src/lib/horizon-sky.ts` and its loops and the flag woken by `src/components/horizon-awake.tsx` (ADR-0030, ADR-0037), — ADR-0015, ADR-0017, ADR-0018, ADR-0019, ADR-0029 |
 | UI runtime | React 19.3 |
 | Language | TypeScript 7, `strict`; `@/*` → `./src/*` |
 | Styling | Tailwind CSS 4 through `@tailwindcss/postcss`; global styles in `src/app/global.css` |
@@ -583,24 +584,25 @@ adopts a host, analytics, CI or an authentication provider adds its own checks**
 │   │                    #   (home)/ (home page, home.css), (site)/(docs)/[...slug]/ (every page, notebook layout),
 │   │                    #   llms.txt, llms-full.txt, llms.mdx/[...slug]/, og/[...slug]/ (share images), static.json,
 │   │                    #   robots.ts, sitemap.ts, manifest.ts, apple-icon.tsx (ADR-0035),
-│   │                    #   diagrams/[project]/[file]/ (each Archify diagram with the site shell), icon.svg (the Verse mark)
+│   │                    #   diagrams/[project]/[file]/ (each Archify diagram with the site shell), icon.svg (the brand mark, small)
 │   ├── components/      # site-header.tsx, theme-switch.tsx, planet.tsx (planet and moon marks),
 │   │                    #   share-image.tsx (the share images), json-ld.tsx (ADR-0035),
-│   │                    #   verse-mark.tsx (the brand mark), sky.tsx (the still sky), zoom-page.tsx (zoom and morph, ADR-0029),
-│   │                    #   horizon-footer.tsx + horizon-awake.tsx (the living horizon, ADR-0030), footer-actions.tsx, mdx.tsx, diagram.tsx + diagram-frame.tsx, profile-link.tsx, search.tsx + search-empty.tsx (search dialog),
+│   │                    #   brand-mark.tsx (the brand mark), nepal-flag.tsx (the flag), verse-mark.tsx (the Verse's place mark), sky.tsx (the still sky), zoom-page.tsx (zoom and morph, ADR-0029),
+│   │                    #   horizon-footer.tsx + horizon-awake.tsx (the Himalayan Horizon, ADR-0030, ADR-0037), footer-actions.tsx, mdx.tsx, diagram.tsx + diagram-frame.tsx, profile-link.tsx, search.tsx + search-empty.tsx (search dialog),
 │   │                    #   docs/ (scale strip, docs header, planet header, track switch, orbit stations,
 │   │                    #   ADR constellation, trajectory TOC, version notice),
 │   │                    #   home/ (home header, hero, orbit map with the Verse view, search button, planet cards,
 │   │                    #   beyond-the-belt + private-projects.ts, two sides, moon rows, terminal,
 │   │                    #   assistant actions)
 │   └── lib/             # source.ts (content loader), catalog*.ts (catalogue schema, checks, entries, redirects),
-│                        #   rings.ts (ecosystem rings and kind names), sky.ts (seeded star fields), horizon-sky.ts (the Horizon's scene, ADR-0030), hero-sky.ts (the living hero, ADR-0032), scale-strip.ts, verse-view.ts and zoom.ts (ADR-0029), overview-sidebar.ts (ADR-0025), sidebar-ladder.ts (ADR-0027),
+│                        #   rings.ts (ecosystem rings and kind names), sky.ts (seeded star fields), horizon-sky.ts (the Horizon's scene, ADR-0030, ADR-0037), flag.ts (the flag's geometry, ADR-0036), hero-sky.ts (the living hero, ADR-0032), scale-strip.ts, verse-view.ts and zoom.ts (ADR-0029), overview-sidebar.ts (ADR-0025), sidebar-ladder.ts (ADR-0027),
 │                        #   docs-layout.ts (DocsLayout options: Fumadocs' theme switch off), trajectory.ts, reading-time.ts, adr-status.ts,
 │                        #   known-paths.ts (site routes and every path with a page, ADR-0034), search-scope.ts, algolia.ts, diagrams.ts + diagrams-plugin.ts (file checks), remark-diagrams.ts
 │                        #   (shape check, Markdown filter), diagram-shell.ts, diagram-files.ts (ADR-0022),
 │                        #   github-profile.ts (ADR-0020); tests beside the code, *.test.ts(x) (ADR-0021)
-│                        #   shared.ts (site name, routes, GitHub),
+│                        #   shared.ts (site name, community, maker, home line, routes, GitHub),
 │                        #   seo.ts (address, each page's rule, titles, metadata, JSON-LD) and share-fonts.ts (ADR-0035)
+├── assets/              # the logo as supplied, not served (ADR-0036)
 ├── diagrams/            # Archify diagrams, one pair each (ADR-0022)
 │   └── <project-slug>/  # <slug>.json, the source (not served) · <slug>.html, PUBLISHED at /diagrams/ with the site shell
 ├── scripts/

@@ -3,7 +3,7 @@
   "diagram_type": "architecture",
   "meta": {
     "title": "Screen 2 — The living hero",
-    "subtitle": "Wireframe on a wide screen, drawn from its Mermaid version · living hero",
+    "subtitle": "Wireframe at phone width, drawn from its Mermaid version · living hero",
     "output": "living-hero-screen-2.html",
     "animation": "trace",
     "quality_profile": "showcase",
@@ -25,94 +25,97 @@
     {
       "id": "header",
       "type": "frontend",
-      "label": "Verse mark",
+      "label": "Brand mark",
       "pos": [
         40,
         60
       ],
       "size": [
-        959,
+        436,
         70
       ],
-      "sublabel": "Puncoz Verse · Projects · llms.txt · GitHub · theme"
+      "sublabel": "Nepal Dev Verse · Projects · llms.txt · GitHub · theme"
     },
     {
       "id": "head",
       "type": "external",
-      "label": "Every package and project, documented to the version",
+      "label": "Every package and",
       "pos": [
         40,
         142
       ],
       "size": [
-        466,
+        212,
         70
-      ]
+      ],
+      "sublabel": "project by Nepalese…"
     },
     {
       "id": "system",
       "type": "external",
       "label": "The system",
       "pos": [
-        533,
+        264,
         142
       ],
       "size": [
-        466,
+        212,
         70
       ],
-      "sublabel": "leans toward the pointer · a comet now and then"
+      "sublabel": "leans toward the pointer · a…"
     },
     {
       "id": "sub",
       "type": "external",
-      "label": "Guides, APIs and release notes",
+      "label": "Guides, APIs and",
       "pos": [
         40,
         224
       ],
       "size": [
-        466,
+        212,
         70
-      ]
+      ],
+      "sublabel": "release notes"
     },
     {
       "id": "orbits",
       "type": "external",
       "label": "Five orbits",
       "pos": [
-        533,
+        264,
         224
       ],
       "size": [
-        466,
+        212,
         70
       ],
-      "sublabel": "npm · Composer · PyPI · Go · Projects"
+      "sublabel": "npm · Composer · PyPI · Go…"
     },
     {
       "id": "search",
       "type": "frontend",
-      "label": "⌕ Search packages, projects and pages ⌘K",
+      "label": "⌕ Search packages,",
       "pos": [
         40,
         306
       ],
       "size": [
-        466,
+        212,
         70
-      ]
+      ],
+      "sublabel": "projects and pages ⌘K"
     },
     {
       "id": "tip",
       "type": "external",
       "label": "Pointing at an orbit",
       "pos": [
-        533,
+        264,
         306
       ],
       "size": [
-        466,
+        212,
         70
       ],
       "sublabel": "Go · No planets yet"
@@ -126,30 +129,30 @@
         388
       ],
       "size": [
-        466,
+        212,
         70
       ],
-      "sublabel": "package · project · moon = version · dashed = unreleased"
+      "sublabel": "package · project · moon =…"
     },
     {
       "id": "caption",
       "type": "backend",
       "label": "Telemetry",
       "pos": [
-        533,
+        264,
         388
       ],
       "size": [
-        466,
+        212,
         70
       ],
-      "sublabel": "1 planet · 4 orbits waiting · 0 moons · Zoom out to the Verse"
+      "sublabel": "1 planet · 4 orbits waiting…"
     }
   ],
   "boundaries": [
     {
       "kind": "region",
-      "label": "Wide screen · /, on a wide screen",
+      "label": "Phone screen · /, on a wide screen",
       "wraps": [
         "header",
         "head",

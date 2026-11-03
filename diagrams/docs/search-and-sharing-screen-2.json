@@ -38,7 +38,7 @@
     {
       "id": "title",
       "type": "frontend",
-      "label": "Install — lodestar — Puncoz Verse",
+      "label": "Install — lodestar — Nepal Dev Verse",
       "pos": [
         40,
         130
@@ -65,7 +65,7 @@
     {
       "id": "domain",
       "type": "external",
-      "label": "docs.puncoz.com",
+      "label": "docs.nepal-dev.com",
       "pos": [
         40,
         282

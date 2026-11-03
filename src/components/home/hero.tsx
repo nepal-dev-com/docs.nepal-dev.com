@@ -1,5 +1,5 @@
 import type { CatalogEntry } from '@/lib/catalog';
-import { owner } from '@/lib/shared';
+import { community } from '@/lib/shared';
 import { OrbitMap } from './orbit-map';
 import { SearchButton } from './search-button';
 
@@ -46,7 +46,7 @@ export function Hero({
 }) {
   return (
     <section className="hero" aria-labelledby="hero-heading">
-      <OrbitMap entries={entries} star={owner.name} />
+      <OrbitMap entries={entries} star={community.name} />
       <div className="wrap hero-content">
         <h1 id="hero-heading">
           {title.lead} <em>{title.rest}</em>

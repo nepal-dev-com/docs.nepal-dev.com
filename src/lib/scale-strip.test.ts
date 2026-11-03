@@ -32,7 +32,7 @@ const overview = (folderPath: string) =>
 // The tree as the catalogue plugin leaves it (ADR-0015, ADR-0025): Overview first in each line and track.
 const tree: PageTree.Root = {
   type: 'root',
-  name: 'Puncoz Verse',
+  name: 'Nepal Dev Verse',
   children: [
     folder(
       'lodestar',

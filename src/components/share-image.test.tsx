@@ -23,7 +23,7 @@ describe('the home share image (ADR-0035 decision 11)', () => {
     );
     expect(ellipses(twoRings) - ellipses(empty)).toBe(1);
     expect(ellipses(ringed) - ellipses(twoRings)).toBe(1);
-    expect(ringed).toContain('Every package and project, documented to the version.');
+    expect(ringed).toContain('Every package and project by Nepalese developers all over the world, documented to the version.');
   });
 });
 
@@ -46,7 +46,8 @@ describe('a page share image (ADR-0035 decision 11)', () => {
 
   test('never puts a star behind the text', () => {
     const markup = renderToStaticMarkup(<PageShareImage {...page} />);
-    const stars = cxOf(markup, 'circle');
+    // The scene is the first SVG; the mark and its text come after it.
+    const stars = cxOf(markup.slice(0, markup.indexOf('</svg>')), 'circle');
     expect(stars.length).toBeGreaterThan(10);
     expect(Math.min(...stars)).toBeGreaterThan(textColumnEnd);
   });

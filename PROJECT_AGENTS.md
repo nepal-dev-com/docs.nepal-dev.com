@@ -1,7 +1,8 @@
 # Documenting a project here — guide for consuming repositories
 
-This repository, **puncoz-packages-docs**, is the documentation site for everything Puncoz
-Nepal builds. Project and package repositories include it as a **git submodule** and write their
+This repository, **puncoz-packages-docs**, is **Nepal Dev Verse**, the documentation platform for
+packages and projects by Nepalese developers all over the world, part of
+[nepal-dev.com](https://nepal-dev.com). Project and package repositories include it as a **git submodule** and write their
 own documentation into it. This guide is for the people and AI agents working in those
 repositories: what to maintain, where each thing goes, and how versions and diagrams work.
 
@@ -278,9 +279,9 @@ counterpart in `latest`.
 
 From the same facts, each page also gets:
 
-- **A title** with the page, its entry and the site: `Install — lodestar — Puncoz Verse` on `latest`,
-  `Install — lodestar 2.x LTS — Puncoz Verse` on an older line, `lodestar — Puncoz Verse` on the overview.
-- **A share image at 1200 by 630**, drawn at build: the Verse mark, your entry's planet, its name, the
+- **A title** with the page, its entry and the site: `Install — lodestar — Nepal Dev Verse` on `latest`,
+  `Install — lodestar 2.x LTS — Nepal Dev Verse` on an older line, `lodestar — Nepal Dev Verse` on the overview.
+- **A share image at 1200 by 630**, drawn at build: the brand mark, your entry's planet, its name, the
   track, the line with its moon, then the page's title and description. Don't add your own.
 - **Structured data**: `TechArticle` and breadcrumbs on a page, and on an overview `SoftwareSourceCode`
   with your repository and latest version from the catalogue. A page that is `noindex`, or whose

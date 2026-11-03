@@ -1,12 +1,12 @@
 import type { MetadataRoute } from 'next';
 import { shareColors } from '@/lib/seo';
-import { appName } from '@/lib/shared';
+import { appName, homeLine } from '@/lib/shared';
 
 export default function manifest(): MetadataRoute.Manifest {
   return {
     name: appName,
     short_name: appName,
-    description: 'Every package and project, documented to the version.',
+    description: `${homeLine.lead} ${homeLine.rest}`,
     start_url: '/',
     display: 'browser',
     background_color: shareColors.ground,

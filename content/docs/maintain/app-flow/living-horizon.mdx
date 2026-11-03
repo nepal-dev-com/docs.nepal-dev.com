@@ -1,20 +1,22 @@
 ---
 title: "App flow — the living horizon"
-description: "How the end of every page behaves: the footer rising over the sidebar and its living sky of stars, aurora and shooting stars."
+description: "How the end of every page behaves: the footer rising over the sidebar and its living sky of stars, clouds and shooting stars over the range."
 ---
 
 - **Status:** Current
-- **Last updated:** 2026-11-01
-- **Related ADRs:** [ADR-0030](../adr/ADR-0030-the-horizon-rises-over-the-page-and-its-sky-comes-alive.mdx),
+- **Last updated:** 2026-11-03
+- **Related ADRs:** [ADR-0037](../adr/ADR-0037-the-horizon-is-the-himalaya.mdx),
+  [ADR-0030](../adr/ADR-0030-the-horizon-rises-over-the-page-and-its-sky-comes-alive.mdx),
   [ADR-0018](../adr/ADR-0018-docs-pages-get-orbit-stations-a-trajectory-and-the-full-horizon.mdx),
   [ADR-0017](../adr/ADR-0017-the-whole-site-is-one-solar-system.mdx)
 
 > Snapshot of the system as it stands today. Edit in place; never record what changed.
 
-How the end of every page works under ADR-0030. The Horizon footer rises over the docs page's
-sidebar and trajectory as the reader reaches it, and its sky is alive: twinkling stars, an aurora
-on the rim, shooting stars, the star rising with the scroll, drifting lit clouds and an
-observatory on the ridge. Sample values are invented (ADR-0008). Phone width first.
+How the end of every page moves under ADR-0030. The Horizon footer rises over the docs page's
+sidebar and trajectory as the reader reaches it, and its sky is alive: twinkling stars, shooting
+stars, the star rising with the scroll and drifting lit clouds. What stands under that sky, the
+range, the flag and the entries' lights, is in [the Himalayan Horizon](./himalayan-horizon.mdx)
+(ADR-0037). Sample values are invented (ADR-0008). Phone width first.
 
 The flow and each screen are drawn with Archify; the page shows them and its Markdown carries
 their Mermaid (ADR-0022). Their sources are in `diagrams/docs/`: `living-horizon.json` for the
@@ -55,21 +57,20 @@ block-beta
   columns 4
   closing["You've reached the horizon. The Verse goes on."]:4
   stars["Twinkling stars · ☄ a shooting star now and then"]:4
-  aurora["Aurora · teal ribbons breathing over the rim"]:4
   clouds["Lit clouds · three bands drifting, warm undersides"]:4
-  ridge["⌂ observatory on the ridge · ☀ the star rising · the curve"]:4
-  planets["lodestar · Puncoz Verse Docs"]:4
+  ridge["⌂ observatory on the shoulder · ☀ the star rising · ⚑ the flag · the range"]:4
+  planets["lodestar · Nepal Dev Verse Docs"]:4
   links["Search ⌘K · llms.txt · llms-full.txt · GitHub · Back to top ↑"]:4
-  credit["Packages and projects by Puncoz Nepal"]:4
+  credit["Part of nepal-dev.com. Made with love by Puncoz Nepal."]:4
 ```
 
 </Diagram>
 
 The closing line stands on the opaque ground above the scene, and the surface rows below it;
-nothing moves behind text. In the scene, back to front: stars (some twinkling), the aurora and
-the rim breathing together, two shooting stars on 14- and 23-second cycles, the star rising
-with the scroll, three cloud bands looping sideways over 90, 140 and 200 seconds, and the
-observatory standing still on the curve, its slit open toward the star.
+nothing moves behind text. In the scene, back to front: stars (some twinkling), two shooting stars on 14- and
+23-second cycles, the star rising with the scroll, the far range, three cloud bands looping sideways
+over 90, 140 and 200 seconds, the mid range and the near range with the flag waving on its summit and
+the observatory standing still on its left shoulder, its slit open toward the star.
 
 **States**
 
@@ -81,8 +82,7 @@ observatory standing still on the curve, its slit open toward the star.
 - Degraded:
   - with reduced motion nothing loops or rises;
   - in a browser without scroll-driven animations the star stands risen;
-  - in the light theme the clouds take a cool grey body with soft warm undersides, and the aurora
-    fades to half;
+  - in the light theme the clouds take a cool grey body with soft warm undersides;
   - without scripts the scene stays still.
 - Success: the reader reaches the end, sees the sky come alive and finds the links below it.
 
@@ -93,7 +93,7 @@ observatory standing still on the curve, its slit open toward the star.
 ```mermaid
 block-beta
   columns 6
-  header["Verse mark · Puncoz Verse · Search ⌘K · GitHub · theme"]:6
+  header["Brand mark · Nepal Dev Verse · Search ⌘K · GitHub · theme"]:6
   side["Sidebar · setting"]:1 last["The page's last lines · previous and next"]:4 toc["On this page · setting"]:1
   dusk["Dusk edge · the sidebar and the trajectory sink into it"]:6
   scene["The Horizon · over the sidebar and the contents"]:6

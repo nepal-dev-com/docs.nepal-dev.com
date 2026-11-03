@@ -4,7 +4,7 @@ import { useEffect, useState, type ReactNode } from 'react';
 import { Search } from 'lucide-react';
 import { ThemeSwitch } from '@/components/theme-switch';
 import { HeaderSky } from '@/components/sky';
-import { VerseMark } from '@/components/verse-mark';
+import { BrandMark } from '@/components/brand-mark';
 import { cn } from '@/lib/cn';
 
 export interface SiteLink {
@@ -40,7 +40,7 @@ export function SiteHeader({ appName, githubUrl, links, onSearch, menu, docs = f
       <HeaderSky />
       <div className="site-header-row">
         <Link href="/" className="site-brand">
-          <VerseMark className="site-mark" />
+          <BrandMark className="site-mark" />
           {appName}
         </Link>
         <nav aria-label="Site" className="site-nav">

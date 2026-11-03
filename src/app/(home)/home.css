@@ -226,8 +226,8 @@
 }
 
 .home .hero h1 {
-  max-width: 12ch;
-  font: 700 clamp(2.4rem, 1.4rem + 3.4vw, 4.4rem) / 1 var(--home-font-display);
+  max-width: 19ch;
+  font: 700 clamp(1.85rem, 1.5rem + 2.1vw, 3.4rem) / 1.04 var(--home-font-display);
   letter-spacing: -0.04em;
   text-wrap: balance;
 }

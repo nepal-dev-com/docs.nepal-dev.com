@@ -19,12 +19,12 @@ import {
   titleSize,
 } from './seo';
 
-const site = new URL('https://docs.puncoz.com');
+const site = new URL('https://docs.nepal-dev.com');
 
 describe('parseSiteUrl (ADR-0035 decision 1)', () => {
   test('reads an https origin', () => {
-    expect(parseSiteUrl('https://docs.puncoz.com')?.origin).toBe('https://docs.puncoz.com');
-    expect(parseSiteUrl('https://docs.puncoz.com/')?.origin).toBe('https://docs.puncoz.com');
+    expect(parseSiteUrl('https://docs.nepal-dev.com')?.origin).toBe('https://docs.nepal-dev.com');
+    expect(parseSiteUrl('https://docs.nepal-dev.com/')?.origin).toBe('https://docs.nepal-dev.com');
   });
 
   test('unset or empty means no public address', () => {
@@ -33,7 +33,7 @@ describe('parseSiteUrl (ADR-0035 decision 1)', () => {
   });
 
   test('refuses anything but an https origin, naming the variable', () => {
-    for (const value of ['docs.puncoz.com', 'http://docs.puncoz.com', 'https://docs.puncoz.com/docs', 'https://docs.puncoz.com?x=1']) {
+    for (const value of ['docs.nepal-dev.com', 'http://docs.nepal-dev.com', 'https://docs.nepal-dev.com/docs', 'https://docs.nepal-dev.com?x=1']) {
       expect(() => parseSiteUrl(value)).toThrow('SITE_URL');
     }
   });
@@ -82,27 +82,27 @@ describe('pageTitle (ADR-0035 decision 7)', () => {
   const lodestar = { title: 'lodestar', overview: false };
 
   test('names the page, the entry and the site', () => {
-    expect(pageTitle({ title: 'Install', entry: lodestar.title })).toBe('Install — lodestar — Puncoz Verse');
+    expect(pageTitle({ title: 'Install', entry: lodestar.title })).toBe('Install — lodestar — Nepal Dev Verse');
   });
 
   test('an overview names the entry and the site', () => {
-    expect(pageTitle({ title: 'Anything', entry: 'lodestar', overview: true })).toBe('lodestar — Puncoz Verse');
+    expect(pageTitle({ title: 'Anything', entry: 'lodestar', overview: true })).toBe('lodestar — Nepal Dev Verse');
   });
 
   test('an older line and dev say which, and latest does not', () => {
-    expect(pageTitle({ title: 'Install', entry: 'lodestar', line: { name: '2.x LTS', channel: 'legacy' } })).toBe('Install — lodestar 2.x LTS — Puncoz Verse');
-    expect(pageTitle({ title: 'Install', entry: 'lodestar', line: { name: 'dev', channel: 'dev' } })).toBe('Install — lodestar dev — Puncoz Verse');
-    expect(pageTitle({ title: 'Install', entry: 'lodestar', line: { name: 'v3.2', channel: 'latest' } })).toBe('Install — lodestar — Puncoz Verse');
+    expect(pageTitle({ title: 'Install', entry: 'lodestar', line: { name: '2.x LTS', channel: 'legacy' } })).toBe('Install — lodestar 2.x LTS — Nepal Dev Verse');
+    expect(pageTitle({ title: 'Install', entry: 'lodestar', line: { name: 'dev', channel: 'dev' } })).toBe('Install — lodestar dev — Nepal Dev Verse');
+    expect(pageTitle({ title: 'Install', entry: 'lodestar', line: { name: 'v3.2', channel: 'latest' } })).toBe('Install — lodestar — Nepal Dev Verse');
   });
 
   test('a page with no entry names only itself and the site', () => {
-    expect(pageTitle({ title: 'Install' })).toBe('Install — Puncoz Verse');
+    expect(pageTitle({ title: 'Install' })).toBe('Install — Nepal Dev Verse');
   });
 });
 
 describe('pageMetadata (ADR-0035 decision 9)', () => {
   const input = {
-    title: 'Install — lodestar — Puncoz Verse',
+    title: 'Install — lodestar — Nepal Dev Verse',
     description: 'Add lodestar to a project.',
     url: '/lodestar/use/v3.2/install',
     rule: { index: true, canonical: '/lodestar/use/v3.2/install', inSitemap: true },
@@ -133,7 +133,7 @@ describe('pageMetadata (ADR-0035 decision 9)', () => {
       title: input.title,
       description: input.description,
       url: input.url,
-      siteName: 'Puncoz Verse',
+      siteName: 'Nepal Dev Verse',
       type: 'article',
       modifiedTime: '2026-11-01T00:00:00.000Z',
       images: [{ url: input.imageUrl, width: 1200, height: 630, type: 'image/png', alt: 'Install' }],
@@ -162,7 +162,7 @@ describe('robotsRules (ADR-0035 decisions 2 and 4)', () => {
   test('allows everyone and names the sitemap', () => {
     expect(robotsRules(site)).toEqual({
       rules: { userAgent: '*', allow: '/' },
-      sitemap: 'https://docs.puncoz.com/sitemap.xml',
+      sitemap: 'https://docs.nepal-dev.com/sitemap.xml',
     });
   });
 
@@ -182,9 +182,9 @@ describe('sitemapEntries (ADR-0035 decision 5)', () => {
 
   test('lists the home page and the marked pages, absolute, with lastmod only when known', () => {
     expect(sitemapEntries(pages, site)).toEqual([
-      { url: 'https://docs.puncoz.com/' },
-      { url: 'https://docs.puncoz.com/docs', lastModified: when },
-      { url: 'https://docs.puncoz.com/x/use/3.x/a' },
+      { url: 'https://docs.nepal-dev.com/' },
+      { url: 'https://docs.nepal-dev.com/docs', lastModified: when },
+      { url: 'https://docs.nepal-dev.com/x/use/3.x/a' },
     ]);
   });
 
@@ -196,10 +196,11 @@ describe('sitemapEntries (ADR-0035 decision 5)', () => {
 describe('structured data (ADR-0035 decision 10)', () => {
   const graphTypes = (data: { '@graph': { '@type': string }[] }) => data['@graph'].map((node) => node['@type']);
 
-  test('the home page has WebSite and the owner, and no SearchAction', () => {
+  test('the home page has WebSite and nepal-dev.com, and no SearchAction', () => {
     const data = homeJsonLd('A description.', site);
-    expect(graphTypes(data)).toEqual(['WebSite', 'Person']);
-    expect(data['@graph'][1]).toMatchObject({ name: 'Puncoz Nepal', sameAs: ['https://github.com/puncoz'] });
+    expect(graphTypes(data)).toEqual(['WebSite', 'Organization']);
+    expect(data['@graph'][1]).toMatchObject({ name: 'nepal-dev.com', url: 'https://nepal-dev.com' });
+    expect(data['@graph'][1]).not.toHaveProperty('sameAs');
     expect(JSON.stringify(data)).not.toContain('SearchAction');
   });
 
@@ -215,9 +216,9 @@ describe('structured data (ADR-0035 decision 10)', () => {
   test('breadcrumbs use plain names, not space words, and skip a level with no page', () => {
     const crumbs = breadcrumbJsonLd(levels, '/lodestar/use/v3.2/guides/start', site);
     expect(crumbs.itemListElement).toEqual([
-      { '@type': 'ListItem', position: 1, name: 'lodestar', item: 'https://docs.puncoz.com/lodestar' },
-      { '@type': 'ListItem', position: 2, name: 'Use', item: 'https://docs.puncoz.com/lodestar/use/v3.2' },
-      { '@type': 'ListItem', position: 3, name: 'Start', item: 'https://docs.puncoz.com/lodestar/use/v3.2/guides/start' },
+      { '@type': 'ListItem', position: 1, name: 'lodestar', item: 'https://docs.nepal-dev.com/lodestar' },
+      { '@type': 'ListItem', position: 2, name: 'Use', item: 'https://docs.nepal-dev.com/lodestar/use/v3.2' },
+      { '@type': 'ListItem', position: 3, name: 'Start', item: 'https://docs.nepal-dev.com/lodestar/use/v3.2/guides/start' },
     ]);
   });
 
@@ -233,7 +234,7 @@ describe('structured data (ADR-0035 decision 10)', () => {
   test('a docs page has TechArticle and BreadcrumbList', () => {
     const data = pageJsonLd(page, site);
     expect(graphTypes(data)).toEqual(['TechArticle', 'BreadcrumbList']);
-    expect(data['@graph'][0]).toMatchObject({ dateModified: '2026-11-01T00:00:00.000Z', image: 'https://docs.puncoz.com/og/x/image.png' });
+    expect(data['@graph'][0]).toMatchObject({ dateModified: '2026-11-01T00:00:00.000Z', image: 'https://docs.nepal-dev.com/og/x/image.png' });
   });
 
   test('an overview adds SoftwareSourceCode, with its repository and latest version', () => {

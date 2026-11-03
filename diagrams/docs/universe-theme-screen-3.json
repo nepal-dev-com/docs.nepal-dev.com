@@ -25,7 +25,7 @@
     {
       "id": "mark",
       "type": "frontend",
-      "label": "Verse mark",
+      "label": "Brand mark",
       "pos": [
         40,
         60
@@ -34,7 +34,7 @@
         324,
         70
       ],
-      "sublabel": "Puncoz Verse"
+      "sublabel": "Nepal Dev Verse"
     },
     {
       "id": "menu",
@@ -79,7 +79,7 @@
     {
       "id": "head",
       "type": "external",
-      "label": "Every package and project, documented to the",
+      "label": "Every package and project by Nepalese developers",
       "pos": [
         40,
         294
@@ -88,7 +88,7 @@
         436,
         70
       ],
-      "sublabel": "version"
+      "sublabel": "all over the world, documented to the version"
     },
     {
       "id": "search",

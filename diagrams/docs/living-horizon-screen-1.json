@@ -47,26 +47,12 @@
       "sublabel": "☄ a shooting star now and then"
     },
     {
-      "id": "aurora",
-      "type": "external",
-      "label": "Aurora",
-      "pos": [
-        40,
-        212
-      ],
-      "size": [
-        436,
-        70
-      ],
-      "sublabel": "teal ribbons breathing over the rim"
-    },
-    {
       "id": "clouds",
       "type": "external",
       "label": "Lit clouds",
       "pos": [
         40,
-        294
+        212
       ],
       "size": [
         436,
@@ -77,7 +63,21 @@
     {
       "id": "ridge",
       "type": "external",
-      "label": "⌂ observatory on the ridge",
+      "label": "⌂ observatory on the shoulder",
+      "pos": [
+        40,
+        294
+      ],
+      "size": [
+        436,
+        70
+      ],
+      "sublabel": "☀ the star rising · ⚑ the flag · the range"
+    },
+    {
+      "id": "planets",
+      "type": "external",
+      "label": "lodestar",
       "pos": [
         40,
         376
@@ -86,21 +86,7 @@
         436,
         70
       ],
-      "sublabel": "☀ the star rising · the curve"
-    },
-    {
-      "id": "planets",
-      "type": "external",
-      "label": "lodestar",
-      "pos": [
-        40,
-        458
-      ],
-      "size": [
-        436,
-        70
-      ],
-      "sublabel": "Puncoz Verse Docs"
+      "sublabel": "Nepal Dev Verse Docs"
     },
     {
       "id": "links",
@@ -108,7 +94,7 @@
       "label": "Search ⌘K",
       "pos": [
         40,
-        540
+        458
       ],
       "size": [
         436,
@@ -119,15 +105,16 @@
     {
       "id": "credit",
       "type": "external",
-      "label": "Packages and projects by Puncoz Nepal",
+      "label": "Part of nepal-dev.com. Made with love by Puncoz",
       "pos": [
         40,
-        622
+        540
       ],
       "size": [
         436,
-        58
-      ]
+        70
+      ],
+      "sublabel": "Nepal."
     }
   ],
   "boundaries": [
@@ -137,7 +124,6 @@
       "wraps": [
         "closing",
         "stars",
-        "aurora",
         "clouds",
         "ridge",
         "planets",

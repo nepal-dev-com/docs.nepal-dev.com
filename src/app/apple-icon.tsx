@@ -1,5 +1,5 @@
 import { ImageResponse } from 'next/og';
-import { VerseMark, verseMarkColors } from '@/components/verse-mark';
+import { BrandMark, brandMarkColors } from '@/components/brand-mark';
 import { shareColors } from '@/lib/seo';
 
 export const size = { width: 180, height: 180 };
@@ -19,7 +19,7 @@ export default function AppleIcon() {
           backgroundColor: shareColors.ground,
         }}
       >
-        <VerseMark colors={verseMarkColors.dark} size={140} />
+        <BrandMark colors={brandMarkColors.dark} size={148} />
       </div>
     ),
     size,

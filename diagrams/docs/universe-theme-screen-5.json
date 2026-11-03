@@ -49,7 +49,7 @@
     {
       "id": "mark",
       "type": "frontend",
-      "label": "Verse mark",
+      "label": "Brand mark",
       "pos": [
         40,
         212
@@ -58,7 +58,7 @@
         324,
         70
       ],
-      "sublabel": "Puncoz Verse"
+      "sublabel": "Nepal Dev Verse"
     },
     {
       "id": "menu",

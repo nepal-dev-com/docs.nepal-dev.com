@@ -1,0 +1,192 @@
+---
+title: "ADR-0036 — The site is Nepal Dev Verse, part of nepal-dev.com"
+description: "The site becomes Nepal Dev Verse, a documentation platform for Nepalese developers, with a summit-and-flag mark and a credit to nepal-dev.com."
+---
+
+- **Status:** Approved
+- **Date:** 2026-11-03
+- **Deciders:** [@puncoz](https://github.com/puncoz)
+- **Approved by:** [@puncoz](https://github.com/puncoz)
+- **Approved on:** 2026-11-03
+- **Supersedes:** [ADR-0028](./ADR-0028-the-site-is-named-puncoz-verse.mdx) decisions 1 and 2;
+  [ADR-0017](./ADR-0017-the-whole-site-is-one-solar-system.mdx) decision 1 (in part: who the star is, and
+  its label); [ADR-0029](./ADR-0029-the-verse-is-a-still-sky-you-zoom-through.mdx) decision 2 (in part:
+  the brand mark); [ADR-0033](./ADR-0033-the-footer-says-you-have-reached-the-horizon.mdx) decision 3 (the
+  credit's words); [ADR-0035](./ADR-0035-every-page-is-ready-for-search-and-sharing.mdx) decisions 1 and 10
+  (in part: the address's value, and the owner's `Person`)
+- **Superseded by:** —
+- **Design documents:** [`../app-flow/community-identity.mdx`](../app-flow/community-identity.mdx),
+  `PRODUCT.md`, `DESIGN.md`
+
+## Context
+
+- The owner wants to publish this site as a documentation platform for the packages and projects of
+  Nepalese developers all over the world, under the name **Nepal Dev Verse**, and has supplied the
+  nepal-dev.com logo in `temp/logo.svg`. They asked for references to Puncoz Nepal to become
+  nepal-dev.com, with a footer credit to nepal-dev.com and "made with love by Puncoz Nepal".
+- The name appears through `appName` in `src/lib/shared.ts`. The maker appears through `owner` in the
+  same file: the star's label, the footer's credit, the page metadata and the JSON-LD.
+- What was measured of the logo:
+  - It is 1.6 MB of SVG, 551 paths, 1395 by 1127: a mountain range with circuit traces, Nepal's flag on
+    the summit and the wordmark *nepal-dev.com*.
+  - On the site's dark ground (`#0a0c10`, the default theme) the navy *nepal* and *.com*, the cursor
+    and the mountains' outline nearly vanish.
+  - At 48px the wordmark cannot be read; at 16px the artwork is a smudge.
+- Nepal's flag holds a moon above a sun. The site's sidebar already uses a sun for Use and a moon for
+  Maintain, and its version lines are moons (ADR-0017), so the flag sits well in this site's own language.
+  [ADR-0037](./ADR-0037-the-horizon-is-the-himalaya.mdx) builds on that.
+- Today the content is this site's own documentation only, and only the owner reviews and commits what
+  reaches `content/` (ADR-0010).
+
+## Decision
+
+### The name
+
+1. **The site is Nepal Dev Verse.** `appName` becomes *Nepal Dev Verse*, wherever it reaches today: the
+   wordmark, titles, share images, the manifest, and the heading of `llms.txt` and `llms-full.txt`.
+2. **This site's own docs are Nepal Dev Verse Docs.** The project with the slug `docs` takes that title in
+   its `meta.json` and overview. The slug and every URL stay: `/docs`, `/docs/maintain/…`.
+
+### What it says it is
+
+3. **The home line reads: "Every package and project by Nepalese developers all over the world,
+   documented to the version."** It is the hero's heading, with *documented to the version.* as its
+   emphasis, the home share image's headline, set smaller to fit, and the manifest's description.
+4. **The home page's title is `Nepal Dev Verse — packages and projects by Nepalese developers`.** The
+   full line is too long for a search result.
+5. **The star is nepal-dev.com.** ADR-0017's metaphor stands, with the community in the maker's place: the
+   star on the home page is labelled *nepal-dev.com*, and the Verse view's plain sentence names it.
+
+### The logo
+
+6. **The original is kept, unchanged, at `assets/nepal-dev-logo.svg`,** as the master. It is not served and
+   not published. The owner removes `temp/`.
+7. **A small summit-and-flag mark is redrawn from it** for everywhere the site shows a brand: about 2 KB
+   of inline SVG in `src/components/brand-mark.tsx`, with a central peak, two shoulders, the snow, the
+   logo's red face and one teal trace, all flying the flag.
+   - **The flag keeps its own colours in both themes, and is never restyled.** Its shape, the moon above
+     the sun, comes from the logo.
+   - **The rock follows the theme:** the logo's navy on the light ground, a lifted blue from the logo's
+     palette on the dark one, with at least 3:1 against the ground.
+   - **It stands in** the site header, `src/app/icon.svg`, `src/app/apple-icon.tsx`, the share images and
+     the footer's credit. At 16px the trace is left out and the flag simplified, so the favicon stays readable.
+8. **The Verse mark stays as a place, not a brand:** only in the scale strip, for the Verse level.
+
+### The credit and the references
+
+9. **The footer's credit reads: "Part of nepal-dev.com. Made with love by Puncoz Nepal."**, with the mark
+   before it. *nepal-dev.com* links to `https://nepal-dev.com` and *Puncoz Nepal* to `https://puncoz.com`.
+10. **Page metadata and JSON-LD name nepal-dev.com:** `authors`, `creator` and `publisher`, `article:author`,
+    and an `Organization` with its URL in place of the owner's `Person`, with no `sameAs` because no
+    profile is known. Per-entry authors wait for the contribution ADR (decision 13).
+11. **The public address is `https://docs.nepal-dev.com`,** still from `SITE_URL`; ADR-0035's rules for it
+    are unchanged. The owner adds the DNS record and sets the variable.
+
+### What stays
+
+12. **Puncoz Nepal stays** in the footer's credit, as `@puncoz` in ADRs (ADR-0020), and as *the owner* in
+    the working documents. Approved ADRs keep the names they were written with. The repository and package
+    names, the GitHub link (`puncoz-official/docs`), the Algolia index and the environment variables are
+    identifiers and do not change here.
+13. **This is the identity, not the platform's workings.** How other developers contribute, who reviews
+    them, and showing who built each entry all wait for their own ADR. Until then ADR-0010 stands and the
+    owner remains the only reviewer. The private projects beyond the belt stay as they are, invented, by
+    the owner's choice.
+
+## Options considered
+
+| Concern | Option | Pros | Cons | Verdict |
+|---|---|---|---|---|
+| Logo | A simple mark from the logo; the Verse mark keeps its place | Readable at 16px, about 2 KB, in the site's themes | Two marks to keep apart | Chosen (owner) |
+| Logo | The same, with the Verse mark retired | One mark | The top of the scale strip loses a symbol that fits the space theme | Rejected (owner) |
+| Logo | The full logo, recoloured, as a file | The most faithful | Unreadable at header size, no favicon, about 1.6 MB per theme | Rejected (owner) |
+| Logo | Keep the Verse mark as the brand, the logo in the credit only | The smallest change | The site barely looks like nepal-dev.com | Rejected (owner) |
+| Address | `docs.nepal-dev.com` | Says what it is, on the community's domain | The owner adds DNS | Chosen (owner) |
+| Address | `verse.nepal-dev.com` | Matches the name | Says less on its own | Rejected (owner) |
+| Address | Keep `docs.puncoz.com` | No change | A community platform on a personal domain, with redirects to come later | Rejected (owner) |
+| Scope | Identity now, and the belt stays | A small visual change; the contribution model gets its own review | Invented private projects under a community name | Chosen (owner) |
+| Scope | Identity now, and the belt removed | No invented names on a community site | One more change here | Rejected (owner) |
+| Scope | Identity and the contribution model together | One review | A far larger review, and the rename waits | Rejected (owner) |
+| Home line | "…by Nepalese developers all over the world, documented to the version." | The owner's words; says whose work it is | Long: more lines on phones, and a smaller headline on the share image | Chosen (owner) |
+| Home line | Unchanged | Short | Nothing says who it is for | Rejected (owner) |
+| Theme with the rename | Separate ADRs, this one and ADR-0037 | Each is reviewed on its own, as ADR-0028 chose | Two to read | Chosen |
+
+## Consequences
+
+**Positive**
+
+- The site says what it is for, and looks like part of nepal-dev.com, on every page and every shared link.
+- The next step, inviting other developers, starts from a name and an identity that already fit.
+
+**Negative / accepted trade-offs**
+
+- **The words go ahead of the content:** the home page says "by Nepalese developers" while one project,
+  this site, is documented. It also shows invented private projects under that name.
+- The long home line takes more of the first screen, most of all on phones. It is measured at 320px and
+  390px during implementation.
+- The original logo adds 1.6 MB to the repository, and so to every consuming submodule's checkout.
+- The repository and GitHub names keep *puncoz* until the owner renames them.
+- The full logo appears nowhere on the site itself; only the mark drawn from it does.
+- Nothing has been said here about whether `https://nepal-dev.com` is live. The owner confirms it before
+  publishing, because the credit links there.
+
+## Content invariants
+
+None is departed from. §6.1 stands: nothing private goes into `content/`, and the belt's names stay
+invented. No page moves, so §6.5's Markdown surfaces keep working; they take the new name. The search index
+takes it on the next publish, which only the owner runs.
+
+## Security considerations
+
+- **No new endpoint, secret or third party.** `SITE_URL` changes value, not handling, and stays public.
+- **Two external links** in the credit, both fixed, with `rel="noreferrer noopener"`.
+- **The logo master** is not served, so it adds no surface. It was read before use: paths and masks only, with
+  no script, external reference or embedded raster image. The mark is hand-drawn and inline.
+- **A community name raises the stakes of §6.1.** The invented private projects could be read as real
+  community projects; `private-projects.ts`'s rule stands, and the contribution ADR must revisit it.
+
+## Implementation notes
+
+- [x] `src/lib/shared.ts`: `appName`; `owner` split into `community` and `maker`, with no other change in
+  who reads what except as decisions 9 and 10 say.
+- [x] `assets/nepal-dev-logo.svg`, byte for byte (decision 6). `temp/` is left for the owner.
+- [x] `src/components/brand-mark.tsx`, with its tokens; `src/app/icon.svg`, `src/app/apple-icon.tsx`,
+  `src/components/site-header.tsx`, `src/components/share-image.tsx`. `verse-mark.tsx` stays for
+  `scale-strip.tsx`.
+- [x] `src/app/(home)/page.tsx`, `src/components/share-image.tsx`, `src/app/manifest.ts`: the home line and
+  title. `src/components/home/hero.tsx` and `orbit-map.tsx`: the star's label and sentence.
+- [x] `src/components/horizon-footer.tsx`: the credit. `src/lib/seo.ts`, `src/app/layout.tsx`: decision 10.
+- [x] `content/docs/meta.json`, `content/docs/index.mdx`: the title and prose. `.env.example`: unchanged.
+- [x] Tests (ADR-0007): the name and the project's title; no *Puncoz Verse* left in `src/`, `content/` outside
+  approved ADRs, or the living documents; the credit's words and two links; the mark's contrast in both themes
+  and its small form; the `Organization`; the share image's headline staying clear of the system.
+- [x] Looked at, in Chrome on localhost against `bunx next build`: the header at 320px, 390px and wide; the
+  hero's line in both themes; the favicon at 16px; the share images; the footer's credit; `llms.txt`.
+- [x] `bun run test`, `bun run types:check` and `bunx next build` pass; `bun run lint` is reported while it
+  stays blocked.
+
+What the build added or changed from the above, and what was measured:
+
+- `src/components/brand-mark.tsx` redraws the flag by hand to the logo's proportions rather than using its paths: the logo
+  is 1.6 MB and 551 paths, with no script, external resource or raster, and its flag alone is 83 auto-traced paths.
+  `src/lib/flag.ts` and `src/components/nepal-flag.tsx` hold the flag, shared with ADR-0037's Horizon.
+- The hero's line takes `max-width: 19ch` and a smaller minimum, `clamp(1.85rem, 1.5rem + 2.1vw, 3.4rem)`: six lines at
+  320px, five at 390px, three at 860px, four on a wide screen, with no sideways scroll. The share image's headline is 54px.
+- In Chrome the longer project name crossed the empty orbits' names on a phone, so `orbit-map.tsx` draws a planet's name
+  with a halo in the ground colour. With many planets on a phone the names still crowd each other as they turn; that is
+  ADR-0032's system at that width and was not changed here.
+- `src/lib/site-name.test.ts` allows one exception to the old names, a row quoting ADR-0028's approved title.
+- `README.md`'s list of decisions stopped at ADR-0028, so ADR-0029 to ADR-0037 were added to it.
+
+**For the owner after approval:** set `SITE_URL=https://docs.nepal-dev.com` in `.env.local` and on the host, add
+the DNS record, confirm `https://nepal-dev.com` is live, and remove `temp/`.
+
+## Docs to update on implementation
+
+- [x] [`../app-flow/community-identity.mdx`](../app-flow/community-identity.mdx): Current, in place of
+  `../app-flow/site-name.mdx`, which is deleted; every app flow whose wireframes show the name or
+  `docs.puncoz.com`, with their Archify views.
+- [x] `PRODUCT.md`, `DESIGN.md`, `.impeccable/design.json`, `AGENTS.md` §1 and §10, `README.md`,
+  `PROJECT_AGENTS.md`, [`../architecture/system.mdx`](../architecture/system.mdx), and the PRDs and API pages
+  that name the site.
+- [x] "Superseded by" in ADR-0017, ADR-0028, ADR-0029, ADR-0033 and ADR-0035; [`./index.mdx`](./index.mdx).

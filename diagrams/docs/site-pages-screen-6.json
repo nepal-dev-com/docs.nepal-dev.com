@@ -25,7 +25,7 @@
     {
       "id": "hdr",
       "type": "frontend",
-      "label": "◎ Puncoz Verse   ⌕ orrery ☰",
+      "label": "▲ Nepal Dev Verse   ⌕ orrery ☰",
       "pos": [
         40,
         60
@@ -52,7 +52,7 @@
     {
       "id": "name",
       "type": "external",
-      "label": "Puncoz Verse Docs",
+      "label": "Nepal Dev Verse Docs",
       "pos": [
         54,
         242

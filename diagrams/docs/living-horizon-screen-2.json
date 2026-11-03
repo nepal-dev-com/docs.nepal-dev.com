@@ -3,7 +3,7 @@
   "diagram_type": "architecture",
   "meta": {
     "title": "Screen 2 — The horizon rises",
-    "subtitle": "Wireframe on a wide screen, drawn from its Mermaid version · living horizon",
+    "subtitle": "Wireframe at phone width, drawn from its Mermaid version · living horizon",
     "output": "living-horizon-screen-2.html",
     "animation": "trace",
     "quality_profile": "showcase",
@@ -22,27 +22,27 @@
     {
       "id": "header",
       "type": "frontend",
-      "label": "Verse mark",
+      "label": "Brand mark",
       "pos": [
         40,
         60
       ],
       "size": [
-        959,
+        436,
         70
       ],
-      "sublabel": "Puncoz Verse · Search ⌘K · GitHub · theme"
+      "sublabel": "Nepal Dev Verse · Search ⌘K · GitHub · theme"
     },
     {
       "id": "side",
       "type": "external",
-      "label": "Sidebar",
+      "label": "Sideb…",
       "pos": [
         40,
         142
       ],
       "size": [
-        139,
+        63,
         70
       ],
       "sublabel": "setting"
@@ -52,11 +52,11 @@
       "type": "external",
       "label": "The page's last lines",
       "pos": [
-        205,
+        115,
         142
       ],
       "size": [
-        631,
+        287,
         70
       ],
       "sublabel": "previous and next"
@@ -64,13 +64,13 @@
     {
       "id": "toc",
       "type": "external",
-      "label": "On this page",
+      "label": "On th…",
       "pos": [
-        861,
+        413,
         142
       ],
       "size": [
-        139,
+        63,
         70
       ],
       "sublabel": "setting"
@@ -84,7 +84,7 @@
         224
       ],
       "size": [
-        959,
+        436,
         70
       ],
       "sublabel": "the sidebar and the trajectory sink into it"
@@ -98,7 +98,7 @@
         306
       ],
       "size": [
-        959,
+        436,
         70
       ],
       "sublabel": "over the sidebar and the contents"
@@ -112,7 +112,7 @@
         388
       ],
       "size": [
-        959,
+        436,
         70
       ],
       "sublabel": "links · credit"
@@ -121,7 +121,7 @@
   "boundaries": [
     {
       "kind": "region",
-      "label": "Wide screen · the end of a docs page, on a wide screen",
+      "label": "Phone screen · the end of a docs page, on a wide screen",
       "wraps": [
         "header",
         "side",

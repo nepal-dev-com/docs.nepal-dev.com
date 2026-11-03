@@ -1,0 +1,105 @@
+{
+  "schema_version": 1,
+  "diagram_type": "architecture",
+  "meta": {
+    "title": "Screen 3 — Footer credit",
+    "subtitle": "Wireframe at phone width, drawn from its Mermaid version · community identity",
+    "output": "community-identity-screen-3.html",
+    "animation": "trace",
+    "quality_profile": "showcase",
+    "legend": {
+      "entries": {
+        "external": {
+          "label": "Content"
+        },
+        "frontend": {
+          "label": "Site chrome"
+        }
+      }
+    }
+  },
+  "components": [
+    {
+      "id": "closing",
+      "type": "external",
+      "label": "You've reached the horizon. The Verse goes on.",
+      "pos": [
+        40,
+        60
+      ],
+      "size": [
+        436,
+        58
+      ]
+    },
+    {
+      "id": "scene",
+      "type": "external",
+      "label": "The Horizon's scene (ADR-0037)",
+      "pos": [
+        40,
+        130
+      ],
+      "size": [
+        436,
+        58
+      ]
+    },
+    {
+      "id": "planets",
+      "type": "external",
+      "label": "Planet row",
+      "pos": [
+        40,
+        200
+      ],
+      "size": [
+        436,
+        70
+      ],
+      "sublabel": "Nepal Dev Verse Docs"
+    },
+    {
+      "id": "links",
+      "type": "frontend",
+      "label": "Search",
+      "pos": [
+        40,
+        282
+      ],
+      "size": [
+        436,
+        70
+      ],
+      "sublabel": "llms.txt · llms-full.txt · GitHub · Back to orbit"
+    },
+    {
+      "id": "credit",
+      "type": "external",
+      "label": "▲ Part of nepal-dev.com. Made with love by Puncoz",
+      "pos": [
+        40,
+        364
+      ],
+      "size": [
+        436,
+        70
+      ],
+      "sublabel": "Nepal."
+    }
+  ],
+  "boundaries": [
+    {
+      "kind": "region",
+      "label": "Phone screen · the end of every page",
+      "wraps": [
+        "closing",
+        "scene",
+        "planets",
+        "links",
+        "credit"
+      ],
+      "pad": 22
+    }
+  ]
+}

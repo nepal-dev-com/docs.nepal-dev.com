@@ -1,9 +1,9 @@
 import type { ReactNode } from 'react';
-import { VerseMark, verseMarkColors } from '@/components/verse-mark';
+import { BrandMark, brandMarkColors } from '@/components/brand-mark';
 import type { Channel } from '@/lib/catalog-schema';
 import type { Ring } from '@/lib/rings';
 import { shareColors, shareImageSize, shortenDescription, skySeed, titleSize } from '@/lib/seo';
-import { appName } from '@/lib/shared';
+import { appName, homeLine } from '@/lib/shared';
 import { starField } from '@/lib/sky';
 
 const { width, height } = shareImageSize;
@@ -80,7 +80,7 @@ function Frame({ scene, domain, children }: { scene: ReactNode; domain?: string;
     >
       <Scene>{scene}</Scene>
       <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
-        <VerseMark colors={verseMarkColors.dark} size={52} />
+        <BrandMark colors={brandMarkColors.dark} size={56} />
         <span style={{ fontFamily: display, fontWeight: 700, fontSize: 30 }}>{appName}</span>
       </div>
       <div
@@ -255,12 +255,12 @@ export function HomeShareImage({ domain, rings, planets }: HomeShare) {
           display: 'flex',
           fontFamily: display,
           fontWeight: 700,
-          fontSize: 70,
-          lineHeight: 1.06,
+          fontSize: 54,
+          lineHeight: 1.1,
           letterSpacing: '-0.02em',
         }}
       >
-        Every package and project, documented to the version.
+        {homeLine.lead} {homeLine.rest}
       </div>
     </Frame>
   );

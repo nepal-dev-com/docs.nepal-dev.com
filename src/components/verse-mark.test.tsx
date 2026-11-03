@@ -19,9 +19,9 @@ test('it is decoration beside the wordmark unless it has a title', () => {
 });
 
 test('with a title it is an image with that name', () => {
-  const html = renderToStaticMarkup(<VerseMark title="Puncoz Verse" />);
+  const html = renderToStaticMarkup(<VerseMark title="The Verse" />);
   expect(html).toContain('role="img"');
-  expect(html).toContain('<title>Puncoz Verse</title>');
+  expect(html).toContain('<title>The Verse</title>');
   expect(html).not.toContain('aria-hidden');
 });
 
@@ -32,10 +32,10 @@ test('it takes fixed colours where CSS variables do not work, such as Open Graph
   expect(html).toContain(`fill="${verseMarkColors.dark.planet}"`);
 });
 
-test('the site icon is the same drawing in the dark theme colours', () => {
-  const icon = readFileSync(join(import.meta.dir, '../app/icon.svg'), 'utf8');
-  expect(icon.match(/<ellipse/g)).toHaveLength(2);
-  expect(icon).toContain(verseMarkColors.dark.star);
-  expect(icon).toContain(verseMarkColors.dark.planet);
-  expect(icon).toContain(verseMarkColors.dark.orbit);
+test('it stays only as a place, for the Verse level of the scale strip (ADR-0036 decision 8)', () => {
+  const read = (path: string) => readFileSync(join(import.meta.dir, path), 'utf8');
+  expect(read('docs/scale-strip.tsx')).toContain('VerseMark');
+  for (const path of ['site-header.tsx', 'share-image.tsx', '../app/apple-icon.tsx', '../app/icon.svg']) {
+    expect(read(path)).not.toContain('VerseMark');
+  }
 });

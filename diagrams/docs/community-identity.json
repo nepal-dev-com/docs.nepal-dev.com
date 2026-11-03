@@ -1,0 +1,123 @@
+{
+  "schema_version": 2,
+  "diagram_type": "workflow",
+  "meta": {
+    "title": "App flow: the community identity",
+    "subtitle": "Nepal Dev Verse, part of nepal-dev.com",
+    "quality_profile": "showcase",
+    "output": "community-identity.html"
+  },
+  "lanes": [
+    {
+      "id": "in",
+      "label": "Arrives"
+    },
+    {
+      "id": "site",
+      "label": "Site"
+    },
+    {
+      "id": "out",
+      "label": "Elsewhere"
+    }
+  ],
+  "mainPath": [
+    "home",
+    "pkg",
+    "credit"
+  ],
+  "nodes": [
+    {
+      "id": "shared",
+      "lane": "in",
+      "col": 0,
+      "type": "external",
+      "label": "Shared link",
+      "sublabel": "share image: mark and name"
+    },
+    {
+      "id": "home",
+      "lane": "site",
+      "col": 0,
+      "type": "frontend",
+      "label": "Home page",
+      "sublabel": "home line, star: nepal-dev.com"
+    },
+    {
+      "id": "pkg",
+      "lane": "site",
+      "col": 1,
+      "type": "frontend",
+      "label": "/lodestar",
+      "sublabel": "mark and Nepal Dev Verse"
+    },
+    {
+      "id": "credit",
+      "lane": "site",
+      "col": 2,
+      "type": "frontend",
+      "label": "Footer credit"
+    },
+    {
+      "id": "nd",
+      "lane": "out",
+      "col": 1,
+      "type": "external",
+      "label": "nepal-dev.com"
+    },
+    {
+      "id": "pz",
+      "lane": "out",
+      "col": 2,
+      "type": "external",
+      "label": "puncoz.com"
+    }
+  ],
+  "edges": [
+    {
+      "id": "in",
+      "from": "shared",
+      "to": "home",
+      "label": "opens",
+      "variant": "default"
+    },
+    {
+      "id": "card",
+      "from": "home",
+      "to": "pkg",
+      "label": "a planet card",
+      "variant": "emphasis"
+    },
+    {
+      "id": "back",
+      "from": "pkg",
+      "to": "home",
+      "label": "mark and wordmark",
+      "variant": "dashed",
+      "role": "return"
+    },
+    {
+      "id": "end",
+      "from": "pkg",
+      "to": "credit",
+      "label": "the end of the page",
+      "variant": "emphasis"
+    },
+    {
+      "id": "n",
+      "from": "credit",
+      "to": "nd",
+      "label": "nepal-dev.com",
+      "variant": "default",
+      "role": "branch"
+    },
+    {
+      "id": "m",
+      "from": "credit",
+      "to": "pz",
+      "label": "Puncoz Nepal",
+      "variant": "default",
+      "role": "branch"
+    }
+  ]
+}

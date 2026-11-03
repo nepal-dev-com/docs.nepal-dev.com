@@ -1,0 +1,97 @@
+{
+  "schema_version": 2,
+  "diagram_type": "workflow",
+  "meta": {
+    "title": "App flow: the Himalayan Horizon",
+    "subtitle": "The end of every page: the range, the flag raised on arrival, a light per entry",
+    "quality_profile": "showcase",
+    "output": "himalayan-horizon.html"
+  },
+  "lanes": [
+    {
+      "id": "read",
+      "label": "Reader"
+    },
+    {
+      "id": "scene",
+      "label": "The scene"
+    }
+  ],
+  "mainPath": [
+    "reading",
+    "enter",
+    "arrive",
+    "summit"
+  ],
+  "nodes": [
+    {
+      "id": "reading",
+      "lane": "read",
+      "col": 0,
+      "type": "external",
+      "label": "Reading a page"
+    },
+    {
+      "id": "enter",
+      "lane": "scene",
+      "col": 1,
+      "type": "frontend",
+      "label": "The footer enters",
+      "sublabel": "star rises, alpenglow grows"
+    },
+    {
+      "id": "arrive",
+      "lane": "scene",
+      "col": 2,
+      "type": "frontend",
+      "label": "Arrival",
+      "sublabel": "flag runs up its pole once"
+    },
+    {
+      "id": "summit",
+      "lane": "scene",
+      "col": 3,
+      "type": "frontend",
+      "label": "The summit",
+      "sublabel": "flag waves while on screen"
+    },
+    {
+      "id": "light",
+      "lane": "read",
+      "col": 3,
+      "type": "backend",
+      "label": "An entry's light",
+      "sublabel": "brightens on hover or focus"
+    }
+  ],
+  "edges": [
+    {
+      "id": "e1",
+      "from": "reading",
+      "to": "enter",
+      "label": "scrolls to the end",
+      "variant": "emphasis"
+    },
+    {
+      "id": "e2",
+      "from": "enter",
+      "to": "arrive",
+      "label": "40% in view",
+      "variant": "emphasis"
+    },
+    {
+      "id": "e3",
+      "from": "arrive",
+      "to": "summit",
+      "variant": "emphasis"
+    },
+    {
+      "id": "e4",
+      "from": "summit",
+      "to": "light",
+      "label": "planet link",
+      "variant": "default",
+      "role": "branch"
+    }
+  ]
+}

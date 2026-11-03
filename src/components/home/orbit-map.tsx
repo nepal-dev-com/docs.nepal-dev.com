@@ -456,7 +456,13 @@ export function OrbitMap({ entries, star }: { entries: CatalogEntry[]; star: str
         // Near the canvas's right edge the name goes on the planet's left, so it is never cut.
         const fits = body.x + offset + context!.measureText(body.entry.title).width <= width - 8;
         context!.textAlign = fits ? 'left' : 'right';
-        context!.fillText(body.entry.title, fits ? body.x + offset : body.x - offset, body.y + 4);
+        const nameX = fits ? body.x + offset : body.x - offset;
+        // On a narrow screen a long name crosses the empty orbits' names as it turns; the halo keeps it readable.
+        context!.strokeStyle = colors.bg;
+        context!.lineWidth = 3;
+        context!.lineJoin = 'round';
+        context!.strokeText(body.entry.title, nameX, body.y + 4);
+        context!.fillText(body.entry.title, nameX, body.y + 4);
         context!.textAlign = 'left';
         context!.globalAlpha = 1;
       }

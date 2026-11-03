@@ -75,7 +75,7 @@
         436,
         70
       ],
-      "sublabel": "Puncoz Verse Docs"
+      "sublabel": "Nepal Dev Verse Docs"
     },
     {
       "id": "links",
@@ -94,15 +94,16 @@
     {
       "id": "credit",
       "type": "external",
-      "label": "Packages and projects by Puncoz Nepal",
+      "label": "Part of nepal-dev.com. Made with love by Puncoz",
       "pos": [
         40,
         458
       ],
       "size": [
         436,
-        58
-      ]
+        70
+      ],
+      "sublabel": "Nepal."
     }
   ],
   "boundaries": [

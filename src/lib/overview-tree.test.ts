@@ -67,7 +67,7 @@ function maintainOnly(): PageTree.Root {
             index: page('docs/maintain/index.mdx', '/docs/maintain'),
           }),
         ],
-        { root: true, index: page('docs/index.mdx', '/docs', 'Puncoz Verse Docs') },
+        { root: true, index: page('docs/index.mdx', '/docs', 'Nepal Dev Verse Docs') },
       ),
     ],
   };
@@ -142,7 +142,7 @@ describe('overviewInTracks (ADR-0025)', () => {
         folder(
           'docs',
           [
-            page('docs/index.mdx', '/docs', 'Puncoz Verse Docs'),
+            page('docs/index.mdx', '/docs', 'Nepal Dev Verse Docs'),
             folder('docs/maintain', [page('docs/maintain/a.mdx', '/docs/maintain/a')], { root: 'track' }),
           ],
           { root: true },

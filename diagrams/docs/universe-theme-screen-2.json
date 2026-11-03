@@ -25,7 +25,7 @@
     {
       "id": "mark",
       "type": "frontend",
-      "label": "Verse mark",
+      "label": "Brand mark",
       "pos": [
         40,
         60
@@ -34,7 +34,7 @@
         212,
         70
       ],
-      "sublabel": "Puncoz Verse"
+      "sublabel": "Nepal Dev Verse"
     },
     {
       "id": "search",

@@ -3,8 +3,8 @@
   "diagram_type": "architecture",
   "meta": {
     "title": "Screen 1 — Header",
-    "subtitle": "Wireframe at phone width, drawn from its Mermaid version · site name",
-    "output": "site-name-screen-1.html",
+    "subtitle": "Wireframe at phone width, drawn from its Mermaid version · community identity",
+    "output": "community-identity-screen-1.html",
     "animation": "trace",
     "quality_profile": "showcase",
     "legend": {
@@ -22,15 +22,16 @@
     {
       "id": "mark",
       "type": "frontend",
-      "label": "◎ Puncoz Verse",
+      "label": "▲ Summit-and-flag mark",
       "pos": [
         40,
         60
       ],
       "size": [
         212,
-        58
-      ]
+        70
+      ],
+      "sublabel": "Nepal Dev Verse"
     },
     {
       "id": "search",
@@ -64,13 +65,27 @@
       "label": "browser tab",
       "pos": [
         40,
-        130
+        142
       ],
       "size": [
         436,
         70
       ],
-      "sublabel": "Install — Puncoz Verse"
+      "sublabel": "Install — lodestar — Nepal Dev Verse"
+    },
+    {
+      "id": "scale",
+      "type": "frontend",
+      "label": "Scale strip",
+      "pos": [
+        40,
+        224
+      ],
+      "size": [
+        436,
+        70
+      ],
+      "sublabel": "the Verse mark stays only here, for the Verse level"
     }
   ],
   "boundaries": [
@@ -81,7 +96,8 @@
         "mark",
         "search",
         "menu",
-        "tab"
+        "tab",
+        "scale"
       ],
       "pad": 22
     }

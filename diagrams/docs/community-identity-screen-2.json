@@ -2,9 +2,9 @@
   "schema_version": 1,
   "diagram_type": "architecture",
   "meta": {
-    "title": "Screen 2 — This site's overview",
-    "subtitle": "Wireframe at phone width, drawn from its Mermaid version · site name",
-    "output": "site-name-screen-2.html",
+    "title": "Screen 2 — Home page",
+    "subtitle": "Wireframe at phone width, drawn from its Mermaid version · community identity",
+    "output": "community-identity-screen-2.html",
     "animation": "trace",
     "quality_profile": "showcase",
     "legend": {
@@ -23,9 +23,9 @@
   },
   "components": [
     {
-      "id": "mark",
+      "id": "hdr",
       "type": "frontend",
-      "label": "◎ Puncoz Verse",
+      "label": "▲ Nepal Dev Verse",
       "pos": [
         40,
         60
@@ -62,9 +62,9 @@
       ]
     },
     {
-      "id": "chip",
-      "type": "backend",
-      "label": "◍ Puncoz Verse Docs",
+      "id": "system",
+      "type": "external",
+      "label": "The system",
       "pos": [
         40,
         130
@@ -73,12 +73,12 @@
         436,
         70
       ],
-      "sublabel": "Project"
+      "sublabel": "the star labelled nepal-dev.com, orbits and planets"
     },
     {
-      "id": "hero",
-      "type": "frontend",
-      "label": "planet header",
+      "id": "line",
+      "type": "external",
+      "label": "Every package and project by Nepalese developers",
       "pos": [
         40,
         212
@@ -87,15 +87,29 @@
         436,
         70
       ],
-      "sublabel": "Puncoz Verse Docs · Maintain · Repository ↗"
+      "sublabel": "all over the world, documented to the version."
     },
     {
-      "id": "h1",
+      "id": "sub",
       "type": "external",
-      "label": "Puncoz Verse Docs",
+      "label": "Guides, APIs and release notes, read from each",
       "pos": [
         40,
         294
+      ],
+      "size": [
+        436,
+        70
+      ],
+      "sublabel": "package's own source."
+    },
+    {
+      "id": "find",
+      "type": "frontend",
+      "label": "⌕ Search packages, projects and pages",
+      "pos": [
+        40,
+        376
       ],
       "size": [
         436,
@@ -103,32 +117,32 @@
       ]
     },
     {
-      "id": "body",
-      "type": "external",
-      "label": "Puncoz Verse holds the documentation for every",
+      "id": "zoom",
+      "type": "backend",
+      "label": "Zoom out to the Verse",
       "pos": [
         40,
-        364
+        446
       ],
       "size": [
         436,
-        70
-      ],
-      "sublabel": "package and project…"
+        58
+      ]
     }
   ],
   "boundaries": [
     {
       "kind": "region",
-      "label": "Phone screen · /docs",
+      "label": "Phone screen · the top, at phone width",
       "wraps": [
-        "mark",
+        "hdr",
         "search",
         "menu",
-        "chip",
-        "hero",
-        "h1",
-        "body"
+        "system",
+        "line",
+        "sub",
+        "find",
+        "zoom"
       ],
       "pad": 22
     }

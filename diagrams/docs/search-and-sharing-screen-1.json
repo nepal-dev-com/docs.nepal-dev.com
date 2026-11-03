@@ -22,7 +22,7 @@
     {
       "id": "site",
       "type": "backend",
-      "label": "docs.puncoz.com › lodestar › use › install",
+      "label": "docs.nepal-dev.com › lodestar › use › install",
       "pos": [
         40,
         60
@@ -35,7 +35,7 @@
     {
       "id": "title",
       "type": "frontend",
-      "label": "Install — lodestar — Puncoz Verse",
+      "label": "Install — lodestar — Nepal Dev Verse",
       "pos": [
         40,
         130

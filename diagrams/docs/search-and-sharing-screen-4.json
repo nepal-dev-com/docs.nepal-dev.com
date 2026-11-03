@@ -25,7 +25,7 @@
     {
       "id": "brand",
       "type": "frontend",
-      "label": "The Verse mark and Puncoz Verse, top left, on the",
+      "label": "The brand mark and Nepal Dev Verse, top left, on",
       "pos": [
         40,
         60
@@ -34,7 +34,7 @@
         436,
         70
       ],
-      "sublabel": "still dark star field"
+      "sublabel": "the still dark star field"
     },
     {
       "id": "kicker",
@@ -80,7 +80,7 @@
     {
       "id": "domain",
       "type": "external",
-      "label": "docs.puncoz.com",
+      "label": "docs.nepal-dev.com",
       "pos": [
         40,
         376

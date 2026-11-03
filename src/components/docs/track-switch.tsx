@@ -5,6 +5,7 @@ import { usePathname } from 'next/navigation';
 import type { Ring } from '@/lib/rings';
 import { PlanetMark } from '@/components/planet';
 import { currentSide } from '@/lib/overview-sidebar';
+import { twelveRays } from '@/lib/flag';
 
 export interface TrackSwitchEntry {
   slug: string;
@@ -17,16 +18,11 @@ export interface TrackSwitchEntry {
   maintainUrl?: string;
 }
 
+// The two sides of every planet are the flag's own sun and moon (ADR-0037 decision 13).
 function Sun() {
   return (
     <svg viewBox="0 0 24 24" className="side-sun" aria-hidden>
-      <circle cx="12" cy="12" r="4.2" fill="currentColor" />
-      <path
-        stroke="currentColor"
-        strokeWidth="1.8"
-        strokeLinecap="round"
-        d="M12 2.5v2.3M12 19.2v2.3M2.5 12h2.3M19.2 12h2.3M5.3 5.3l1.6 1.6M17.1 17.1l1.6 1.6M5.3 18.7l1.6-1.6M17.1 6.9l1.6-1.6"
-      />
+      <path fill="currentColor" d={twelveRays(12, 12, 5.6, 10.6)} />
     </svg>
   );
 }
@@ -34,7 +30,8 @@ function Sun() {
 function Moon() {
   return (
     <svg viewBox="0 0 24 24" className="side-moon" aria-hidden>
-      <path fill="currentColor" d="M20 14.6A8.5 8.5 0 1 1 9.4 4a7 7 0 0 0 10.6 10.6Z" />
+      <path fill="currentColor" d="M2.5 10.5a9.5 9.5 0 0 0 19 0a11 9.6 0 0 1-19 0Z" />
+      <path fill="currentColor" d="M7.8 9.6a4.2 4.2 0 0 1 8.4 0Z" />
     </svg>
   );
 }

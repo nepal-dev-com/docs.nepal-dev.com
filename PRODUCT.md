@@ -8,24 +8,26 @@ web
 
 ## Users
 
-- **Package users** — developers installing, evaluating or upgrading one of Puncoz Nepal's
-  open-source packages (npm, PHP / Composer, and other ecosystems). They arrive mid-task, from
+- **Package users** — developers installing, evaluating or upgrading an open-source package
+  by a Nepalese developer (npm, PHP / Composer, and other ecosystems). They arrive mid-task, from
   a registry page, a README or a search, looking for an install command, an API, an option, a
   default or a supported version.
 - **Maintainers** — the people who look after a package or project: they need its
   architecture, local setup, tests, release process and contribution notes. Each package and
   project has a Maintain track for them beside the Use track (owner's decision, 2026-10-31).
 - **Project stakeholders** — collaborators, clients or teammates reading the documentation of
-  Puncoz Nepal's public and private projects.
-- **The owner, as reference** — Puncoz Nepal's own single source of truth across everything
-  they maintain.
+  public and private projects by Nepalese developers.
+- **Authors** — Nepalese developers anywhere in the world, who write their package's or project's
+  pages from its own repository, through the submodule (ADR-0010), and keep them as their
+  single source of truth.
 - **AI tools and agents** — LLMs and coding agents that read the documentation as Markdown,
   through `llms.txt`, `llms-full.txt` and each page's Markdown route, without the site.
 
 ## Product Purpose
 
-One documentation site for everything Puncoz Nepal builds and publishes: open-source packages
-and libraries for any ecosystem, and public and private projects. Success is a reader finding
+One documentation platform for everything Nepalese developers all over the world build and
+publish, as part of nepal-dev.com: open-source packages and libraries for any ecosystem, and public
+and private projects. Success is a reader finding
 an answer they can trust and act on (a command that works, a signature that matches the
 installed version) without leaving for the source code.
 
@@ -39,8 +41,8 @@ installed version) without leaving for the source code.
   the version it documents.
 - **Readable by machines.** Every page is also clean Markdown and part of `llms.txt`, so people
   and tools can take the documentation without the site.
-- **A portfolio of the work.** Seen together, the documentation also shows what Puncoz Nepal
-  builds, as well as how to use it.
+- **A showcase of the community.** Seen together, the documentation also shows what Nepalese
+  developers build, as well as how to use it.
 
 ## Operating Context
 
@@ -70,17 +72,18 @@ installed version) without leaving for the source code.
 
 ## Brand Commitments
 
-- Owner and author: Puncoz Nepal.
-- Name: **Puncoz Verse**, as in universe (owner's decision, 2026-11-01; ADR-0028). The site's own
-  documentation, the project `docs`, is **Puncoz Verse Docs**. Its one identity asset is the
-  Verse mark (ADR-0029); there is no voice guide beyond the vocabulary rule below.
+- Community: **nepal-dev.com**. Owner and maintainer: Puncoz Nepal, credited in the footer.
+- Name: **Nepal Dev Verse**, as in universe (owner's decision, 2026-11-03; ADR-0036). The site's
+  own documentation, the project `docs`, is **Nepal Dev Verse Docs**. Its brand mark is
+  nepal-dev.com's mountain and flag, and the Verse keeps its own place mark in the scale strip
+  (ADR-0029, ADR-0036); there is no voice guide beyond the vocabulary rule below.
 - Craft bar: the documentation of **Stripe, Linear and Resend** (owner's choice, 2026-10-31).
 - Look: cool, modern and technical, with motion and graphics; search is the first thing a reader
   uses (owner's steer, 2026-10-31). Not wanted: a warm, earthy palette, or a hero that makes the
   reader choose between options before they can search. The design decisions inside that steer
   are delegated to the builder and recorded in ADR-0014.
-- The whole site is one solar system (owner's steer, 2026-11-01; ADR-0017): the star is the
-  maker, packages and projects are planets, version lines are moons, Use and Maintain are a
+- The whole site is one solar system (owner's steer, 2026-11-01; ADR-0017): the star is
+  nepal-dev.com, packages and projects are planets, version lines are moons, Use and Maintain are a
   planet's day and night sides, on every page.
 - The Verse is the sky around that one system (owner's choice, 2026-11-01; ADR-0029): a still
   sky on every page, a mark of its own, and a scale ladder readers zoom through, from the Verse

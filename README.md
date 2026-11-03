@@ -1,10 +1,11 @@
 # puncoz-packages-docs
 
-> One place for the documentation of everything Puncoz Nepal builds: open-source packages and
-> libraries across ecosystems, and public and private projects.
+> Nepal Dev Verse: one place for the documentation of everything Nepalese developers all over the
+> world build, open-source packages and libraries across ecosystems, and public and private
+> projects. Part of [nepal-dev.com](https://nepal-dev.com).
 
-**Status:** the site is **Puncoz Verse**; its own documentation is **Puncoz Verse Docs** (ADR-0028). The catalogue shape, root addresses, one site-wide
-look with a light/dark switch, the Verse mark, a still sky on every page, the scale strip, the Verse view and the planet morph (ADR-0029), and the home page's release map are built; no package or project
+**Status:** the site is **Nepal Dev Verse**; its own documentation is **Nepal Dev Verse Docs** (ADR-0036). The catalogue shape, root addresses, one site-wide
+look with a light/dark switch, nepal-dev.com's mark, the Himalayan Horizon at the end of every page (ADR-0037), a still sky on every page, the scale strip, the Verse view and the planet morph (ADR-0029), and the home page's release map are built; no package or project
 is documented yet besides this site itself, so the home page shows its empty states.
 · **Owner:** [Puncoz Nepal](https://puncoz.com)
 
@@ -140,6 +141,7 @@ Open [http://localhost:3000](http://localhost:3000). The docs are at `/docs`.
 │   ├── app/             # home, every page at /<slug>/…, llms.txt, share images, robots, sitemap, search records, tokens
 │   ├── components/      # site header, MDX components, search dialog, docs/ (scale strip, hero, track switch, version banners), home/
 │   └── lib/             # content loader, catalogue schema and checks, search client, site settings
+├── assets/              # the nepal-dev.com logo as supplied, not served
 ├── diagrams/            # Archify diagrams: the candidate JSON (not served) and the HTML, served sandboxed at /diagrams/
 ├── scripts/
 │   └── sync-content.ts  # pushes search records to Algolia after a build
@@ -255,3 +257,12 @@ threat model, data classification, secrets inventory and audit checklist live in
 | [0026](content/docs/maintain/adr/ADR-0026-the-moon-picker-on-an-overview-opens-a-lines-first-page.mdx) | The moon picker on an overview opens a line's first page | Approved |
 | [0027](content/docs/maintain/adr/ADR-0027-the-sidebar-is-a-scale-ladder-with-one-lifted-orbit.mdx) | The sidebar is a scale ladder with one lifted orbit | Approved |
 | [0028](content/docs/maintain/adr/ADR-0028-the-site-is-named-puncoz-verse.mdx) | The site is named Puncoz Verse | Approved |
+| [0029](content/docs/maintain/adr/ADR-0029-the-verse-is-a-still-sky-you-zoom-through.mdx) | The Verse is a still sky you zoom through | Approved |
+| [0030](content/docs/maintain/adr/ADR-0030-the-horizon-rises-over-the-page-and-its-sky-comes-alive.mdx) | The horizon rises over the page, and its sky comes alive | Approved |
+| [0031](content/docs/maintain/adr/ADR-0031-the-sidebar-sets-without-dimming.mdx) | The sidebar sets without dimming | Approved |
+| [0032](content/docs/maintain/adr/ADR-0032-the-heros-system-comes-alive.mdx) | The hero's system comes alive | Approved |
+| [0033](content/docs/maintain/adr/ADR-0033-the-footer-says-you-have-reached-the-horizon.mdx) | The footer says you've reached the horizon | Approved |
+| [0034](content/docs/maintain/adr/ADR-0034-the-proxy-answers-unknown-paths-with-a-true-404.mdx) | The proxy answers unknown paths with a true 404 | Approved |
+| [0035](content/docs/maintain/adr/ADR-0035-every-page-is-ready-for-search-and-sharing.mdx) | Every page is ready for search and sharing | Approved |
+| [0036](content/docs/maintain/adr/ADR-0036-the-site-is-nepal-dev-verse.mdx) | The site is Nepal Dev Verse, part of nepal-dev.com | Approved |
+| [0037](content/docs/maintain/adr/ADR-0037-the-horizon-is-the-himalaya.mdx) | The Horizon is the Himalaya | Approved |

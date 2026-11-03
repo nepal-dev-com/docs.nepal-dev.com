@@ -35,7 +35,7 @@
     {
       "id": "scene",
       "type": "external",
-      "label": "Living sky",
+      "label": "The Himalaya",
       "pos": [
         40,
         130
@@ -44,12 +44,12 @@
         436,
         70
       ],
-      "sublabel": "twinkling stars, aurora, shooting stars, lit clouds, the star…"
+      "sublabel": "twinkling stars, shooting stars, the star rising, clouds, the…"
     },
     {
       "id": "planets",
       "type": "external",
-      "label": "● lodestar  ● ledgerly  ○ orbit-board  ○ Puncoz",
+      "label": "● lodestar  ● ledgerly  ○ orbit-board  ○ Nepal",
       "pos": [
         40,
         212
@@ -58,7 +58,7 @@
         436,
         70
       ],
-      "sublabel": "Verse Docs"
+      "sublabel": "Dev Verse Docs"
     },
     {
       "id": "links",
@@ -77,15 +77,16 @@
     {
       "id": "credit",
       "type": "external",
-      "label": "Packages and projects by Puncoz Nepal",
+      "label": "Part of nepal-dev.com. Made with love by Puncoz",
       "pos": [
         40,
         376
       ],
       "size": [
         436,
-        58
-      ]
+        70
+      ],
+      "sublabel": "Nepal."
     }
   ],
   "boundaries": [

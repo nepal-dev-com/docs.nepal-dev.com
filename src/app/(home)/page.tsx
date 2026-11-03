@@ -3,7 +3,7 @@ import Link from 'next/link';
 import { ArrowRight } from 'lucide-react';
 import { getCatalog, getExamplePage, getTracksPreview } from '@/lib/catalog';
 import { docsLlms } from '@/lib/source';
-import { appName, getPageMarkdownUrl, gitConfig, homeImageUrl } from '@/lib/shared';
+import { appName, getPageMarkdownUrl, gitConfig, homeImageUrl, homeLine } from '@/lib/shared';
 import { homeJsonLd, pageMetadata, searchRule, siteUrl } from '@/lib/seo';
 import { JsonLd } from '@/components/json-ld';
 import { verseFragment } from '@/lib/verse-view';
@@ -20,7 +20,7 @@ import { Reveal } from '@/components/home/reveal';
 import { ZoomPage } from '@/components/zoom-page';
 
 const description = 'Guides, APIs and release notes for npm, Composer, PyPI and Go packages, read from each package’s own source.';
-const title = `${appName} — every package and project, documented to the version`;
+const title = `${appName} — packages and projects by Nepalese developers`;
 
 export const metadata: Metadata = pageMetadata({
   title,
@@ -77,7 +77,7 @@ export default async function HomePage() {
         <main>
           <Hero
             entries={entries}
-            title={{ lead: 'Every package and project,', rest: 'documented to the version.' }}
+            title={homeLine}
             subtitle="Guides, APIs and release notes for npm, Composer, PyPI and Go packages, read from each package's own source."
           />
 

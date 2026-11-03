@@ -19,7 +19,7 @@
     {
       "id": "latest",
       "type": "backend",
-      "label": "Tab, latest line: Install — lodestar — Puncoz",
+      "label": "Tab, latest line: Install — lodestar — Nepal Dev",
       "pos": [
         40,
         60
@@ -42,12 +42,12 @@
         436,
         70
       ],
-      "sublabel": "Puncoz Verse"
+      "sublabel": "Nepal Dev Verse"
     },
     {
       "id": "dev",
       "type": "backend",
-      "label": "Tab, dev line: Install — lodestar dev — Puncoz",
+      "label": "Tab, dev line: Install — lodestar dev — Nepal Dev",
       "pos": [
         40,
         224
@@ -61,7 +61,7 @@
     {
       "id": "overview",
       "type": "backend",
-      "label": "Tab, overview: lodestar — Puncoz Verse",
+      "label": "Tab, overview: lodestar — Nepal Dev Verse",
       "pos": [
         40,
         306
@@ -74,7 +74,7 @@
     {
       "id": "home",
       "type": "backend",
-      "label": "Tab, home page: Puncoz Verse — every package and",
+      "label": "Tab, home page: Nepal Dev Verse — packages and",
       "pos": [
         40,
         376
@@ -83,7 +83,7 @@
         436,
         70
       ],
-      "sublabel": "project, documented to the version"
+      "sublabel": "projects by Nepalese developers"
     }
   ],
   "boundaries": [

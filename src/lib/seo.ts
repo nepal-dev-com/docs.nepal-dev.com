@@ -2,7 +2,7 @@ import type { Metadata, MetadataRoute } from 'next';
 import type { Channel } from './catalog-schema';
 import type { Ring } from './rings';
 import type { Level } from './scale-strip';
-import { appName, owner } from './shared';
+import { appName, community } from './shared';
 
 /** ADR-0035 decision 1: an https origin, or undefined when the site has no public address. */
 export function parseSiteUrl(value: string | undefined): URL | undefined {
@@ -111,7 +111,7 @@ export function pageMetadata(input: MetadataInput): Metadata {
         ? {
             ...shared,
             type,
-            authors: [owner.url],
+            authors: [community.url],
             ...(modified ? { modifiedTime: modified.toISOString() } : {}),
           }
         : { ...shared, type },
@@ -148,11 +148,10 @@ export function sitemapEntries(
 
 const context = 'https://schema.org';
 
-const person = {
-  '@type': 'Person',
-  name: owner.name,
-  url: owner.url,
-  sameAs: ['https://github.com/puncoz'],
+const organization = {
+  '@type': 'Organization',
+  name: community.name,
+  url: community.url,
 };
 
 /** ADR-0035 decision 10. No SearchAction: search is a dialog, with no results address to name. */
@@ -160,8 +159,8 @@ export function homeJsonLd(description: string, site: URL) {
   return {
     '@context': context,
     '@graph': [
-      { '@type': 'WebSite', name: appName, url: new URL('/', site).href, description, inLanguage: 'en', author: person },
-      person,
+      { '@type': 'WebSite', name: appName, url: new URL('/', site).href, description, inLanguage: 'en', author: organization },
+      organization,
     ],
   };
 }
@@ -205,7 +204,7 @@ export function pageJsonLd(input: PageJsonLdInput, site: URL) {
       url: address,
       inLanguage: 'en',
       image: new URL(imageUrl, site).href,
-      author: person,
+      author: organization,
       isPartOf: { '@type': 'WebSite', name: appName, url: new URL('/', site).href },
       ...(modified ? { dateModified: modified.toISOString() } : {}),
     } as { '@type': string },
@@ -218,7 +217,7 @@ export function pageJsonLd(input: PageJsonLdInput, site: URL) {
       description,
       url: address,
       codeRepository: software.repository,
-      author: person,
+      author: organization,
       ...(software.version ? { version: software.version } : {}),
     } as { '@type': string });
   }

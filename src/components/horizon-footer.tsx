@@ -2,49 +2,56 @@ import type { CSSProperties, ReactNode } from 'react';
 import Link from 'next/link';
 import type { CatalogEntry } from '@/lib/catalog';
 import { ringOf } from '@/lib/rings';
-import { owner } from '@/lib/shared';
-import { PlanetMark } from '@/components/planet';
+import { community, maker } from '@/lib/shared';
+import { BrandMark } from '@/components/brand-mark';
+import { PlanetMark, ringColor } from '@/components/planet';
 import { BackToTop, FooterSearch, VerseLink } from '@/components/footer-actions';
 import { HorizonAwake } from '@/components/horizon-awake';
+import { NepalFlagCloth } from '@/components/nepal-flag';
 import {
+  alpenglow,
   cloudBands,
   cloudPeriod,
+  farRange,
+  flagPole,
   horizonStars,
+  lightSpots,
+  lightsFor,
+  midRange,
+  moon,
+  nearRange,
   observatory,
   planet,
-  ridgeY,
+  polygonPath,
+  rangePath,
   sceneHeight,
   sceneWidth,
+  snow,
   starDisc,
+  traceFor,
+  worldView,
 } from '@/lib/horizon-sky';
 
 const view = `0 0 ${sceneWidth} ${sceneHeight}`;
+const world = `${worldView.x} 0 ${worldView.width} ${sceneHeight}`;
 const stars = horizonStars();
 const clouds = cloudBands();
 const site = observatory();
 
-// Two ribbons that rise off the rim, swelling in the middle and fading at both ends.
-function auroraPath(from: number, to: number, height: (x: number) => number) {
-  const top: string[] = [];
-  const bottom: string[] = [];
-  for (let x = from; x <= to; x += 20) {
-    const fade = Math.sin((Math.PI * (x - from)) / (to - from));
-    top.push(`${x},${(ridgeY(x) - height(x) * fade).toFixed(1)}`);
-    bottom.unshift(`${x},${(ridgeY(x) + 4).toFixed(1)}`);
-  }
-  return `M${top.join(' L')} L${bottom.join(' L')} Z`;
-}
-
-const auroras = [
-  auroraPath(180, 760, (x) => 34 + 18 * Math.sin(x / 80)),
-  auroraPath(520, 1040, (x) => 26 + 14 * Math.sin(x / 64 + 1)),
-];
-
-// Each layer is its own SVG on the same viewBox, so a looping layer moves alone and the blurs
-// are never redrawn (ADR-0030 decision 3).
+// Each layer is its own SVG, so a looping layer moves alone and the blurs are never redrawn
+// (ADR-0030 decision 3).
 function Layer({ className, children }: { className: string; children: ReactNode }) {
   return (
     <svg className={className} viewBox={view} preserveAspectRatio="xMidYMax slice">
+      {children}
+    </svg>
+  );
+}
+
+// Scaled by the scene's height, not its width, so the summit and flag are never cropped (ADR-0037 decision 11).
+function World({ className, children }: { className: string; children: ReactNode }) {
+  return (
+    <svg className={`horizon-world ${className}`} viewBox={world}>
       {children}
     </svg>
   );
@@ -70,8 +77,8 @@ function ShootingStar({ id, cycle, delay }: { id: string; cycle: number; delay: 
   );
 }
 
-/** The scene: a dusk sky over the planet's curved edge (ADR-0030 decision 2). */
-export function HorizonScene() {
+/** The scene: the range on the planet's edge, at dusk or at dawn (ADR-0030 decision 2, ADR-0037). */
+export function HorizonScene({ entries }: { entries: CatalogEntry[] }) {
   return (
     <div className="horizon-scene" aria-hidden>
       <Layer className="horizon-stars">
@@ -92,38 +99,28 @@ export function HorizonScene() {
           />
         ))}
       </Layer>
-      <Layer className="horizon-aurora h-loop">
-        <defs>
-          <linearGradient id="horizon-aurora-fill" x1="0" y1="140" x2="0" y2="232" gradientUnits="userSpaceOnUse">
-            <stop offset="0" stopColor="var(--home-accent)" stopOpacity="0" />
-            <stop offset="0.7" stopColor="var(--home-accent)" stopOpacity="0.55" />
-            <stop offset="1" stopColor="var(--home-accent)" stopOpacity="0.8" />
-          </linearGradient>
-          <filter id="horizon-aurora-blur" x="-10%" y="-40%" width="120%" height="180%">
-            <feGaussianBlur stdDeviation="7" />
-          </filter>
-        </defs>
-        <g fill="url(#horizon-aurora-fill)" filter="url(#horizon-aurora-blur)">
-          {auroras.map((d) => (
-            <path key={d} d={d} />
-          ))}
-        </g>
-      </Layer>
       <ShootingStar id="a" cycle={14} delay={-4} />
       <ShootingStar id="b" cycle={23} delay={-15} />
-      <Layer className="horizon-sun">
+      <World className="horizon-sun">
         <defs>
-          <radialGradient id="horizon-glow" cx="50%" cy="100%" r="60%">
-            <stop offset="0" stopColor="var(--home-star)" stopOpacity="0.55" />
-            <stop offset="0.35" stopColor="var(--home-star)" stopOpacity="0.14" />
+          <radialGradient id="horizon-glow">
+            <stop offset="0" stopColor="var(--home-star)" stopOpacity="var(--sun-glow)" />
+            <stop offset="0.45" stopColor="var(--horizon-warm)" stopOpacity="0.16" />
             <stop offset="1" stopColor="var(--home-star)" stopOpacity="0" />
           </radialGradient>
         </defs>
+        <path
+          className="horizon-moon"
+          d={`M${moon.cx + 8} ${moon.cy - moon.r + 1} a${moon.r} ${moon.r} 0 1 0 14 22 a12 12 0 1 1 -14 -22 Z`}
+        />
         <g className="horizon-rise">
-          <ellipse className="horizon-glow" cx="600" cy="230" rx="520" ry="200" fill="url(#horizon-glow)" />
-          <circle cx={starDisc.cx} cy={starDisc.cy} r={starDisc.r} fill="var(--home-star)" />
+          <ellipse className="horizon-glow" cx={starDisc.cx} cy={starDisc.cy + 22} rx="460" ry="180" fill="url(#horizon-glow)" />
+          <circle className="horizon-star-disc" cx={starDisc.cx} cy={starDisc.cy} r={starDisc.r} />
         </g>
-      </Layer>
+      </World>
+      <World className="horizon-far">
+        <path d={rangePath(farRange())} />
+      </World>
       <div className="horizon-clouds">
         {clouds.map((band, index) => (
           <svg
@@ -151,16 +148,18 @@ export function HorizonScene() {
           </svg>
         ))}
       </div>
-      <Layer className="horizon-ground">
-        <defs>
-          <linearGradient id="horizon-ground-fill" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0" stopColor="var(--home-panel)" />
-            <stop offset="0.12" stopColor="var(--home-bg-2)" />
-          </linearGradient>
-        </defs>
-        <circle cx={planet.cx} cy={planet.cy} r={planet.r} fill="url(#horizon-ground-fill)" />
-        <circle cx={planet.cx} cy={planet.cy} r={planet.r} fill="none" stroke="var(--home-accent)" strokeWidth="1.2" opacity="0.8" />
-        <g className="horizon-observatory" transform={`translate(${site.x} ${site.y.toFixed(2)}) rotate(${site.angle})`}>
+      <World className="horizon-mid">
+        <path d={rangePath(midRange())} />
+      </World>
+      <World className="horizon-near">
+        <path className="horizon-rock" d={rangePath(nearRange)} />
+        {alpenglow.map((face) => (
+          <path key={polygonPath(face)} className="horizon-alpenglow" d={polygonPath(face)} />
+        ))}
+        {snow.map((patch) => (
+          <path key={polygonPath(patch)} className="horizon-snow" d={polygonPath(patch)} />
+        ))}
+        <g className="horizon-observatory" transform={`translate(${site.x} ${site.y.toFixed(2)}) rotate(${site.angle}) scale(0.72)`}>
           <rect x="-14" y="-13" width="28" height="17" />
           <rect x="13" y="-6" width="10" height="10" />
           <path d="M-13 -13 A13 13 0 0 1 13 -13 Z" />
@@ -169,29 +168,37 @@ export function HorizonScene() {
           <path className="horizon-dome-lit" d="M0 -26 A13 13 0 0 1 13 -13" />
           <rect className="horizon-window" x="-9" y="-8" width="3" height="3.5" />
         </g>
-      </Layer>
-      <Layer className="horizon-rim-glow h-loop">
-        <defs>
-          <filter id="horizon-rim" x="-10%" y="-50%" width="120%" height="200%">
-            <feGaussianBlur stdDeviation="3" />
-          </filter>
-        </defs>
-        <circle
-          cx={planet.cx}
-          cy={planet.cy}
-          r={planet.r}
-          fill="none"
-          stroke="var(--home-accent)"
-          strokeWidth="6"
-          opacity="0.45"
-          filter="url(#horizon-rim)"
-        />
-      </Layer>
+        {lightsFor(entries).map(({ entry, spot }) => {
+          const { x, y } = lightSpots[spot];
+          return (
+            <g
+              key={entry.slug}
+              className="horizon-light"
+              data-spot={spot}
+              style={{ '--light': ringColor(ringOf(entry)) } as CSSProperties}
+            >
+              <path className="horizon-trace" d={traceFor(lightSpots[spot])} />
+              <circle className="horizon-light-halo" cx={x} cy={y} r="10" />
+              <circle className="horizon-light-core" cx={x} cy={y} r="3.4" />
+            </g>
+          );
+        })}
+        <rect className="horizon-pole" x={flagPole.x - 1.2} y={flagPole.top} width="2.4" height={flagPole.foot - flagPole.top} rx="1" />
+        <g transform={`translate(${flagPole.x + 1.2} ${flagPole.top + 1})`}>
+          <g className="horizon-flag">
+            <g className="horizon-flag-cloth h-loop">
+              <NepalFlagCloth />
+            </g>
+          </g>
+        </g>
+      </World>
+      <World className="horizon-ground">
+        <circle cx={planet.cx} cy={planet.cy} r={planet.r} className="horizon-ground-fill" />
+      </World>
     </div>
   );
 }
 
-/** The Horizon footer, the same on every page (ADR-0017 decision 8, ADR-0018 decision 4, ADR-0030). */
 /** The footer's closing line, a sentence to a line (ADR-0033). */
 export function HorizonClosing() {
   return (
@@ -206,15 +213,24 @@ export function HorizonClosing() {
 
 export function HorizonCredit() {
   return (
-    <small>
-      Packages and projects by{' '}
-      <a href={owner.url} rel="noreferrer noopener">
-        {owner.name}
-      </a>
+    <small className="horizon-credit">
+      <BrandMark />
+      <span>
+        Part of{' '}
+        <a href={community.url} rel="noreferrer noopener">
+          {community.name}
+        </a>
+        . Made with ❤️ by{' '}
+        <a href={maker.url} rel="noreferrer noopener">
+          {maker.name}
+        </a>
+        .
+      </span>
     </small>
   );
 }
 
+/** The Horizon footer, the same on every page (ADR-0017 decision 8, ADR-0018 decision 4, ADR-0030). */
 export function HorizonFooter({
   entries,
   githubUrl,
@@ -224,16 +240,17 @@ export function HorizonFooter({
   githubUrl: string;
   backLabel?: string;
 }) {
+  const spots = new Map(lightsFor(entries).map(({ entry, spot }) => [entry.slug, spot]));
   return (
     <footer className="horizon">
       <HorizonAwake />
       <HorizonClosing />
-      <HorizonScene />
+      <HorizonScene entries={entries} />
       <div className="horizon-surface">
         {entries.length > 0 && (
           <nav className="horizon-planets" aria-label="Packages and projects">
             {entries.map((entry) => (
-              <Link key={entry.slug} href={entry.url}>
+              <Link key={entry.slug} href={entry.url} data-spot={spots.get(entry.slug)}>
                 <PlanetMark ring={ringOf(entry)} kind={entry.kind} />
                 {entry.title}
               </Link>

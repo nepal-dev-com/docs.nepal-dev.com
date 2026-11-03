@@ -1,0 +1,226 @@
+{
+  "schema_version": 1,
+  "diagram_type": "architecture",
+  "meta": {
+    "title": "Screen 2 — The Horizon",
+    "subtitle": "Wireframe at phone width, drawn from its Mermaid version · himalayan horizon",
+    "output": "himalayan-horizon-screen-2.html",
+    "animation": "trace",
+    "quality_profile": "showcase",
+    "legend": {
+      "entries": {
+        "backend": {
+          "label": "Control or link"
+        },
+        "external": {
+          "label": "Content"
+        }
+      }
+    }
+  },
+  "components": [
+    {
+      "id": "closing",
+      "type": "external",
+      "label": "You've reached the horizon. The Verse goes on.",
+      "pos": [
+        40,
+        60
+      ],
+      "size": [
+        436,
+        58
+      ]
+    },
+    {
+      "id": "far",
+      "type": "external",
+      "label": "Far range,",
+      "pos": [
+        40,
+        130
+      ],
+      "size": [
+        100,
+        70
+      ],
+      "sublabel": "hazy"
+    },
+    {
+      "id": "flag",
+      "type": "external",
+      "label": "The flag",
+      "pos": [
+        152,
+        130
+      ],
+      "size": [
+        100,
+        70
+      ],
+      "sublabel": "on the summit"
+    },
+    {
+      "id": "star",
+      "type": "external",
+      "label": "Moon above",
+      "pos": [
+        264,
+        130
+      ],
+      "size": [
+        100,
+        70
+      ],
+      "sublabel": "the star"
+    },
+    {
+      "id": "far2",
+      "type": "external",
+      "label": "Far range,",
+      "pos": [
+        376,
+        130
+      ],
+      "size": [
+        100,
+        70
+      ],
+      "sublabel": "hazy"
+    },
+    {
+      "id": "mid",
+      "type": "external",
+      "label": "Middle ran",
+      "pos": [
+        40,
+        212
+      ],
+      "size": [
+        100,
+        70
+      ],
+      "sublabel": "ge, out of…"
+    },
+    {
+      "id": "peak",
+      "type": "external",
+      "label": "The summit",
+      "pos": [
+        152,
+        212
+      ],
+      "size": [
+        100,
+        70
+      ],
+      "sublabel": ", its right…"
+    },
+    {
+      "id": "shoulder",
+      "type": "external",
+      "label": "A second",
+      "pos": [
+        264,
+        212
+      ],
+      "size": [
+        100,
+        70
+      ],
+      "sublabel": "peak, lit…"
+    },
+    {
+      "id": "mid2",
+      "type": "external",
+      "label": "Middle ran",
+      "pos": [
+        376,
+        212
+      ],
+      "size": [
+        100,
+        70
+      ],
+      "sublabel": "ge, out of…"
+    },
+    {
+      "id": "obs",
+      "type": "external",
+      "label": "The observ",
+      "pos": [
+        40,
+        294
+      ],
+      "size": [
+        100,
+        70
+      ],
+      "sublabel": "atory on…"
+    },
+    {
+      "id": "rock",
+      "type": "external",
+      "label": "Traces and lights on",
+      "pos": [
+        152,
+        294
+      ],
+      "size": [
+        212,
+        70
+      ],
+      "sublabel": "the near rock"
+    },
+    {
+      "id": "slope",
+      "type": "external",
+      "label": "The range",
+      "pos": [
+        376,
+        294
+      ],
+      "size": [
+        100,
+        70
+      ],
+      "sublabel": "runs off…"
+    },
+    {
+      "id": "surface",
+      "type": "backend",
+      "label": "Planet row",
+      "pos": [
+        40,
+        376
+      ],
+      "size": [
+        436,
+        70
+      ],
+      "sublabel": "link row · credit"
+    }
+  ],
+  "boundaries": [
+    {
+      "kind": "region",
+      "label": "Phone screen · the end of a docs page, on a wide screen",
+      "wraps": [
+        "closing",
+        "far",
+        "flag",
+        "star",
+        "far2",
+        "mid",
+        "peak",
+        "shoulder",
+        "mid2",
+        "obs",
+        "rock",
+        "slope",
+        "surface"
+      ],
+      "pad": 22
+    }
+  ]
+}

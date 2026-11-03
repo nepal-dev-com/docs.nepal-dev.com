@@ -14,6 +14,7 @@ html > body[data-scroll-locked] {
 /* Site tokens on every page (ADR-0015 decision 7; star and night, ADR-0017 decision 13). Light first, then dark. */
 :root {
   color-scheme: light;
+  --brand-rock: #162B3F;
   --home-bg: #f6f7f9;
   --home-bg-2: #eef0f4;
   --home-panel: #ffffff;
@@ -46,6 +47,7 @@ html > body[data-scroll-locked] {
 
 .dark {
   color-scheme: dark;
+  --brand-rock: #3B7A9E;
   --home-bg: #0a0c10;
   --home-bg-2: #0f1218;
   --home-panel: #141821;
