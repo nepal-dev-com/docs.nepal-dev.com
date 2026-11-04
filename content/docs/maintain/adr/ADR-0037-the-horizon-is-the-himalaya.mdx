@@ -165,6 +165,10 @@ static inline SVG with no user input.
     bare rock between them;
   - the dark theme's near rock lifted to `#20405c`, close to the logo's navy, because the old rock was lost against the night sky.
   - the star's glow made 150 tall rather than 180, so it fades out before the scene's top instead of being cut off there.
+- [x] The wave of decision 5 was too slight to see, so it became a ripple running from the pole to the tips every 3.2 seconds. Under
+  decision 12 only transforms may move, so `flagWaveStrips` cuts the cloth into fourteen strips, each lifting and tilting to meet the
+  next, in `src/lib/flag.ts`. The pole and cloth moved to a layer of their own, so the loop never repaints the rock. Measured in Chrome:
+  no step between strips at 5× at two moments of the cycle, and steady frames at about 2044px. Safari and Firefox were not looked at.
 - [x] Measured the redraw in Chrome against `bunx next build`: dark at 320px, 390px, 860px, 1920px and about 2455px; light at 320px,
   390px, 860px and about 2455px, with no sideways scroll. 2560px was not looked at separately, and the reduced-motion rules were read
   from the source rather than seen.

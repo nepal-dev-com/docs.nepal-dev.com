@@ -4,7 +4,7 @@ import { join } from 'node:path';
 import { renderToStaticMarkup } from 'react-dom/server';
 import type { CatalogEntry } from '@/lib/catalog';
 import { privateProjects } from '@/components/home/private-projects';
-import { eightRays, flagMoon, flagMoonCentre } from '@/lib/flag';
+import { eightRays, flagMoon, flagMoonCentre, flagSize, flagWave } from '@/lib/flag';
 import { lightSpots, snowShade } from '@/lib/horizon-sky';
 import { HorizonClosing, HorizonCredit, HorizonFooter, HorizonScene } from './horizon-footer';
 
@@ -75,7 +75,6 @@ describe('the Horizon scene (ADR-0030 decision 2, ADR-0037)', () => {
   test('flies the flag: the pole fixed, the cloth raised by itself, in its own colours', () => {
     expect(html).toContain('class="horizon-pole"');
     expect(html).toContain('class="horizon-flag"');
-    expect(html).toContain('class="horizon-flag-cloth h-loop"');
     expect(html).toContain('fill="#D2193B"');
     expect(html).toContain('stroke="#1F468D"');
     expect(html).toContain(flagMoon);
@@ -106,7 +105,7 @@ describe('the Horizon scene (ADR-0030 decision 2, ADR-0037)', () => {
   });
 
   test('marks every looping layer, so it can be paused when off screen', () => {
-    expect(count(/class="[^"]*\bh-loop\b/g)).toBe(14 + 2 + 3 + 1);
+    expect(count(/class="[^"]*\bh-loop\b/g)).toBe(14 + 2 + 3 + flagWave.strips * 2);
   });
 });
 
@@ -131,6 +130,37 @@ describe('the planet row and the lights (ADR-0037 decision 7)', () => {
 
 describe('the flag (ADR-0037 decision 5)', () => {
   const css = readFileSync(join(import.meta.dir, '../app/site.css'), 'utf8');
+
+  test('waves strip by strip, each moved by transforms alone and put to sleep with the other loops', () => {
+    expect(count(/class="horizon-flag-lift h-loop"/g)).toBe(flagWave.strips);
+    expect(count(/class="horizon-flag-tilt h-loop"/g)).toBe(flagWave.strips);
+    for (const name of ['horizon-flag-lift', 'horizon-flag-tilt']) {
+      const keyframes = css.match(new RegExp(`@keyframes ${name} \\{[\\s\\S]*?\\n\\}`))?.[0] ?? '';
+      expect(keyframes).toContain('transform:');
+      expect(keyframes).not.toMatch(/\n\s+(?!transform)[a-z-]+:/);
+    }
+  });
+
+  test('is raised from a fixed point at the foot of its cloth, which the moving strips cannot shift', () => {
+    const rule = css.match(/^\.horizon-flag \{[^}]*\}/m)?.[0] ?? '';
+    expect(rule).toContain(`transform-origin: 0 ${flagSize.height}px`);
+    expect(rule).not.toContain('fill-box');
+  });
+
+  test('swings at half the period the strips were worked out for', () => {
+    const rules = css.match(/\.horizon-flag-(?:lift|tilt) \{[^}]*\}/g) ?? [];
+    expect(rules).toHaveLength(2);
+    for (const rule of rules) {
+      expect(rule).toContain(`${flagWave.period / 2}s`);
+    }
+  });
+
+  test('stands in a layer of its own, so its loop never repaints the rock (ADR-0030 decision 3)', () => {
+    const near = html.slice(html.indexOf('horizon-near'), html.indexOf('horizon-flag-layer'));
+    expect(html).toContain('horizon-flag-layer');
+    expect(near).not.toContain('horizon-pole');
+    expect(near).not.toContain('horizon-flag-lift');
+  });
 
   test('is raised by default, so without scripts it never stands part-way', () => {
     expect(css).toMatch(/\.horizon\[data-lowered\]:not\(\[data-summit\]\) \.horizon-flag/);

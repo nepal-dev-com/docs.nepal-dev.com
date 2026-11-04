@@ -8,6 +8,7 @@ import { PlanetMark, ringColor } from '@/components/planet';
 import { BackToTop, FooterSearch, VerseLink } from '@/components/footer-actions';
 import { HorizonAwake } from '@/components/horizon-awake';
 import { NepalFlagCloth } from '@/components/nepal-flag';
+import { flagSize, flagWaveStrips } from '@/lib/flag';
 import {
   alpenglow,
   cloudBands,
@@ -58,6 +59,40 @@ function World({ className, children }: { className: string; children: ReactNode
     <svg className={`horizon-world ${className}`} viewBox={world}>
       {children}
     </svg>
+  );
+}
+
+const strips = flagWaveStrips();
+
+// One cloth, seen through a row of moving slits. Each slit runs a hair into the next, so no seam shows.
+function WavingCloth() {
+  return (
+    <>
+      <defs>
+        <g id="horizon-cloth">
+          <NepalFlagCloth />
+        </g>
+        {strips.map((strip, index) => (
+          <clipPath key={index} id={`horizon-strip-${index}`}>
+            <rect x={strip.x} y="-4" width={strip.width + 0.2} height={flagSize.height + 8} />
+          </clipPath>
+        ))}
+      </defs>
+      {strips.map((strip, index) => (
+        <g
+          key={index}
+          className="horizon-flag-lift h-loop"
+          style={{ '--lift': `${strip.lift}px`, '--lift-at': `${strip.liftAt}s` } as CSSProperties}
+        >
+          <g
+            className="horizon-flag-tilt h-loop"
+            style={{ '--tilt': `${strip.tilt}deg`, '--tilt-at': `${strip.tiltAt}s`, transformOrigin: `${strip.x}px 0` } as CSSProperties}
+          >
+            <use href="#horizon-cloth" clipPath={`url(#horizon-strip-${index})`} />
+          </g>
+        </g>
+      ))}
+    </>
   );
 }
 
@@ -190,6 +225,8 @@ export function HorizonScene({ entries }: { entries: CatalogEntry[] }) {
             </g>
           );
         })}
+      </World>
+      <World className="horizon-flag-layer">
         <rect
           className="horizon-pole"
           x={flagPole.x - flagPole.width / 2}
@@ -200,9 +237,7 @@ export function HorizonScene({ entries }: { entries: CatalogEntry[] }) {
         />
         <g transform={`translate(${flagPole.x + flagPole.width / 2} ${flagTop}) scale(${flagScale})`}>
           <g className="horizon-flag">
-            <g className="horizon-flag-cloth h-loop">
-              <NepalFlagCloth />
-            </g>
+            <WavingCloth />
           </g>
         </g>
       </World>

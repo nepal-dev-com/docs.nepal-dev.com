@@ -47,3 +47,49 @@ export function eightRays(cx: number, cy: number, inner: number, outer: number):
   const footX = inner * 0.7;
   return `M${rim.join(' L')} L${round(cx + footX)} ${footY} L${round(cx - footX)} ${footY} Z`;
 }
+
+/** A slow ripple, in seconds and in the flag's units (ADR-0037 decision 5). `site.css` swings at half the period. */
+export const flagWave = { period: 3.2, ripples: 1.1, lift: 2.4, strips: 14 } as const;
+
+export interface FlagStrip {
+  x: number;
+  width: number;
+  /** How far the strip's pole-side edge swings, and when, as a negative animation delay in seconds. */
+  lift: number;
+  liftAt: number;
+  /** How far its slope swings, in degrees, and when, so it meets the next strip with no step. */
+  tilt: number;
+  tiltAt: number;
+}
+
+// The keyframes run from -value to +value, so a swing starts a quarter of a period before its sine does.
+const delayFor = (phase: number) => {
+  const turns = (phase / (2 * Math.PI) + 0.25) % 1;
+  return -Math.round((turns < 0 ? turns + 1 : turns) * flagWave.period * 1000) / 1000;
+};
+
+/**
+ * The ripple, cut into strips because only transforms may move (ADR-0037 decision 12): each strip's edges
+ * follow the same travelling sine, so the strip's lift and slope are sines too, each with its own phase.
+ */
+export function flagWaveStrips(): FlagStrip[] {
+  const start = -1;
+  const width = (flagSize.width + 2) / flagWave.strips;
+  const height = (x: number) => (flagWave.lift * Math.max(0, x)) / flagSize.width;
+  const phase = (x: number) => (-2 * Math.PI * flagWave.ripples * x) / flagSize.width;
+
+  return Array.from({ length: flagWave.strips }, (_, index) => {
+    const x = start + index * width;
+    const right = x + width;
+    const slopeX = (height(right) * Math.cos(phase(right)) - height(x) * Math.cos(phase(x))) / width;
+    const slopeY = (height(right) * Math.sin(phase(right)) - height(x) * Math.sin(phase(x))) / width;
+    return {
+      x,
+      width,
+      lift: Math.round(height(x) * 1000) / 1000,
+      liftAt: delayFor(phase(x)),
+      tilt: Math.round((Math.atan(Math.hypot(slopeX, slopeY)) * 180000) / Math.PI) / 1000,
+      tiltAt: delayFor(Math.atan2(slopeY, slopeX)),
+    };
+  });
+}

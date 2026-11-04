@@ -28,7 +28,7 @@ import {
   worldView,
   type Point,
 } from './horizon-sky';
-import { flagSize } from './flag';
+import { flagSize, flagWave } from './flag';
 
 describe('the scene stars (ADR-0030 decision 2)', () => {
   test('are the same on every build', () => {
@@ -134,7 +134,7 @@ describe('the range (ADR-0037 decision 1)', () => {
   });
 
   test('lets the cloth fly clear of the summit, the moon and the star, never covered (ADR-0037 decision 5)', () => {
-    expect(flagTop + flagSize.height * flagScale).toBeLessThan(summit.y);
+    expect(flagTop + (flagSize.height + flagWave.lift) * flagScale).toBeLessThan(summit.y);
     const fly = flagPole.x + flagPole.width / 2 + flagSize.width * flagScale;
     expect(fly).toBeLessThan(moon.cx - moon.r);
     expect(fly).toBeLessThan(starDisc.cx - starDisc.r);

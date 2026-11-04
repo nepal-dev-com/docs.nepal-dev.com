@@ -1694,14 +1694,16 @@
 /* The flag stands raised unless HorizonAwake has lowered it out of sight, so it can never rest part-way
    up its pole: that would mean mourning (ADR-0037 decision 5). */
 .horizon-flag {
-  transform-box: fill-box;
-  transform-origin: 0 100%;
+  transform-origin: 0 39px;
 }
 
-.horizon-flag-cloth {
-  transform-box: fill-box;
-  transform-origin: 0 50%;
-  animation: horizon-wave 7s ease-in-out infinite alternate;
+/* The closest easing to a sine, which the strips' phases in `flagWaveStrips` are worked out for. */
+.horizon-flag-lift {
+  animation: horizon-flag-lift 1.6s cubic-bezier(0.37, 0, 0.63, 1) var(--lift-at) infinite alternate;
+}
+
+.horizon-flag-tilt {
+  animation: horizon-flag-tilt 1.6s cubic-bezier(0.37, 0, 0.63, 1) var(--tilt-at) infinite alternate;
 }
 
 @media (prefers-reduced-motion: no-preference) {
@@ -1744,12 +1746,21 @@
   animation-play-state: paused;
 }
 
-@keyframes horizon-wave {
+@keyframes horizon-flag-lift {
   from {
-    transform: skewY(-1.6deg) scaleX(1);
+    transform: translateY(calc(var(--lift) * -1));
   }
   to {
-    transform: skewY(1.6deg) scaleX(0.97);
+    transform: translateY(var(--lift));
+  }
+}
+
+@keyframes horizon-flag-tilt {
+  from {
+    transform: skewY(calc(var(--tilt) * -1));
+  }
+  to {
+    transform: skewY(var(--tilt));
   }
 }
 
