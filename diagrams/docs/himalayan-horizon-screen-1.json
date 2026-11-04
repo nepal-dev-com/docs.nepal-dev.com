@@ -33,7 +33,7 @@
       ]
     },
     {
-      "id": "moon",
+      "id": "sky",
       "type": "external",
       "label": "Stars and shooting stars",
       "pos": [
@@ -44,7 +44,7 @@
         436,
         70
       ],
-      "sublabel": "a still crescent moon above the star"
+      "sublabel": "the sky takes the hour's light"
     },
     {
       "id": "flag",
@@ -60,9 +60,9 @@
       ]
     },
     {
-      "id": "star",
+      "id": "body",
       "type": "external",
-      "label": "The star, right of the",
+      "label": "The sun or moon,",
       "pos": [
         264,
         212
@@ -71,7 +71,7 @@
         212,
         70
       ],
-      "sublabel": "summit"
+      "sublabel": "placed by the hour"
     },
     {
       "id": "peak",
@@ -163,9 +163,9 @@
       "label": "Phone screen · the end of any page, at phone width",
       "wraps": [
         "closing",
-        "moon",
+        "sky",
         "flag",
-        "star",
+        "body",
         "peak",
         "sea",
         "rock",

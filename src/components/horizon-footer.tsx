@@ -9,10 +9,13 @@ import { BackToTop, FooterSearch, VerseLink } from '@/components/footer-actions'
 import { HorizonAwake } from '@/components/horizon-awake';
 import { NepalFlagCloth } from '@/components/nepal-flag';
 import { flagSize, flagWaveStrips } from '@/lib/flag';
+import { moonShadePath } from '@/lib/horizon-time';
 import {
   alpenglow,
+  bodyGlow,
   cloudBands,
   cloudPeriod,
+  fallbackMoonAge,
   farRange,
   flagPole,
   flagScale,
@@ -21,7 +24,7 @@ import {
   lightSpots,
   lightsFor,
   midRange,
-  moon,
+  moonDisc,
   nearRange,
   observatory,
   planet,
@@ -31,8 +34,6 @@ import {
   sceneWidth,
   snow,
   snowShade,
-  starDisc,
-  starGlow,
   traceFor,
   worldView,
 } from '@/lib/horizon-sky';
@@ -96,6 +97,86 @@ function WavingCloth() {
   );
 }
 
+const skyParts = ['dawn', 'day', 'dusk', 'night'] as const;
+
+// The moon's seas, on a disc of radius 20. Soft by being faint, never by a blur (ADR-0040 decision 6).
+const seas = [
+  [-7, -8, 6, 5],
+  [3, -10, 4.5, 3.5],
+  [-9, 2, 5, 6],
+  [5, 0, 6, 4.5],
+  [1, 9, 4, 3],
+  [-3, -2, 3, 2.5],
+  [10, -5, 2.5, 2],
+] as const;
+
+// Place by the hour, then light by the hour, then the rise with the scroll: each its own transform (ADR-0040).
+function SunAndMoon() {
+  return (
+    <>
+      <defs>
+        <radialGradient id="horizon-sun-glow">
+          <stop offset="0" stopColor="var(--sun-edge)" stopOpacity="var(--sun-glow)" />
+          <stop offset="0.45" stopColor="var(--sun-edge)" stopOpacity="0.16" />
+          <stop offset="1" stopColor="var(--sun-edge)" stopOpacity="0" />
+        </radialGradient>
+        <radialGradient id="horizon-sun-halo">
+          <stop offset="0.3" stopColor="var(--sun-core)" stopOpacity="0.55" />
+          <stop offset="0.55" stopColor="var(--sun-edge)" stopOpacity="0.2" />
+          <stop offset="1" stopColor="var(--sun-edge)" stopOpacity="0" />
+        </radialGradient>
+        <radialGradient id="horizon-sun-disc">
+          <stop offset="0" stopColor="var(--sun-core)" />
+          <stop offset="0.68" stopColor="var(--sun-core)" />
+          <stop offset="1" stopColor="var(--sun-core)" stopOpacity="0" />
+        </radialGradient>
+        <radialGradient id="horizon-moon-glow">
+          <stop offset="0" stopColor="#b9c9e6" stopOpacity="0.28" />
+          <stop offset="0.45" stopColor="#8fa6cf" stopOpacity="0.08" />
+          <stop offset="1" stopColor="#8fa6cf" stopOpacity="0" />
+        </radialGradient>
+        <radialGradient id="horizon-moon-halo">
+          <stop offset="0.5" stopColor="#dbe4f2" stopOpacity="0.28" />
+          <stop offset="1" stopColor="#dbe4f2" stopOpacity="0" />
+        </radialGradient>
+        <radialGradient id="horizon-moon-disc" cx="0.42" cy="0.4" r="0.62">
+          <stop offset="0" stopColor="#f6f6f0" />
+          <stop offset="0.7" stopColor="#e3e5e2" />
+          <stop offset="1" stopColor="#b6bcc6" />
+        </radialGradient>
+      </defs>
+      <g className="horizon-body horizon-body-sun">
+        <g className="horizon-body-light">
+          <g className="horizon-rise">
+            <g className="horizon-body-glow">
+              <ellipse className="horizon-glow" cx="0" cy={bodyGlow.below} rx={bodyGlow.rx} ry={bodyGlow.ry} fill="url(#horizon-sun-glow)" />
+            </g>
+            <circle r="58" fill="url(#horizon-sun-halo)" />
+            <circle r="29" fill="url(#horizon-sun-disc)" />
+          </g>
+        </g>
+      </g>
+      <g className="horizon-body horizon-body-moon">
+        <g className="horizon-body-light">
+          <g className="horizon-rise">
+            <g className="horizon-body-glow">
+              <ellipse className="horizon-glow" cx="0" cy={bodyGlow.below} rx={bodyGlow.rx} ry={bodyGlow.ry} fill="url(#horizon-moon-glow)" />
+            </g>
+            <circle className="horizon-moon-halo" r={moonDisc * 2} fill="url(#horizon-moon-halo)" />
+            <circle r={moonDisc} fill="url(#horizon-moon-disc)" />
+            <g className="horizon-moon-seas">
+              {seas.map(([cx, cy, rx, ry]) => (
+                <ellipse key={`${cx} ${cy}`} cx={cx} cy={cy} rx={rx} ry={ry} />
+              ))}
+            </g>
+            <path className="horizon-moon-shade" d={moonShadePath(fallbackMoonAge, moonDisc)} />
+          </g>
+        </g>
+      </g>
+    </>
+  );
+}
+
 function ShootingStar({ id, cycle, delay }: { id: string; cycle: number; delay: number }) {
   return (
     <svg
@@ -116,10 +197,13 @@ function ShootingStar({ id, cycle, delay }: { id: string; cycle: number; delay: 
   );
 }
 
-/** The scene: the range on the planet's edge, at dusk or at dawn (ADR-0030 decision 2, ADR-0037). */
+/** The scene: the range on the planet's edge, lit by the reader's hour (ADR-0030 decision 2, ADR-0037, ADR-0040). */
 export function HorizonScene({ entries }: { entries: CatalogEntry[] }) {
   return (
     <div className="horizon-scene" aria-hidden>
+      {skyParts.map((part) => (
+        <div key={part} className="horizon-sky-part" data-part={part} />
+      ))}
       <Layer className="horizon-stars">
         {stars.map((star, index) => (
           <circle
@@ -140,22 +224,8 @@ export function HorizonScene({ entries }: { entries: CatalogEntry[] }) {
       </Layer>
       <ShootingStar id="a" cycle={14} delay={-4} />
       <ShootingStar id="b" cycle={23} delay={-15} />
-      <World className="horizon-sun">
-        <defs>
-          <radialGradient id="horizon-glow">
-            <stop offset="0" stopColor="var(--home-star)" stopOpacity="var(--sun-glow)" />
-            <stop offset="0.45" stopColor="var(--horizon-warm)" stopOpacity="0.16" />
-            <stop offset="1" stopColor="var(--home-star)" stopOpacity="0" />
-          </radialGradient>
-        </defs>
-        <path
-          className="horizon-moon"
-          d={`M${moon.cx + 8} ${moon.cy - moon.r + 1} a${moon.r} ${moon.r} 0 1 0 14 22 a12 12 0 1 1 -14 -22 Z`}
-        />
-        <g className="horizon-rise">
-          <ellipse className="horizon-glow" cx={starGlow.cx} cy={starGlow.cy} rx={starGlow.rx} ry={starGlow.ry} fill="url(#horizon-glow)" />
-          <circle className="horizon-star-disc" cx={starDisc.cx} cy={starDisc.cy} r={starDisc.r} />
-        </g>
+      <World className="horizon-bodies">
+        <SunAndMoon />
       </World>
       <World className="horizon-far">
         <path d={rangePath(farRange())} />
@@ -192,9 +262,11 @@ export function HorizonScene({ entries }: { entries: CatalogEntry[] }) {
       </World>
       <World className="horizon-near">
         <path className="horizon-rock" d={rangePath(nearRange)} />
-        {alpenglow.map((face) => (
-          <path key={polygonPath(face)} className="horizon-alpenglow" d={polygonPath(face)} />
-        ))}
+        <g className="horizon-red">
+          {alpenglow.map((face) => (
+            <path key={polygonPath(face)} className="horizon-alpenglow" d={polygonPath(face)} />
+          ))}
+        </g>
         {snow.map((patch) => (
           <path key={polygonPath(patch)} className="horizon-snow" d={polygonPath(patch)} />
         ))}

@@ -5,7 +5,8 @@ import { renderToStaticMarkup } from 'react-dom/server';
 import type { CatalogEntry } from '@/lib/catalog';
 import { privateProjects } from '@/components/home/private-projects';
 import { eightRays, flagMoon, flagMoonCentre, flagSize, flagWave } from '@/lib/flag';
-import { lightSpots, snowShade } from '@/lib/horizon-sky';
+import { bodyHome, fallbackMoonAge, lightSpots, moonDisc, snowShade } from '@/lib/horizon-sky';
+import { horizonVars, moonShadePath } from '@/lib/horizon-time';
 import { HorizonClosing, HorizonCredit, HorizonFooter, HorizonScene } from './horizon-footer';
 
 const entry = (slug: string, ecosystem: string, kind: 'package' | 'project' = 'package') =>
@@ -24,7 +25,7 @@ describe('the Horizon scene (ADR-0030 decision 2, ADR-0037)', () => {
     const order = [
       'horizon-stars',
       'horizon-shooting',
-      'horizon-world horizon-sun',
+      'horizon-world horizon-bodies',
       'horizon-world horizon-far',
       'horizon-clouds',
       'horizon-world horizon-mid',
@@ -63,8 +64,7 @@ describe('the Horizon scene (ADR-0030 decision 2, ADR-0037)', () => {
     expect(html).not.toContain('rim');
   });
 
-  test('stands the moon above the star, and lights the sunward faces', () => {
-    expect(count(/class="horizon-moon"/g)).toBe(1);
+  test('lights the sunward faces', () => {
     expect(count(/class="horizon-alpenglow"/g)).toBe(3);
   });
 
@@ -125,6 +125,91 @@ describe('the planet row and the lights (ADR-0037 decision 7)', () => {
     for (let index = 0; index < lightSpots.length; index++) {
       expect(css).toContain(`a[data-spot='${index}']`);
     }
+  });
+});
+
+describe('the sun and the moon (ADR-0040)', () => {
+  const css = readFileSync(join(import.meta.dir, '../app/site.css'), 'utf8');
+  const ruleOf = (selector: string) => css.match(new RegExp(`(?:^|\\n)\\s*${selector} \\{[^}]*\\}`))?.[0] ?? '';
+
+  test('both are in the page, and the theme chooses in CSS, so a theme switch needs no script (decision 1)', () => {
+    expect(html).toContain('horizon-body-sun');
+    expect(html).toContain('horizon-body-moon');
+    expect(ruleOf('\\.horizon-body-moon')).toContain('display: none');
+    expect(ruleOf('\\.dark \\.horizon-body-moon')).toContain('display: inline');
+    expect(ruleOf('\\.dark \\.horizon-body-sun')).toContain('display: none');
+  });
+
+  test('each rises with the scroll, inside the place the hour gives it (decision 5)', () => {
+    expect(count(/class="horizon-rise"/g)).toBe(2);
+    const rise = css.match(/\.horizon-rise \{[^}]*\}/)?.[0] ?? '';
+    expect(rise).toContain('animation-timeline: --horizon');
+    const keyframes = css.match(/@keyframes horizon-rise \{[\s\S]*?\n\}/)?.[0] ?? '';
+    expect(keyframes).toContain('translateY(100px)');
+  });
+
+  test('stands where a star would without scripts, because the static page holds no hour (decision 10)', () => {
+    const rule = ruleOf('\\.horizon');
+    expect(rule).toContain(`--sun-x: ${bodyHome.x}px`);
+    expect(rule).toContain(`--sun-y: ${bodyHome.y}px`);
+    expect(rule).toContain(`--moon-x: ${bodyHome.x}px`);
+    expect(rule).toContain(`--moon-y: ${bodyHome.y}px`);
+    expect(html).not.toMatch(/--sun-x|--dusk:/);
+  });
+
+  test('sets every property the hour can change a default, so nothing is unset without scripts', () => {
+    const rule = ruleOf('\\.horizon');
+    for (const name of Object.keys(horizonVars(new Date(2026, 10, 4, 12)))) {
+      expect(rule).toContain(`${name}:`);
+    }
+  });
+
+  test('draws the moon a fixed crescent until the date is known (decision 10)', () => {
+    expect(html).toContain(moonShadePath(fallbackMoonAge, moonDisc));
+  });
+
+  test('uses gradients for its softness, never a blur that would be redrawn as it moves (decision 6)', () => {
+    const bodies = html.slice(html.indexOf('horizon-bodies'), html.indexOf('horizon-far'));
+    expect(bodies).not.toContain('feGaussianBlur');
+    expect(bodies).not.toContain('filter');
+    expect(bodies).toContain('radialGradient');
+  });
+
+  test('lights the sky with one layer per part of the day, moved by opacity alone (decision 7)', () => {
+    for (const part of ['dawn', 'day', 'dusk', 'night']) {
+      expect(html).toContain(`data-part="${part}"`);
+      const rule = ruleOf(`\\.horizon-sky-part\\[data-part='${part}'\\]`);
+      expect(rule).toContain(`opacity: var(--${part})`);
+    }
+  });
+
+  test('never relights the flag or the lights of the entries (decision 7)', () => {
+    expect(ruleOf('\\.horizon-flag')).not.toContain('--cool');
+    expect(ruleOf('\\.horizon-light')).not.toContain('--cool');
+    expect(ruleOf('\\.horizon-light')).not.toContain('--warm');
+  });
+
+  test('multiplies the red by the hour around the scroll fade, which stays (decision 8)', () => {
+    expect(count(/class="horizon-red"/g)).toBe(1);
+    expect(ruleOf('\\.horizon-red')).toContain('opacity: var(--red)');
+    expect(css).toMatch(/\.horizon-near \.horizon-alpenglow \{\s*animation: horizon-glow-face/);
+  });
+
+  test("the moon's halo and glow follow how much of it is lit, so a new moon is no eclipse (decision 6)", () => {
+    expect(count(/class="horizon-moon-halo"/g)).toBe(1);
+    expect(css).toMatch(/\.horizon-body-moon \.horizon-body-glow,\s*\.horizon-moon-halo \{\s*opacity: calc\([^)]*var\(--moon-lit\)/);
+  });
+
+  test('fades at a crossing only when motion is allowed (decision 9)', () => {
+    const fade = css.match(/@media \(prefers-reduced-motion: no-preference\) \{\s*\.horizon-body \{[^}]*\}/)?.[0] ?? '';
+    expect(fade).toContain('transition: opacity');
+    expect(css).toMatch(/\.horizon\[data-crossing~='sun'\] \.horizon-body-sun,\s*\.horizon\[data-crossing~='moon'\] \.horizon-body-moon \{\s*opacity: 0/);
+  });
+
+  test('sends the hour to nothing: the client side only reads the clock and sets properties (ADR-0040 security)', () => {
+    const awake = readFileSync(join(import.meta.dir, 'horizon-awake.tsx'), 'utf8');
+    expect(awake).not.toMatch(/fetch\(|sendBeacon|localStorage|geolocation|document\.cookie/);
+    expect(awake).toContain('horizonVars(');
   });
 });
 

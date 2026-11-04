@@ -5,7 +5,7 @@ export const sceneWidth = 1200;
 export const sceneHeight = 330;
 
 /**
- * The world: the star, the moon, the ranges and the ground. It scales with the scene's height alone and
+ * The world: the sun or moon, the ranges and the ground. It scales with the scene's height alone and
  * runs far past the screen on both sides, so its top is never cropped (ADR-0037 decision 11).
  */
 export const worldView = { x: -1200, width: 3600 } as const;
@@ -18,14 +18,10 @@ export function sceneScale(width: number): number {
 /** The planet under the range, curved gently enough to reach past the widest screen. */
 export const planet = { cx: 600, cy: 24296, r: 24000 } as const;
 
-/** The star, risen: right of the summit, so everything lit is lit from the right (ADR-0037 decision 3). */
-export const starDisc = { cx: 690, cy: 128, r: 24 } as const;
+/** Where the sun or moon stands on a page with no script to read the hour (ADR-0040 decision 10). */
+export const bodyHome = { x: 690, y: 128, clear: 24 } as const;
 
-/** The star's glow. It fades out by its own edge, so that edge must stay inside the scene or the top cuts it off. */
-export const starGlow = { cx: starDisc.cx, cy: starDisc.cy + 22, rx: 460, ry: 150 } as const;
-
-/** Directly above the star, the flag's moon over its sun (ADR-0037 decision 6). */
-export const moon = { cx: 690, cy: 54, r: 15 } as const;
+export { bodyGlow, fallbackMoonAge, moonDisc } from './horizon-time';
 
 export const summit = { x: 600, y: 96 } as const;
 
@@ -144,7 +140,7 @@ export const snowShade: Point[][] = [
 ].map(fromLogo);
 
 /**
- * The logo's red, here the star's light on the faces turned toward it (ADR-0037 decision 4). Drawn before
+ * The logo's red, here the light on the faces turned toward it (ADR-0037 decision 4). Drawn before
  * the snow, which covers its upper edge and the foot of the summit's face.
  */
 export const alpenglow: Point[][] = [
