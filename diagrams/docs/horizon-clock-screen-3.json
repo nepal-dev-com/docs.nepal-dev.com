@@ -1,0 +1,164 @@
+{
+  "schema_version": 1,
+  "diagram_type": "architecture",
+  "meta": {
+    "title": "Screen 3 — The other hours",
+    "subtitle": "Wireframe at phone width, drawn from its Mermaid version · the Horizon by the clock",
+    "output": "horizon-clock-screen-3.html",
+    "animation": "trace",
+    "quality_profile": "showcase",
+    "legend": {
+      "entries": {
+        "external": {
+          "label": "Content"
+        },
+        "frontend": {
+          "label": "Site chrome"
+        }
+      }
+    }
+  },
+  "components": [
+    {
+      "id": "closing",
+      "type": "external",
+      "label": "You've reached the horizon. The Verse goes on.",
+      "pos": [
+        40,
+        60
+      ],
+      "size": [
+        436,
+        58
+      ]
+    },
+    {
+      "id": "sky",
+      "type": "external",
+      "label": "Dim blue sky over the range",
+      "pos": [
+        40,
+        130
+      ],
+      "size": [
+        436,
+        70
+      ],
+      "sublabel": "the theme stays light above the scene"
+    },
+    {
+      "id": "sun",
+      "type": "external",
+      "label": "The sun, resting low on the left",
+      "pos": [
+        40,
+        212
+      ],
+      "size": [
+        212,
+        70
+      ],
+      "sublabel": "2:10 am, dim, its glow small"
+    },
+    {
+      "id": "flag",
+      "type": "external",
+      "label": "The flag on the summit",
+      "pos": [
+        264,
+        212
+      ],
+      "size": [
+        212,
+        70
+      ]
+    },
+    {
+      "id": "peak",
+      "type": "external",
+      "label": "The summit",
+      "pos": [
+        40,
+        294
+      ],
+      "size": [
+        436,
+        70
+      ],
+      "sublabel": "red faces at their faintest"
+    },
+    {
+      "id": "sea",
+      "type": "external",
+      "label": "A sea of cloud between the ranges",
+      "pos": [
+        40,
+        376
+      ],
+      "size": [
+        436,
+        70
+      ],
+      "sublabel": "its undersides take the hour's light"
+    },
+    {
+      "id": "rock",
+      "type": "external",
+      "label": "The near rock",
+      "pos": [
+        40,
+        458
+      ],
+      "size": [
+        436,
+        70
+      ],
+      "sublabel": "traces climb to one light per entry"
+    },
+    {
+      "id": "planets",
+      "type": "external",
+      "label": "Planet row",
+      "pos": [
+        40,
+        540
+      ],
+      "size": [
+        436,
+        70
+      ],
+      "sublabel": "Nepal Dev Verse Docs"
+    },
+    {
+      "id": "links",
+      "type": "frontend",
+      "label": "Search · llms.txt · GitHub · Back to orbit",
+      "pos": [
+        40,
+        622
+      ],
+      "size": [
+        436,
+        58
+      ]
+    }
+  ],
+  "boundaries": [
+    {
+      "kind": "region",
+      "label": "Phone screen · light theme, the middle of the night",
+      "wraps": [
+        "closing",
+        "sky",
+        "sun",
+        "flag",
+        "peak",
+        "sea",
+        "rock",
+        "planets",
+        "links"
+      ],
+      "pad": 22
+    }
+  ]
+}

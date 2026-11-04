@@ -1,0 +1,165 @@
+---
+title: "ADR-0040 — The Horizon's sun and moon keep the reader's time"
+description: "The footer shows a natural sun in the light theme and a moon in its real phase in the dark one, placed and lit by the reader's clock, still rising with the scroll."
+---
+
+- **Status:** Approved
+- **Date:** 2026-11-04
+- **Deciders:** [@puncoz](https://github.com/puncoz)
+- **Approved by:** [@puncoz](https://github.com/puncoz)
+- **Approved on:** 2026-11-04
+- **Supersedes:** [ADR-0037](./ADR-0037-the-horizon-is-the-himalaya.mdx) decision 3 (the star's fixed place and the light always
+  from the right), decision 4 (in part: how strong the red faces are), decision 6 (the moon above the star), decision 10 (in part:
+  the light theme always at dawn) and decision 12 (in part: what reduced motion shows)
+- **Superseded by:** —
+- **Design documents:** [`../app-flow/horizon-clock.mdx`](../app-flow/horizon-clock.mdx), `DESIGN.md`,
+  [`../app-flow/himalayan-horizon.mdx`](../app-flow/himalayan-horizon.mdx),
+  [`../architecture/system.mdx`](../architecture/system.mdx)
+
+## Context
+
+- The owner asked for four things in the Horizon: a new sun and moon, the moon in dark mode and the sun in light mode, both placed by
+  the current time and the lighting to follow them, keeping the way they rise with the scroll.
+- What the code does now, read from `horizon-footer.tsx`, `horizon-sky.ts` and `site.css`:
+  - both themes show one flat star disc at (690, 128) with a flat crescent above it at (690, 54), the flag's moon over its sun;
+  - `.horizon-rise` lifts the disc and its glow 100 units through a scroll-driven animation, and the red faces fade in the same way;
+  - the sky tint, the glow and the ranges are fixed per theme.
+- Every page is prerendered (ADR-0016), so the server cannot know the hour. Only the reader's browser can. `HorizonAwake`, a client
+  component, already runs on every footer.
+- The red faces come from the logo and are drawn on the mountains' right sides, so light from the left cannot move them.
+- On a 320px phone the scene shows about x=371 to x=829, which limits how wide a path across the sky can be (ADR-0037 decision 11).
+- No state diagram is written: the parts of the day are a function of the clock, with no guarded transitions. No DFD is written: nothing
+  crosses a boundary.
+
+## Decision
+
+1. **The theme chooses the body:** a sun in the light theme, a moon in the dark one. Both are in the page's HTML and CSS shows one, so
+   switching theme swaps them at once, at the same hour.
+2. **The reader's clock sets the hour.** It comes from the device's local time: no location prompt, and nothing is sent or stored.
+3. **Each crosses the sky for twelve hours.**
+   - The sun crosses from 6:00 to 18:00, the moon from 18:00 to 6:00, left to right, on one arc: from (400, 150), up to (600, 44) at the
+     halfway hour, down to (800, 150).
+   - The flag stays in front. From about 12:00 to 14:00 (and 0:00 to 2:00 for the moon) it flies across the disc, and is never covered
+     (ADR-0037 decision 5).
+4. **The other twelve hours, it rests low and stays in sky.**
+   - The sun stays at (800, 150) from 18:00 to midnight, then at (400, 150) until 6:00. The moon stays at (800, 150) from 6:00 to noon,
+     then at (400, 150) until 18:00.
+   - It is dim while it rests, its glow small. At midnight (noon for the moon) it fades out on the right and in on the left over a second.
+     You always see the body your theme asks for, and its place still tells the time.
+5. **The scroll parallax stays, for both.** Each rises 100 units with the scroll into its place for the hour, and its glow grows with it,
+   as the star does now. Scrolling back lowers it.
+6. **They are drawn natural, not from the flag.**
+   - The sun is a soft round disc with no hard edge and a wide halo, deep orange when low and pale gold when high.
+   - The moon is a pale disc with a few soft darker seas and shaded edges. Its light part is **today's real phase**, worked out from the
+     date alone, drawn as seen from the Himalaya: waxing is lit on the right.
+   - On the nights around a new moon its dark side still shows faintly, so the dark theme is never without a moon.
+   - Gradients and flat shapes only, with no blur filters, because a body that moves must not redraw a blur (ADR-0030 decision 3).
+   - The sidebar's sun and moon keep the flag's forms (ADR-0037 decision 13).
+7. **The lighting follows the hour.** Four fixed parts of the day, the same in every season and place because no location is known,
+   blending across their edges:
+
+   | Part | Hours | Sky and cloud undersides | Rock and snow |
+   |---|---|---|---|
+   | Dawn | 5:00 to 7:00 | Rose gold | A warm tint on the snow |
+   | Day | 7:00 to 17:00 | Clear, pale | True colours |
+   | Dusk | 17:00 to 19:00 | Orange | A warm tint on the snow |
+   | Night | 19:00 to 5:00 | Deep blue | A cool tint on both |
+
+   - **The theme still rules.** The light theme at night dims only inside the scene, to a dusky blue. The dark theme by day lifts only
+     a little and stays dark. The closing line, the planet row and the links do not change, so their contrast does not either.
+   - **Never relit:** the flag's colours (ADR-0036 decision 7) and the entries' lights. The stars and shooting stars stay as they are.
+8. **The red faces follow the light.** They are strongest when the light is low and on their side, and fade when it moves left: full for
+   the sun low on the right, about 60% at its highest, down to 20% on the left and while it rests at night. Never below 20%, so the logo's
+   mountain stays recognisable. Under the moon they reach at most 55%, cooler. This multiplies with the scroll's fade-in (ADR-0037
+   decision 4), which stays.
+9. **The rules of motion hold** (ADR-0030 decision 3).
+   - Only transform and opacity animate, in CSS. The hour's values are set once when the page loads, once a minute while the footer is on
+     screen and when a hidden tab returns; they are not animated. A minute's move is under a unit, too small to see.
+   - No dependency is added.
+10. **When it can't run.**
+    - **No scripts:** the sun or moon by theme, at (690, 128) as the star stands now, with today's lighting and a fixed crescent moon.
+    - **Reduced motion:** placed and lit by the hour, with no rise and no fade at the crossing.
+    - **No scroll-driven animations:** placed and lit by the hour, standing risen.
+11. **Where it lives.** `src/lib/horizon-time.ts` holds the pure functions, tested: place, part of the day, lighting values, red strength
+    and moon phase from a `Date`. `HorizonAwake` reads the clock and sets custom properties on the footer, after hydration, so the static
+    HTML never holds an hour. `horizon-footer.tsx` draws both bodies; `site.css` reads the properties.
+12. **Unchanged:** the ranges, the flag and its raise and wave, the clouds' movement, the stars, the lights, the closing line, the dusk
+    edge, every URL and Markdown surface.
+
+## Options considered
+
+| Concern | Option | Pros | Cons | Verdict |
+|---|---|---|---|---|
+| Whose time | The reader's clock | Matches their own day anywhere; no prompt, nothing sent | A wrong device clock shows a wrong sky | **Chosen by the owner** |
+| Whose time | Nepal time | Shows the Himalaya as it is now, the same for everyone | A reader abroad at midday sees night, which can look broken | Rejected |
+| Whose time | The reader's location | Real sunrise and sunset | A location prompt on a docs footer, and a privacy decision | Rejected |
+| Off hours | Always in the sky, resting low | The theme's body always shows, and its place still tells the time | The sun is visible at midnight, which isn't true to life | **Chosen by the owner** |
+| Off hours | True sky, may be empty | Honest to the hour | Half of each day that theme has no sun or moon | Rejected |
+| Off hours | One 24-hour arc for both | The simplest; always well up | The moon is highest at noon | Rejected |
+| Lighting | Sky, glow, red faces, a soft tint | A real change through the day, keeping the logo's shape | More values to tune in both themes | **Chosen by the owner** |
+| Lighting | Glow and red faces only | The cheapest and calmest | Dawn and noon look much alike | Rejected |
+| Lighting | Full relight with new lit faces on the left | The most convincing | New geometry that isn't in the logo, on every page | Rejected |
+| Look | A natural sun, and a moon in its real phase | Reads as a real sky, with a detail that is true tonight | Leaves the flag's language; new drawing | **Chosen by the owner** |
+| Look | The flag's sun and moon | Ties to the site's marks; lightest | Less of a change | Rejected |
+| Scroll | Keep the parallax | Keeps what the end of a page does today | The clock's and scroll's positions must combine | **Chosen by the owner** |
+| Hour | Set on the client, after hydration | Static pages stay static; correct for each reader | Without scripts there is no hour | Proposed |
+| Hour | Rendered on the server | Right on first paint | Needs a timezone the server lacks, and ends prerendering (ADR-0016) | Rejected |
+| Hour | An inline script before first paint | No change on screen at load | A second script on every page, for a footer usually out of view at load | Rejected |
+| Moon's path | The same simple arc every night | Easy to read, and always up at night | Not where the moon really is | Proposed |
+| Moon's path | The real moonrise from an ephemeris | True | Needs a location and more code, and a real moon is often down at night | Rejected |
+
+## Consequences
+
+**Positive**
+
+- The end of every page is different at every hour, and true to the reader's own day and tonight's moon.
+- No dependency, no network call, and the pages stay fully static.
+
+**Negative / accepted trade-offs**
+
+- **The star leaves the Horizon.** The star is nepal-dev.com in the site's picture (ADR-0036 decision 5). The home page's system keeps it,
+  but in the footer a sun or moon takes its place, and the *star's* words in the living documents change to match.
+- **The sky no longer repeats the flag.** ADR-0037 decision 6, the moon over the sun as on the flag, goes, by the owner's choice of a natural
+  look. The sun and moon never appear together.
+- **It is a clock, not an almanac:** fixed hours, no seasons, and a moon in its true phase on a simplified path. The phase is computed from
+  the mean lunar month, so it can be off by up to about half a day.
+- The light theme shows a sun at midnight. It rests low and dim, but it is there.
+- The observatory's telescope is drawn fixed, so it no longer always points at the light (ADR-0037 decision 9).
+- A small jump can show if the footer is already on screen at load, as on the 404, while the script places the body.
+- More to look at in review: four parts of the day, in two themes.
+
+## Content invariants
+
+None is touched. The footer is not part of any Markdown surface, and the scene stays `aria-hidden`.
+
+## Security considerations
+
+The device's local time is read in the browser and used only to draw. It is not sent, logged or stored, and the site gains no endpoint,
+secret or third party. No location is asked for. Nothing here depends on who the reader is, and no private content is involved.
+
+## Implementation notes
+
+- [x] `src/lib/horizon-time.ts` with tests: the place at each hour and the crossings; the body always on screen at 320px; every part of the
+  day and its blends; red never below 20% and at most 55% under the moon; the phase checked against dates from a published new moon table.
+- [x] `horizon-footer.tsx`: both bodies, each in a group placed by the hour around today's `.horizon-rise`. `horizon-sky.ts`: the moon above
+  the star goes. `HorizonAwake`: the clock, the minute and the hidden tab.
+- [x] `site.css`: which body each theme shows, the lighting properties in both themes, the fade at the crossing, reduced motion.
+- [x] Looked at in Chrome against `bunx next build`, with the clock faked: both themes at 6:00, noon, 16:30, 21:15 and 2:10; the widths of
+  ADR-0037 decision 11; a theme switch; a new moon and a full moon; no scripts. Not viewed: reduced motion, because the browser tool cannot emulate it, so its rules rest on tests; and a browser without scroll-driven
+  animations. Only Chrome was used.
+- [x] `bun run test`, `bun run types:check` and `bunx next build` pass; `bun run lint` is reported while it stays blocked.
+- Found in the build, within the decisions above:
+  - The phase counts from a mean new moon, because a true one is itself up to about half a day off the mean month. Against the seven 2026
+    new moons in the test the error is at most 0.56 days.
+  - The crossing's fade names the body that jumped, so the moon does not blink at midnight when only the hidden sun moves, nor the sun at noon.
+  - The moon's halo and glow scale with how much of it is lit, because a bright halo round a dark disc reads as an eclipse.
+  - Clouds' undersides go pale by day, for decision 7's *clear, pale*.
+
+## Docs to update on implementation
+
+- [x] [`../app-flow/horizon-clock.mdx`](../app-flow/horizon-clock.mdx): Current;
+  [`../app-flow/himalayan-horizon.mdx`](../app-flow/himalayan-horizon.mdx) and
+  [`../app-flow/living-horizon.mdx`](../app-flow/living-horizon.mdx), with their Archify views.
+- [x] `DESIGN.md`: the Horizon footer, the Himalayan moon and star lines, the motion section. `.impeccable/design.json` does not describe the Horizon's star or moon, so it is unchanged.
+- [x] `AGENTS.md` §1 and §5, `PROJECT_AGENTS.md` does not name the star, so it is unchanged, [`../architecture/system.mdx`](../architecture/system.mdx).
+- [x] "Superseded by" in ADR-0037; [`./index.mdx`](./index.mdx).

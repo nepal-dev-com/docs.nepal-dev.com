@@ -1,0 +1,96 @@
+{
+  "schema_version": 2,
+  "diagram_type": "workflow",
+  "meta": {
+    "title": "App flow: the Horizon by the clock",
+    "subtitle": "The sun or the moon stands at the reader's hour and rises with the scroll",
+    "quality_profile": "showcase",
+    "output": "horizon-clock.html"
+  },
+  "lanes": [
+    {
+      "id": "read",
+      "label": "Reader"
+    },
+    {
+      "id": "scene",
+      "label": "The scene"
+    }
+  ],
+  "mainPath": [
+    "reading",
+    "clock",
+    "enter",
+    "minute"
+  ],
+  "nodes": [
+    {
+      "id": "reading",
+      "lane": "read",
+      "col": 0,
+      "type": "external",
+      "label": "Reading a page"
+    },
+    {
+      "id": "clock",
+      "lane": "scene",
+      "col": 1,
+      "type": "frontend",
+      "label": "The hour is read",
+      "sublabel": "sun or moon placed, scene lit"
+    },
+    {
+      "id": "enter",
+      "lane": "scene",
+      "col": 2,
+      "type": "frontend",
+      "label": "The footer enters",
+      "sublabel": "it rises with the scroll"
+    },
+    {
+      "id": "minute",
+      "lane": "scene",
+      "col": 3,
+      "type": "frontend",
+      "label": "While on screen",
+      "sublabel": "moves on every minute"
+    },
+    {
+      "id": "theme",
+      "lane": "read",
+      "col": 1,
+      "type": "backend",
+      "label": "Switches theme",
+      "sublabel": "sun in light, moon in dark"
+    }
+  ],
+  "edges": [
+    {
+      "id": "e1",
+      "from": "reading",
+      "to": "clock",
+      "label": "page loads",
+      "variant": "emphasis"
+    },
+    {
+      "id": "e2",
+      "from": "clock",
+      "to": "enter",
+      "label": "scrolls to the end",
+      "variant": "emphasis"
+    },
+    {
+      "id": "e3",
+      "from": "enter",
+      "to": "minute",
+      "label": "stays in view",
+      "variant": "emphasis"
+    },
+    {
+      "id": "e4",
+      "from": "theme",
+      "to": "clock",
+      "label": "same hour"
+    }
+  ]
+}

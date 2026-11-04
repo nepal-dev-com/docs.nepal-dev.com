@@ -5,11 +5,12 @@ import {
   cloudPeriod,
   farRange,
   flagPole,
+  flagScale,
+  flagTop,
   horizonStars,
   lightSpots,
   lightsFor,
   midRange,
-  moon,
   nearRange,
   observatory,
   planet,
@@ -17,13 +18,17 @@ import {
   ridgeY,
   sceneScale,
   snow,
-  starDisc,
+  snowShade,
+  bodyGlow,
+  bodyHome,
   summit,
   traceFor,
   twinklingCount,
   worldView,
   type Point,
 } from './horizon-sky';
+import { flagSize, flagWave } from './flag';
+import { bodyRadius, skyArc } from './horizon-time';
 
 describe('the scene stars (ADR-0030 decision 2)', () => {
   test('are the same on every build', () => {
@@ -95,15 +100,10 @@ describe('the range (ADR-0037 decision 1)', () => {
     }
   });
 
-  test('leaves the risen star clear of the far and middle ranges', () => {
+  test('leaves the place the sun or moon stands without scripts clear of the far and middle ranges', () => {
     for (const range of [farRange(), midRange()]) {
-      expect(rangeY(range, starDisc.cx)).toBeGreaterThan(starDisc.cy + starDisc.r);
+      expect(rangeY(range, bodyHome.x)).toBeGreaterThan(bodyHome.y + bodyHome.clear);
     }
-  });
-
-  test('stands the moon directly above the star, as on the flag (ADR-0037 decision 6)', () => {
-    expect(moon.cx).toBe(starDisc.cx);
-    expect(moon.cy).toBeLessThan(starDisc.cy - starDisc.r);
   });
 
   test('lights only the side facing the star (ADR-0037 decision 4)', () => {
@@ -125,6 +125,37 @@ describe('the range (ADR-0037 decision 1)', () => {
     expect(flagPole.x).toBe(summit.x);
     expect(flagPole.foot).toBeGreaterThanOrEqual(summit.y);
     expect(flagPole.top).toBeGreaterThan(0);
+    expect(flagTop).toBeGreaterThan(flagPole.top);
+  });
+
+  test('lets the cloth fly clear of the summit (ADR-0037 decision 5)', () => {
+    expect(flagTop + (flagSize.height + flagWave.lift) * flagScale).toBeLessThan(summit.y);
+  });
+
+  test('keeps the logo\'s five peaks: both shoulders, the summit and two before it', () => {
+    expect(snow).toHaveLength(5);
+    expect(snowShade).toHaveLength(5);
+    for (const patch of [...snow, ...snowShade, ...alpenglow]) {
+      for (const point of patch) {
+        expect(point.y).toBeGreaterThanOrEqual(summit.y);
+        expect(point.y).toBeGreaterThanOrEqual(rangeY(nearRange, point.x) - 0.5);
+        expect(point.y).toBeLessThan(ridgeY(point.x));
+      }
+    }
+  });
+
+  test('sinks its foothills into the planet, so no strip of rock runs along the ground to the screen edge', () => {
+    for (const x of [worldView.x, -600, -300, 0, 120, 1080, 1500, 1800, worldView.x + worldView.width]) {
+      expect(rangeY(nearRange, x)).toBeGreaterThan(ridgeY(x));
+    }
+  });
+
+  test('fades the glow out before the top of the scene from the place it stands without scripts', () => {
+    expect(bodyHome.y + bodyGlow.below - bodyGlow.ry).toBeGreaterThanOrEqual(0);
+  });
+
+  test('leaves that place clear of the near range too', () => {
+    expect(rangeY(nearRange, bodyHome.x)).toBeGreaterThan(bodyHome.y + bodyHome.clear);
   });
 });
 
@@ -132,12 +163,12 @@ describe('the scene at every width (ADR-0037 decision 11)', () => {
   // The world scales with the scene's height alone, so nothing is ever cropped from the top.
   const widths = [320, 390, 860, 1412, 1920, 2560];
 
-  test('keeps the flag, the star and the moon on screen', () => {
+  test('keeps the flag and the place the sun or moon stands without scripts on screen', () => {
     for (const width of widths) {
       const scale = sceneScale(width);
       const half = width / 2 / scale;
-      expect(Math.abs(flagPole.x + 33 - planet.cx)).toBeLessThan(half);
-      expect(Math.abs(starDisc.cx + starDisc.r - planet.cx)).toBeLessThan(half);
+      expect(flagPole.x + flagSize.width * flagScale - planet.cx).toBeLessThan(half);
+      expect(Math.abs(bodyHome.x + bodyHome.clear - planet.cx)).toBeLessThan(half);
     }
   });
 
@@ -155,7 +186,7 @@ describe('the lights (ADR-0037 decision 7)', () => {
   test('every spot stands on rock, clear of the snow and the red', () => {
     for (const spot of lightSpots) {
       expect(inside(nearRange, spot.x, spot.y)).toBe(true);
-      for (const patch of [...alpenglow, ...snow]) {
+      for (const patch of [...alpenglow, ...snow, ...snowShade]) {
         expect(inside(patch, spot.x, spot.y)).toBe(false);
       }
       expect(spot.y).toBeLessThan(ridgeY(spot.x) - 4);
@@ -233,8 +264,8 @@ describe('the lit clouds', () => {
     expect(cloudBands().map((band) => band.duration)).toEqual([200, 140, 90]);
   });
 
-  test("float below the risen star's disc, between the ranges (ADR-0037 decision 2)", () => {
-    const bottom = starDisc.cy + starDisc.r;
+  test('float below the sun or moon wherever it rests, between the ranges (ADR-0037 decision 2)', () => {
+    const bottom = skyArc.left.y + bodyRadius.sun;
     for (const band of cloudBands()) {
       for (const puff of band.puffs) {
         expect(puff.cy - puff.ry).toBeGreaterThan(bottom);

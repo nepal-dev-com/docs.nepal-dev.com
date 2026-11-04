@@ -1420,18 +1420,77 @@
 .horizon {
   /* White clouds vanish on the light sky; a cool grey body keeps their shape (ADR-0030 decision 4). */
   --cloud-top: color-mix(in srgb, var(--home-faint) 45%, var(--home-bg));
-  --cloud-under: color-mix(in srgb, var(--home-star) 55%, var(--home-bg));
-  /* Dawn: the logo's navy on a warm sky. The red and the flag are the same in both themes (ADR-0037). */
+  --cloud-base: color-mix(in srgb, var(--home-star) 55%, var(--home-bg));
+  /* The logo's navy on a pale sky. The flag is the same in both themes (ADR-0037). */
   --range-far: #b4c5d3;
   --range-mid: #7b97ad;
   --range-near: #1f3f5a;
-  --range-snow: #fbfdfe;
+  --range-snow: #f9fbfb;
+  --range-snow-shade: #d8dfe5;
   --range-trace: #55bfc3;
   --horizon-pole: #14324d;
   --sun-glow: 0.85;
-  --horizon-warm: #ff9d7a;
-  --horizon-moon: var(--home-faint);
-  --horizon-sky: color-mix(in srgb, #ff9d7a 18%, transparent);
+  --cloud-day: #f4f6f8;
+  --warm-haze: #ffb79c;
+  --sky-dawn: color-mix(in srgb, #ff9d7a 18%, transparent);
+  --sky-day: color-mix(in srgb, #8fc4ea 26%, transparent);
+  --sky-dusk: color-mix(in srgb, #ff8a4c 34%, transparent);
+  --sky-night: color-mix(in srgb, #34507f 48%, transparent);
+  --night-near: #0e2344;
+  --night-range: #5d7699;
+  /* What HorizonAwake sets from the reader's clock. Without it the scene stands as these say (ADR-0040 decision 10). */
+  --sun-x: 690px;
+  --sun-y: 128px;
+  --moon-x: 690px;
+  --moon-y: 128px;
+  --sun-bright: 1;
+  --moon-bright: 1;
+  --sun-glow-size: 1;
+  --moon-glow-size: 1;
+  --moon-lit: 0.1;
+  --sun-high: 0.7;
+  --red-sun: 1;
+  --red-moon: 1;
+  --dawn: 1;
+  --day: 0;
+  --dusk: 0;
+  --night: 0;
+  --warm: 0;
+  --cool: 0;
+  /* Deep orange low, pale gold high, on a light sky: only the light theme shows the sun (ADR-0040 decision 6). */
+  --sun-core: color-mix(in srgb, #ffcf5c calc(var(--sun-high) * 100%), #ffae5c);
+  --sun-edge: color-mix(in srgb, #f2a93b calc(var(--sun-high) * 100%), #ea6a28);
+  --red: var(--red-sun);
+  --cloud-under: color-mix(
+    in srgb,
+    color-mix(
+      in srgb,
+      color-mix(in srgb, var(--cloud-base), var(--cloud-day) calc(var(--day) * 80%)),
+      #ff9a5c calc(var(--warm) * 55%)
+    ),
+    #5d7bb5 calc(var(--cool) * 55%)
+  );
+  --range-far-lit: color-mix(
+    in srgb,
+    color-mix(in srgb, var(--range-far), var(--warm-haze) calc(var(--warm) * 14%)),
+    var(--night-range) calc(var(--cool) * 45%)
+  );
+  --range-mid-lit: color-mix(
+    in srgb,
+    color-mix(in srgb, var(--range-mid), var(--warm-haze) calc(var(--warm) * 10%)),
+    var(--night-range) calc(var(--cool) * 40%)
+  );
+  --range-near-lit: color-mix(in srgb, var(--range-near), var(--night-near) calc(var(--cool) * 30%));
+  --range-snow-lit: color-mix(
+    in srgb,
+    color-mix(in srgb, var(--range-snow), #ffc4ad calc(var(--warm) * 35%)),
+    #a9bcd9 calc(var(--cool) * 30%)
+  );
+  --range-shade-lit: color-mix(
+    in srgb,
+    color-mix(in srgb, var(--range-snow-shade), #e8a58c calc(var(--warm) * 35%)),
+    #8ea3c4 calc(var(--cool) * 30%)
+  );
   position: relative;
   margin-top: 44px;
   padding-top: 96px;
@@ -1446,16 +1505,23 @@
 
 .dark .horizon {
   --cloud-top: var(--home-line-2);
-  --cloud-under: var(--home-star);
-  --range-far: #223245;
-  --range-mid: #1a2736;
-  --range-near: #141f2c;
+  --cloud-base: var(--home-star);
+  --cloud-day: #8ca0b8;
+  --warm-haze: #4a3238;
+  --range-far: #1c2a3a;
+  --range-mid: #18242f;
+  --range-near: #20405c;
   --range-snow: #e6ecf2;
+  --range-snow-shade: #b7c4d0;
   --range-trace: #3ddbb6;
   --horizon-pole: var(--home-ink);
-  --sun-glow: 0.6;
-  --horizon-moon: var(--home-ink);
-  --horizon-sky: color-mix(in srgb, #ff9d7a 7%, transparent);
+  --sky-dawn: color-mix(in srgb, #ff9d7a 7%, transparent);
+  --sky-day: color-mix(in srgb, #7ba4cc 14%, transparent);
+  --sky-dusk: color-mix(in srgb, #ff8a4c 12%, transparent);
+  --sky-night: color-mix(in srgb, #4a6fb0 10%, transparent);
+  --night-near: #0e1a33;
+  --night-range: #101a2b;
+  --red: var(--red-moon);
 }
 
 /* Above the docs sidebar and the trajectory, under the header (z-index 40). */
@@ -1500,9 +1566,38 @@
 .horizon-scene {
   position: relative;
   height: clamp(230px, 28vw, 360px);
-  margin-top: -6px;
+  /* The pole's top is the scene's highest point, and must stand clear of the closing line's underline. */
+  margin-top: 10px;
   container-type: size;
-  background: linear-gradient(transparent 15%, var(--horizon-sky) 80%);
+}
+
+/* One layer per part of the day, so the hour only changes opacities (ADR-0040 decisions 7 and 9). */
+.horizon-sky-part {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(transparent 15%, var(--sky-tint) 80%);
+}
+
+.horizon-sky-part[data-part='dawn'] {
+  --sky-tint: var(--sky-dawn);
+  opacity: var(--dawn);
+}
+
+.horizon-sky-part[data-part='day'] {
+  --sky-tint: var(--sky-day);
+  opacity: var(--day);
+}
+
+.horizon-sky-part[data-part='dusk'] {
+  --sky-tint: var(--sky-dusk);
+  opacity: var(--dusk);
+}
+
+/* Night reaches higher up the scene, and still fades out before its top, so only the scene dims. */
+.horizon-sky-part[data-part='night'] {
+  --sky-tint: var(--sky-night);
+  background: linear-gradient(transparent 8%, var(--sky-tint) 62%);
+  opacity: var(--night);
 }
 
 .horizon-scene > svg,
@@ -1583,40 +1678,103 @@
   opacity: 0.85;
 }
 
-/* The star's light falls off with distance; the clouds fade toward the scene's sides. */
+/* The light falls off with distance; the clouds fade toward the scene's sides. */
 .horizon-clouds {
   mask-image: radial-gradient(ellipse 70% 120% at 50% 100%, #000 45%, rgb(0 0 0 / 0.45) 85%);
 }
 
-.horizon-moon {
-  fill: var(--horizon-moon);
-  opacity: 0.85;
+/* The theme chooses the body, so a switch needs no script (ADR-0040 decision 1). */
+.horizon-body-sun {
+  --bright: var(--sun-bright);
+  --glow-size: var(--sun-glow-size);
+  transform: translate(var(--sun-x), var(--sun-y));
 }
 
-.horizon-star-disc {
-  fill: var(--home-star);
+.horizon-body-moon {
+  --bright: var(--moon-bright);
+  --glow-size: var(--moon-glow-size);
+  display: none;
+  transform: translate(var(--moon-x), var(--moon-y));
+}
+
+.dark .horizon-body-moon {
+  display: inline;
+}
+
+.dark .horizon-body-sun {
+  display: none;
+}
+
+.horizon-body-light {
+  opacity: var(--bright);
+}
+
+.horizon-body-glow {
+  transform: scale(var(--glow-size));
+  transform-origin: 0 22px;
+}
+
+.horizon[data-crossing~='sun'] .horizon-body-sun,
+.horizon[data-crossing~='moon'] .horizon-body-moon {
+  opacity: 0;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .horizon-body {
+    transition: opacity 0.5s ease-in-out;
+  }
+}
+
+/* A bright halo round a dark disc would read as an eclipse. */
+.horizon-body-moon .horizon-body-glow,
+.horizon-moon-halo {
+  opacity: calc(0.2 + 0.8 * var(--moon-lit));
+}
+
+.horizon-moon-seas {
+  fill: #a7b1bf;
+  opacity: 0.34;
+}
+
+/* Not fully dark, so the seas show faintly on the unlit side and a new moon is still there. */
+.horizon-moon-shade {
+  fill: #121a26;
+  opacity: 0.88;
 }
 
 .horizon-far path {
-  fill: var(--range-far);
+  fill: var(--range-far-lit);
 }
 
 .horizon-mid path {
-  fill: var(--range-mid);
+  fill: var(--range-mid-lit);
 }
 
 .horizon-near .horizon-rock {
-  fill: var(--range-near);
+  fill: var(--range-near-lit);
 }
 
 .horizon-near .horizon-snow {
-  fill: var(--range-snow);
+  fill: var(--range-snow-lit);
 }
 
-/* The logo's red: the star's light on the sunward faces (ADR-0037 decision 4). */
+.horizon-near .horizon-snow-shade {
+  fill: var(--range-shade-lit);
+}
+
+/* The hour's strength; the scroll's fade-in stays on each face inside it (ADR-0040 decision 8). */
+.horizon-red {
+  opacity: var(--red);
+}
+
+/* The logo's red: the light on the faces turned toward it (ADR-0037 decision 4). */
 .horizon-near .horizon-alpenglow {
   fill: #d2193b;
   opacity: 0.92;
+}
+
+.dark .horizon-near .horizon-alpenglow {
+  fill: color-mix(in srgb, #d2193b 78%, #5a6fa8);
 }
 
 .horizon-ground-fill {
@@ -1654,7 +1812,7 @@
 }
 
 .horizon-light-core {
-  fill: var(--range-near);
+  fill: var(--range-near-lit);
   stroke: var(--light-lit);
   stroke-width: 2;
 }
@@ -1687,19 +1845,21 @@
 /* The flag stands raised unless HorizonAwake has lowered it out of sight, so it can never rest part-way
    up its pole: that would mean mourning (ADR-0037 decision 5). */
 .horizon-flag {
-  transform-box: fill-box;
-  transform-origin: 0 100%;
+  transform-origin: 0 39px;
 }
 
-.horizon-flag-cloth {
-  transform-box: fill-box;
-  transform-origin: 0 50%;
-  animation: horizon-wave 7s ease-in-out infinite alternate;
+/* The closest easing to a sine, which the strips' phases in `flagWaveStrips` are worked out for. */
+.horizon-flag-lift {
+  animation: horizon-flag-lift 1.6s cubic-bezier(0.37, 0, 0.63, 1) var(--lift-at) infinite alternate;
+}
+
+.horizon-flag-tilt {
+  animation: horizon-flag-tilt 1.6s cubic-bezier(0.37, 0, 0.63, 1) var(--tilt-at) infinite alternate;
 }
 
 @media (prefers-reduced-motion: no-preference) {
   .horizon[data-lowered]:not([data-summit]) .horizon-flag {
-    transform: translateY(26px) scale(0.28, 0.5);
+    transform: translateY(5px) scale(0.28, 0.4);
   }
 
   .horizon[data-summit] .horizon-flag {
@@ -1708,7 +1868,7 @@
 }
 
 .horizon-observatory {
-  fill: var(--range-near);
+  fill: var(--range-near-lit);
 }
 
 .horizon-observatory .horizon-scope {
@@ -1737,12 +1897,21 @@
   animation-play-state: paused;
 }
 
-@keyframes horizon-wave {
+@keyframes horizon-flag-lift {
   from {
-    transform: skewY(-1.6deg) scaleX(1);
+    transform: translateY(calc(var(--lift) * -1));
   }
   to {
-    transform: skewY(1.6deg) scaleX(0.97);
+    transform: translateY(var(--lift));
+  }
+}
+
+@keyframes horizon-flag-tilt {
+  from {
+    transform: skewY(calc(var(--tilt) * -1));
+  }
+  to {
+    transform: skewY(var(--tilt));
   }
 }
 
@@ -1803,8 +1972,8 @@
   }
 }
 
-/* The star rises and the docs sidebar and trajectory set, in step with the scroll. Without
-   scroll-driven animations the star stands risen and the dusk edge simply covers them. */
+/* The sun or moon rises and the docs sidebar and trajectory set, in step with the scroll. Without
+   scroll-driven animations it stands risen and the dusk edge simply covers them. */
 @supports (animation-timeline: view()) {
   :root {
     timeline-scope: --horizon;
