@@ -244,7 +244,7 @@ Cool graphite neutrals in a nine-step stack, one teal signal, a warm star, an un
 
 ### Secondary
 - **Star** (`star` / `star-light`, `--home-star`): the star in the hero, the footer's horizon and the 404, its glow (`--home-star-glow`), the sun in the theme switch, the day side's sun, the Verse mark's centre, the observatory's window and the closing line's underline. Never text.
-- **Flag** (`#D2193B`, `#1F468D`, `#F9FBFB`, fixed in both themes, in `src/components/nepal-flag.tsx`): the flag of Nepal, the brand mark's red face and snow, and the Horizon's alpenglow. Never text, and never anywhere else.
+- **Flag** (`#D2193B`, `#1F468D`, `#F9FBFB`, with `#C31938` and `#A6142E` for the cloth's folds, fixed in both themes, in `src/components/nepal-flag.tsx`): the flag of Nepal, the brand mark's red face and snow, and the Horizon's alpenglow. Never text, and never anywhere else.
 - **Night** (`night` / `night-light`, `--home-night`): a planet's unlit face: the theme switch's planet, private planets, older-release crescents, the terminator planet.
 - **Ecosystem set** (`eco-npm`, `eco-composer`, `eco-pypi`, `eco-go`, `eco-cargo` and their `-light` pairs): one hue per ecosystem, for planets, their moons on the hero and the ring of a card's sky wash. The "other" ecosystem reuses Steel Muted; projects reuse Frost Ink and are ringed. Against the page ground each hue measures 4.2:1 or more.
 
@@ -410,10 +410,10 @@ The **Verse mark** is the place mark of the Verse, and appears only as the first
   - the far range, in haze;
   - three lit cloud bands (lumpy outlines, cool tops, star-coloured undersides; the far band dimmest; in light a cool grey body, Steel Faint mixed into the ground, with the undersides softened), looping sideways over 200, 140 and 90s and fading toward the sides, the nearest passing in front of the glow but never the disc;
   - the mid range, which the clouds wade through;
-  - the near range, from the logo's silhouette, a summit between two shoulders: rock, snow on the three tops, and the faces turned to the star in flag red (alpenglow), growing with the scroll as the footer enters;
-  - on its left shoulder an observatory in the rock's colour: a dome with its slit open toward the star, a telescope line, a side annex and one warm window;
+  - the near range, drawn over the logo's own outlines, its foothills sinking below the planet's edge: rock, and the logo's five peaks (a summit, two shoulders and two peaks before the summit) with white snow, grey shaded snow and the three faces turned to the star in flag red (alpenglow), growing with the scroll as the footer enters;
+  - on the flat top of its left knee an observatory in the rock's colour: a dome with its slit open toward the star, a telescope line, a side annex and one warm window;
   - on the rock one light per entry, a node in the entry's ecosystem colour at the top of a trace, at a spot that depends only on its slug; sixteen spots, and past them no light. Hovering or focusing an entry's link in the planet row brightens its light;
-  - on the summit the flag on its pole, its cloth waving over 7s. It is lowered while the footer is out of view and runs up once in 1.2s when 40% of the scene is in view; on a page where the summit already shows at load it stands raised with no movement. It never rests part-way, because half-mast means mourning;
+  - on the summit the flag on its pole, drawn over the logo's flag: a wavy cloth with a blue border and two folds, the moon with eight rays above the twelve-rayed sun, at nearly the logo's size for its mountain, its cloth waving over 7s. It is lowered while the footer is out of view and runs up once in 1.2s when 40% of the scene is in view; on a page where the summit already shows at load it stands raised with no movement. It never rests part-way, because half-mast means mourning;
   - the planet's ground in Graphite Ground 2, with a thin teal edge.
   Then the surface, on Graphite Ground 2: one link per public planet (its mark and name in data, teal on hover), a row of Search ⌘K, `llms.txt`, `llms-full.txt`, GitHub and "Back to orbit ↑" ("Back to top ↑" on docs pages) in muted 14px, and the credit in Steel Faint: the small mark, then "Part of nepal-dev.com. Made with ❤️ by Puncoz Nepal.", both names linked. On docs pages the footer stacks above the sidebar and the trajectory, under the header: as it enters, they drop up to 24px with the scroll, at full opacity (ADR-0031), and sink into the dusk edge.
 

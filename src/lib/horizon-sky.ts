@@ -21,13 +21,18 @@ export const planet = { cx: 600, cy: 24296, r: 24000 } as const;
 /** The star, risen: right of the summit, so everything lit is lit from the right (ADR-0037 decision 3). */
 export const starDisc = { cx: 690, cy: 128, r: 24 } as const;
 
+/** The star's glow. It fades out by its own edge, so that edge must stay inside the scene or the top cuts it off. */
+export const starGlow = { cx: starDisc.cx, cy: starDisc.cy + 22, rx: 460, ry: 150 } as const;
+
 /** Directly above the star, the flag's moon over its sun (ADR-0037 decision 6). */
 export const moon = { cx: 690, cy: 54, r: 15 } as const;
 
-export const summit = { x: 600, y: 92 } as const;
+export const summit = { x: 600, y: 96 } as const;
 
-/** The pole stands on the summit; the cloth, 41 tall at this scale, flies at its top. */
-export const flagPole = { x: 600, top: 28, foot: 96 } as const;
+/** The pole stands on the summit and the cloth flies at its top, at nearly the logo's size for its mountain. */
+export const flagPole = { x: 600, top: 14, foot: 100, width: 4 } as const;
+export const flagScale = 1.65;
+export const flagTop = flagPole.top + 8;
 
 export const twinklingCount = 14;
 
@@ -73,13 +78,22 @@ const seededRandom = (seed: number) => {
   return () => (state = (state * 16807) % 2147483647) / 2147483647;
 };
 
-// Sawtooth peaks with seeded heights, past both edges of the world.
+// Seeded peaks past both edges of the world, with a knee on each flank so a ridge never reads as a sawtooth.
 function peaks(seed: number, top: number, floor: number, step: number): Point[] {
   const next = seededRandom(seed);
   const result: Point[] = [];
   for (let x = worldView.x - 2 * step, up = true; x <= worldView.x + worldView.width + 2 * step; x += step, up = !up) {
     const y = up ? top + next() * 26 : floor + next() * 22;
-    result.push({ x: round(x + (next() - 0.5) * step * 0.5), y: round(y) });
+    const point = { x: round(x + (next() - 0.5) * step * 0.5), y: round(y) };
+    const last = result.at(-1);
+    if (last) {
+      const along = 0.35 + next() * 0.3;
+      result.push({
+        x: round(last.x + (point.x - last.x) * along),
+        y: round(last.y + (point.y - last.y) * along + (next() - 0.5) * (floor - top) * 0.45),
+      });
+    }
+    result.push(point);
   }
   return result;
 }
@@ -89,25 +103,58 @@ export const farRange = () => peaks(29, 168, 200, 66);
 /** The range the clouds wade through. */
 export const midRange = () => peaks(61, 204, 240, 84);
 
-/** The near range, drawn from the logo's silhouette: a summit between two shoulders (ADR-0037 decision 1). */
-export const nearRange: Point[] = points([
-  [-1240, 306], [120, 288], [240, 276], [330, 262], [382, 232], [408, 232], [425, 246], [455, 196], [492, 158], [520, 174],
-  [548, 134], [574, 116], [600, 92], [628, 124], [650, 140], [676, 178], [706, 206], [742, 162], [770, 146],
-  [800, 186], [838, 216], [880, 240], [960, 262], [1060, 282], [2440, 306],
-]);
+// The near range is measured in the logo's own units, its summit at (697, 0) and its foot at y=556, so it
+// keeps the logo's shape: that foot lands on the planet's edge at this scale.
+const logoScale = 0.36;
+const fromLogo = (list: number[][]): Point[] =>
+  list.map(([x, y]) => ({ x: round(summit.x + (x - 697) * logoScale), y: round(summit.y + y * logoScale) }));
 
-/** The snow on the summit and the two shoulders. */
+/** The near range, from the logo's silhouette; its foothills sink below the planet's edge (ADR-0037 decision 1). */
+export const nearRange: Point[] = [
+  ...points([[-1240, 400], [120, 304], [240, 296], [330, 280]]),
+  ...fromLogo([
+    [85, 461], [178, 350], [245, 350], [382, 189], [395, 191], [486, 253], [560, 155], [595, 136], [605, 125], [697, 0],
+    [806, 147], [842, 164], [909, 253], [1003, 189], [1013, 190], [1148, 334], [1207, 353], [1217, 359], [1311, 461],
+  ]),
+  ...points([[870, 280], [960, 296], [1080, 304], [2440, 400]]),
+];
+
+/** The snow in the logo, back to front: both shoulders, the summit, then the two peaks standing before it. */
 export const snow: Point[][] = [
-  points([[600, 92], [628, 124], [638, 152], [622, 146], [612, 176], [600, 148], [590, 168], [578, 146], [562, 160], [574, 116]]),
-  points([[492, 158], [520, 174], [508, 184], [498, 174], [486, 194], [476, 178], [455, 196]]),
-  points([[770, 146], [800, 186], [788, 190], [780, 176], [768, 196], [756, 178], [742, 162]]),
-];
+  [[389, 213], [469, 270], [424, 262], [402, 242], [398, 270], [327, 347], [343, 302], [260, 352]],
+  [[1006, 213], [1133, 349], [1033, 267], [1010, 237], [1009, 271], [1057, 351], [1004, 299], [977, 329], [952, 309], [923, 269]],
+  [
+    [696, 35], [779, 146], [731, 112], [704, 67], [715, 126], [752, 182], [717, 162], [718, 261], [731, 281], [715, 263],
+    [677, 181], [633, 227], [653, 141], [614, 180], [579, 195], [525, 237], [575, 170], [611, 151],
+  ],
+  [[543, 254], [561, 273], [557, 300], [557, 345], [527, 396], [520, 398], [520, 327], [452, 387], [447, 389], [457, 359], [333, 427], [395, 365], [437, 345], [469, 310], [507, 286]],
+  [
+    [865, 293], [864, 316], [875, 357], [842, 428], [834, 434], [840, 397], [775, 440], [804, 383], [668, 502], [675, 472],
+    [628, 484], [532, 534], [625, 463], [710, 432], [786, 352], [831, 327],
+  ],
+].map(fromLogo);
 
-/** The logo's red, here the star's light on the faces turned toward it (ADR-0037 decision 4). */
+/** The grey side of the same snow, where it turns from the ground's light. */
+export const snowShade: Point[][] = [
+  [[391, 214], [469, 270], [424, 262], [402, 242], [399, 265]],
+  [[1007, 214], [1133, 349], [1023, 257], [1009, 238]],
+  [[696, 35], [779, 146], [731, 112], [704, 67], [715, 126], [752, 182], [717, 162], [716, 231], [699, 162], [685, 139], [699, 100]],
+  [[561, 273], [573, 287], [604, 300], [647, 350], [659, 398], [636, 362], [586, 330], [557, 362], [557, 300]],
+  [[865, 293], [969, 378], [1122, 513], [948, 394], [964, 437], [896, 372], [842, 428], [875, 357], [864, 316]],
+].map(fromLogo);
+
+/**
+ * The logo's red, here the star's light on the faces turned toward it (ADR-0037 decision 4). Drawn before
+ * the snow, which covers its upper edge and the foot of the summit's face.
+ */
 export const alpenglow: Point[][] = [
-  points([[612, 106], [628, 124], [650, 140], [676, 178], [706, 206], [766, 268], [712, 244], [662, 210], [634, 186], [624, 160]]),
-  points([[784, 164], [800, 186], [838, 216], [858, 240], [826, 226], [796, 206], [786, 180]]),
-];
+  [
+    [701, 60], [731, 112], [779, 146], [795, 166], [829, 180], [937, 324], [965, 347], [1008, 361], [1129, 517], [1122, 513],
+    [969, 378], [865, 293], [831, 327], [786, 352], [731, 281], [712, 261], [712, 162], [745, 180], [712, 126],
+  ],
+  [[1006, 232], [1033, 267], [1130, 348], [1145, 357], [1186, 366], [1204, 375], [1263, 441], [1186, 391], [1138, 387], [1062, 317], [1063, 358], [1055, 351], [1005, 271]],
+  [[401, 240], [423, 259], [471, 270], [447, 305], [420, 331], [380, 291], [396, 268]],
+].map(fromLogo);
 
 /** A closed outline of the range, down past the foot of the scene. */
 export function rangePath(range: Point[]): string {
@@ -128,9 +175,9 @@ export function rangeY(range: Point[], x: number): number {
   return a.y + ((b.y - a.y) * (x - a.x)) / (b.x - a.x);
 }
 
-/** Where the observatory stands: the left shoulder's flat top, which a 320px screen still shows. */
+/** Where the observatory stands: the flat top of the range's left knee, which a 320px screen still shows. */
 export function observatory() {
-  const x = 395;
+  const x = 426;
   const slope = rangeY(nearRange, x + 8) - rangeY(nearRange, x - 8);
   const angle = (Math.atan2(slope, 16) * 180) / Math.PI;
   return { x, y: rangeY(nearRange, x), angle: round(Math.max(-8, Math.min(8, angle))) };
@@ -141,24 +188,27 @@ export interface LightSpot extends Point {
   turn: number;
 }
 
-/** The fixed spots on the rock, all in view on the narrowest phone (ADR-0037 decision 7). */
+/**
+ * The fixed spots on the rock, all in view on the narrowest phone (ADR-0037 decision 7). The first ten are
+ * the nodes in the logo, the rest fill the bare rock between them.
+ */
 export const lightSpots: LightSpot[] = [
-  { x: 548, y: 214, turn: -22 },
-  { x: 590, y: 196, turn: 18 },
-  { x: 508, y: 232, turn: -18 },
-  { x: 640, y: 248, turn: -16 },
-  { x: 746, y: 218, turn: 20 },
-  { x: 470, y: 240, turn: -20 },
-  { x: 580, y: 256, turn: 14 },
-  { x: 790, y: 246, turn: 16 },
-  { x: 432, y: 268, turn: -14 },
-  { x: 520, y: 272, turn: -12 },
-  { x: 690, y: 282, turn: -10 },
-  { x: 762, y: 278, turn: -8 },
-  { x: 625, y: 284, turn: 8 },
-  { x: 816, y: 276, turn: 8 },
-  { x: 476, y: 282, turn: 8 },
-  { x: 556, y: 286, turn: 6 },
+  { x: 568, y: 174, turn: -14 },
+  { x: 587, y: 190, turn: 16 },
+  { x: 425, y: 241, turn: -18 },
+  { x: 460, y: 237, turn: -20 },
+  { x: 512, y: 246, turn: -18 },
+  { x: 561, y: 249, turn: -16 },
+  { x: 476, y: 284, turn: -6 },
+  { x: 713, y: 273, turn: 10 },
+  { x: 756, y: 262, turn: 14 },
+  { x: 740, y: 240, turn: 18 },
+  { x: 668, y: 282, turn: -8 },
+  { x: 623, y: 284, turn: 6 },
+  { x: 536, y: 268, turn: -10 },
+  { x: 493, y: 262, turn: -12 },
+  { x: 439, y: 264, turn: -12 },
+  { x: 795, y: 266, turn: 12 },
 ];
 
 /** A light's trace, as in the logo: down from the light, a turn, then straight into the ground. */

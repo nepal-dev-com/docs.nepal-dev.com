@@ -1425,7 +1425,8 @@
   --range-far: #b4c5d3;
   --range-mid: #7b97ad;
   --range-near: #1f3f5a;
-  --range-snow: #fbfdfe;
+  --range-snow: #f9fbfb;
+  --range-snow-shade: #d8dfe5;
   --range-trace: #55bfc3;
   --horizon-pole: #14324d;
   --sun-glow: 0.85;
@@ -1447,10 +1448,11 @@
 .dark .horizon {
   --cloud-top: var(--home-line-2);
   --cloud-under: var(--home-star);
-  --range-far: #223245;
-  --range-mid: #1a2736;
-  --range-near: #141f2c;
+  --range-far: #1c2a3a;
+  --range-mid: #18242f;
+  --range-near: #20405c;
   --range-snow: #e6ecf2;
+  --range-snow-shade: #b7c4d0;
   --range-trace: #3ddbb6;
   --horizon-pole: var(--home-ink);
   --sun-glow: 0.6;
@@ -1500,7 +1502,8 @@
 .horizon-scene {
   position: relative;
   height: clamp(230px, 28vw, 360px);
-  margin-top: -6px;
+  /* The pole's top is the scene's highest point, and must stand clear of the closing line's underline. */
+  margin-top: 10px;
   container-type: size;
   background: linear-gradient(transparent 15%, var(--horizon-sky) 80%);
 }
@@ -1613,6 +1616,10 @@
   fill: var(--range-snow);
 }
 
+.horizon-near .horizon-snow-shade {
+  fill: var(--range-snow-shade);
+}
+
 /* The logo's red: the star's light on the sunward faces (ADR-0037 decision 4). */
 .horizon-near .horizon-alpenglow {
   fill: #d2193b;
@@ -1699,7 +1706,7 @@
 
 @media (prefers-reduced-motion: no-preference) {
   .horizon[data-lowered]:not([data-summit]) .horizon-flag {
-    transform: translateY(26px) scale(0.28, 0.5);
+    transform: translateY(5px) scale(0.28, 0.4);
   }
 
   .horizon[data-summit] .horizon-flag {

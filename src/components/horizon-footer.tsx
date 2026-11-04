@@ -14,6 +14,8 @@ import {
   cloudPeriod,
   farRange,
   flagPole,
+  flagScale,
+  flagTop,
   horizonStars,
   lightSpots,
   lightsFor,
@@ -27,7 +29,9 @@ import {
   sceneHeight,
   sceneWidth,
   snow,
+  snowShade,
   starDisc,
+  starGlow,
   traceFor,
   worldView,
 } from '@/lib/horizon-sky';
@@ -114,7 +118,7 @@ export function HorizonScene({ entries }: { entries: CatalogEntry[] }) {
           d={`M${moon.cx + 8} ${moon.cy - moon.r + 1} a${moon.r} ${moon.r} 0 1 0 14 22 a12 12 0 1 1 -14 -22 Z`}
         />
         <g className="horizon-rise">
-          <ellipse className="horizon-glow" cx={starDisc.cx} cy={starDisc.cy + 22} rx="460" ry="180" fill="url(#horizon-glow)" />
+          <ellipse className="horizon-glow" cx={starGlow.cx} cy={starGlow.cy} rx={starGlow.rx} ry={starGlow.ry} fill="url(#horizon-glow)" />
           <circle className="horizon-star-disc" cx={starDisc.cx} cy={starDisc.cy} r={starDisc.r} />
         </g>
       </World>
@@ -159,6 +163,9 @@ export function HorizonScene({ entries }: { entries: CatalogEntry[] }) {
         {snow.map((patch) => (
           <path key={polygonPath(patch)} className="horizon-snow" d={polygonPath(patch)} />
         ))}
+        {snowShade.map((patch) => (
+          <path key={polygonPath(patch)} className="horizon-snow-shade" d={polygonPath(patch)} />
+        ))}
         <g className="horizon-observatory" transform={`translate(${site.x} ${site.y.toFixed(2)}) rotate(${site.angle}) scale(0.72)`}>
           <rect x="-14" y="-13" width="28" height="17" />
           <rect x="13" y="-6" width="10" height="10" />
@@ -183,8 +190,15 @@ export function HorizonScene({ entries }: { entries: CatalogEntry[] }) {
             </g>
           );
         })}
-        <rect className="horizon-pole" x={flagPole.x - 1.2} y={flagPole.top} width="2.4" height={flagPole.foot - flagPole.top} rx="1" />
-        <g transform={`translate(${flagPole.x + 1.2} ${flagPole.top + 1})`}>
+        <rect
+          className="horizon-pole"
+          x={flagPole.x - flagPole.width / 2}
+          y={flagPole.top}
+          width={flagPole.width}
+          height={flagPole.foot - flagPole.top}
+          rx={flagPole.width / 2}
+        />
+        <g transform={`translate(${flagPole.x + flagPole.width / 2} ${flagTop}) scale(${flagScale})`}>
           <g className="horizon-flag">
             <g className="horizon-flag-cloth h-loop">
               <NepalFlagCloth />

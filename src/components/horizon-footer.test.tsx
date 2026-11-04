@@ -4,7 +4,8 @@ import { join } from 'node:path';
 import { renderToStaticMarkup } from 'react-dom/server';
 import type { CatalogEntry } from '@/lib/catalog';
 import { privateProjects } from '@/components/home/private-projects';
-import { lightSpots } from '@/lib/horizon-sky';
+import { eightRays, flagMoon, flagMoonCentre } from '@/lib/flag';
+import { lightSpots, snowShade } from '@/lib/horizon-sky';
 import { HorizonClosing, HorizonCredit, HorizonFooter, HorizonScene } from './horizon-footer';
 
 const entry = (slug: string, ecosystem: string, kind: 'package' | 'project' = 'package') =>
@@ -64,7 +65,11 @@ describe('the Horizon scene (ADR-0030 decision 2, ADR-0037)', () => {
 
   test('stands the moon above the star, and lights the sunward faces', () => {
     expect(count(/class="horizon-moon"/g)).toBe(1);
-    expect(count(/class="horizon-alpenglow"/g)).toBe(2);
+    expect(count(/class="horizon-alpenglow"/g)).toBe(3);
+  });
+
+  test('shades the snow, as the logo does', () => {
+    expect(count(/class="horizon-snow-shade"/g)).toBe(snowShade.length);
   });
 
   test('flies the flag: the pole fixed, the cloth raised by itself, in its own colours', () => {
@@ -72,6 +77,9 @@ describe('the Horizon scene (ADR-0030 decision 2, ADR-0037)', () => {
     expect(html).toContain('class="horizon-flag"');
     expect(html).toContain('class="horizon-flag-cloth h-loop"');
     expect(html).toContain('fill="#D2193B"');
+    expect(html).toContain('stroke="#1F468D"');
+    expect(html).toContain(flagMoon);
+    expect(html).toContain(eightRays(flagMoonCentre.cx, flagMoonCentre.cy, flagMoonCentre.inner, flagMoonCentre.outer));
   });
 
   test('draws a light for each entry, in its ecosystem colour, marked with its spot', () => {
