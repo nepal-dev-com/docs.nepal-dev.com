@@ -26,8 +26,8 @@ describe('vercel.json (ADR-0042)', () => {
     expect(vercel.installCommand).toBe('bunx bun@1.4.4 install --frozen-lockfile');
   });
 
-  test('Node is pinned to 24 (decision 5)', () => {
-    expect(pkg.engines).toEqual({ node: '24.x' });
+  test('Node is pinned to 26 (decision 5)', () => {
+    expect(pkg.engines).toEqual({ node: '26.x' });
   });
 });
 
