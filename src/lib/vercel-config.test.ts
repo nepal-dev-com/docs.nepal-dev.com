@@ -45,10 +45,14 @@ describe('vercel.json (ADR-0042, ADR-0043)', () => {
     expect(vercel.buildCommand).toBe('sh scripts/require-full-history.sh && bun run build');
   });
 
-  test('installs with Bun 1.4.4 from the lockfile exactly (decision 5)', () => {
-    expect(vercel.installCommand).toBe('bunx bun@1.4.4 install --frozen-lockfile');
+  test('installs with Vercel\'s Bun, from the lockfile exactly (ADR-0044)', () => {
+    expect(vercel.installCommand).toBe('bun install --frozen-lockfile');
   });
 
+  test('never fetches Bun through bunx, which fails on Vercel (ADR-0044)', () => {
+    expect(vercel.installCommand).not.toContain('bunx');
+    expect(vercel.buildCommand).not.toContain('bunx');
+  });
   test('Node is pinned to 26 (ADR-0043 decision 3)', () => {
     expect(pkg.engines).toEqual({ node: '26.x' });
   });

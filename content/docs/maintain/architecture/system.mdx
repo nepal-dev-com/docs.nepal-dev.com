@@ -183,7 +183,7 @@ Vercel builds and serves the site (ADR-0042, ADR-0043). `vercel.json` holds the 
 | Key | Value | Why |
 |---|---|---|
 | `git.deploymentEnabled` | `{ "**": false, "main": true }` | Only `main` gets a deployment, and every commit on it does, as a production deployment on the custom domain |
-| `installCommand` | `bunx bun@1.4.4 install --frozen-lockfile` | The owner's Bun, the lockfile exactly |
+| `installCommand` | `bun install --frozen-lockfile` | Vercel's Bun, which it picks from `bun.lock` (1.4.4, the owner's); the lockfile exactly (ADR-0044) |
 | `buildCommand` | `sh scripts/require-full-history.sh && bun run build` | Fails on a shallow clone, then the owner's own build and sync |
 
 There is no `ignoreCommand`, so nothing cancels a commit on `main`. A deployment that starts elsewhere (a fork's pull request
