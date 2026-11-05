@@ -13,9 +13,32 @@ function run(command: string[], cwd: string, env: Record<string, string> = {}) {
   return { code: result.exitCode, stderr: result.stderr.toString() };
 }
 
-describe('vercel.json (ADR-0042)', () => {
-  test('deploys main only (decision 2)', () => {
+describe('vercel.json (ADR-0042, ADR-0043)', () => {
+  test('deploys main only (ADR-0043 decision 1)', () => {
     expect(vercel.git.deploymentEnabled).toEqual({ '**': false, main: true });
+  });
+
+  test('main never decides on VERCEL_ENV, which cancelled every merge (ADR-0043 decision 1)', () => {
+    expect(vercel).not.toHaveProperty('ignoreCommand');
+  });
+
+  test('sets nothing else that could skip or redirect a deployment', () => {
+    expect(Object.keys(vercel).sort()).toEqual(['$schema', 'buildCommand', 'git', 'installCommand']);
+    expect(Object.keys(vercel.git)).toEqual(['deploymentEnabled']);
+  });
+
+  const branchDeploys = (branch: string) => {
+    const rules = Object.entries(vercel.git.deploymentEnabled as Record<string, boolean>);
+    const matching = rules.filter(([glob]) => new Bun.Glob(glob).match(branch));
+    // Vercel: a branch deploys when at least one rule it matches is true; unmatched branches deploy.
+    return matching.length === 0 || matching.some(([, enabled]) => enabled);
+  };
+
+  test('only main matches a true rule', () => {
+    expect(branchDeploys('main')).toBe(true);
+    for (const branch of ['dev', 'feature/search', 'main-old', 'release/main', 'Main', 'staging']) {
+      expect(branchDeploys(branch)).toBe(false);
+    }
   });
 
   test('builds with the history check, then the owner\'s own command (decisions 3 and 4)', () => {
@@ -26,22 +49,8 @@ describe('vercel.json (ADR-0042)', () => {
     expect(vercel.installCommand).toBe('bunx bun@1.4.4 install --frozen-lockfile');
   });
 
-  test('Node is pinned to 26 (decision 5)', () => {
+  test('Node is pinned to 26 (ADR-0043 decision 3)', () => {
     expect(pkg.engines).toEqual({ node: '26.x' });
-  });
-});
-
-describe('ignoreCommand (ADR-0042 decision 2)', () => {
-  // Exit 1 lets Vercel build; exit 0 cancels the deployment.
-  test('builds production', () => {
-    expect(run(['sh', '-c', vercel.ignoreCommand], root, { VERCEL_ENV: 'production' }).code).toBe(1);
-  });
-
-  test('cancels everything else', () => {
-    const others: Record<string, string>[] = [{ VERCEL_ENV: 'preview' }, { VERCEL_ENV: 'development' }, { VERCEL_ENV: '' }, {}];
-    for (const env of others) {
-      expect(run(['sh', '-c', vercel.ignoreCommand], root, env).code).toBe(0);
-    }
   });
 });
 

@@ -37,7 +37,7 @@
       "id": "sync",
       "type": "backend",
       "label": "sync-content.ts",
-      "sublabel": "Node 24"
+      "sublabel": "Node 26"
     },
     {
       "id": "algolia",

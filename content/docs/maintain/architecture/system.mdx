@@ -178,16 +178,18 @@ flowchart TB
 
 ## Deployment
 
-Vercel builds and serves the site (ADR-0042). `vercel.json` holds the rules:
+Vercel builds and serves the site (ADR-0042, ADR-0043). `vercel.json` holds the rules, and nothing else:
 
 | Key | Value | Why |
 |---|---|---|
-| `git.deploymentEnabled` | `{ "**": false, "main": true }` | Only `main` gets a deployment |
-| `ignoreCommand` | `[ "$VERCEL_ENV" != production ]` | Anything else that starts (a fork's pull request, a CLI deploy) is cancelled before it builds |
+| `git.deploymentEnabled` | `{ "**": false, "main": true }` | Only `main` gets a deployment, and every commit on it does, as a production deployment on the custom domain |
 | `installCommand` | `bunx bun@1.4.4 install --frozen-lockfile` | The owner's Bun, the lockfile exactly |
 | `buildCommand` | `sh scripts/require-full-history.sh && bun run build` | Fails on a shallow clone, then the owner's own build and sync |
 
-`package.json` pins Node with `engines.node` `24.x`. The variables live in Vercel's Production environment only, with
+There is no `ignoreCommand`, so nothing cancels a commit on `main`. A deployment that starts elsewhere (a fork's pull request
+someone authorizes, a `vercel` CLI deploy) runs with no variables, so its sync refuses and nothing is published.
+
+`package.json` pins Node with `engines.node` `26.x`. The variables live in Vercel's Production environment only, with
 `VERCEL_DEEP_CLONE=true` for the full history ([`../security/secrets.mdx`](../security/secrets.mdx)). A push to `main` publishes
 the site and the search index together. A failed install, history check, build or sync fails the deployment, and the previous
 one stays live ([`../sequence/build-and-search-sync.mdx`](../sequence/build-and-search-sync.mdx)).

@@ -114,15 +114,17 @@ Open [http://localhost:3000](http://localhost:3000). The docs are at `/docs`.
 
 ### Deploy
 
-Vercel deploys `main` only, straight to production (ADR-0042). A push to `main` runs
-`bun run build` on Vercel, which publishes the site and the search index together. Other
-branches, pull requests and forks get no deployment, and production never comes from `vercel --prod`.
+Vercel deploys `main` only, straight to production on the custom domain (ADR-0042, ADR-0043).
+Every commit on `main`, pushed or merged, runs `bun run build` on Vercel (Node 26), which publishes
+the site and the search index together. Other branches get no deployment; a fork's pull request
+asks for authorization, which is never given; production never comes from `vercel --prod`.
 `vercel.json` holds the rules. To roll back, push a `git revert` to `main`: Vercel's Instant Rollback
 restores the pages but not the search index.
 
 The Vercel project, set once by the owner:
 
-- Production branch `main`. *Automatically expose System Environment Variables* on.
+- Production branch `main`. *Automatically expose System Environment Variables* on. *Ignored
+  Build Step* set to *Automatic*.
 - In the Production environment only: `SITE_URL`, the three Algolia variables (`ALGOLIA_WRITE_KEY`
   marked *Sensitive*), `NEXT_PUBLIC_GA_MEASUREMENT_ID` and `VERCEL_DEEP_CLONE=true`. Preview and
   Development hold nothing.

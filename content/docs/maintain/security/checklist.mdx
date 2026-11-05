@@ -102,15 +102,16 @@ and unauthorized access first, abuse and logic flaws second.
 - [ ] In GA4: data retention 2 months, Google signals off, no Google Ads or other product links,
       enhanced measurement's history-change page views on.
 
-### Hosting on Vercel (ADR-0042)
+### Hosting on Vercel (ADR-0042, ADR-0043)
 
-- [ ] `vercel.json` still deploys `main` only (`git.deploymentEnabled`) and cancels anything that is not
-      production (`ignoreCommand`); a push to another branch creates no deployment.
+- [ ] `vercel.json` still deploys `main` only (`git.deploymentEnabled`) and has no `ignoreCommand`; a push to
+      another branch creates no deployment, and every commit on `main` goes live on the custom domain.
+- [ ] No fork deployment has been authorized under Git Fork Protection.
 - [ ] Every variable is in the Production environment only; Preview and Development hold none.
       `ALGOLIA_WRITE_KEY` is marked *Sensitive*.
 - [ ] *Automatically expose System Environment Variables* is on, and `VERCEL_DEEP_CLONE=true` is set.
 - [ ] Deployment Protection is *Standard Protection*: generated deployment URLs ask for a Vercel login.
 - [ ] Build Logs and Source Protection and Git Fork Protection are on.
-- [ ] The production build log shows Bun 1.4.4, Node 24, the history check passing and
+- [ ] The production build log shows Bun 1.4.4, Node 26, the history check passing and
       `search updated: N records`, and no variable's value.
 - [ ] Production deploys came from Git pushes to `main`, never from `vercel --prod`.
