@@ -4,8 +4,9 @@ description: "The full security audits run before the first public deployment an
 ---
 
 - **Status:** Current
-- **Last updated:** 2026-11-01
-- **Related ADRs:** ADR-0005, ADR-0011
+- **Last updated:** 2026-11-05
+- **Related ADRs:** ADR-0005, ADR-0011, [ADR-0041](../adr/ADR-0041-readers-are-counted-by-vercel-and-by-google-with-consent.mdx),
+  [ADR-0042](../adr/ADR-0042-only-main-deploys-straight-to-production-on-vercel.mdx)
 
 > Snapshot of the system as it stands today. Edit in place; never record what changed.
 
@@ -36,9 +37,10 @@ and unauthorized access first, abuse and logic flaws second.
 ## Audit 3 — Pre-deploy production
 
 - [ ] The publishing build refuses to run without its secrets and without `SITE_URL`.
-- [ ] `SITE_URL` is set on the production host and on no preview; `robots.txt` names the sitemap on
-      production and disallows everything on a preview.
-- [ ] The host clones the repository in full, so `lastmod` is true (ADR-0035).
+- [ ] `SITE_URL` is set in Vercel's Production environment; `robots.txt` names the sitemap. No preview
+      deployment exists (ADR-0042).
+- [ ] The host clones the repository in full, so `lastmod` is true (ADR-0035): the build log shows
+      `require-full-history.sh` passing (ADR-0042).
 - [ ] The 404's one-year `s-maxage` (ADR-0034) does not outlive a deploy in the host's cache.
 - [ ] TLS everywhere.
 - [ ] Security headers set (CSP, frame-ancestors, referrer policy) and verified.
@@ -85,3 +87,30 @@ and unauthorized access first, abuse and logic flaws second.
       accepts them only from its own frame's window, a height only within 120 to 4000, and on
       a Present request opens only that diagram's own URL, built by the page.
 - [ ] Embed frames delegate fullscreen (`allow="fullscreen"`) and nothing else.
+
+### Vercel Analytics and Google Analytics (ADR-0041)
+
+- [ ] Before any choice, a first visit sets no `_ga` cookie, and the first `dataLayer` entry is
+      `consent default` with `analytics_storage: denied` and every ads signal `denied`.
+- [ ] *Allow* sets the `_ga` cookies; *Decline* removes them; *Privacy choices* in the footer reopens
+      the banner on every page. With Global Privacy Control on, no banner shows and nothing is granted.
+- [ ] The site loads no Google script but `www.googletagmanager.com/gtag/js?id=<the ID>`, and no
+      Tag Manager container.
+- [ ] Vercel Analytics and Speed Insights requests go to `/_vercel/…` on the site's own origin and
+      carry no query string.
+- [ ] `NEXT_PUBLIC_GA_MEASUREMENT_ID` is set in Vercel's Production environment only.
+- [ ] In GA4: data retention 2 months, Google signals off, no Google Ads or other product links,
+      enhanced measurement's history-change page views on.
+
+### Hosting on Vercel (ADR-0042)
+
+- [ ] `vercel.json` still deploys `main` only (`git.deploymentEnabled`) and cancels anything that is not
+      production (`ignoreCommand`); a push to another branch creates no deployment.
+- [ ] Every variable is in the Production environment only; Preview and Development hold none.
+      `ALGOLIA_WRITE_KEY` is marked *Sensitive*.
+- [ ] *Automatically expose System Environment Variables* is on, and `VERCEL_DEEP_CLONE=true` is set.
+- [ ] Deployment Protection is *Standard Protection*: generated deployment URLs ask for a Vercel login.
+- [ ] Build Logs and Source Protection and Git Fork Protection are on.
+- [ ] The production build log shows Bun 1.4.4, Node 24, the history check passing and
+      `search updated: N records`, and no variable's value.
+- [ ] Production deploys came from Git pushes to `main`, never from `vercel --prod`.

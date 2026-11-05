@@ -62,7 +62,8 @@ only the primary repository edits the project's shared files.
 Every file under `content/` and every diagram's HTML is **published**: on the website, in the
 search index, in `llms.txt` / `llms-full.txt`, as per-page Markdown, in `sitemap.xml`, in the
 page's structured data and on its share image. Published is permanent. **That includes the Maintain
-track**: maintainer docs are public too.
+track**: maintainer docs are public too. Every page's address and title also reach the site's analytics,
+Vercel Web Analytics and Google Analytics (ADR-0041).
 
 **`noindex` is not privacy.** A `dev` page is left out of search results (§4.4), and it can still be
 read by anyone with the link, in `llms-full.txt` and in the site's search. Nothing here keeps a page
@@ -542,7 +543,9 @@ Fix the folder rather than working around the check.
   git -C <submodule-path> switch main && git -C <submodule-path> pull
   ```
 
-- **When done**, list the files you changed and give the human these commands to run:
+- **When done**, list the files you changed and give the human these commands to run. **Pushing the
+  submodule to `main` publishes at once**: Vercel builds the site and updates the search index from it,
+  with no preview first (ADR-0042). Check with `bunx next build` before handing these over.
 
   ```sh
   git -C <submodule-path> add content/<project-slug> diagrams/<project-slug>

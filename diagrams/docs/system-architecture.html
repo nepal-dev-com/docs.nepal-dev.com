@@ -5196,7 +5196,7 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
         <div class="pulse-dot"></div>
         <h1>System architecture</h1>
       </div>
-      <p class="subtitle">content/ through the build to the deployed site, Algolia and the people who read it</p>
+      <p class="subtitle">content/ through the build to the deployed site, Algolia, the analytics and the people who read it</p>
     </div>
 
 
@@ -5206,7 +5206,7 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
          data-preset-badge-editorial-plate="ARCHIFY / PLATE 04">
       <svg viewBox="0 0 1210 682" role="img" lang="en" aria-labelledby="archify-diagram-title archify-diagram-description" data-animation="trace" data-preset="classic" data-quality-profile="showcase" data-node-ui="" data-reader-fit="intrinsic-height" data-reader-min-text="7.5" data-reader-primary-text="14">
         <title id="archify-diagram-title">System architecture</title>
-        <desc id="archify-diagram-description">content/ through the build to the deployed site, Algolia and the people who read it</desc>
+        <desc id="archify-diagram-description">content/ through the build to the deployed site, Algolia, the analytics and the people who read it</desc>
         <!-- Definitions -->
         <defs>
           <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
@@ -5251,9 +5251,9 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
         <rect width="100%" height="100%" fill="url(#grid)" />
 
         <!-- Boundaries (behind everything) -->
-        <rect data-graph-role="structural-frame" data-composition-frame-kind="region" data-composition-frame-id="0" data-composition-frame-label="Repository" x="30" y="280" width="180" height="110" rx="12" class="c-region" stroke-width="1"/>
+        <rect data-graph-role="structural-frame" data-composition-frame-kind="region" data-composition-frame-id="0" data-composition-frame-label="Repository · main" x="30" y="280" width="180" height="110" rx="12" class="c-region" stroke-width="1"/>
 
-        <rect data-graph-role="structural-frame" data-composition-frame-kind="region" data-composition-frame-id="1" data-composition-frame-label="bun run build" x="270" y="280" width="180" height="330" rx="12" class="c-region" stroke-width="1"/>
+        <rect data-graph-role="structural-frame" data-composition-frame-kind="region" data-composition-frame-id="1" data-composition-frame-label="Vercel · bun run build" x="270" y="280" width="180" height="330" rx="12" class="c-region" stroke-width="1"/>
 
         <rect data-graph-role="structural-frame" data-composition-frame-kind="region" data-composition-frame-id="2" data-composition-frame-label="Deployed site" x="510" y="170" width="660" height="330" rx="12" class="c-region" stroke-width="1"/>
 
@@ -5302,6 +5302,14 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
           <path data-graph-role="automatic-crossover-underlay" d="M 600 260 L 600 420" fill="none" stroke="var(--mask)" stroke-width="5.5" stroke-linecap="round" stroke-linejoin="round" pointer-events="none"/>
           <path data-edge-from="proxy" data-edge-to="crawl" data-edge-label="crawlers" data-edge-key="10" data-composition-points="600,260;600,420" data-composition-crossover="halo" data-composition-independent="true" d="M 600 260 L 600 420" class="a-default" data-animate="edge" style="--step:10" stroke-width="1.5" marker-end="url(#arrowhead)"/>
         </g>
+        <g data-graph-role="automatic-crossover" style="--step:11">
+          <path data-graph-role="automatic-crossover-underlay" d="M 300 113 L 180 113" fill="none" stroke="var(--mask)" stroke-width="5.5" stroke-linecap="round" stroke-linejoin="round" pointer-events="none"/>
+          <path data-edge-from="reader" data-edge-to="vercel" data-edge-label="no query string" data-edge-key="11" data-composition-points="300,113;180,113" data-composition-crossover="halo" data-composition-independent="true" d="M 300 113 L 180 113" class="a-dashed" data-animate="edge" style="--step:11" stroke-width="1.5" marker-end="url(#arrowhead-dashed)"/>
+        </g>
+        <g data-graph-role="automatic-crossover" style="--step:12">
+          <path data-graph-role="automatic-crossover-underlay" d="M 316 150 L 316 208 Q 316 216 308 216 L 180 216" fill="none" stroke="var(--mask)" stroke-width="5.5" stroke-linecap="round" stroke-linejoin="round" pointer-events="none"/>
+          <path data-edge-from="reader" data-edge-to="ga" data-edge-label="cookies if allowed" data-edge-key="12" data-composition-points="316,150;316,216;180,216" data-composition-crossover="halo" data-composition-independent="true" d="M 316 150 L 316 208 Q 316 216 308 216 L 180 216" class="a-dashed" data-animate="edge" style="--step:12" stroke-width="1.5" marker-end="url(#arrowhead-dashed)"/>
+        </g>
 
         <!-- Components -->
         <g id="node-reader" data-node-id="reader" data-node-label="Reader" tabindex="0" role="button" aria-label="Focus Reader, browser, Architecture component" aria-pressed="false" data-node-kind="external" data-node-sublabel="browser" data-node-context="Architecture component">
@@ -5328,8 +5336,8 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
         <text data-detail="context" x="600" y="134" class="t-muted" font-size="9" text-anchor="middle">and crawlers</text>
         </g>
 
-        <g id="node-content" data-node-id="content" data-node-label="content/" tabindex="0" role="button" aria-label="Focus content/, MDX + catalogue, Repository" aria-pressed="false" data-node-kind="database" data-node-sublabel="MDX + catalogue" data-node-context="Repository">
-          <title>content/ · MDX + catalogue · Repository</title>
+        <g id="node-content" data-node-id="content" data-node-label="content/" tabindex="0" role="button" aria-label="Focus content/, MDX + catalogue, Repository · main" aria-pressed="false" data-node-kind="database" data-node-sublabel="MDX + catalogue" data-node-context="Repository · main">
+          <title>content/ · MDX + catalogue · Repository · main</title>
           <rect x="60" y="310" width="120" height="60" rx="8" class="c-mask"/>
           <rect x="60" y="310" width="120" height="60" rx="8" class="c-database" data-animate="node" style="--step:0" stroke-width="1.5"/>
           <g aria-hidden="true" data-semantic-sigil="database" class="semantic-sigil s-database" transform="translate(66 316) scale(0.6875)">
@@ -5340,8 +5348,8 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
         <text data-detail="context" x="120" y="354" class="t-muted" font-size="9" text-anchor="middle">MDX + catalogue</text>
         </g>
 
-        <g id="node-next" data-node-id="next" data-node-label="next build" tabindex="0" role="button" aria-label="Focus next build, checks, static output, bun run build" aria-pressed="false" data-node-kind="backend" data-node-sublabel="checks, static output" data-node-context="bun run build">
-          <title>next build · checks, static output · bun run build</title>
+        <g id="node-next" data-node-id="next" data-node-label="next build" tabindex="0" role="button" aria-label="Focus next build, checks, static output, Vercel · bun run build" aria-pressed="false" data-node-kind="backend" data-node-sublabel="checks, static output" data-node-context="Vercel · bun run build">
+          <title>next build · checks, static output · Vercel · bun run build</title>
           <rect x="300" y="310" width="120" height="60" rx="8" class="c-mask"/>
           <rect x="300" y="310" width="120" height="60" rx="8" class="c-backend" data-animate="node" style="--step:1" stroke-width="1.5"/>
           <g aria-hidden="true" data-semantic-sigil="backend" class="semantic-sigil s-backend" transform="translate(306 316) scale(0.6875)">
@@ -5351,8 +5359,8 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
         <text data-detail="context" x="360" y="354" class="t-muted" font-size="8.8" text-anchor="middle">checks, static output</text>
         </g>
 
-        <g id="node-sync" data-node-id="sync" data-node-label="sync-content.ts" tabindex="0" role="button" aria-label="Focus sync-content.ts, after the build, bun run build" aria-pressed="false" data-node-kind="backend" data-node-sublabel="after the build" data-node-context="bun run build">
-          <title>sync-content.ts · after the build · bun run build</title>
+        <g id="node-sync" data-node-id="sync" data-node-label="sync-content.ts" tabindex="0" role="button" aria-label="Focus sync-content.ts, after the build, Vercel · bun run build" aria-pressed="false" data-node-kind="backend" data-node-sublabel="after the build" data-node-context="Vercel · bun run build">
+          <title>sync-content.ts · after the build · Vercel · bun run build</title>
           <rect x="300" y="530" width="120" height="60" rx="8" class="c-mask"/>
           <rect x="300" y="530" width="120" height="60" rx="8" class="c-backend" data-animate="node" style="--step:3" stroke-width="1.5"/>
           <g aria-hidden="true" data-semantic-sigil="backend" class="semantic-sigil s-backend" transform="translate(306 536) scale(0.6875)">
@@ -5480,6 +5488,28 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
         <text data-detail="context" x="600" y="464" class="t-muted" font-size="7.4" text-anchor="middle">robots, sitemap, manifest</text>
         </g>
 
+        <g id="node-vercel" data-node-id="vercel" data-node-label="Vercel Analytics" tabindex="0" role="button" aria-label="Focus Vercel Analytics, views, vitals, no cookies, Architecture component" aria-pressed="false" data-node-kind="cloud" data-node-sublabel="views, vitals, no cookies" data-node-context="Architecture component">
+          <title>Vercel Analytics · views, vitals, no cookies · Architecture component</title>
+          <rect x="60" y="90" width="120" height="60" rx="8" class="c-mask"/>
+          <rect x="60" y="90" width="120" height="60" rx="8" class="c-cloud" data-animate="node" style="--step:12" stroke-width="1.5"/>
+          <g aria-hidden="true" data-semantic-sigil="cloud" class="semantic-sigil s-cloud" transform="translate(66 96) scale(0.6875)">
+            <path d="M4.3 12.5h7.3a2.4 2.4 0 0 0 .2-4.8 4 4 0 0 0-7.5-1.3A3.1 3.1 0 0 0 4.3 12.5Z"/>
+          </g>
+          <text data-node-label="" data-detail-anchor="" x="120" y="118" class="t-primary" font-size="11" font-weight="600" text-anchor="middle">Vercel Analytics</text>
+        <text data-detail="context" x="120" y="134" class="t-muted" font-size="7.4" text-anchor="middle">views, vitals, no cookies</text>
+        </g>
+
+        <g id="node-ga" data-node-id="ga" data-node-label="Google Analytics" tabindex="0" role="button" aria-label="Focus Google Analytics, Consent Mode v2, Architecture component" aria-pressed="false" data-node-kind="cloud" data-node-sublabel="Consent Mode v2" data-node-context="Architecture component">
+          <title>Google Analytics · Consent Mode v2 · Architecture component</title>
+          <rect x="60" y="200" width="120" height="60" rx="8" class="c-mask"/>
+          <rect x="60" y="200" width="120" height="60" rx="8" class="c-cloud" data-animate="node" style="--step:12" stroke-width="1.5"/>
+          <g aria-hidden="true" data-semantic-sigil="cloud" class="semantic-sigil s-cloud" transform="translate(66 206) scale(0.6875)">
+            <path d="M4.3 12.5h7.3a2.4 2.4 0 0 0 .2-4.8 4 4 0 0 0-7.5-1.3A3.1 3.1 0 0 0 4.3 12.5Z"/>
+          </g>
+          <text data-node-label="" data-detail-anchor="" x="120" y="228" class="t-primary" font-size="11" font-weight="600" text-anchor="middle">Google Analytics</text>
+        <text data-detail="context" x="120" y="244" class="t-muted" font-size="9" text-anchor="middle">Consent Mode v2</text>
+        </g>
+
         <!-- Connection labels -->
         <g data-detail="context" data-edge-from="content" data-edge-to="next" data-edge-label="compiled" data-edge-key="0">
           <rect x="215.8" y="320" width="48.4" height="14" rx="3" class="c-mask"/>
@@ -5522,16 +5552,24 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
           <rect x="545.5999999999999" y="293" width="48.4" height="14" rx="3" class="c-mask"/>
           <text x="569.8" y="303" class="t-edge-default" font-size="8" text-anchor="middle">crawlers</text>
         </g>
-
-        <!-- Boundary labels (foreground masks keep routes out of titles) -->
-        <g data-graph-role="structural-frame-label" data-composition-frame-id="0" data-composition-frame-kind="region" data-composition-frame-label="Repository">
-          <rect data-graph-role="structural-frame-label-mask" x="34" y="290" width="64" height="16" rx="3" class="c-mask"/>
-          <text data-boundary-label="" x="38" y="303" class="t-cloud" font-size="9" font-weight="600">Repository</text>
+        <g data-detail="context" data-edge-from="reader" data-edge-to="vercel" data-edge-label="no query string" data-edge-key="11">
+          <rect x="199" y="93" width="82" height="14" rx="3" class="c-mask"/>
+          <text x="240" y="103" class="t-edge-dashed" font-size="8" text-anchor="middle">no query string</text>
+        </g>
+        <g data-detail="context" data-edge-from="reader" data-edge-to="ga" data-edge-label="cookies if allowed" data-edge-key="12">
+          <rect x="199.8" y="196" width="96.39999999999999" height="14" rx="3" class="c-mask"/>
+          <text x="248" y="206" class="t-edge-dashed" font-size="8" text-anchor="middle">cookies if allowed</text>
         </g>
 
-        <g data-graph-role="structural-frame-label" data-composition-frame-id="1" data-composition-frame-kind="region" data-composition-frame-label="bun run build">
-          <rect data-graph-role="structural-frame-label-mask" x="274" y="290" width="80.2" height="16" rx="3" class="c-mask"/>
-          <text data-boundary-label="" x="278" y="303" class="t-cloud" font-size="9" font-weight="600">bun run build</text>
+        <!-- Boundary labels (foreground masks keep routes out of titles) -->
+        <g data-graph-role="structural-frame-label" data-composition-frame-id="0" data-composition-frame-kind="region" data-composition-frame-label="Repository · main">
+          <rect data-graph-role="structural-frame-label-mask" x="34" y="290" width="101.8" height="16" rx="3" class="c-mask"/>
+          <text data-boundary-label="" x="38" y="303" class="t-cloud" font-size="9" font-weight="600">Repository · main</text>
+        </g>
+
+        <g data-graph-role="structural-frame-label" data-composition-frame-id="1" data-composition-frame-kind="region" data-composition-frame-label="Vercel · bun run build">
+          <rect data-graph-role="structural-frame-label-mask" x="274" y="290" width="128.8" height="16" rx="3" class="c-mask"/>
+          <text data-boundary-label="" x="278" y="303" class="t-cloud" font-size="9" font-weight="600">Vercel · bun run build</text>
         </g>
 
         <g data-graph-role="structural-frame-label" data-composition-frame-id="2" data-composition-frame-kind="region" data-composition-frame-label="Deployed site">

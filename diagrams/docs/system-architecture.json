@@ -3,7 +3,7 @@
   "diagram_type": "architecture",
   "meta": {
     "title": "System architecture",
-    "subtitle": "content/ through the build to the deployed site, Algolia and the people who read it",
+    "subtitle": "content/ through the build to the deployed site, Algolia, the analytics and the people who read it",
     "quality_profile": "showcase",
     "animation": "trace",
     "output": "system-architecture.html"
@@ -129,19 +129,35 @@
       "sublabel": "robots, sitemap, manifest",
       "row": 3,
       "col": 2
+    },
+    {
+      "id": "vercel",
+      "type": "cloud",
+      "label": "Vercel Analytics",
+      "sublabel": "views, vitals, no cookies",
+      "row": 0,
+      "col": 0
+    },
+    {
+      "id": "ga",
+      "type": "cloud",
+      "label": "Google Analytics",
+      "sublabel": "Consent Mode v2",
+      "row": 1,
+      "col": 0
     }
   ],
   "boundaries": [
     {
       "kind": "region",
-      "label": "Repository",
+      "label": "Repository · main",
       "wraps": [
         "content"
       ]
     },
     {
       "kind": "region",
-      "label": "bun run build",
+      "label": "Vercel · bun run build",
       "wraps": [
         "next",
         "sync"
@@ -227,6 +243,18 @@
       "to": "crawl",
       "label": "crawlers",
       "variant": "default"
+    },
+    {
+      "from": "reader",
+      "to": "vercel",
+      "label": "no query string",
+      "variant": "dashed"
+    },
+    {
+      "from": "reader",
+      "to": "ga",
+      "label": "cookies if allowed",
+      "variant": "dashed"
     }
   ]
 }

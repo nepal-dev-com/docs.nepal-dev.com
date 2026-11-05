@@ -100,6 +100,14 @@ yet** besides the site itself, so the home page shows its empty states.
   body comes from the slug, so a `<Suspense>` boundary would put a skeleton in every page's
   static HTML and hide the content without scripts.
 - **Also here:** Algolia search, `llms.txt` / `llms-full.txt` and per-page Markdown.
+- **Readers are counted** (ADR-0041): Vercel Web Analytics and Speed Insights, cookieless, on builds
+  that run on Vercel; Google Analytics 4 loaded directly (no Tag Manager) under Consent Mode v2 when
+  `NEXT_PUBLIC_GA_MEASUREMENT_ID` is set, with the *Privacy choices* banner and a footer link to
+  change the choice. Any other tag needs its own ADR. Search Console is verified by DNS, with no code.
+- **Only `main` deploys, straight to production on Vercel** (ADR-0042): `vercel.json` gives other
+  branches no deployment and cancels anything that is not production, so there are no previews. A push
+  to `main` runs `bun run build` there, which publishes the site and the search index together. Production
+  deploys come only from Git, never `vercel --prod`.
 - **Every page is ready for search and sharing** (ADR-0035), from where it sits and its frontmatter:
   canonical link, `robots`, title, description, Open Graph, JSON-LD and its own share image, with
   `robots.txt`, `sitemap.xml`, the manifest and the Apple icon. `SITE_URL` holds the address; without
@@ -211,7 +219,8 @@ changes nothing visible. Unsure whether a person would notice? Write it. Templat
   `<!-- BEGIN:nextjs-agent-rules -->` and `<!-- END:nextjs-agent-rules -->`. Never edit
   inside those markers; put project content below them.
 - **Don't publish by accident.** `bun run build` also pushes every page to the live Algolia
-  index (§5). Verify with `bunx next build` instead.
+  index (§5). Verify with `bunx next build` instead. A push to `main` publishes the site and the
+  index on Vercel (ADR-0042), so it is the owner's alone; never run `vercel` or `vercel --prod`.
 - **Use the skills — they do not outrank this file.** See §12.
 - **Never guess — ask.** See §4.
 - **Report honestly.** If something is blocked, unverified, or skipped, say so plainly,
@@ -275,9 +284,11 @@ What is installed **today** (verified from `package.json`, `node_modules` and th
 | Diagrams | Archify source and HTML side by side in `diagrams/<project-slug>/`; served by `src/app/diagrams/[project]/[file]/route.ts` with the site shell `src/lib/diagram-shell.ts`; `<Diagram>` in `src/components/diagram.tsx` and `diagram-frame.tsx` (registered in `src/components/mdx.tsx`); the shape check and Markdown filter in `src/lib/remark-diagrams.ts` (wired in `src/lib/source.ts`); file checks in `src/lib/diagrams.ts`, run by the loader plugin `src/lib/diagrams-plugin.ts`; the CSP `sandbox` header for `/diagrams/:path*` in `next.config.mjs` — ADR-0011, ADR-0022 |
 | Search engines and sharing | `src/lib/seo.ts` holds the address (`SITE_URL`), each page's rule, title, metadata and JSON-LD, all pure and tested; `generateMetadata` in the docs page and `metadata` in the home page read it; `src/components/json-ld.tsx`; `src/app/robots.ts`, `sitemap.ts` (`lastmod` from git, `lastModified: true` in `source.ts`), `manifest.ts`, `apple-icon.tsx`; share images in `src/app/og/[...slug]/route.tsx` with `src/components/share-image.tsx` and `src/lib/share-fonts.ts` (fetched from Google Fonts at build, in `use cache`); the description check in `catalog-plugin.ts`; `X-Robots-Tag: noindex` on the Markdown route and in `next.config.mjs` for the other machine-readable routes — ADR-0035 |
 | Search | Algolia: `src/app/static.json/route.ts` emits the records (scope `tag` plus catalogue fields), `scripts/sync-content.ts` pushes them after `next build`; `src/lib/algolia.ts` is the search-only client used by `src/components/search.tsx`, the one search dialog (its no-results line in `search-empty.tsx`) (the home page's hero button opens it) |
+| Analytics | `@vercel/analytics` 2.0.1 and `@vercel/speed-insights` 2.0.0 in `src/components/vercel-insights.tsx` (rendered when `VERCEL` is set at build); GA4 in `src/components/google-analytics.tsx` (two `next/script` elements, the consent script first); the banner and the footer button in `src/components/privacy-choices.tsx`; the rules, the ID check and the inline script in `src/lib/privacy-choice.ts`, tested; styles at the end of `site.css` — ADR-0041 |
 | Linting | ESLint 9 + `eslint-config-next` (core-web-vitals); ignores `.claude/**` (agent skills, ADR-0009). **`bun run lint` does not run today:** `typescript-eslint` does not support TypeScript 7; fixing it needs its own ADR |
 | Testing | `bun test` (Bun's built-in runner), tests beside the code as `*.test.ts(x)`; `@types/bun` 1.4.4 through `tsconfig.test.json`, which `tsconfig.json` leaves out so the site's own check never sees Bun's types; server components rendered with `react-dom/server`; client components not unit-tested until a DOM is chosen — ADR-0007, ADR-0021 |
-| Package manager | Bun (`bun.lock`; 1.4.4 on the owner's machine). `scripts/sync-content.ts` runs on Node (v24) |
+| Hosting | Vercel, `main` only, straight to production: `vercel.json` (`git.deploymentEnabled`, `ignoreCommand`, `installCommand` with Bun 1.4.4 and `--frozen-lockfile`, `buildCommand`); `scripts/require-full-history.sh` fails a shallow clone; `engines.node` `24.x` in `package.json`; the publish variables checked by `src/lib/publish-env.ts` — ADR-0042 |
+| Package manager | Bun (`bun.lock`; 1.4.4 on the owner's machine and in the Vercel build). `scripts/sync-content.ts` runs on Node (v24) |
 
 - **Read the installed docs first.** `node_modules/next/dist/docs/` holds the docs for the exact
   installed Next.js version. For Fumadocs, read the installed packages' source and type
@@ -292,15 +303,15 @@ What is installed **today** (verified from `package.json`, `node_modules` and th
 | Install | `bun install` |
 | Dev server | `bun run dev` |
 | Build only (local verification) | `bunx next build` |
-| Build **and publish the search index** | `bun run build` — `next build`, then pushes every page to Algolia |
+| Build **and publish the search index** | `bun run build` — `next build`, then pushes every page to Algolia; run by Vercel on each push to `main` (ADR-0042) |
 | Start built app | `bun run start` |
 | Test | `bun run test` — `bun test --no-env-file`, so `.env.local` stays out of tests |
 | Type check | `bun run types:check` — `next typegen`, then `tsc --noEmit` for the site and for `tsconfig.test.json` |
 | Lint | `bun run lint` |
 | Add a dependency | `bun add <pkg>` — **an approved ADR and the owner's yes first; then the agent runs it** (§3) |
 
-`bun run build` reads `.env.local` and writes to the live search index with
-`ALGOLIA_WRITE_KEY`; never run it to verify a change. Run `bun run lint`,
+`bun run build` reads `.env.local` (on Vercel, the Production environment) and writes to the live
+search index with `ALGOLIA_WRITE_KEY`; never run it to verify a change. Run `bun run lint`,
 `bun run types:check` and `bunx next build` before declaring work complete, and report the lint
 failure above while it stands. Run `bun run test` with them.
 
@@ -544,7 +555,7 @@ the maintainer documentation**, until they are fixed: those pages are published 
 
 ### Tool-specific rules
 
-Algolia is adopted; its checks are in
+Algolia, Vercel Analytics and Google Analytics (ADR-0041) and Vercel hosting (ADR-0042) are adopted; their checks are in
 [`content/docs/maintain/security/checklist.mdx`](content/docs/maintain/security/checklist.mdx#tool-specific-checks). **The ADR that
 adopts a host, analytics, CI or an authentication provider adds its own checks** there.
 
@@ -590,6 +601,7 @@ adopts a host, analytics, CI or an authentication provider adds its own checks**
 │   │                    #   share-image.tsx (the share images), json-ld.tsx (ADR-0035),
 │   │                    #   brand-mark.tsx (the brand mark), nepal-flag.tsx (the flag), verse-mark.tsx (the Verse's place mark), sky.tsx (the still sky), zoom-page.tsx (zoom and morph, ADR-0029),
 │   │                    #   horizon-footer.tsx + horizon-awake.tsx (the Himalayan Horizon, ADR-0030, ADR-0037, ADR-0040), footer-actions.tsx, mdx.tsx, diagram.tsx + diagram-frame.tsx, profile-link.tsx, search.tsx + search-empty.tsx (search dialog),
+│   │                    #   google-analytics.tsx, privacy-choices.tsx, vercel-insights.tsx (analytics and the Privacy choices banner, ADR-0041),
 │   │                    #   docs/ (scale strip, docs header, planet header, track switch, orbit stations,
 │   │                    #   ADR constellation, trajectory TOC, version notice),
 │   │                    #   home/ (home header, hero, orbit map with the Verse view, search button, planet cards,
@@ -600,14 +612,16 @@ adopts a host, analytics, CI or an authentication provider adds its own checks**
 │                        #   docs-layout.ts (DocsLayout options: Fumadocs' theme switch off), trajectory.ts, reading-time.ts, adr-status.ts,
 │                        #   known-paths.ts (site routes and every path with a page, ADR-0034), search-scope.ts, algolia.ts, diagrams.ts + diagrams-plugin.ts (file checks), remark-diagrams.ts
 │                        #   (shape check, Markdown filter), diagram-shell.ts, diagram-files.ts (ADR-0022),
-│                        #   github-profile.ts (ADR-0020); tests beside the code, *.test.ts(x) (ADR-0021)
+│                        #   github-profile.ts (ADR-0020), privacy-choice.ts (ADR-0041); tests beside the code, *.test.ts(x) (ADR-0021)
 │                        #   shared.ts (site name, community, maker, home line, routes, GitHub),
 │                        #   seo.ts (address, each page's rule, titles, metadata, JSON-LD) and share-fonts.ts (ADR-0035)
 ├── assets/              # the logo as supplied, not served (ADR-0036)
 ├── diagrams/            # Archify diagrams, one pair each (ADR-0022)
 │   └── <project-slug>/  # <slug>.json, the source (not served) · <slug>.html, PUBLISHED at /diagrams/ with the site shell
 ├── scripts/
-│   └── sync-content.ts  # after next build: pushes static.json records to Algolia
+│   ├── sync-content.ts  # after next build: pushes static.json records to Algolia
+│   └── require-full-history.sh  # the Vercel build fails on a shallow clone (ADR-0042)
+├── vercel.json          # Vercel: main only, no previews, the install and build commands (ADR-0042)
 ├── .env.example         # every variable the site reads, names only (§9)
 ├── next.config.mjs      # Fumadocs MDX plugin, Cache Components, the sandbox header for /diagrams/, X-Robots-Tag on machine-readable routes
 ├── postcss.config.mjs   # Tailwind CSS 4

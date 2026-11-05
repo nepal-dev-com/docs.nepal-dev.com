@@ -3,7 +3,7 @@
   "diagram_type": "sequence",
   "meta": {
     "title": "Build and search sync",
-    "subtitle": "bun run build: next build, then the records pushed to Algolia",
+    "subtitle": "A push to main: Vercel builds with bun run build, the records go to Algolia, then the deployment goes live",
     "quality_profile": "showcase",
     "animation": "trace",
     "output": "build-and-search-sync.html"
@@ -13,7 +13,13 @@
       "id": "owner",
       "type": "external",
       "label": "Owner",
-      "sublabel": "runs the command"
+      "sublabel": "pushes main"
+    },
+    {
+      "id": "vercel",
+      "type": "cloud",
+      "label": "Vercel",
+      "sublabel": "production build"
     },
     {
       "id": "next",
@@ -31,7 +37,7 @@
       "id": "sync",
       "type": "backend",
       "label": "sync-content.ts",
-      "sublabel": "Node"
+      "sublabel": "Node 24"
     },
     {
       "id": "algolia",
@@ -43,21 +49,55 @@
   "segments": [
     {
       "from": 150,
-      "to": 262,
+      "to": 250,
+      "label": "Start"
+    },
+    {
+      "from": 260,
+      "to": 355,
       "label": "Build"
     },
     {
-      "from": 272,
-      "to": 475,
+      "from": 365,
+      "to": 565,
       "label": "Sync"
+    },
+    {
+      "from": 575,
+      "to": 615,
+      "label": "Live"
     }
   ],
   "messages": [
     {
-      "id": "run",
+      "id": "push",
       "from": "owner",
-      "to": "next",
+      "to": "vercel",
       "y": 165,
+      "label": "git push to main",
+      "variant": "emphasis"
+    },
+    {
+      "id": "gate",
+      "from": "vercel",
+      "to": "owner",
+      "y": 200,
+      "label": "other branches: no deployment",
+      "variant": "return"
+    },
+    {
+      "id": "prep",
+      "from": "vercel",
+      "to": "next",
+      "y": 235,
+      "label": "full clone, Bun 1.4.4 install, history check",
+      "variant": "default"
+    },
+    {
+      "id": "run",
+      "from": "vercel",
+      "to": "next",
+      "y": 275,
       "label": "bun run build",
       "variant": "emphasis"
     },
@@ -65,23 +105,23 @@
       "id": "write",
       "from": "next",
       "to": "out",
-      "y": 200,
+      "y": 310,
       "label": "compile content/; pages, Markdown, OG, static.json",
       "variant": "emphasis"
     },
     {
       "id": "done",
       "from": "next",
-      "to": "owner",
-      "y": 240,
+      "to": "vercel",
+      "y": 345,
       "label": "build done",
       "variant": "return"
     },
     {
       "id": "second",
-      "from": "owner",
+      "from": "vercel",
       "to": "sync",
-      "y": 285,
+      "y": 380,
       "label": "same command, second step",
       "variant": "default"
     },
@@ -89,23 +129,23 @@
       "id": "glob",
       "from": "sync",
       "to": "out",
-      "y": 320,
-      "label": "glob static.json.body",
+      "y": 415,
+      "label": "variables checked; glob static.json.body",
       "variant": "default"
     },
     {
       "id": "records",
       "from": "out",
       "to": "sync",
-      "y": 355,
+      "y": 450,
       "label": "records",
       "variant": "return"
     },
     {
-      "id": "push",
+      "id": "sendrec",
       "from": "sync",
       "to": "algolia",
-      "y": 390,
+      "y": 485,
       "label": "sync with ALGOLIA_WRITE_KEY",
       "variant": "security"
     },
@@ -113,16 +153,24 @@
       "id": "ok",
       "from": "algolia",
       "to": "sync",
-      "y": 425,
+      "y": 520,
       "label": "ok",
       "variant": "return"
     },
     {
       "id": "updated",
       "from": "sync",
-      "to": "owner",
-      "y": 460,
+      "to": "vercel",
+      "y": 555,
       "label": "search updated: N records",
+      "variant": "return"
+    },
+    {
+      "id": "live",
+      "from": "vercel",
+      "to": "owner",
+      "y": 595,
+      "label": "deployment live at SITE_URL",
       "variant": "return"
     }
   ]

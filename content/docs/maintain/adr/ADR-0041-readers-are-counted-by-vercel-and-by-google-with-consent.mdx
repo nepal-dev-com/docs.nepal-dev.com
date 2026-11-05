@@ -1,0 +1,197 @@
+---
+title: "ADR-0041 — Readers are counted by Vercel, and by Google with consent"
+description: "The site adds Vercel Web Analytics and Speed Insights, cookieless, and Google Analytics 4 with Consent Mode, a privacy banner and a footer link to change the choice."
+---
+
+- **Status:** Approved
+- **Date:** 2026-11-04
+- **Deciders:** [@puncoz](https://github.com/puncoz)
+- **Approved by:** [@puncoz](https://github.com/puncoz)
+- **Approved on:** 2026-11-04
+- **Supersedes:** [ADR-0035](./ADR-0035-every-page-is-ready-for-search-and-sharing.mdx) decision 14, in part: analytics is no longer out of
+  scope. Verifying the domain stays by DNS, as it said.
+- **Superseded by:** —
+- **Design documents:** [`../app-flow/privacy-choices.mdx`](../app-flow/privacy-choices.mdx),
+  [`../prd/privacy-choices.mdx`](../prd/privacy-choices.mdx); on implementation `../dfd/system.mdx`, `../security/`,
+  `../architecture/system.mdx`
+
+## Context
+
+- The owner wants to know how the site is read: Vercel Web Analytics, Google Analytics, Google Search Console and Google Tag
+  Manager were asked for, with keys set by the owner in the environment.
+- ADR-0035 decision 14 left analytics and a search-console tag out, and said the domain is verified by DNS after deployment.
+- **No host is decided in the repository** (`architecture/system.mdx`). The owner has now chosen Vercel. Vercel Web Analytics and
+  Speed Insights only report from a Vercel deployment.
+- Readers are developers anywhere, including the EU and the UK, where a cookie that is not strictly needed requires consent first.
+  Google Analytics 4 sets first-party cookies (`_ga`, `_ga_<id>`). Vercel Web Analytics sets none.
+- Read from the packages' published source:
+  - `@vercel/analytics` 2.0.1 (MIT, no dependencies) and `@vercel/speed-insights` 2.0.0 (Apache-2.0, no dependencies) each export a
+    Next.js component from `/next`. It loads its script from the site's own origin, `/_vercel/insights/script.js` and
+    `/_vercel/speed-insights/script.js`, reads the route with `usePathname`, `useParams` and `useSearchParams` inside its own
+    `<Suspense>`, and takes a `beforeSend` to change or drop an event.
+  - `@next/third-parties` 16.4.2 `GoogleAnalytics` runs `gtag('config', …)` in an `afterInteractive` inline script, with no way to
+    set a consent default first, and writes the ID into that script unescaped.
+- Every page is prerendered (ADR-0016), so a reader's choice can only be read in the browser.
+- The site sets no site-wide `Content-Security-Policy` today; only `/diagrams/…` has one (`next.config.mjs`).
+- No private project is documented, so every path a reader can visit is public (`AGENTS.md` §6.1).
+
+## Decision
+
+1. **Vercel is the host this ADR assumes.** How the site is deployed there (the build command, preview deployments, where each
+   variable is set, the Algolia sync on a preview) is a separate ADR, to be written next. Until it is approved and the site is
+   deployed, the Vercel parts below are in the code and report nothing.
+2. **Vercel Web Analytics counts page views, cookieless.** `<Analytics />` from `@vercel/analytics/next` goes in the root layout. Its
+   `beforeSend` drops the query string from every URL, so nothing a reader types into a URL is kept. It is rendered only when the
+   build runs on Vercel (the `VERCEL` system variable), so a build elsewhere asks for no script that would answer 404.
+3. **Speed Insights measures Core Web Vitals.** `<SpeedInsights />` from `@vercel/speed-insights/next`, beside it, under the same
+   two rules. Both are switched on in the Vercel dashboard by the owner.
+4. **Google Analytics 4 is loaded directly, without Tag Manager and without `@next/third-parties`.**
+   - A server component, `src/components/google-analytics.tsx`, renders two `next/script` elements, `afterInteractive`: an inline
+     script, then `https://www.googletagmanager.com/gtag/js?id=<id>`.
+   - The inline script queues, in this order: the consent default, `gtag('set', 'ads_data_redaction', true)`, `gtag('js', …)` and
+     `gtag('config', <id>, { allow_google_signals: false, allow_ad_personalization_signals: false })`. gtag.js runs the queue in
+     order, so the default always comes before the first hit, whichever script loads first.
+   - The ID comes from `NEXT_PUBLIC_GA_MEASUREMENT_ID`. It must match `G-` followed by letters and digits; a set but malformed value
+     fails the build naming the variable, so the ID can never write anything else into the inline script. An empty value means no
+     Google Analytics, no banner and no footer link.
+   - Page views on client navigation come from GA4's enhanced measurement ("page changes based on browser history events"), which
+     is on by default; no code sends them.
+   - Adding Tag Manager or any other tag later needs its own ADR.
+5. **Consent Mode v2, advanced, by the owner's choice.**
+   - gtag.js loads for every reader. Until they allow it, `analytics_storage` is `denied`: no cookie is set and Google receives
+     cookieless pings, which it uses to model the missing traffic.
+   - `ad_storage`, `ad_user_data` and `ad_personalization` are `denied` always. The site shows no ads, and no button grants them.
+   - A stored *allow* sets the default to `granted` on the next page, read in the inline script, inside `try`/`catch`.
+6. **The banner asks once, plainly.** A client component, `src/components/privacy-choices.tsx`, in the root layout.
+   - It shows after hydration, only when Google Analytics is on, no valid choice is stored and the browser does not send Global
+     Privacy Control.
+   - It sits at the bottom of the viewport as a region named *Privacy choices*, not a dialog: it traps no focus, dims nothing, and the
+     page under it stays readable and scrollable.
+   - Its words: **Privacy choices.** *Allow Google Analytics cookies? They help us see which pages are read. Vercel counts visits
+     without cookies either way.* Two buttons, **Allow** and **Decline**, the same size and the same weight.
+   - There is no close button. Leaving it unanswered is no consent; it shows again on the next page.
+   - **Allow** sends `gtag('consent', 'update', { analytics_storage: 'granted' })`. **Decline** sends the same with `denied`, and
+     deletes the `_ga` cookies on the site's domain, so declining after allowing stops collection and removes what was set.
+7. **The choice stays in the reader's browser.** `localStorage` key `ndv-privacy-choice`, holding `{ "analytics": "granted" | "denied",
+   "at": "<ISO date>" }`. It is not a cookie and is sent nowhere. After 12 months it lapses and the banner asks again. If storage is
+   unavailable, the choice holds for that page only and analytics stays denied.
+8. **Global Privacy Control is respected.** When `navigator.globalPrivacyControl` is `true`, the choice is *declined* without asking.
+   The footer link still lets that reader allow it.
+9. **Privacy choices in the footer.** A button, *Privacy choices*, in the Horizon's link row (`.horizon-links`) before *Back to
+   orbit*, on every page, reopens the banner. The banner then says the current choice ("You allowed analytics on 4 Nov 2026."). It is
+   rendered only when Google Analytics is on, and only after hydration, since it does nothing without scripts.
+10. **Search Console and Bing Webmaster Tools need no code.** The owner verifies the domain with a DNS TXT record, submits
+    `/sitemap.xml` (ADR-0035), and can import the site into Bing from Search Console. No verification tag is added.
+11. **Where it does not run.** The Markdown routes, `llms.txt`, `llms-full.txt`, `static.json`, the share images and the diagram
+    frames are not HTML pages of the site, so they load no analytics. Pages built without the variable and off Vercel (local
+    builds, `bun run dev`) load none either.
+12. **The owner's settings in Google Analytics,** recorded so they are checked, not assumed: data retention 2 months, Google signals
+    off, no Google Ads or other product links, enhanced measurement's history-change page views on.
+
+## Options considered
+
+| Concern | Option | Pros | Cons | Verdict |
+|---|---|---|---|---|
+| Host | Vercel | Vercel Analytics and Speed Insights work, first-party scripts, the scaffold already ignores `.vercel` | One more vendor holding visit data | **Chosen by the owner** |
+| Host | Elsewhere, or undecided | No Vercel lock-in | No Vercel Analytics or Speed Insights | Rejected |
+| Google tags | GA4 directly | Every script on the site is in code and passes an ADR | No adding tags from a dashboard | **Chosen by the owner** |
+| Google tags | Tag Manager, GA4 inside it | Tags change without a deploy | Scripts reach every reader without review or an ADR | Rejected |
+| Google tags | No Google Analytics | No cookies, no banner | No GA reports | Rejected |
+| Loading GA4 | Our own component on `next/script` | The consent default is queued first; the ID is validated; no dependency | About 40 lines to own | Proposed |
+| Loading GA4 | `@next/third-parties` `GoogleAnalytics` | Maintained by Next.js | No consent hook; ID written unescaped; one more dependency | Rejected |
+| Consent | A banner with Consent Mode v2 | Consent asked where the law needs it; one behaviour everywhere | A banner on every first visit | **Chosen by the owner** |
+| Consent | Consent Mode denied, no banner | No UI, no cookies | GA numbers are only modelled | Rejected |
+| Consent | None | Least work | Cookies without consent for EU and UK readers | Rejected |
+| Before consent | Advanced: cookieless pings | Fuller GA numbers through modelling | Google receives the reader's IP before consent, which some EU authorities treat as needing consent too | **Chosen by the owner** |
+| Before consent | Basic: nothing before consent | Nothing reaches Google until *Allow* | GA counts only those who allowed it | Rejected |
+| Changing it | A footer link | On every page, as easy as giving consent | One more link in the row | **Chosen by the owner** |
+| Changing it | A `/privacy` page | Room to explain what is collected | A route and a page to keep current | Rejected |
+| Where the banner shows | Everyone | Works on prerendered pages; one behaviour | Readers outside the EU and UK are asked too | Proposed |
+| Where the banner shows | Only by country | Fewer readers asked | Needs the proxy or a geo lookup on every page | Rejected |
+| Verification | DNS TXT record | No code; covers every subdomain; ADR-0035's plan | The owner's step at the DNS host | **Chosen by the owner** |
+| Verification | A meta tag from a variable | No DNS access needed | Code and a variable for a one-time check | Rejected |
+
+## Consequences
+
+**Positive**
+
+- The owner sees page views, referrers, countries and Core Web Vitals in Vercel without asking anyone for anything, and fuller
+  reports in GA4 from readers who allow it.
+- Every script the site loads stays in the code, reviewed. Nothing is added from a dashboard.
+- Withdrawing consent is one click from every page and removes the cookies.
+
+**Negative / accepted trade-offs**
+
+- **Two runtime dependencies:** `@vercel/analytics` and `@vercel/speed-insights`.
+- **Google receives cookieless pings with the reader's IP address before consent**, by the owner's choice of advanced mode. This is
+  the open legal risk of this ADR, and it is recorded in the threat model's accepted risks.
+- Every first visit shows a banner, and it covers the bottom of a phone screen until answered.
+- GA4 numbers for readers who decline are modelled by Google, and only once the site has enough traffic.
+- Speed Insights and Web Analytics have usage limits on Vercel's free plan; past them, data stops or the plan changes.
+- Readers who block scripts or trackers are not counted by Google, and may not be by Vercel.
+
+## Content invariants
+
+- **1, private stays private.** Each page's path and title reach Vercel and Google. Every path is public today. **The ADR that
+  decides how private documentation is served must keep analytics off private pages**, or decide otherwise explicitly.
+- **5, every page is readable as Markdown.** Unaffected: the Markdown surfaces load nothing.
+- The others are not touched.
+
+## Security considerations
+
+- **What leaves the site:**
+
+  | To | When | What |
+  |---|---|---|
+  | Vercel (first-party, `/_vercel/insights`, `/_vercel/speed-insights`) | Every page view | Path without query string, referrer, browser, OS, device type, country from the IP; Web Vitals. Vercel's daily visitor hash is not stored |
+  | Google (`googletagmanager.com`, `google-analytics.com`) | Every page view, before consent | Cookieless ping: page URL and title, referrer, the reader's IP and user agent, consent state |
+  | Google | After *Allow* | The same, with the `_ga` client ID cookie, and engagement events from enhanced measurement |
+
+- **Classification:** all of it is about public pages. The reader's IP address and the GA client ID are personal data of the reader,
+  held by Vercel and Google under their terms, not by this site.
+- **Variables:** `NEXT_PUBLIC_GA_MEASUREMENT_ID` is public by design, inlined into every page. It is validated before it is written
+  into the inline script, so a mistyped or hostile value fails the build instead of running. No secret is added. Vercel Analytics
+  needs no variable.
+- **Input:** the banner takes two button presses and a stored value; a stored value that does not parse is treated as no choice.
+- **No authorization changes**, and no endpoint is added.
+- **CSP:** none applies to pages today. An ADR that adds one must allow `www.googletagmanager.com` and `*.google-analytics.com`.
+- **Residual risks accepted:** pings before consent (above); Google's or Vercel's script changing under us, since both are loaded
+  live and unpinned; a reader's choice lost when they clear storage, which only means being asked again.
+
+## Implementation notes
+
+- [x] Add `@vercel/analytics@2.0.1` and `@vercel/speed-insights@2.0.0` to `dependencies`, after the owner's yes to that command
+  (`AGENTS.md` §3). Their published manifests and Next.js entries were read: no dependencies, first-party script paths, `beforeSend`.
+  The supply-chain auditor's scripts were not run, as they need the owner's yes.
+- [x] `src/lib/privacy-choice.ts`, pure: the ID check, parsing and expiring the stored choice, the GPC rule, the consent default and
+  the inline script built from them, the URL without its query string.
+- [x] `src/components/google-analytics.tsx` (server), `src/components/privacy-choices.tsx` (client: the banner and the footer button),
+  wired in `src/app/layout.tsx` and `src/components/horizon-footer.tsx`; Vercel's two components, in `src/components/vercel-insights.tsx`
+  because `beforeSend` is a function, in the root layout.
+- [x] Styles in `site.css`, on the site's tokens, both themes, phone width first; reduced motion respected.
+- [x] `.env.example`: `NEXT_PUBLIC_GA_MEASUREMENT_ID`, with a comment and no value.
+- [x] Tests: the ID check accepts `G-AB12CD34EF`, treats unset and empty as off (decision 4), and rejects a blank, `UA-…`, quotes and
+  `</script>`; the default is `denied` without a choice, with GPC, with a malformed, lapsed or future choice, and `granted` only with a
+  valid *allow* under 12 months; the inline script, run with fake globals, queues the default before `config`, pushes real `arguments`
+  objects and agrees with `parseChoice`; `GoogleAnalytics` renders nothing without an ID; the footer has no *Privacy choices* without
+  one; the query string is dropped; GA cookies are expired on every parent domain.
+- [x] Built with an invented ID and served locally: every page carries the consent script, gtag.js for that ID and the hidden *Privacy
+  choices* button, and no Vercel script (not on Vercel); `/docs.md` carries none. A malformed ID (`UA-123`) fails the build naming the
+  variable. Built without an ID: no Google script, banner or link.
+- [ ] **Not done:** the hand check of the banner and the footer button in Chrome (first visit, *Allow*, *Decline* with cookies gone,
+  reopen, GPC, storage blocked, the network panel, 320px and desktop, both themes). The browser extension was not connected. These are
+  client components, not unit-tested (ADR-0021), so their behaviour in a browser is unverified.
+- [x] `bun run test` (515 pass), `bun run types:check` and `bunx next build` pass; `bun run lint` still fails with
+  "typescript-eslint does not support TS 7.0", as before.
+
+## Docs to update on implementation
+
+- [x] `content/docs/maintain/app-flow/privacy-choices.mdx` and `prd/privacy-choices.mdx` — to Current, matching what was built
+- [x] `content/docs/maintain/dfd/system.mdx` — Vercel Analytics and Google Analytics as external entities, their flows and crossings
+- [x] `content/docs/maintain/security/` — `secrets.mdx` (the variable), `threat-model.mdx` (*Site ↔ analytics* moves to crossed; the
+  accepted risks), `data-classification.mdx` (visit data, the stored choice), `checklist.mdx` (Vercel Analytics and Google Analytics
+  checks, including decision 12's settings)
+- [x] `content/docs/maintain/architecture/system.mdx` — the new components and the third parties
+- [x] `content/docs/maintain/app-flow/himalayan-horizon.mdx` and the other footer wireframes — the link row with *Privacy choices*
+- [x] `AGENTS.md` §1 and §5, `README.md`, `PROJECT_AGENTS.md` (analytics runs on consuming projects' pages too)
+- [x] `content/docs/maintain/adr/index.mdx` — status

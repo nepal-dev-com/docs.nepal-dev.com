@@ -63,7 +63,9 @@ goes into `content/`**: everything there is published to the site, the search in
 | UI | React 19.3 |
 | Language | TypeScript 7 (strict) |
 | Styling | Tailwind CSS 4 |
+| Hosting | [Vercel](https://vercel.com), `main` only, straight to production; no previews (ADR-0042) |
 | Search | [Algolia](https://www.algolia.com), synced after each production build |
+| Analytics | [Vercel Web Analytics](https://vercel.com/docs/analytics) and Speed Insights, cookieless; Google Analytics 4 with Consent Mode v2 and a *Privacy choices* banner (ADR-0041) |
 | For LLMs | `llms.txt`, `llms-full.txt`, and every page as Markdown (`/<page>.md`) |
 | Search engines and sharing | Canonical links, `robots.txt`, `sitemap.xml`, JSON-LD and a designed share image per page, all from the content |
 | Linting | ESLint 9 + `eslint-config-next` |
@@ -86,8 +88,9 @@ sync script runs on Node, and v24 is known to work).
 2. **Configure.** Copy `.env.example` to `.env.local` and fill in `SITE_URL` and the three Algolia
    variables, described in [`content/docs/maintain/security/secrets.mdx`](content/docs/maintain/security/secrets.mdx).
    `SITE_URL` is the site's public address, `https://docs.nepal-dev.com` (ADR-0036). Without it
-   every page is `noindex` and `bun run build` refuses to publish. `.env.local` is gitignored;
-   never commit it.
+   every page is `noindex` and `bun run build` refuses to publish. `NEXT_PUBLIC_GA_MEASUREMENT_ID`
+   is optional: leave it empty locally, so no Google Analytics, banner or footer link is rendered;
+   it belongs in the host's Production environment. `.env.local` is gitignored; never commit it.
 
 3. **Run.**
 
@@ -108,6 +111,24 @@ Open [http://localhost:3000](http://localhost:3000). The docs are at `/docs`.
 | `bun run test` | Unit tests with Bun's built-in runner, without loading `.env` files |
 | `bun run types:check` | Generate route types and type-check the site and the tests |
 | `bun run lint` | Lint with ESLint — **does not run today**: `typescript-eslint` does not support TypeScript 7 |
+
+### Deploy
+
+Vercel deploys `main` only, straight to production (ADR-0042). A push to `main` runs
+`bun run build` on Vercel, which publishes the site and the search index together. Other
+branches, pull requests and forks get no deployment, and production never comes from `vercel --prod`.
+`vercel.json` holds the rules. To roll back, push a `git revert` to `main`: Vercel's Instant Rollback
+restores the pages but not the search index.
+
+The Vercel project, set once by the owner:
+
+- Production branch `main`. *Automatically expose System Environment Variables* on.
+- In the Production environment only: `SITE_URL`, the three Algolia variables (`ALGOLIA_WRITE_KEY`
+  marked *Sensitive*), `NEXT_PUBLIC_GA_MEASUREMENT_ID` and `VERCEL_DEEP_CLONE=true`. Preview and
+  Development hold nothing.
+- Deployment Protection *Standard Protection*, Build Logs and Source Protection, and Git Fork
+  Protection on; Web Analytics and Speed Insights on (ADR-0041); the custom domain added, matching
+  `SITE_URL`.
 
 ---
 

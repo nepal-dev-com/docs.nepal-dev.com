@@ -1,0 +1,83 @@
+{
+  "schema_version": 1,
+  "diagram_type": "architecture",
+  "meta": {
+    "title": "Screen 2 — Privacy choices in the footer",
+    "subtitle": "Wireframe at phone width, drawn from its Mermaid version · privacy choices",
+    "output": "privacy-choices-screen-2.html",
+    "animation": "trace",
+    "quality_profile": "showcase",
+    "legend": {
+      "entries": {
+        "external": {
+          "label": "Content"
+        },
+        "frontend": {
+          "label": "Site chrome"
+        }
+      }
+    }
+  },
+  "components": [
+    {
+      "id": "closing",
+      "type": "external",
+      "label": "You've reached the horizon. The Verse goes on.",
+      "pos": [40, 60],
+      "size": [436, 58]
+    },
+    {
+      "id": "scene",
+      "type": "external",
+      "label": "The Himalaya",
+      "pos": [40, 130],
+      "size": [436, 70],
+      "sublabel": "the sky, the ranges, one light per entry"
+    },
+    {
+      "id": "planets",
+      "type": "external",
+      "label": "Planet row",
+      "pos": [40, 212],
+      "size": [436, 58],
+      "sublabel": "Nepal Dev Verse Docs"
+    },
+    {
+      "id": "links",
+      "type": "frontend",
+      "label": "Search · llms.txt · llms-full.txt · GitHub",
+      "pos": [40, 282],
+      "size": [436, 58]
+    },
+    {
+      "id": "privacy",
+      "type": "frontend",
+      "label": "Privacy choices",
+      "pos": [40, 352],
+      "size": [212, 58],
+      "sublabel": "reopens the banner"
+    },
+    {
+      "id": "back",
+      "type": "frontend",
+      "label": "Back to orbit",
+      "pos": [264, 352],
+      "size": [212, 58]
+    },
+    {
+      "id": "credit",
+      "type": "external",
+      "label": "Part of nepal-dev.com. Made with ❤️ by Puncoz Nepal.",
+      "pos": [40, 422],
+      "size": [436, 58]
+    }
+  ],
+  "boundaries": [
+    {
+      "kind": "region",
+      "label": "Phone screen · the end of any page",
+      "wraps": ["closing", "scene", "planets", "links", "privacy", "back", "credit"],
+      "pad": 22
+    }
+  ]
+}

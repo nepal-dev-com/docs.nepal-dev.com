@@ -1,0 +1,120 @@
+{
+  "schema_version": 1,
+  "diagram_type": "architecture",
+  "meta": {
+    "title": "Screen 1 — The banner on a first visit",
+    "subtitle": "Wireframe at phone width, drawn from its Mermaid version · privacy choices",
+    "output": "privacy-choices-screen-1.html",
+    "animation": "trace",
+    "quality_profile": "showcase",
+    "legend": {
+      "entries": {
+        "external": {
+          "label": "Content"
+        },
+        "frontend": {
+          "label": "Site chrome"
+        }
+      }
+    }
+  },
+  "components": [
+    {
+      "id": "header",
+      "type": "frontend",
+      "label": "Site header",
+      "pos": [
+        40,
+        60
+      ],
+      "size": [
+        436,
+        58
+      ],
+      "sublabel": "brand mark, Search, theme switch"
+    },
+    {
+      "id": "strip",
+      "type": "frontend",
+      "label": "Scale strip",
+      "pos": [
+        40,
+        130
+      ],
+      "size": [
+        436,
+        58
+      ],
+      "sublabel": "Verse ▸ System ▸ Atlas UI ▸ Use · v2.1"
+    },
+    {
+      "id": "page",
+      "type": "external",
+      "label": "Installing Atlas UI",
+      "pos": [
+        40,
+        200
+      ],
+      "size": [
+        436,
+        120
+      ],
+      "sublabel": "the page stays readable and scrollable"
+    },
+    {
+      "id": "banner",
+      "type": "frontend",
+      "label": "Privacy choices",
+      "pos": [
+        40,
+        332
+      ],
+      "size": [
+        436,
+        96
+      ],
+      "sublabel": "Allow Google Analytics cookies? Vercel counts visits without them."
+    },
+    {
+      "id": "allow",
+      "type": "frontend",
+      "label": "Allow",
+      "pos": [
+        40,
+        440
+      ],
+      "size": [
+        212,
+        58
+      ]
+    },
+    {
+      "id": "decline",
+      "type": "frontend",
+      "label": "Decline",
+      "pos": [
+        264,
+        440
+      ],
+      "size": [
+        212,
+        58
+      ]
+    }
+  ],
+  "boundaries": [
+    {
+      "kind": "region",
+      "label": "Phone screen · a docs page, first visit",
+      "wraps": [
+        "header",
+        "strip",
+        "page",
+        "banner",
+        "allow",
+        "decline"
+      ],
+      "pad": 22
+    }
+  ]
+}

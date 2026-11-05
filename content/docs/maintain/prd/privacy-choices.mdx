@@ -1,0 +1,45 @@
+---
+title: "PRD — privacy choices"
+description: "What readers and the owner need from the site's analytics: counts the owner can use, and a plain choice about cookies that readers can change."
+---
+
+- **Status:** Current
+- **Last updated:** 2026-11-04
+- **Related ADRs:** [ADR-0041](../adr/ADR-0041-readers-are-counted-by-vercel-and-by-google-with-consent.mdx)
+
+> Snapshot of the system as it stands today. Edit in place; never record what changed.
+
+## Problem
+
+The owner can't see which pages are read, where readers come from or how fast pages are for them. Google Analytics would tell them, but
+its cookies need the reader's consent in many places where the site is read.
+
+## Who it is for
+
+- **The owner**, deciding what to write and fix next.
+- **A reader**, who should be asked once, plainly, and be able to change their mind.
+
+## User stories
+
+| ID | Story | Acceptance |
+|---|---|---|
+| US-1 | As **the owner**, I want **page views, referrers and countries without cookies**, so that **I see every visit's shape**. | Given the site on Vercel with Web Analytics on, when any page is viewed, then Vercel records it, without a cookie and without the query string. |
+| US-2 | As **the owner**, I want **Core Web Vitals from real readers**, so that **I know which pages are slow**. | Given Speed Insights on, when a page is viewed, then its vitals reach Speed Insights. |
+| US-3 | As **a reader**, I want **to be asked before cookies are set**, so that **I decide**. | Given a first visit, then no `_ga` cookie exists until I choose *Allow*. |
+| US-4 | As **a reader**, I want **declining to be as easy as allowing**, so that **I'm not pushed**. | Given the banner, then *Allow* and *Decline* are the same size and weight, and there is no third, hidden path to allowing. |
+| US-5 | As **a reader**, I want **to change my answer later**, so that **a click isn't forever**. | Given any page, when I press *Privacy choices* in the footer, then the banner opens with my current choice; *Decline* removes the `_ga` cookies. |
+| US-6 | As **a reader whose browser sends Global Privacy Control**, I want **it respected**, so that **I'm not asked on every site**. | Given GPC on, then no banner shows and analytics is declined. |
+| US-7 | As **the owner**, I want **no analytics in local builds or previews without an ID**, so that **test visits aren't counted**. | Given no `NEXT_PUBLIC_GA_MEASUREMENT_ID`, then no Google script, banner or footer link is rendered. |
+
+## Rules and edge cases
+
+- **Before a choice**, Google receives cookieless pings (Consent Mode advanced, the owner's choice); nothing is stored on the device.
+- **Ads signals are never granted.** The site shows no ads.
+- **The choice lapses after 12 months**, and the banner asks again.
+- **Storage blocked:** the answer holds for one page; analytics stays denied.
+- **Private pages:** none exist. The ADR for private documentation decides analytics there.
+
+## Out of scope
+
+Google Tag Manager, custom events, a `/privacy` page, showing the banner by country, and any verification tag (the domain is verified by
+DNS).

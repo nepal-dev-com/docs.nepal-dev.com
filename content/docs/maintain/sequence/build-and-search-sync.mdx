@@ -1,18 +1,24 @@
 ---
 title: "Sequence — Build and search sync"
-description: "What happens when the site is built and published: next build runs, then every page's search record is pushed to Algolia."
+description: "What happens when main is pushed: Vercel builds the site with bun run build, every page's search record goes to Algolia, then the deployment goes live."
 ---
 
 - **Status:** Current
-- **Last updated:** 2026-10-31
-- **Related ADRs:** none yet — scaffold behaviour
+- **Last updated:** 2026-11-05
+- **Related ADRs:** [ADR-0035](../adr/ADR-0035-every-page-is-ready-for-search-and-sharing.mdx),
+  [ADR-0042](../adr/ADR-0042-only-main-deploys-straight-to-production-on-vercel.mdx)
 
 > Snapshot of the system as it stands today. Edit in place; never record what changed.
 
 ## Trigger
 
-`bun run build`. It runs `next build`, then
-`node --env-file-if-exists=.env.local scripts/sync-content.ts`.
+A push to `main`, from the owner or from a consuming repository (ADR-0042). Vercel's production branch is `main`, and
+`vercel.json` gives every other branch no deployment (`git.deploymentEnabled`). Its `ignoreCommand` cancels any deployment that
+is not production before it builds.
+
+The build is `vercel.json`'s `buildCommand`: `sh scripts/require-full-history.sh && bun run build`. `bun run build` runs `next build`,
+then `node --env-file-if-exists=.env.local scripts/sync-content.ts`. On Vercel there is no `.env.local`; the variables come from
+the Production environment.
 
 ## Diagram
 
@@ -22,36 +28,47 @@ description: "What happens when the site is built and published: next build runs
 sequenceDiagram
   autonumber
   actor O as Owner
+  participant V as Vercel
   participant N as next build
   participant F as .next/ output
   participant S as sync-content.ts
   participant A as Algolia
 
-  O->>N: bun run build
-  N->>N: compile content/ (Fumadocs MDX)
-  N->>F: static pages, Markdown routes, share images, static.json
-  N-->>O: build done
-  O->>S: (same command, second step)
-  S->>F: glob .next/server/{app,route-cache/*/*/$}/static.json.body
+  O->>V: git push to main
+  V-->>O: other branches: no deployment
+  V->>N: full clone, Bun 1.4.4 install, history check
+  V->>N: bun run build
+  N->>F: compile content/; pages, Markdown, share images, static.json
+  N-->>V: build done
+  V->>S: same command, second step
+  S->>F: variables checked; glob .next/server/{app,route-cache/*/*/$}/static.json.body
   F-->>S: records
   S->>A: sync(index "document", records) with ALGOLIA_WRITE_KEY
   A-->>S: ok
-  S-->>O: "search updated: N records"
+  S-->>V: "search updated: N records"
+  V-->>O: deployment live at SITE_URL
 ```
 
 </Diagram>
 
 ## Failure paths
 
+Every failure below fails the deployment, so the previous one stays live.
+
 | Step | Failure | Behaviour | Recovery |
 |---|---|---|---|
-| 2 | Invalid MDX or frontmatter | `next build` fails; the sync never runs | Fix the page, rebuild |
-| 5 | `SITE_URL` missing from the environment | The script throws, naming the variable, before reading anything; the index is unchanged (ADR-0035) | Set `SITE_URL`, then re-run the build |
-| 6 | `static.json.body` not found (unknown build adapter layout) | The script throws reading an undefined path; the index is unchanged | Check the build output layout; adjust the glob |
-| 8 | Algolia variables missing from the environment | The script does not check for them (non-null assertions), so `undefined` reaches the Algolia client; where it fails has not been verified | Set the variables (`content/docs/maintain/security/secrets.mdx`) |
-| 8 | Algolia rejects or is unreachable | The script fails after a successful build | Re-run the build, or the sync step alone |
+| 1 | A push to any branch but `main`, a fork's pull request, a `vercel` CLI deploy | No deployment, or one cancelled by `ignoreCommand` before it builds; nothing is built or synced | Merge to `main` |
+| 3 | `bun.lock` does not match `package.json` | `--frozen-lockfile` fails the install | Update the lockfile locally (with the owner's yes), push |
+| 3 | The clone is shallow (`VERCEL_DEEP_CLONE` unset or ignored) | `require-full-history.sh` exits `1`, naming `VERCEL_DEEP_CLONE` and ADR-0042; nothing is built | Set `VERCEL_DEEP_CLONE=true` in Production, redeploy |
+| 5 | Invalid MDX or frontmatter | `next build` fails; the sync never runs | Fix the page, push |
+| 8 | `SITE_URL`, `NEXT_PUBLIC_ALGOLIA_APP_ID` or `ALGOLIA_WRITE_KEY` missing | The script throws before reading anything, naming every missing variable and no value; the index is unchanged (ADR-0042 decision 7) | Set the variables in Production, redeploy |
+| 8 | `static.json.body` not found (unknown build adapter layout) | The script throws reading an undefined path; the index is unchanged | Check the build output layout; adjust the glob |
+| 10 | Algolia rejects or is unreachable | The script fails after a successful `next build` | Redeploy |
 
 ## Post-conditions
 
-The Algolia index `document` holds exactly the pages in this build — every page in
-`content/`. Anyone with the public search-only key can query all of them.
+- The Algolia index `document` holds exactly the pages in this build, which is every page in `content/` on `main`. Anyone with
+  the public search-only key can query all of them.
+- The sync finishes before Vercel makes the deployment live, so for that short gap search can find a page that is not served yet.
+- Vercel's *Instant Rollback* brings back old pages but not the old index. A `git revert` pushed to `main` moves both (ADR-0042
+  decision 9).

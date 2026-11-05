@@ -3,7 +3,7 @@
   "diagram_type": "dataflow",
   "meta": {
     "title": "Data flow",
-    "subtitle": "What moves where, and the one trust boundary: the repository and the build",
+    "subtitle": "What moves where, and the one trust boundary: the repository and Vercel's production build",
     "quality_profile": "showcase",
     "animation": "trace",
     "output": "data-flow.html"
@@ -16,7 +16,7 @@
       "label": "Trust boundary · repository"
     },
     {
-      "label": "Trust boundary · build"
+      "label": "Trust boundary · Vercel build of main"
     },
     {
       "label": "Public · deployed site"
@@ -53,8 +53,8 @@
     {
       "id": "env",
       "type": "security",
-      "label": "D2 · .env.local",
-      "sublabel": "write key",
+      "label": "D2 · Vercel env",
+      "sublabel": "Production · write key",
       "stage": 1,
       "row": 2
     },
@@ -121,6 +121,22 @@
       "sublabel": "font files",
       "stage": 3,
       "row": 1
+    },
+    {
+      "id": "vercelva",
+      "type": "cloud",
+      "label": "Vercel Analytics",
+      "sublabel": "views and vitals",
+      "stage": 3,
+      "row": 3
+    },
+    {
+      "id": "ga",
+      "type": "cloud",
+      "label": "Google Analytics",
+      "sublabel": "Consent Mode v2",
+      "stage": 4,
+      "row": 3
     }
   ],
   "flows": [
@@ -142,7 +158,7 @@
       "id": "to-build",
       "from": "content",
       "to": "build",
-      "label": "pages",
+      "label": "main, full clone",
       "variant": "emphasis"
     },
     {
@@ -206,6 +222,20 @@
       "from": "build",
       "to": "fonts",
       "label": "font request, no content",
+      "variant": "dashed"
+    },
+    {
+      "id": "visit",
+      "from": "reader",
+      "to": "vercelva",
+      "label": "path, no query, no cookie",
+      "variant": "dashed"
+    },
+    {
+      "id": "hit",
+      "from": "reader",
+      "to": "ga",
+      "label": "ping; cookie if allowed",
       "variant": "dashed"
     }
   ]
