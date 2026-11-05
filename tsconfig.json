@@ -11,6 +11,8 @@
     "strict": true,
     "forceConsistentCasingInFileNames": true,
     "noEmit": true,
+    // scripts/sync-content.ts runs on Node, which needs `.ts` in its relative imports (ADR-0042 decision 7).
+    "allowImportingTsExtensions": true,
     "esModuleInterop": true,
     "module": "esnext",
     "moduleResolution": "bundler",

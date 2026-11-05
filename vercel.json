@@ -1,0 +1,12 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "git": {
+    "deploymentEnabled": {
+      "**": false,
+      "main": true
+    }
+  },
+  "ignoreCommand": "[ \"$VERCEL_ENV\" != production ]",
+  "installCommand": "bunx bun@1.4.4 install --frozen-lockfile",
+  "buildCommand": "sh scripts/require-full-history.sh && bun run build"
+}

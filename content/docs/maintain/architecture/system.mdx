@@ -4,14 +4,16 @@ description: "How the site works as built: a Next.js and Fumadocs app rendering 
 ---
 
 - **Status:** Current
-- **Last updated:** 2026-11-01
+- **Last updated:** 2026-11-05
 - **Related ADRs:** [ADR-0013](../adr/ADR-0013-packages-and-projects-share-one-catalogue-shape.mdx),
   [ADR-0014](../adr/ADR-0014-home-page-is-a-search-first-release-map.mdx),
   [ADR-0015](../adr/ADR-0015-every-entry-lives-at-the-root-in-one-shape-and-one-look.mdx),
   [ADR-0017](../adr/ADR-0017-the-whole-site-is-one-solar-system.mdx),
   [ADR-0011](../adr/ADR-0011-archify-diagrams-are-embedded-from-sandboxed-html.mdx),
   [ADR-0020](../adr/ADR-0020-people-in-adrs-are-github-usernames-shown-as-profile-chips.mdx),
-  [ADR-0021](../adr/ADR-0021-tests-run-with-bun-test.mdx)
+  [ADR-0021](../adr/ADR-0021-tests-run-with-bun-test.mdx),
+  [ADR-0041](../adr/ADR-0041-readers-are-counted-by-vercel-and-by-google-with-consent.mdx),
+  [ADR-0042](../adr/ADR-0042-only-main-deploys-straight-to-production-on-vercel.mdx)
 
 > Snapshot of the system as it stands today. Edit in place; never record what changed.
 
@@ -19,7 +21,9 @@ description: "How the site works as built: a Next.js and Fumadocs app rendering 
 
 A Next.js 16 App Router site built on Fumadocs. It renders the MDX pages in `content/`
 as a documentation site, and serves every page again as Markdown, as an Open Graph image, and
-as a search record. Search runs on Algolia. There is no database, no sign-in and no
+as a search record. Search runs on Algolia. Readers are counted by Vercel Web Analytics and
+Speed Insights, cookieless, and by Google Analytics 4 under Consent Mode v2 (ADR-0041). Vercel hosts it and builds `main` only,
+straight to production (ADR-0042). There is no database, no sign-in and no
 server-side state. Cache Components is on (`cacheComponents` and `partialPrefetching` in
 `next.config.mjs`, ADR-0016), and every page and route handler is prerendered at build time: none
 reads request data yet. The sign-in ADR adds the first request-time part, the home page's
@@ -103,6 +107,8 @@ that would collide with a route (`api`, `og`, `static`, …). Contracts for the 
 | `src/components/home/` | Server: hero, home header, planet cards, beyond the belt (private projects from `private-projects.ts`), two sides, moon rows. Client: orbit map (canvas; a planet opens its overview; the Verse view at `#verse`, its easing and far planets from `src/lib/verse-view.ts`, ADR-0029; every ecosystem's orbit, the living star, trails, pointer depth, the arrival, the comet and the telemetry line from `src/lib/hero-sky.ts`, with the nebula behind it in `home.css`, ADR-0032), search button (opens the search dialog), terminal (tabs), assistant actions (Fumadocs' Copy Markdown and Open menu for the example page), reveal | `catalog.ts`, `rings.ts`, `fumadocs-ui`, `lucide-react` |
 | `src/components/search.tsx`, `search-empty.tsx` | The site-wide search dialog, opened by `⌘K`, the docs header's search button and the home page's hero button; its no-results line is the site's own (ADR-0029) | `algolia.ts` |
 | `src/proxy.ts` | Leaves site routes alone; on catalogued paths, line redirects and the Markdown rewrites; any other unknown path, the 404 | `catalog-routes.ts`, `known-paths.ts`, `fumadocs-core/negotiation` |
+| `src/lib/privacy-choice.ts` | Pure and tested: validates `NEXT_PUBLIC_GA_MEASUREMENT_ID`, reads and lapses the stored choice (`ndv-privacy-choice`, 12 months), the Global Privacy Control rule, the consent inline script, the GA cookies to expire, the URL without its query string, the banner's current-choice line (ADR-0041) | — |
+| `src/components/google-analytics.tsx`, `privacy-choices.tsx`, `vercel-insights.tsx` | In the root layout: GA4 as two `next/script` elements, the consent script before gtag.js; the Privacy choices banner (client) and the footer's Privacy choices button; Vercel Web Analytics and Speed Insights with the query string dropped (ADR-0041) | `next/script`, `@vercel/analytics`, `@vercel/speed-insights` |
 | `src/lib/seo.ts` | Pure and tested: validates `SITE_URL` (`https` origin, no path), each page's search rule, its title, its metadata, the robots rules, the sitemap entries, the JSON-LD and its escaping, and the share images' colours and sizing (ADR-0035) | `shared.ts` |
 | `src/components/json-ld.tsx` | The JSON-LD `<script>` in the home page and in an indexed docs page | `seo.ts` |
 | `src/components/share-image.tsx`, `src/lib/share-fonts.ts` | The two share images for `next/og`, with the stars and orbits kept clear of the text; Bricolage Grotesque and Onest fetched as `ttf` from Google Fonts in `use cache`, so a failed fetch fails the build and the routes stay prerendered | `seo.ts`, `sky.ts`, `verse-mark.tsx` |
@@ -135,10 +141,10 @@ folders of the same type into one switcher whose options keep the reader on the 
 
 ```mermaid
 flowchart TB
-  subgraph Repo["Repository"]
+  subgraph Repo["Repository · main"]
     CONTENT["content/<br/>MDX + meta.json catalogue"]
   end
-  subgraph Build["bun run build"]
+  subgraph Build["Vercel · bun run build"]
     NEXT["next build<br/>schema + catalogue checks → static pages and routes"]
     SYNC["scripts/sync-content.ts"]
   end
@@ -154,6 +160,8 @@ flowchart TB
   end
   ALG[("Algolia index<br/>document")]
   Reader["Reader / browser"]
+  VA[("Vercel Analytics<br/>views, vitals, no cookies")]
+  GA[("Google Analytics<br/>Consent Mode v2")]
   Bot["LLM tools and crawlers"]
 
   CONTENT --> NEXT --> HOME & PAGES & MD & OG & REC & CRAWL
@@ -162,9 +170,27 @@ flowchart TB
   Reader -->|search-only key, from the dialog and the hero| ALG
   Bot --> PROXY --> MD & CRAWL
   PAGES -.->|frames| DIAG
+  Reader -.->|no query string| VA
+  Reader -.->|cookies if allowed| GA
 ```
 
 </Diagram>
+
+## Deployment
+
+Vercel builds and serves the site (ADR-0042). `vercel.json` holds the rules:
+
+| Key | Value | Why |
+|---|---|---|
+| `git.deploymentEnabled` | `{ "**": false, "main": true }` | Only `main` gets a deployment |
+| `ignoreCommand` | `[ "$VERCEL_ENV" != production ]` | Anything else that starts (a fork's pull request, a CLI deploy) is cancelled before it builds |
+| `installCommand` | `bunx bun@1.4.4 install --frozen-lockfile` | The owner's Bun, the lockfile exactly |
+| `buildCommand` | `sh scripts/require-full-history.sh && bun run build` | Fails on a shallow clone, then the owner's own build and sync |
+
+`package.json` pins Node with `engines.node` `24.x`. The variables live in Vercel's Production environment only, with
+`VERCEL_DEEP_CLONE=true` for the full history ([`../security/secrets.mdx`](../security/secrets.mdx)). A push to `main` publishes
+the site and the search index together. A failed install, history check, build or sync fails the deployment, and the previous
+one stays live ([`../sequence/build-and-search-sync.mdx`](../sequence/build-and-search-sync.mdx)).
 
 ## Key decisions in force
 
@@ -182,8 +208,10 @@ flowchart TB
   Markdown routes, `llms.txt` / `llms-full.txt`, `static.json`, the share images or the search
   index; `noindex` keeps a page out of search results only. The catalogue schema rejects a private entry, so the build fails instead of publishing
   one (`AGENTS.md` §6.1).
-- **`lastmod` needs a full clone.** It comes from `git log`, so a shallow clone would date every page
-  to the last commit, and an uncommitted page has none. The hosting ADR must clone in full.
+- **`lastmod` needs a full clone.** It comes from `git log`, so a shallow clone would date most pages
+  to the clone's oldest commit, and an uncommitted page has none. Vercel clones ten commits deep unless
+  `VERCEL_DEEP_CLONE` is set, which Vercel does not document; `scripts/require-full-history.sh` fails the
+  build on a shallow clone (ADR-0042).
 - **The build needs the network**, for `next/font` and the share images' fonts.
 - **Demos are not published.** A `use/<line>/demo.mdx` page would be linked from the catalogue,
   but ADR-0011's embed takes only `/diagrams/…` files, so how a demo runs needs its own ADR; the
@@ -191,6 +219,8 @@ flowchart TB
 - **`defineCollections({ type: 'meta' })` is broken in fumadocs-mdx 15.4.10** (its generated
   call passes `meta` where the runtime reads `entries`), so `catalog-routes.ts` uses a
   `defineDocs` whose page pattern matches nothing.
-- **`bun run build` publishes.** Its second step overwrites the live search index.
-- **Hosting is not decided.** `.gitignore` lists `.vercel`, from the scaffold; no host is
-  configured in the repository.
+- **`bun run build` publishes.** Its second step overwrites the live search index, so it runs only
+  in Vercel's production build of `main`; locally, `bunx next build` verifies.
+- **No preview deployments.** A change is first seen live once it is on `main`; checking before that
+  is local (ADR-0042). Vercel Web Analytics and Speed Insights render only when the build runs on Vercel
+  (`VERCEL`).

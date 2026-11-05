@@ -4,8 +4,9 @@ description: "The whole site as one data flow, from authoring through the build 
 ---
 
 - **Status:** Current
-- **Last updated:** 2026-11-01
-- **Related ADRs:** ADR-0005, ADR-0010, ADR-0020, ADR-0013, ADR-0014, ADR-0016
+- **Last updated:** 2026-11-05
+- **Related ADRs:** ADR-0005, ADR-0010, ADR-0020, ADR-0013, ADR-0014, ADR-0016, [ADR-0041](../adr/ADR-0041-readers-are-counted-by-vercel-and-by-google-with-consent.mdx),
+  [ADR-0042](../adr/ADR-0042-only-main-deploys-straight-to-production-on-vercel.mdx)
 
 > Snapshot of the system as it stands today. Edit in place; never record what changed.
 > Conventions: `content/docs/maintain/dfd/index.mdx`. Levels balance — a child's flows match its parent's.
@@ -27,10 +28,12 @@ flowchart LR
   ALG["Algolia"]
   GH["GitHub<br/>(avatars)"]
   GF["Google Fonts"]
+  VA["Vercel Analytics"]
+  GA["Google Analytics"]
 
-  subgraph Trust["Trust boundary — repository and build"]
+  subgraph Trust["Trust boundary — repository and Vercel's build of main"]
     D1[("D1 · content/ and diagrams/")]
-    D2[("D2 · .env.local")]
+    D2[("D2 · Vercel Production env")]
     P1(("1.0<br/>Build"))
     P2(("2.0<br/>Sync search index"))
   end
@@ -41,7 +44,7 @@ flowchart LR
 
   Owner -->|"MDX pages"| D1
   Consumer -->|"MDX pages in content/&lt;slug&gt;/,<br/>reviewed and committed by the owner"| D1
-  D1 -->|"pages"| P1
+  D1 -->|"main, full clone"| P1
   P1 -->|"static pages, Markdown, llms.txt, share images,<br/>robots.txt, sitemap.xml, static.json"| P3
   P1 -->|"font request, no content"| GF
   P1 -->|"static.json records"| P2
@@ -53,6 +56,8 @@ flowchart LR
   ALG -->|"matching records"| Reader
   Reader -->|"avatar request, no referrer<br/>(profile chips)"| GH
   GH -->|"avatar image"| Reader
+  Reader -->|"path, no query, no cookie"| VA
+  Reader -->|"ping; cookie if allowed"| GA
 ```
 
 </Diagram>
@@ -61,19 +66,21 @@ flowchart LR
 
 | Entity | Role |
 |---|---|
-| Owner | Writes the content; reviews and commits every change; runs the build |
+| Owner | Writes the content; reviews and commits every change; a push to `main` publishes (ADR-0042) |
 | Consuming repositories | The owner's project and package repositories, which include this one as a git submodule and write their own folder, `content/<slug>/` (ADR-0010) |
 | Reader | Reads pages; searches from the browser, in the search dialog or the home page's hero field |
 | LLM tools / crawlers | Read the pages, the Markdown routes, `llms.txt` / `llms-full.txt`, `robots.txt` and `sitemap.xml` |
 | Google Fonts | Serves font files during the build, for `next/font` and the share images (ADR-0035) |
 | Algolia | Hosts the search index `document` |
 | GitHub | Serves the avatar in each profile chip, `github.com/<user>.png`, redirecting to `avatars.githubusercontent.com` (ADR-0020) |
+| Vercel Analytics | Web Analytics and Speed Insights, from the site's own origin (`/_vercel/insights`, `/_vercel/speed-insights`), on builds that run on Vercel (ADR-0041) |
+| Google Analytics | GA4 through gtag.js from `www.googletagmanager.com`, hits to `*.google-analytics.com`, when `NEXT_PUBLIC_GA_MEASUREMENT_ID` is set (ADR-0041) |
 
 ## Processes
 
 | # | Process | Input → Output |
 |---|---|---|
-| 1.0 | Build (`next build`) | `content/` → static pages and routes |
+| 1.0 | Build (`next build`, on Vercel, from `main` only) | `content/` → static pages and routes |
 | 2.0 | Sync search index (`scripts/sync-content.ts`) | Built `static.json` → Algolia index |
 | 3.0 | Serve | Built output → readers and tools |
 
@@ -82,19 +89,23 @@ flowchart LR
 | ID | Store | Contents | Classification |
 |---|---|---|---|
 | D1 | `content/` | Published documentation, one folder per package or project, including this site's own design documents (`docs/maintain/`) | Public — see [`../security/data-classification.mdx`](../security/data-classification.mdx) |
-| D2 | `.env.local` (gitignored) | Algolia app ID, search-only key, write key | The write key is Restricted; the others are Public |
+| D2 | Vercel's Production environment (on the owner's machine, `.env.local`, gitignored) | `SITE_URL`, Algolia app ID, search-only key, write key (*Sensitive*), GA4 ID, `VERCEL_DEEP_CLONE` | The write key is Restricted; the others are Public |
 
 ## Trust boundary crossings
 
 | Flow | Direction | Authorisation | Private content? |
 |---|---|---|---|
 | Pages from a consuming repository → `content/` | Submodule → repository | The owner's review and commit; agents there never commit (`PROJECT_AGENTS.md` §10) | Could carry a private project's text if written into its folder; the owner's review is the control, and `PROJECT_AGENTS.md` §2 forbids it |
-| Records → Algolia | Build → Algolia | `ALGOLIA_WRITE_KEY` | Would carry any page in `content/`. Each record also carries its scope `tag` and, for catalogue pages, `package`, `kind`, `ecosystem`, `track`, `line`, `channel` (ADR-0013) — public metadata about public pages |
+| `main` → Vercel build | GitHub → Vercel | Vercel's GitHub app; anyone who can push to `main` publishes | Would carry any page in `content/`. Other branches and forks get no deployment (ADR-0042) |
+| Records → Algolia | Vercel build → Algolia | `ALGOLIA_WRITE_KEY` | Would carry any page in `content/`. Each record also carries its scope `tag` and, for catalogue pages, `package`, `kind`, `ecosystem`, `track`, `line`, `channel` (ADR-0013) — public metadata about public pages |
 | Search query → Algolia | Browser → Algolia | Search-only key, public by design | Can read every record in the index. The query is the reader's text only; the dialog adds no filter |
 | Pages and machine-readable routes → readers and tools | Site → public | None | Would carry any page in `content/` |
 | Font request → Google Fonts | Build → Google Fonts | None | No. The request names a font family and weight, and no page's words |
 | Avatar → reader | Browser → GitHub | None | No. The request carries the reader's IP address and user agent and, with `referrerpolicy="no-referrer"`, no page address. The username in it is already on the page (Public) |
+| Page view → Vercel Analytics | Browser → Vercel | None | No. The path without its query string, the referrer, browser, OS, device type and the country from the IP; Web Vitals. No cookie |
+| Page view → Google Analytics | Browser → Google | None; Consent Mode v2 decides what is kept | No. Before *Allow*: a cookieless ping with the page URL and title, referrer, the reader's IP and user agent and the consent state. After: the same with the `_ga` client ID and engagement events. The choice itself stays in the browser (`localStorage`) |
 | "View on GitHub" link | Site → GitHub | GitHub's own access rules | Points at the page's source in the repository named in `gitConfig` |
 
-Every crossing carries everything in `content/`. That is why no private project content
+Every crossing to readers and to Algolia carries everything in `content/`, and the analytics crossings carry every page's address
+and title. That is why no private project content
 may go there until its ADR is approved (`AGENTS.md` §6.1).

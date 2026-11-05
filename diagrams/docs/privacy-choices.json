@@ -1,0 +1,113 @@
+{
+  "schema_version": 2,
+  "diagram_type": "workflow",
+  "meta": {
+    "title": "App flow: privacy choices",
+    "subtitle": "The reader allows or declines Google Analytics cookies, and can change it from the footer",
+    "quality_profile": "showcase",
+    "output": "privacy-choices.html"
+  },
+  "lanes": [
+    {
+      "id": "read",
+      "label": "Reader"
+    },
+    {
+      "id": "ask",
+      "label": "The banner"
+    },
+    {
+      "id": "count",
+      "label": "Analytics"
+    }
+  ],
+  "mainPath": [
+    "visit",
+    "banner",
+    "allowed"
+  ],
+  "nodes": [
+    {
+      "id": "visit",
+      "lane": "read",
+      "col": 0,
+      "type": "external",
+      "label": "First visit",
+      "sublabel": "no choice stored"
+    },
+    {
+      "id": "gpc",
+      "lane": "read",
+      "col": 1,
+      "type": "external",
+      "label": "Browser sends GPC",
+      "sublabel": "Global Privacy Control"
+    },
+    {
+      "id": "footer",
+      "lane": "read",
+      "col": 3,
+      "type": "external",
+      "label": "Privacy choices",
+      "sublabel": "the footer link"
+    },
+    {
+      "id": "banner",
+      "lane": "ask",
+      "col": 1,
+      "type": "frontend",
+      "label": "The banner",
+      "sublabel": "at the bottom, the page still readable"
+    },
+    {
+      "id": "allowed",
+      "lane": "count",
+      "col": 2,
+      "type": "backend",
+      "label": "Analytics allowed",
+      "sublabel": "GA4 may set its cookies"
+    },
+    {
+      "id": "declined",
+      "lane": "count",
+      "col": 3,
+      "type": "backend",
+      "label": "Analytics declined",
+      "sublabel": "cookieless pings only"
+    }
+  ],
+  "edges": [
+    {
+      "id": "e1",
+      "from": "visit",
+      "to": "banner",
+      "label": "page loads",
+      "variant": "emphasis"
+    },
+    {
+      "id": "e2",
+      "from": "banner",
+      "to": "allowed",
+      "label": "Allow",
+      "variant": "emphasis"
+    },
+    {
+      "id": "e3",
+      "from": "banner",
+      "to": "declined",
+      "label": "Decline"
+    },
+    {
+      "id": "e4",
+      "from": "gpc",
+      "to": "declined",
+      "label": "no banner"
+    },
+    {
+      "id": "e5",
+      "from": "footer",
+      "to": "banner",
+      "label": "reopens it"
+    }
+  ]
+}

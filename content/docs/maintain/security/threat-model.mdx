@@ -4,12 +4,14 @@ description: "What could go wrong on this site, what is at risk, and how each th
 ---
 
 - **Status:** Current
-- **Last updated:** 2026-11-01
+- **Last updated:** 2026-11-05
 - **Related ADRs:** ADR-0005, [ADR-0016](../adr/ADR-0016-home-search-is-the-fumadocs-dialog-and-private-projects-render-server-side.mdx),
   [ADR-0017](../adr/ADR-0017-the-whole-site-is-one-solar-system.mdx),
   [ADR-0011](../adr/ADR-0011-archify-diagrams-are-embedded-from-sandboxed-html.mdx),
   [ADR-0022](../adr/ADR-0022-diagrams-show-archify-on-the-page-and-mermaid-in-markdown.mdx),
-  [ADR-0020](../adr/ADR-0020-people-in-adrs-are-github-usernames-shown-as-profile-chips.mdx)
+  [ADR-0020](../adr/ADR-0020-people-in-adrs-are-github-usernames-shown-as-profile-chips.mdx),
+  [ADR-0041](../adr/ADR-0041-readers-are-counted-by-vercel-and-by-google-with-consent.mdx),
+  [ADR-0042](../adr/ADR-0042-only-main-deploys-straight-to-production-on-vercel.mdx)
 
 > Snapshot of the system as it stands today. Edit in place; never record what changed.
 
@@ -30,8 +32,9 @@ static markup listing three invented projects from `src/components/home/private-
 | User input of any kind | Yes | The search query, sent from the browser straight to Algolia; the `Accept` header, read by `src/proxy.ts`; the request's path, compared by `src/proxy.ts` with a fixed list and never echoed |
 | Database or persistence | No | Content is files; the search index is a build output |
 | Files / uploads | No uploads | Archify diagrams in `diagrams/`: generated script, committed by the owner, served with the site shell's added script and style, run in a sandboxed frame and served with a CSP `sandbox` header. The frame sends the page one message, its height, which the page takes only from that frame's window and only as a number from 120 to 4000 (ADR-0011, ADR-0022, [`../api/content-routes.mdx`](../api/content-routes.mdx)) |
-| Secrets / environment variables | Yes | Three Algolia variables, listed in [`secrets.mdx`](./secrets.mdx) |
+| Secrets / environment variables | Yes | Listed in [`secrets.mdx`](./secrets.mdx); in Vercel's Production environment, the write key marked *Sensitive* (ADR-0042) |
 | Third-party integrations | Yes | Algolia (search). GitHub serves the avatar in each profile chip to the reader's browser, without a referrer (ADR-0020). The page actions' Open in ChatGPT, Claude, Cursor and Scira links, on docs pages and the home page, send a public page's URL to that service when the reader clicks one. The fonts are fetched by `next/font` at build time and served from the site's own origin |
+| Build and deploy | Yes | Vercel builds `main` only, with `bun run build`, so a push to `main` publishes the site and the search index; other branches, forks and CLI deploys never build (`vercel.json`, ADR-0042) |
 | Logging / audit trail | No | The sync script prints a record count |
 
 Each ADR that adds a surface updates this table in the same change.
@@ -61,18 +64,19 @@ Crossed today, each in [`../dfd/system.mdx`](../dfd/system.mdx):
 
 | Boundary | Carries |
 |---|---|
-| Build ↔ Algolia | Every page's search record, with the write key |
+| GitHub ↔ Vercel build | A full clone of `main` on every push to it (ADR-0042) |
+| Vercel build ↔ Algolia | Every page's search record, with the write key |
 | Browser ↔ Algolia | Search queries and results, with the search-only key |
 | Browser ↔ GitHub | Avatar requests for profile chips: the reader's IP address and user agent, no page address |
+| Browser ↔ Vercel Analytics | Page views without query strings and Web Vitals, on the site's own origin, no cookie (ADR-0041) |
+| Browser ↔ Google Analytics | Cookieless pings before consent, hits with the `_ga` client ID after *Allow*; gtag.js loaded live from Google (ADR-0041) |
 | Site ↔ public | Every page on every surface |
 
 Anticipated, each documented by the ADR that introduces it:
 
 | Boundary | Will carry |
 |---|---|
-| Repository ↔ host | The build and its environment variables |
 | Site ↔ authentication provider | Reader identity, if private docs are served from this site |
-| Site ↔ analytics | Page views, if analytics is adopted |
 
 ## Accepted risks
 
@@ -82,6 +86,12 @@ Anticipated, each documented by the ADR that introduces it:
 | The avatar is whatever the GitHub account sets, shown on the site. | It is that person's own profile picture, shown at 20px as decoration. | The chip's name and link come from the page, not from GitHub. |
 | A future Archify release adds a network call or an external resource to the generated diagrams; the sandbox does not block outgoing requests. | Diagrams are made with Archify by the owner's standing choice; Archify 3.2.0 makes none. | Each upgrade needs the owner's yes, and its HTML is scanned before it is published (checklist, Archify). |
 | The private projects list (`src/components/home/private-projects.ts`) is the one place in code where a private project's name is typed. Someone may later replace an invented name with a real client's, publishing it on the home page and to crawlers (A1). | The owner chose to show invented private projects on the live site (ADR-0017). | The file's comment says only invented names belong there until the private-documentation ADR; a real name there breaks invariant 1. The list is never sent to search, `llms.txt` or `static.json`. |
+| Google receives a cookieless ping with each reader's IP address and user agent before they choose, under Consent Mode v2 advanced; some EU authorities treat that as needing consent too (A5). | The owner chose advanced mode for fuller, modelled reports (ADR-0041). | No cookie and no client ID before *Allow*; ads signals always denied; Google signals off; IP not kept by GA4; Global Privacy Control declines. |
+| gtag.js and Vercel's scripts are loaded live and unpinned, so a change on their side runs on every page. | Both are the vendors' own scripts, the only way they are offered (ADR-0041). | No other tag can be added without an ADR; no Tag Manager. |
+| Each page's address and title reach Vercel and Google. | Every page is public today (ADR-0041). | The private-documentation ADR must keep analytics off private pages. |
+| Anyone who can push to `main`, or change the Vercel project, publishes to the site and the search index at once; no preview stands between (A1, A3). | The owner chose a direct production build with no previews (ADR-0042). | Agents never commit or push (`AGENTS.md` §3); the owner reviews every change; GitHub branch protection on `main` is the owner's to set. |
+| A compromised dependency runs during the Vercel build with `ALGOLIA_WRITE_KEY` in its environment (A2, A3). | The same exposure as the owner's machine, now on every push to `main` (ADR-0042). | `--frozen-lockfile` and a lockfile reviewed by the owner; Bun pinned to 1.4.4; installs need the owner's yes. |
+| Search and the live site disagree for the minute between the sync and the deployment going live, and after an *Instant Rollback*. | The index is written by the build (ADR-0042). | Roll back with a `git revert` on `main`, which moves both. |
 | Visitors take the invented private projects as real, and their links return the 404 (A5). | The owner's decision, ADR-0017. | Replacing the list is a one-file change. |
 
 ## Incidents

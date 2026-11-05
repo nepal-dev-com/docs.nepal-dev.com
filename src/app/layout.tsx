@@ -3,9 +3,13 @@ import { RootProvider } from 'fumadocs-ui/provider/next';
 import { Bricolage_Grotesque, JetBrains_Mono, Onest } from 'next/font/google';
 import './global.css';
 import './site.css';
+import { GoogleAnalytics } from '@/components/google-analytics';
+import { PrivacyBanner } from '@/components/privacy-choices';
 import SearchDialog from '@/components/search';
 import { Sky } from '@/components/sky';
+import { VercelInsights } from '@/components/vercel-insights';
 import { cn } from '@/lib/cn';
+import { measurementId } from '@/lib/privacy-choice';
 import { siteUrl } from '@/lib/seo';
 import { appName, community } from '@/lib/shared';
 
@@ -23,6 +27,9 @@ export const metadata: Metadata = {
   publisher: community.name,
 };
 
+// Vercel sets VERCEL at build; elsewhere the insight scripts would answer 404 (ADR-0041 decision 2).
+const onVercel = Boolean(process.env.VERCEL);
+
 export const viewport: Viewport = {
   themeColor: [
     { media: '(prefers-color-scheme: dark)', color: '#0a0c10' },
@@ -38,6 +45,9 @@ export default function Layout({ children }: LayoutProps<'/'>) {
         <RootProvider search={{ SearchDialog }} theme={{ defaultTheme: 'dark' }}>
           {children}
         </RootProvider>
+        {measurementId && <PrivacyBanner />}
+        <GoogleAnalytics id={measurementId} />
+        {onVercel && <VercelInsights />}
       </body>
     </html>
   );

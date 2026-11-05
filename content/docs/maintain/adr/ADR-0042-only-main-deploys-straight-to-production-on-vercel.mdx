@@ -1,0 +1,198 @@
+---
+title: "ADR-0042 — Only main deploys, straight to production on Vercel"
+description: "The site is built and published by Vercel from main only: no preview deployments, one production build that also updates the search index."
+---
+
+- **Status:** Approved
+- **Date:** 2026-11-05
+- **Deciders:** [@puncoz](https://github.com/puncoz)
+- **Approved by:** [@puncoz](https://github.com/puncoz)
+- **Approved on:** 2026-11-05
+- **Supersedes:** —
+- **Superseded by:** —
+- **Design documents:** on implementation [`../sequence/build-and-search-sync.mdx`](../sequence/build-and-search-sync.mdx),
+  [`../architecture/system.mdx`](../architecture/system.mdx), [`../dfd/system.mdx`](../dfd/system.mdx), `../security/`. Nothing a
+  reader sees changes, so there is no app flow (ADR-0008).
+
+## Context
+
+- [ADR-0041](./ADR-0041-readers-are-counted-by-vercel-and-by-google-with-consent.mdx) decision 1 made Vercel the host and left how the
+  site deploys there to this ADR. Nothing about deployment is in the repository yet: no `vercel.json`, no `engines`.
+- `bun run build` is `next build`, then `scripts/sync-content.ts`, which **replaces the live Algolia index** with this build's
+  records. A Vercel preview deployment, which by default runs the `build` script for every branch push and pull request, would
+  overwrite the live index with unmerged work.
+- The owner's choice: **no previews; the one build is the production build.**
+- Read from Vercel's documentation (November 2026):
+  - `git.deploymentEnabled` in `vercel.json` takes branch globs (minimatch). When a branch matches several rules and one is `true`,
+    it deploys. A branch that matches only `false` rules creates no deployment.
+  - `ignoreCommand` runs when the deployment starts building, with the build-time system variables (`VERCEL_ENV` among them): exit
+    `0` cancels the build, exit `1` continues. A cancelled build still counts against the deployment quota.
+  - A build clones with `git clone --depth=10`. `VERCEL_DEEP_CLONE=true` asks for a full clone; Vercel does not document it, but
+    projects that use it report it works.
+  - Builds use Node.js 26.x by default; `engines.node` in `package.json` overrides the dashboard. Bun is pinned by running the install
+    as `bunx bun@<version> install`.
+  - The `VERCEL` and `VERCEL_ENV` variables exist only while *Automatically expose System Environment Variables* is on.
+- The sitemap's `lastmod` and `article:modified_time` come from `git log` (`lastModified: true` in `src/lib/source.ts`, ADR-0035
+  decision 5). In a shallow clone every file untouched by the last ten commits is dated to the clone's oldest commit.
+  `architecture/system.mdx` already says the hosting ADR must clone in full.
+- `scripts/sync-content.ts` refuses to run without `SITE_URL`, but reads the Algolia variables with non-null assertions, so a missing
+  key reaches the Algolia client as `undefined` (`sequence/build-and-search-sync.mdx`).
+- Consuming repositories push their pages into this repository through the submodule (ADR-0010), so their pushes land here too.
+
+## Decision
+
+1. **Only `main` is deployed, and only to production.** Vercel's production branch is `main`. Every push to `main` builds the site
+   and, in the same build, updates the search index. No other branch, pull request or fork gets a deployment.
+2. **Previews are stopped twice, in `vercel.json`, so the rule is reviewed in the repository and not only in a dashboard.**
+   - `"git": { "deploymentEnabled": { "**": false, "main": true } }`: a push to any other branch creates no deployment.
+   - `"ignoreCommand": "[ \"$VERCEL_ENV\" != production ]"`: any deployment that still starts outside production (a fork's pull
+     request, a `vercel` CLI deploy, a redeploy of an old preview) is cancelled before the build runs, so the sync never runs.
+3. **The build is the owner's own command.** `"buildCommand": "sh scripts/require-full-history.sh && bun run build"`: the same
+   `bun run build` as on the owner's machine, `next build` then the sync. No second build script exists.
+4. **The build clones in full, or fails.** The owner sets `VERCEL_DEEP_CLONE=true` in Production. Because Vercel does not document
+   it, `scripts/require-full-history.sh` checks `git rev-parse --is-shallow-repository`. If the clone is shallow, the script exits `1`,
+   naming `VERCEL_DEEP_CLONE` and this ADR, and nothing is built or published.
+5. **The toolchain is pinned to what the owner runs.**
+   - `"installCommand": "bunx bun@1.4.4 install --frozen-lockfile"`: Bun 1.4.4 (`AGENTS.md` §5), from `bun.lock` exactly. A lockfile
+     that does not match `package.json` fails the install.
+   - `"engines": { "node": "24.x" }` in `package.json`, since `scripts/sync-content.ts` runs on Node 24.
+6. **Variables live in Vercel's Production environment only.** That means `SITE_URL`, `NEXT_PUBLIC_ALGOLIA_APP_ID`,
+   `NEXT_PUBLIC_ALGOLIA_SEARCH_KEY`, `NEXT_PUBLIC_GA_MEASUREMENT_ID`, `VERCEL_DEEP_CLONE` and `ALGOLIA_WRITE_KEY`. The last is marked
+   *Sensitive*, so it cannot be read back from the dashboard. Preview and Development hold none. *Automatically expose System
+   Environment Variables* stays on (ADR-0041, and decision 2 above).
+7. **The publish step refuses without its secrets.**
+   - `scripts/sync-content.ts` checks `SITE_URL`, `NEXT_PUBLIC_ALGOLIA_APP_ID` and `ALGOLIA_WRITE_KEY` before reading anything. It
+     names every missing variable, never prints a value, and exits non-zero.
+   - The check is a pure function in `src/lib/publish-env.ts`, tested. The script imports it by a relative path.
+   - A failed sync fails the build, so the deployment fails and the previous one stays live. The site and the index are never left
+     half-published.
+8. **Production deploys come only from Git.** No `vercel --prod` from a machine: it would publish the local working tree, uncommitted
+   pages included. This is a working rule in `AGENTS.md` and `PROJECT_AGENTS.md`; `vercel.json` cannot enforce it.
+9. **Going back is a revert on `main`.** A `git revert` pushed to `main` rebuilds the site and the index together. Vercel's *Instant
+   Rollback* restores pages but not the index, so it is for emergencies only and is followed by that revert.
+10. **The build runs no tests and no lint.** This is the owner's "direct production build". Running tests before publishing, and CI in
+    general, is a later ADR.
+11. **Vercel's protections stay on**, set by the owner in the dashboard:
+    - Deployment Protection: *Standard Protection*, so only the production domain is public and generated deployment URLs need a
+      Vercel login.
+    - Build Logs and Source Protection, so `/_logs` and `/_src` need a login.
+    - Git Fork Protection.
+12. **The domain is the owner's.** They add the custom domain in Vercel and set `SITE_URL` to the same `https` origin. The production
+    `*.vercel.app` address still serves the site; every page's canonical link points at `SITE_URL` (ADR-0035), so search engines
+    index only the domain.
+
+## Options considered
+
+| Concern | Option | Pros | Cons | Verdict |
+|---|---|---|---|---|
+| Previews | None; production only | The live index is only written by `main`; one environment to set up | No preview URL to check a change before it is live | **Chosen** (owner) |
+| Previews | Previews run `next build` only, without the sync | A URL for every branch | Preview search shows the live index, not the branch; a second build command to keep in step | Rejected (owner) |
+| Previews | Previews sync to a separate preview index | Search works on previews | A second Algolia index and key, and a preview index readable with a public key | Rejected |
+| Stopping previews | `deploymentEnabled` plus `ignoreCommand` in `vercel.json` | Reviewed in the repo; non-`main` pushes cost no build; the backstop covers forks and CLI | Two rules to read | **Chosen** |
+| Stopping previews | Dashboard *Ignored Build Step*: "Only build production" | No file | Invisible to review; a cancelled build per push counts against the quota | Rejected |
+| Stopping previews | `ignoreCommand` only | One rule | Every branch push creates and cancels a deployment | Rejected |
+| Where it builds | Vercel builds from Git | Direct; no deploy token anywhere | Nothing runs before the build | **Chosen** (owner) |
+| Where it builds | GitHub Actions builds and runs tests, then `vercel deploy --prebuilt` | Tests gate the publish | A Vercel token in GitHub; a CI ADR first | Later ADR |
+| Tests | `bun run test && …` in the build command | A failing test stops the publish, at a few seconds' cost | Not "direct" | Not chosen; it is one line to add later |
+| History | `VERCEL_DEEP_CLONE=true`, and the build fails on a shallow clone | Correct `lastmod`; a failure is loud | Relies on an undocumented variable; a full clone grows with the history | **Chosen** |
+| History | `git fetch --unshallow` in the build | Documented git | Needs read access to the remote; a private repository needs a token in the build | Rejected |
+| History | Accept the shallow dates | Nothing to do | Most pages dated wrong in the sitemap, against ADR-0035 | Rejected |
+| Bun | `bunx bun@1.4.4 install --frozen-lockfile` | Same Bun as the owner; the lockfile is binding | Bun is fetched from npm on each build | **Chosen** |
+| Bun | Vercel's default Bun | No pin | A version Vercel does not state | Rejected |
+| Node | `engines.node` `24.x` | The version the sync script runs on | Moved by hand | **Chosen** |
+| Node | Vercel's default, 26.x | Newest | Not run here yet | Rejected |
+
+## Consequences
+
+**Positive**
+
+- The live search index is only ever written by a build of `main`, which is the risk ADR-0041 named.
+- The deployment is described in the repository, in `vercel.json` and `package.json`, and each rule there is tested.
+- The site and the index move together. A failed sync, a missing secret or a shallow clone leaves the previous deployment live.
+
+**Negative / accepted trade-offs**
+
+- **Pushing to `main` publishes.** This applies to consuming repositories too. Nothing checks a change on a live URL before readers see
+  it; checking happens locally with `bunx next build` and `bun run start`. The owner may protect `main` on GitHub (required reviews);
+  that is a GitHub setting, outside this repository.
+- No tests run before publishing (decision 10).
+- For the minute or two between the sync and Vercel making the new deployment live, search can find a page that is not live yet, or
+  miss one that is about to go.
+- `VERCEL_DEEP_CLONE` is undocumented. If Vercel drops it, builds fail (decision 4) until another way to get the history is decided.
+- Every build downloads Bun 1.4.4 from npm (`bunx`) and clones the full history.
+
+## Content invariants
+
+- **§6.1 Private stays private:** unchanged. Every page in `content/` is public, and this ADR publishes exactly what `bun run build`
+  publishes today, from `main` only. No branch's unmerged pages reach the site or the index.
+- **§6.5 Every page is readable as Markdown:** unchanged; the production build is the same build.
+
+## Security considerations
+
+- **Secrets.** `ALGOLIA_WRITE_KEY` moves from the owner's `.env.local` into Vercel's Production environment, marked *Sensitive*. It is
+  readable by the build and by no deployment's runtime code, since nothing outside `scripts/sync-content.ts` reads it. People on
+  the Vercel team who can change environment variables can replace it, but not read it back. The script prints only a record count,
+  never a value (decision 7). Rotation: `security/secrets.mdx`.
+- **Who can publish.** Anyone who can push to `main` on GitHub, or change the Vercel project, can publish to the site and the search
+  index. Before this ADR, only someone holding `ALGOLIA_WRITE_KEY` could write the index. Accepted. GitHub branch protection is the
+  owner's to set.
+- **Forks and pull requests** never build (decision 2), so a fork's code never runs with the Production variables. Git Fork
+  Protection stays on as well.
+- **Supply chain.** `--frozen-lockfile` installs exactly `bun.lock`. Bun itself is fetched as the exact version `bun@1.4.4`. A
+  compromised dependency would run during the build, with `ALGOLIA_WRITE_KEY` in its environment. This is the same exposure as the
+  owner's machine today, now on every push.
+- **What leaves the system.** Vercel receives the full git history and the built site. Algolia receives the same records as now. No
+  new third party is added: Vercel was adopted in ADR-0041, Algolia earlier.
+- **Generated deployment URLs** need a Vercel login (Standard Protection), so an old deployment cannot be reached by guessing its URL.
+- **Residual risk:** the window in which search and the live site disagree (Consequences), and the undocumented clone variable.
+
+## Implementation notes
+
+- [x] `vercel.json` at the root: `$schema`, `git.deploymentEnabled`, `ignoreCommand`, `buildCommand`, `installCommand` as in decisions 2,
+      3 and 5.
+- [x] `scripts/require-full-history.sh`: exits `1` on a shallow clone, naming `VERCEL_DEEP_CLONE` and ADR-0042; exits `0` otherwise.
+- [x] `package.json`: `"engines": { "node": "24.x" }`.
+- [x] `src/lib/publish-env.ts`: `missingPublishVariables(env)`, returning the names of the unset ones among `SITE_URL`,
+      `NEXT_PUBLIC_ALGOLIA_APP_ID` and `ALGOLIA_WRITE_KEY`, with `publishRefusal` and `readPublishEnv` on top.
+      `scripts/sync-content.ts` calls `readPublishEnv` first, so it throws on any of them, naming them, before reading `static.json`.
+      Its non-null assertions are gone.
+- [x] `tsconfig.json`: `"allowImportingTsExtensions": true`, by the owner's choice on 2026-11-05. Node needs the `.ts` in the script's
+      relative import, and the type check refuses it without this. It changes type checking only: `noEmit` is on, and Next.js
+      compiles with SWC.
+- [x] Tests:
+  - `src/lib/publish-env.test.ts`: all variables set; each one missing; empty and blank strings; no values in the message.
+    `readPublishEnv` returns the values or throws. `scripts/sync-content.ts` run under Node without its variables exits non-zero,
+    names them, never prints a given value and never reaches `static.json`.
+  - `src/lib/vercel-config.test.ts`:
+    - `vercel.json` has the rules above, and `package.json` pins Node 24;
+    - its `ignoreCommand`, run with `sh`, exits `1` for `VERCEL_ENV=production` and `0` for `preview`, `development`, empty and
+      unset;
+    - `require-full-history.sh` exits `0` in a full clone, `1` in a shallow clone of a two-commit repository made in a temporary
+      folder (naming `VERCEL_DEEP_CLONE` and ADR-0042), and `1` outside a git repository.
+- [ ] Not testable here: Vercel honouring `vercel.json` and `VERCEL_DEEP_CLONE`. **Not done yet:** nothing has been deployed. It
+      is verified in the first production build's log, which should show the install with Bun 1.4.4, the history check passing and
+      `search updated: N records`, and by one push to a branch creating no deployment.
+- [x] `bun run test` (534 pass), `bun run types:check` and `bunx next build` pass. `bun run lint` still fails with "typescript-eslint
+      does not support TS 7.0".
+
+## Docs to update on implementation
+
+- [x] `content/docs/maintain/sequence/build-and-search-sync.mdx`: the trigger is a push to `main`; Vercel's install, history check,
+      build and sync, then promotion; failure paths for a shallow clone, missing variables and a failed sync. Its Mermaid and Archify
+      diagram change together. The data-flow and system-architecture Archify views are regenerated with their Mermaid.
+- [x] `content/docs/maintain/architecture/system.mdx`: a Deployment section, and constraints where the hosting ADR is no longer
+      pending and the full clone is decided.
+- [x] `content/docs/maintain/dfd/system.mdx`: GitHub to the Vercel build, and the Vercel build to Algolia with `ALGOLIA_WRITE_KEY`, as
+      boundary crossings.
+- [x] `content/docs/maintain/security/secrets.mdx`: where each variable is set (Vercel Production), and `VERCEL_DEEP_CLONE`.
+- [x] `content/docs/maintain/security/threat-model.mdx`: push to `main` as a publish path; build-time supply chain with the write key.
+- [x] `content/docs/maintain/security/checklist.mdx`: Vercel hosting checks (decisions 2, 6, 11).
+- [x] `AGENTS.md`:
+  - §1: how the site is deployed.
+  - §3 and §5: a push to `main` publishes; no `vercel --prod`.
+  - §5: the `vercel.json` row.
+  - §10: `vercel.json` and `scripts/require-full-history.sh`.
+- [x] `PROJECT_AGENTS.md`: a push to this repository's `main` publishes at once, site and search.
+- [x] `README.md`: a Deploy section with the owner's Vercel settings.
+- [x] `.env.example`: `VERCEL_DEEP_CLONE`, described as Vercel-only.
+- [x] `content/docs/maintain/adr/index.mdx`: status.

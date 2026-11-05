@@ -7,9 +7,11 @@ import { BrandMark } from '@/components/brand-mark';
 import { PlanetMark, ringColor } from '@/components/planet';
 import { BackToTop, FooterSearch, VerseLink } from '@/components/footer-actions';
 import { HorizonAwake } from '@/components/horizon-awake';
+import { PrivacyChoicesButton } from '@/components/privacy-choices';
 import { NepalFlagCloth } from '@/components/nepal-flag';
 import { flagSize, flagWaveStrips } from '@/lib/flag';
 import { moonShadePath } from '@/lib/horizon-time';
+import { measurementId } from '@/lib/privacy-choice';
 import {
   alpenglow,
   bodyGlow,
@@ -356,10 +358,12 @@ export function HorizonFooter({
   entries,
   githubUrl,
   backLabel = 'Back to orbit',
+  privacyChoices = Boolean(measurementId),
 }: {
   entries: CatalogEntry[];
   githubUrl: string;
   backLabel?: string;
+  privacyChoices?: boolean;
 }) {
   const spots = new Map(lightsFor(entries).map(({ entry, spot }) => [entry.slug, spot]));
   return (
@@ -385,6 +389,7 @@ export function HorizonFooter({
           <a href={githubUrl} rel="noreferrer noopener">
             GitHub
           </a>
+          {privacyChoices && <PrivacyChoicesButton />}
           <BackToTop label={backLabel} />
         </nav>
         <HorizonCredit />

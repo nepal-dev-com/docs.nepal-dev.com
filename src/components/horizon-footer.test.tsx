@@ -337,3 +337,17 @@ test('the home page has the Verse view\'s hash target, at the very top', () => {
   expect(page).toContain('<span id={verseFragment.slice(1)} className="verse-target" />');
   expect(css).toMatch(/\.verse-target\s*\{\s*position: absolute;\s*top: 0;/);
 });
+
+describe('Privacy choices in the link row (ADR-0041 decision 9)', () => {
+  const footer = (privacyChoices: boolean) =>
+    renderToStaticMarkup(<HorizonFooter entries={[]} githubUrl="https://example.test" privacyChoices={privacyChoices} />);
+
+  test('stands before Back to orbit, hidden until scripts run', () => {
+    const html = footer(true);
+    expect(html).toMatch(/<button type="button" hidden="">Privacy choices<\/button><button type="button">Back to orbit/);
+  });
+
+  test('is absent when the site has no Google Analytics ID', () => {
+    expect(footer(false)).not.toContain('Privacy choices');
+  });
+});
