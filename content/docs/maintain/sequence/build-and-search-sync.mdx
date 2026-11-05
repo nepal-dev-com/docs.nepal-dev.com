@@ -12,9 +12,9 @@ description: "What happens when main is pushed: Vercel builds the site with bun 
 
 ## Trigger
 
-A push to `main`, from the owner or from a consuming repository (ADR-0042). Vercel's production branch is `main`, and
-`vercel.json` gives every other branch no deployment (`git.deploymentEnabled`). Its `ignoreCommand` cancels any deployment that
-is not production before it builds.
+Any commit that lands on `main` (a push, a merged pull request, a commit made on GitHub), from the owner or from a consuming
+repository (ADR-0042, ADR-0043). Vercel's production branch is `main`, so each one is a production deployment on the custom
+domain. `vercel.json` gives every other branch no deployment (`git.deploymentEnabled`), and nothing cancels a commit on `main`.
 
 The build is `vercel.json`'s `buildCommand`: `sh scripts/require-full-history.sh && bun run build`. `bun run build` runs `next build`,
 then `node --env-file-if-exists=.env.local scripts/sync-content.ts`. On Vercel there is no `.env.local`; the variables come from
@@ -57,7 +57,8 @@ Every failure below fails the deployment, so the previous one stays live.
 
 | Step | Failure | Behaviour | Recovery |
 |---|---|---|---|
-| 1 | A push to any branch but `main`, a fork's pull request, a `vercel` CLI deploy | No deployment, or one cancelled by `ignoreCommand` before it builds; nothing is built or synced | Merge to `main` |
+| 1 | A push to any branch but `main` | No deployment; nothing is built or synced | Merge to `main` |
+| 1 | A fork's pull request (Vercel asks for authorization, Git Fork Protection), or a `vercel` CLI deploy | Not authorized: no build. Authorized, or from the CLI: it builds with no variables, the sync refuses at step 8, and nothing is published | Merge to `main`; don't authorize fork deployments |
 | 3 | `bun.lock` does not match `package.json` | `--frozen-lockfile` fails the install | Update the lockfile locally (with the owner's yes), push |
 | 3 | The clone is shallow (`VERCEL_DEEP_CLONE` unset or ignored) | `require-full-history.sh` exits `1`, naming `VERCEL_DEEP_CLONE` and ADR-0042; nothing is built | Set `VERCEL_DEEP_CLONE=true` in Production, redeploy |
 | 5 | Invalid MDX or frontmatter | `next build` fails; the sync never runs | Fix the page, push |

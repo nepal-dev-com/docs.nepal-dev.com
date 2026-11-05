@@ -104,8 +104,9 @@ yet** besides the site itself, so the home page shows its empty states.
   that run on Vercel; Google Analytics 4 loaded directly (no Tag Manager) under Consent Mode v2 when
   `NEXT_PUBLIC_GA_MEASUREMENT_ID` is set, with the *Privacy choices* banner and a footer link to
   change the choice. Any other tag needs its own ADR. Search Console is verified by DNS, with no code.
-- **Only `main` deploys, straight to production on Vercel** (ADR-0042): `vercel.json` gives other
-  branches no deployment and cancels anything that is not production, so there are no previews. A push
+- **Only `main` deploys, straight to production on Vercel** (ADR-0042, ADR-0043): `vercel.json` gives other
+  branches no deployment and has no `ignoreCommand`, so every commit on `main` goes to the custom domain and
+  there are no previews. A build that starts elsewhere has no variables, so it cannot publish. A push
   to `main` runs `bun run build` there, which publishes the site and the search index together. Production
   deploys come only from Git, never `vercel --prod`.
 - **Every page is ready for search and sharing** (ADR-0035), from where it sits and its frontmatter:
@@ -287,8 +288,8 @@ What is installed **today** (verified from `package.json`, `node_modules` and th
 | Analytics | `@vercel/analytics` 2.0.1 and `@vercel/speed-insights` 2.0.0 in `src/components/vercel-insights.tsx` (rendered when `VERCEL` is set at build); GA4 in `src/components/google-analytics.tsx` (two `next/script` elements, the consent script first); the banner and the footer button in `src/components/privacy-choices.tsx`; the rules, the ID check and the inline script in `src/lib/privacy-choice.ts`, tested; styles at the end of `site.css` — ADR-0041 |
 | Linting | ESLint 9 + `eslint-config-next` (core-web-vitals); ignores `.claude/**` (agent skills, ADR-0009). **`bun run lint` does not run today:** `typescript-eslint` does not support TypeScript 7; fixing it needs its own ADR |
 | Testing | `bun test` (Bun's built-in runner), tests beside the code as `*.test.ts(x)`; `@types/bun` 1.4.4 through `tsconfig.test.json`, which `tsconfig.json` leaves out so the site's own check never sees Bun's types; server components rendered with `react-dom/server`; client components not unit-tested until a DOM is chosen — ADR-0007, ADR-0021 |
-| Hosting | Vercel, `main` only, straight to production: `vercel.json` (`git.deploymentEnabled`, `ignoreCommand`, `installCommand` with Bun 1.4.4 and `--frozen-lockfile`, `buildCommand`); `scripts/require-full-history.sh` fails a shallow clone; `engines.node` `24.x` in `package.json`; the publish variables checked by `src/lib/publish-env.ts` — ADR-0042 |
-| Package manager | Bun (`bun.lock`; 1.4.4 on the owner's machine and in the Vercel build). `scripts/sync-content.ts` runs on Node (v24) |
+| Hosting | Vercel, `main` only, straight to production: `vercel.json` (`git.deploymentEnabled`, no `ignoreCommand`, `installCommand` with Bun 1.4.4 and `--frozen-lockfile`, `buildCommand`); `scripts/require-full-history.sh` fails a shallow clone; `engines.node` `26.x` in `package.json`; the publish variables checked by `src/lib/publish-env.ts` — ADR-0042, ADR-0043 |
+| Package manager | Bun (`bun.lock`; 1.4.4 on the owner's machine and in the Vercel build). `scripts/sync-content.ts` runs on Node (26.x on Vercel, `engines.node`; v24 on the owner's machine) — ADR-0043 |
 
 - **Read the installed docs first.** `node_modules/next/dist/docs/` holds the docs for the exact
   installed Next.js version. For Fumadocs, read the installed packages' source and type
