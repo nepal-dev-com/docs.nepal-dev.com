@@ -6,6 +6,6 @@
       "main": true
     }
   },
-  "installCommand": "bunx bun@1.4.4 install --frozen-lockfile",
+  "installCommand": "bun install --frozen-lockfile",
   "buildCommand": "sh scripts/require-full-history.sh && bun run build"
 }
