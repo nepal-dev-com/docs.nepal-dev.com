@@ -143,7 +143,8 @@ The Vercel project, set once by the owner:
 ├── PRODUCT.md           # who the site is for and what it must do — read by UI design skills
 ├── DESIGN.md            # the home page's visual system: colours, type, components, motion
 ├── PROJECT_AGENTS.md    # for project repositories that include this one as a git submodule
-├── .claude/agent-skills/  # trusted agent skills, pinned; INDEX.md says which to load when
+├── .agent-skills/       # every agent skill: this project's own (nepal-dev-*), vendored and pinned, installed;
+│                        #   INDEX.md says which to load when. .claude/skills/ and .agents/skills/ link into it
 ├── content/             # every published page, one folder per package or project, at /<slug>
 │   ├── <project-slug>/  # catalogue entry, overview, use/ (dev/ + named lines), maintain/;
 │   │                    #   one folder per repository in each track for a multi-repository project
@@ -225,13 +226,22 @@ the shared files (ADR-0024).
 ### Skills
 
 Agent **skills** — packaged workflows for brainstorming, debugging, writing, security review and
-more — are vendored from trusted sources in [`.claude/agent-skills/`](.claude/agent-skills/INDEX.md),
+more — are vendored from trusted sources in [`.agent-skills/`](.agent-skills/INDEX.md),
 pinned to reviewed commits: Next.js, Algolia, Vercel, Anthropic, Trail of Bits and widely used
-community libraries. Agents read [`INDEX.md`](.claude/agent-skills/INDEX.md) and load only
-the skills a task needs; [`SOURCES.md`](.claude/agent-skills/SOURCES.md) records where each comes from. Skills from anywhere else need the owner's approval
+community libraries. Agents read [`INDEX.md`](.agent-skills/INDEX.md) and load only
+the skills a task needs; [`SOURCES.md`](.agent-skills/SOURCES.md) records where each comes from. Skills from anywhere else need the owner's approval
 ([ADR-0009](content/docs/maintain/adr/ADR-0009-trusted-agent-skills-are-vendored.mdx)). Skills are advice about
 *method*, not authority: **`AGENTS.md` and `content/docs/maintain/` outrank every skill**
 ([ADR-0006](content/docs/maintain/adr/ADR-0006-agent-skills-are-advisory.mdx)).
+
+The exception is this project's own skills, named `nepal-dev-*`. `AGENTS.md` and `PROJECT_AGENTS.md`
+hold the rules every task needs; these skills hold the depth (the ADR workflow, the stack and the
+repository map, documentation duties, diagrams, the security check, and a consuming repository's
+layout, pages and versions) and are as binding as those files. An agent reads one only when its
+task calls for it, so the rules it does not need stay out of its context
+([ADR-0045](content/docs/maintain/adr/ADR-0045-agents-md-keeps-the-standing-rules-and-in-house-skills-hold-the-rest.mdx)).
+Every skill is in `.agent-skills/`; `.claude/skills/` and `.agents/skills/` hold only relative
+symlinks into it.
 
 ### Documentation
 

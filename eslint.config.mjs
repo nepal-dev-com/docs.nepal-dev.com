@@ -9,8 +9,10 @@ const eslintConfig = defineConfig([
     'build/**',
     'next-env.d.ts',
     '.source/**',
-    // Agent skills, vendored and installed: third-party tooling, not this site's code (ADR-0009).
+    // Agent skills, vendored and installed: third-party tooling, not this site's code (ADR-0009, ADR-0045).
+    '.agent-skills/**',
     '.claude/**',
+    '.agents/**',
   ]),
 ]);
 

@@ -1,7 +1,8 @@
 # Agent skills — sources
 
 Provenance and trust policy for the skills in this folder
-([ADR-0009](../../content/docs/maintain/adr/ADR-0009-trusted-agent-skills-are-vendored.mdx)).
+([ADR-0009](../content/docs/maintain/adr/ADR-0009-trusted-agent-skills-are-vendored.mdx),
+[ADR-0045](../content/docs/maintain/adr/ADR-0045-agents-md-keeps-the-standing-rules-and-in-house-skills-hold-the-rest.mdx)).
 Which skill to load for which task is in [`INDEX.md`](./INDEX.md).
 
 ## Trust policy
@@ -35,6 +36,12 @@ better-trusted alternatives (`AGENTS.md` §12.2).
 `<owner>-<repository>/<path in that repository>`. Upstream paths are kept, so a skill's own
 relative links (`../../references/…`) still resolve. Each source folder holds the upstream
 licence file, where the repository has one.
+
+Beside the vendored sources sit this project's own skills, `nepal-dev-<topic>/`
+([In-house skills](#in-house-skills)), and the project copies of three installed skills,
+`archify/`, `hallmark/` and `design-taste-frontend/` ([Approved installed skills](#approved-installed-skills)).
+The installed copies ship scripts, so ESLint ignores this folder. `.claude/skills/` holds one
+relative symlink per skill and nothing else (ADR-0045).
 
 ## Sources
 
@@ -98,12 +105,25 @@ installed on that date; the routing and overrides are in
 |---|---|---|---|---|
 | impeccable | Plugin `impeccable@impeccable` 4.6.0 (engine 0.1.15), user scope; user skill `~/.claude/skills/impeccable` (engine 0.1.18) | [pbakaus/impeccable](https://github.com/pbakaus/impeccable) (the marketplace added); docs at impeccable.style | Apache-2.0 (the marketplace repository's `LICENSE`) | `SKILL.md`, `init.md`, `hooks.md`, the launcher; references pattern-scanned. The launcher downloads its engine only when the bundled binary is missing, checked against `engine-checksums.txt` |
 | ui-ux-pro-max | Plugin `ui-ux-pro-max@ui-ux-pro-max-skill` 2.15.0, project scope | NextLevelBuilder, [nextlevelbuilder/ui-ux-pro-max-skill](https://github.com/nextlevelbuilder/ui-ux-pro-max-skill) | MIT (`LICENSE`, "Copyright (c) 2024 Next Level Builder") | Main `SKILL.md` in full; the six sibling skills' frontmatter and workflows; scripts' commands, inputs and outputs. `search.py` is local, reads bundled CSVs, makes no network calls. The `design` scripts call Gemini, Atlas Cloud and MuAPI |
-| taste skills | v2 in `.claude/skills/design-taste-frontend` (project); the family in `~/.claude/skills/`, linked from the owner's dotfiles | Leonxlnx, [Leonxlnx/taste-skill](https://github.com/Leonxlnx/taste-skill) (named in the v2 `assets.mjs`) | None found in the installed copies. Its README notes that library photographs come from Lorem Picsum under the Unsplash licence, and that media found by `assets.mjs` keep their own licences | v2 `SKILL.md` and `README.md` in full, its scripts skimmed for network, browser and file writes; the other members' `SKILL.md` files for purpose and mandates |
-| Archify | 3.2.0 in `.claude/skills/archify` (project), installed by the owner on 2026-10-31 from archify.si | tt-a1i, [tt-a1i/archify](https://github.com/tt-a1i/archify); NOTICE also credits Cocoon AI | Apache-2.0 (`LICENSE`, `NOTICE`); `LICENSE-MIT` covers parts derived from Cocoon AI | `SKILL.md` in full; `bin/` and `scripts/` skimmed for network, browser, process and file writes. Needs Node 18+, installs nothing. `finalize`, `browser-check` and `visual-check` launch the installed Chrome headless with a temporary profile; `preview` starts a local server; `open-artifact` opens the browser; the update check fetches `tt-a1i.github.io/archify/skill-updates/archify/stable.json` and caches it in `~/Library/Caches/archify-skill`. The delivered HTML is self-contained (checked on 3.2.0: no external resources, no network calls, `localStorage` only for theme and motion); its `.delivery.json` receipt holds absolute local paths |
-| hallmark | v2.0.0 in `.claude/skills/hallmark` (project), installed by the owner on 2026-10-31 | "Hallmark contributors" (`LICENSE`); [Nutlope/hallmark](https://github.com/Nutlope/hallmark), named in `scripts/theme.mjs`; "Powered by Together AI" | MIT (`LICENSE`) | `SKILL.md` in full; every script skimmed for network, browser, install and file writes. No script installs packages. The render tier needs `puppeteer-core` and Chrome. `imagegen.mjs` calls `api.together.xyz` with `TOGETHER_API_KEY`; `theme.mjs photos --save` fetches from Wikimedia Commons; `install-hook.mjs` writes `.claude/settings.json` |
+| taste skills | v2 in `.agent-skills/design-taste-frontend` (project); the family in `~/.claude/skills/`, linked from the owner's dotfiles | Leonxlnx, [Leonxlnx/taste-skill](https://github.com/Leonxlnx/taste-skill) (named in the v2 `assets.mjs`) | None found in the installed copies. Its README notes that library photographs come from Lorem Picsum under the Unsplash licence, and that media found by `assets.mjs` keep their own licences | v2 `SKILL.md` and `README.md` in full, its scripts skimmed for network, browser and file writes; the other members' `SKILL.md` files for purpose and mandates |
+| Archify | 3.2.0 in `.agent-skills/archify` (project), installed by the owner on 2026-10-31 from archify.si | tt-a1i, [tt-a1i/archify](https://github.com/tt-a1i/archify); NOTICE also credits Cocoon AI | Apache-2.0 (`LICENSE`, `NOTICE`); `LICENSE-MIT` covers parts derived from Cocoon AI | `SKILL.md` in full; `bin/` and `scripts/` skimmed for network, browser, process and file writes. Needs Node 18+, installs nothing. `finalize`, `browser-check` and `visual-check` launch the installed Chrome headless with a temporary profile; `preview` starts a local server; `open-artifact` opens the browser; the update check fetches `tt-a1i.github.io/archify/skill-updates/archify/stable.json` and caches it in `~/Library/Caches/archify-skill`. The delivered HTML is self-contained (checked on 3.2.0: no external resources, no network calls, `localStorage` only for theme and motion); its `.delivery.json` receipt holds absolute local paths |
+| hallmark | v2.0.0 in `.agent-skills/hallmark` (project), installed by the owner on 2026-10-31 | "Hallmark contributors" (`LICENSE`); [Nutlope/hallmark](https://github.com/Nutlope/hallmark), named in `scripts/theme.mjs`; "Powered by Together AI" | MIT (`LICENSE`) | `SKILL.md` in full; every script skimmed for network, browser, install and file writes. No script installs packages. The render tier needs `puppeteer-core` and Chrome. `imagegen.mjs` calls `api.together.xyz` with `TOGETHER_API_KEY`; `theme.mjs photos --save` fetches from Wikimedia Commons; `install-hook.mjs` writes `.claude/settings.json` |
 
 Family membership of the user-scope taste skills rests on a shared install time and shared
 wording, not on a manifest. `hallmark` is a separate project, approved on its own (row below).
+
+## In-house skills
+
+The `nepal-dev-*` skills are this project's own (ADR-0045). They are written here and reviewed by
+the owner like a design document, so the trust policy above, which is for text from elsewhere,
+does not apply to them. Each is a folder at the top of this one, `nepal-dev-<topic>/SKILL.md`,
+with the same `name` in its frontmatter and a `description` that starts with when to read it. No
+vendored or installed skill may use the prefix.
+
+To add or change one: it needs an ADR when it changes how work is done (`AGENTS.md` §2). Put the
+hardest rules first and keep it under 500 lines. Link it in `.claude/skills/` and `.agents/skills/`,
+name it in the table in `AGENTS.md` §11 or `PROJECT_AGENTS.md` §13, and list it in
+[`INDEX.md`](./INDEX.md). The test checks each of these.
 
 ## Adding a skill
 
@@ -119,9 +139,12 @@ downloaded or copied until the owner says yes.**
    scan the rest against the policy above, and copy it unmodified to
    `<owner>-<repository>/<upstream path>` with its licence, omitting JavaScript/TypeScript.
    If the scan finds something the owner did not see in step 1, stop and report it.
-4. **Record.** Add the source row, omissions and anything rejected here; add the task row and
+4. **Link.** Add a relative symlink to the skill's folder in `.claude/skills/`, named after the
+   folder (`ln -s ../../.agent-skills/<path to the skill> .claude/skills/<skill folder>`). The test
+   in `src/lib/agent-docs.test.ts` fails without it.
+5. **Record.** Add the source row, omissions and anything rejected here; add the task row and
    any overrides to [`INDEX.md`](./INDEX.md).
-5. Leave the change uncommitted for the owner's review.
+6. Leave the change uncommitted for the owner's review.
 
 ## Updating
 
