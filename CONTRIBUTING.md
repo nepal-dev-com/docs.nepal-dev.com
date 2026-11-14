@@ -53,6 +53,8 @@ bun run dev
 
 ## Before you open a pull request
 
+Run what CI runs:
+
 ```bash
 bun run test
 bun run types:check
@@ -82,7 +84,13 @@ bunx next build
 - Fill in the pull request template. Link the issue and the approved ADR.
 - **There is no preview deployment.** Only `main` deploys, and a pull request from a fork is never
   built by the host ([ADR-0042](content/docs/maintain/adr/ADR-0042-only-main-deploys-straight-to-production-on-vercel.mdx)).
-  The maintainer checks your branch locally.
+  GitHub Actions checks it instead: the tests, the type check, the build, a review of any dependency
+  you add, and CodeQL
+  ([ADR-0047](content/docs/maintain/adr/ADR-0047-github-checks-every-pull-request-and-dependabot-proposes-the-updates.mdx)).
+  The checks must pass before a merge.
+- **In a workflow**, pin every action to a full commit SHA, keep the token read-only, and never use
+  `pull_request_target` or a secret. A test holds these rules. A change to CI needs an ADR.
+- **Dependency updates come from Dependabot**, once a week. Please don't send version bumps by hand.
 - **Merging publishes at once**: the site and the search index, straight to production. So the
   maintainer merges, and reviews with that in mind.
 

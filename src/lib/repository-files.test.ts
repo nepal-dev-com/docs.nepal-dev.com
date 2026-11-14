@@ -59,11 +59,10 @@ describe('the community files (ADR-0046 decisions 4 to 9)', () => {
     }
   });
 
-  test('GitHub has the forms and the owner, and no workflow', () => {
+  test('GitHub has the forms and the owner', () => {
     expect(readdirSync(join(root, '.github/ISSUE_TEMPLATE')).sort()).toEqual(['bug.yml', 'config.yml', 'docs.yml', 'proposal.yml']);
     expect(read('.github/ISSUE_TEMPLATE/config.yml')).toContain('blank_issues_enabled: false');
     expect(read('.github/CODEOWNERS')).toContain('* @puncoz');
     expect(existsSync(join(root, '.github/PULL_REQUEST_TEMPLATE.md'))).toBe(true);
-    expect(existsSync(join(root, '.github/workflows'))).toBe(false);
   });
 });

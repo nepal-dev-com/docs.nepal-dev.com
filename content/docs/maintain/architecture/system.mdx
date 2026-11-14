@@ -4,7 +4,7 @@ description: "How the site works as built: a Next.js and Fumadocs app rendering 
 ---
 
 - **Status:** Current
-- **Last updated:** 2026-11-05
+- **Last updated:** 2026-11-14
 - **Related ADRs:** [ADR-0013](../adr/ADR-0013-packages-and-projects-share-one-catalogue-shape.mdx),
   [ADR-0014](../adr/ADR-0014-home-page-is-a-search-first-release-map.mdx),
   [ADR-0015](../adr/ADR-0015-every-entry-lives-at-the-root-in-one-shape-and-one-look.mdx),
@@ -13,7 +13,8 @@ description: "How the site works as built: a Next.js and Fumadocs app rendering 
   [ADR-0020](../adr/ADR-0020-people-in-adrs-are-github-usernames-shown-as-profile-chips.mdx),
   [ADR-0021](../adr/ADR-0021-tests-run-with-bun-test.mdx),
   [ADR-0041](../adr/ADR-0041-readers-are-counted-by-vercel-and-by-google-with-consent.mdx),
-  [ADR-0042](../adr/ADR-0042-only-main-deploys-straight-to-production-on-vercel.mdx)
+  [ADR-0042](../adr/ADR-0042-only-main-deploys-straight-to-production-on-vercel.mdx),
+  [ADR-0047](../adr/ADR-0047-github-checks-every-pull-request-and-dependabot-proposes-the-updates.mdx)
 
 > Snapshot of the system as it stands today. Edit in place; never record what changed.
 
@@ -188,6 +189,21 @@ Vercel builds and serves the site (ADR-0042, ADR-0043). `vercel.json` holds the 
 
 There is no `ignoreCommand`, so nothing cancels a commit on `main`. A deployment that starts elsewhere (a fork's pull request
 someone authorizes, a `vercel` CLI deploy) runs with no variables, so its sync refuses and nothing is published.
+
+### Checks before the merge
+
+GitHub Actions checks every pull request to `main` and every push to it (ADR-0047). It never publishes and holds no secret.
+
+| File | What it does |
+|---|---|
+| `.github/workflows/ci.yml` | `verify`: Node 26, Bun 1.4.4, `bun install --frozen-lockfile`, then `bun run test`, `bun run types:check` and `bunx next build`, with no environment variable. `dependency-review`, on pull requests: fails a new direct dependency with a known vulnerability of moderate severity or higher, or a licence outside the allowed list |
+| `.github/workflows/codeql.yml` | `Analyze`: CodeQL for JavaScript and TypeScript and for the workflows, also weekly; findings go to the repository's Security tab |
+| `.github/dependabot.yml` | One grouped pull request a week for the Bun dependencies' minor and patch updates, one per major update, and one for the pinned actions; nothing younger than seven days; `@types/bun` and major versions of `@types/node` are left to the owner |
+
+Every action is pinned to a commit SHA, each workflow's token is read-only, and the trigger is `pull_request`, so a fork's
+code runs without a secret; `src/lib/github-automation.ts` holds these rules and its tests apply them to the files. Nothing
+merges by itself. A ruleset on `main`, set in GitHub, requires the checks on a pull request and lets the owner bypass it, so
+the owner's direct push is checked after it has published. The Bun version in `ci.yml` moves by hand with `@types/bun`.
 
 `package.json` pins Node with `engines.node` `26.x`. The variables live in Vercel's Production environment only, with
 `VERCEL_DEEP_CLONE=true` for the full history ([`../security/secrets.mdx`](../security/secrets.mdx)). A push to `main` publishes

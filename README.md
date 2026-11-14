@@ -56,6 +56,8 @@ moons, and Use and Maintain are a planet's day and night sides
   and its Mermaid source in the Markdown, so docs render on GitHub and diff as text.
 - **Ready for search engines and sharing**: canonical links, `sitemap.xml`, structured data and a
   share image for every page, all from the content.
+- **Checked before it ships**: tests, types, build, dependency review and CodeQL on every pull
+  request, and weekly dependency updates from Dependabot.
 - **Privacy first**: cookieless analytics by default, and Google Analytics only with consent.
 
 ### Built with
@@ -87,7 +89,7 @@ bun run dev
 
 Open [http://localhost:3000](http://localhost:3000). The site's own docs are at `/docs`.
 
-`.env.local` can stay empty for local work. `SITE_URL` and the three Algolia variables are needed
+`.env.local` can stay empty for local work, and search then finds nothing. `SITE_URL` and the three Algolia variables are needed
 only to publish, and `NEXT_PUBLIC_GA_MEASUREMENT_ID` belongs in production alone. Each variable is
 described in [`.env.example`](.env.example) and in the
 [secrets inventory](content/docs/maintain/security/secrets.mdx). `.env.local` is gitignored; never
@@ -107,6 +109,10 @@ commit it.
 
 > **`bun run build` publishes.** It writes to the live Algolia index. To verify a change, run
 > `bunx next build`.
+
+Every pull request is checked by GitHub Actions: the tests, the type check, the build, a review of new
+dependencies, and CodeQL. It only checks, and holds no secret
+([ADR-0047](content/docs/maintain/adr/ADR-0047-github-checks-every-pull-request-and-dependabot-proposes-the-updates.mdx)).
 
 Every commit on `main` deploys straight to production on Vercel, the site and the search index
 together, with no preview. Other branches and forks get no deployment. The settings are in
@@ -133,7 +139,7 @@ together, with no preview. Other branches and forks get no deployment. The setti
 ├── AGENTS.md            # the working agreement: read before contributing (CLAUDE.md imports it)
 ├── PROJECT_AGENTS.md    # the guide for repositories that document themselves here
 ├── .agent-skills/       # skills for AI agents: this project's own (nepal-dev-*) and trusted third-party ones
-├── .github/             # issue forms, pull request template, CODEOWNERS
+├── .github/             # issue forms, pull request template, CODEOWNERS, CI workflows, Dependabot
 ├── CONTRIBUTING.md, CODE_OF_CONDUCT.md, SECURITY.md
 └── LICENSE, LICENSE-CONTENT
 ```

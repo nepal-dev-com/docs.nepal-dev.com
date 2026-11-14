@@ -4,16 +4,17 @@ description: "The whole site as one data flow, from authoring through the build 
 ---
 
 - **Status:** Current
-- **Last updated:** 2026-11-05
+- **Last updated:** 2026-11-14
 - **Related ADRs:** ADR-0005, ADR-0010, ADR-0020, ADR-0013, ADR-0014, ADR-0016, [ADR-0041](../adr/ADR-0041-readers-are-counted-by-vercel-and-by-google-with-consent.mdx),
-  [ADR-0042](../adr/ADR-0042-only-main-deploys-straight-to-production-on-vercel.mdx)
+  [ADR-0042](../adr/ADR-0042-only-main-deploys-straight-to-production-on-vercel.mdx),
+  [ADR-0047](../adr/ADR-0047-github-checks-every-pull-request-and-dependabot-proposes-the-updates.mdx)
 
 > Snapshot of the system as it stands today. Edit in place; never record what changed.
 > Conventions: `content/docs/maintain/dfd/index.mdx`. Levels balance — a child's flows match its parent's.
 
 ## Scope
 
-The whole site: authoring, build, publishing and reading. No parent diagram.
+The whole site: authoring, checking, build, publishing and reading. No parent diagram.
 
 ## Diagram
 
@@ -23,6 +24,7 @@ The whole site: authoring, build, publishing and reading. No parent diagram.
 flowchart LR
   Owner["Owner<br/>(author)"]
   Consumer["Consuming repositories<br/>(submodule)"]
+  Contributor["Contributors<br/>and Dependabot"]
   Reader["Reader"]
   Bot["LLM tools / crawlers"]
   ALG["Algolia"]
@@ -33,6 +35,7 @@ flowchart LR
 
   subgraph Trust["Trust boundary — repository and Vercel's build of main"]
     D1[("D1 · content/ and diagrams/")]
+    P0(("0.1<br/>Check<br/>GitHub Actions, no secret"))
     D2[("D2 · Vercel Production env")]
     P1(("1.0<br/>Build"))
     P2(("2.0<br/>Sync search index"))
@@ -44,6 +47,8 @@ flowchart LR
 
   Owner -->|"MDX pages"| D1
   Consumer -->|"MDX pages in content/&lt;slug&gt;/,<br/>reviewed and committed by the owner"| D1
+  Contributor -->|"pull request"| P0
+  P0 -->|"checks; the owner merges"| D1
   D1 -->|"main, full clone"| P1
   P1 -->|"static pages, Markdown, llms.txt, share images,<br/>robots.txt, sitemap.xml, static.json"| P3
   P1 -->|"font request, no content"| GF
@@ -68,6 +73,7 @@ flowchart LR
 |---|---|
 | Owner | Writes the content; reviews and commits every change; a push to `main` publishes (ADR-0042) |
 | Consuming repositories | The owner's project and package repositories, which include this one as a git submodule and write their own folder, `content/<slug>/` (ADR-0010) |
+| Contributors and Dependabot | Open pull requests: people from a fork, and Dependabot with one grouped update a week for the Bun dependencies and the pinned actions (ADR-0047) |
 | Reader | Reads pages; searches from the browser, in the search dialog or the home page's hero field |
 | LLM tools / crawlers | Read the pages, the Markdown routes, `llms.txt` / `llms-full.txt`, `robots.txt` and `sitemap.xml` |
 | Google Fonts | Serves font files during the build, for `next/font` and the share images (ADR-0035) |
@@ -80,6 +86,7 @@ flowchart LR
 
 | # | Process | Input → Output |
 |---|---|---|
+| 0.1 | Check (GitHub Actions, on every pull request and push to `main`): the tests, the type check, `bunx next build`, dependency review and CodeQL | A pull request's tree → pass or fail on the pull request; findings in the Security tab |
 | 1.0 | Build (`next build`, on Vercel, from `main` only) | `content/` → static pages and routes |
 | 2.0 | Sync search index (`scripts/sync-content.ts`) | Built `static.json` → Algolia index |
 | 3.0 | Serve | Built output → readers and tools |
@@ -96,6 +103,7 @@ flowchart LR
 | Flow | Direction | Authorisation | Private content? |
 |---|---|---|---|
 | Pages from a consuming repository → `content/` | Submodule → repository | The owner's review and commit; agents there never commit (`PROJECT_AGENTS.md` §10) | Could carry a private project's text if written into its folder; the owner's review is the control, and `PROJECT_AGENTS.md` §2 forbids it |
+| Pull request → GitHub Actions | A fork or Dependabot → GitHub's runners | A read-only token and no secret (`pull_request`, never `pull_request_target`); the owner merges | No more than the repository holds, which is public. The runner cannot push, publish or reach Algolia (ADR-0047) |
 | `main` → Vercel build | GitHub → Vercel | Vercel's GitHub app; anyone who can push to `main` publishes | Would carry any page in `content/`. Other branches and forks get no deployment (ADR-0042) |
 | Records → Algolia | Vercel build → Algolia | `ALGOLIA_WRITE_KEY` | Would carry any page in `content/`. Each record also carries its scope `tag` and, for catalogue pages, `package`, `kind`, `ecosystem`, `track`, `line`, `channel` (ADR-0013) — public metadata about public pages |
 | Search query → Algolia | Browser → Algolia | Search-only key, public by design | Can read every record in the index. The query is the reader's text only; the dialog adds no filter |

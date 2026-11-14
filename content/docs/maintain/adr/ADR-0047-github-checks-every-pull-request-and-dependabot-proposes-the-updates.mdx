@@ -1,0 +1,193 @@
+---
+title: "ADR-0047 — GitHub checks every pull request, and Dependabot proposes the updates"
+description: "GitHub Actions runs the tests, the type check and the build on every pull request, with dependency review and CodeQL, and Dependabot opens one grouped update a week."
+---
+
+- **Status:** Approved
+- **Date:** 2026-11-14
+- **Deciders:** [@puncoz](https://github.com/puncoz)
+- **Approved by:** [@puncoz](https://github.com/puncoz)
+- **Approved on:** 2026-11-14
+- **Supersedes:** [ADR-0046](./ADR-0046-the-code-is-mit-the-docs-are-cc-by-and-the-repository-gets-its-community-files.mdx) in part: the last sentence of its decision 8, "No workflow"
+- **Superseded by:** —
+- **Design documents:** [`../architecture/system.mdx`](../architecture/system.mdx), [`../dfd/system.mdx`](../dfd/system.mdx),
+  [`../security/checklist.mdx`](../security/checklist.mdx), [`../security/threat-model.mdx`](../security/threat-model.mdx),
+  `README.md`, `CONTRIBUTING.md`. Nothing a reader of the site sees changes, so there is no app flow (ADR-0008).
+
+## Context
+
+- A merge to `main` publishes the site and the search index at once, with no preview (ADR-0042,
+  ADR-0043). Nothing checks a pull request before that: the maintainer runs the tests, the type
+  check and the build locally, by hand.
+- Dependencies are updated by hand. Nothing reports a dependency with a published vulnerability.
+- `.github/` holds issue forms, a pull request template and `CODEOWNERS`, and no workflow. ADR-0046
+  left CI to its own ADR, and a test asserts that `.github/workflows` does not exist.
+- The verification set is `bun run test`, `bun run types:check` and `bunx next build`. `bun run lint`
+  does not run: `typescript-eslint` does not support TypeScript 7. `bun run build` publishes to the
+  live search index and is never a check (`AGENTS.md` §5).
+- The build needs no secret. `SITE_URL` and the Algolia variables are read only to publish; without
+  `SITE_URL` every page is built `noindex` (ADR-0035).
+- `package.json` asks for Node 26 and `@types/bun` is pinned to 1.4.4. `vercel.json` deploys `main`
+  only, so a branch Dependabot pushes gets no deployment.
+- `.agent-skills/archify/` holds a `package.json` of its own, which is a vendored skill's and not
+  this site's.
+- The owner chose, when asked on 2026-11-14: all four of Dependabot updates, CI checks, dependency
+  review and CodeQL; one grouped update a week with a seven-day cooldown; and a ruleset on `main`
+  that requires the checks on pull requests and lets the owner bypass it.
+
+## Decision
+
+1. **GitHub Actions is adopted as the CI**, for checks only. It never publishes: no workflow runs
+   `bun run build`, a deploy, or the search sync, and none is given a secret. Vercel stays the only
+   thing that publishes (ADR-0042).
+2. **`.github/workflows/ci.yml`** runs on every pull request to `main` and every push to `main`. One
+   job, `verify`: check out, set up Node 26 and Bun 1.4.4, `bun install --frozen-lockfile`, then
+   `bun run test`, `bun run types:check` and `bunx next build`. No environment variable is set.
+   `bun run lint` joins when the ADR that makes it run again is approved.
+3. **Dependency review** is a second job in `ci.yml`, `dependency-review`, on pull requests only. It
+   fails a pull request that adds a dependency with a known vulnerability of moderate severity or
+   higher, or one whose licence is not in the allowed list: `MIT`, `ISC`, `Apache-2.0`,
+   `BSD-2-Clause`, `BSD-3-Clause`, `0BSD`, `CC0-1.0`, `Unlicense`, `BlueOak-1.0.0`, `MPL-2.0`,
+   `CC-BY-4.0`, `Python-2.0`. A licence outside the list is a question for the owner, not an
+   automatic no. It does not replace the rule that a new dependency needs an ADR (`AGENTS.md` §3).
+4. **`.github/workflows/codeql.yml`** runs CodeQL on pull requests to `main`, on pushes to `main`,
+   and weekly, for `javascript-typescript` and for `actions` (the workflows themselves), with no
+   build step. Findings go to the repository's Security tab, which only maintainers see.
+5. **Every workflow is hardened the same way**, and a test holds it:
+   - each action is pinned to a full commit SHA, with its version in a comment;
+   - `permissions` is set at the top of each workflow to `contents: read`, and a job is given more
+     only where it must be (`security-events: write` for CodeQL);
+   - the trigger is `pull_request`, never `pull_request_target`, so a fork's code runs with a
+     read-only token and no secret;
+   - no workflow reads `secrets.*` other than the token GitHub provides;
+   - the checkout does not keep its credentials (`persist-credentials: false`);
+   - each job has a timeout, and a newer run of the same pull request cancels the older one.
+6. **`.github/dependabot.yml`** opens version updates weekly, on Monday:
+   - **`bun`**, directory `/` only, so the vendored skill's manifest is never touched. All minor and
+     patch updates arrive in one grouped pull request; each major update arrives by itself.
+   - **`github-actions`**, directory `/`, in one grouped pull request, which moves the pinned SHAs.
+   - **A seven-day cooldown** on both: a release younger than seven days is not proposed. Security
+     updates are not delayed by it.
+   - **Not proposed:** `@types/bun`, which moves by hand together with the Bun version in `ci.yml`,
+     and major versions of `@types/node`, which follow the Node version in `package.json`.
+   - Commits are prefixed `chore(deps)`, and each pull request is labelled `dependencies`.
+7. **Nothing merges by itself.** There is no auto-merge. The maintainer merges a Dependabot pull
+   request as any other, knowing that the merge publishes. An update Dependabot proposes within a
+   major version an approved ADR already chose needs no new ADR; a major version of the framework,
+   Fumadocs, TypeScript or the build tooling is a decision, and takes one.
+8. **Settings the owner switches on in GitHub**, since no file can:
+   - Dependabot alerts and Dependabot security updates;
+   - secret scanning with push protection;
+   - CodeQL *default setup* left off, because `codeql.yml` is the setup;
+   - a ruleset on `main`: a pull request is required, with the status checks `verify`,
+     `dependency-review` and `Analyze` passing; force pushes and deletion are blocked; the
+     repository admin role is on the bypass list, so the owner still pushes to `main` directly;
+   - the label `dependencies`, beside `bug`, `documentation` and `proposal` that the issue forms use.
+
+## Options considered
+
+| Option | Pros | Cons | Verdict |
+|---|---|---|---|
+| A — CI, dependency review, CodeQL and Dependabot, as above | A broken or vulnerable change is caught before the merge that publishes it | Four things to keep; a weekly pull request to review | Chosen |
+| B — Dependabot without CI | One file | Updates arrive unchecked, and merging one publishes | Rejected |
+| C — CI on Vercel preview builds | No GitHub Actions | ADR-0042 turned previews off; `bun run build` there would publish | Rejected |
+| D — CodeQL default setup, no workflow file | Nothing in the repository | The setup is invisible in a diff and cannot be pinned or tested | Rejected by the owner's choice of a workflow |
+| E — Monthly updates | Fewer deploys | Dependencies up to a month behind | Rejected by the owner |
+| F — Security updates only | Least noise | Versions drift until a vulnerability forces a large jump | Rejected by the owner |
+| G — Checks required for everyone, the owner included | Strongest | Ends direct commits to `main`, and changes `AGENTS.md` §3 | Rejected by the owner |
+| H — Auto-merge for patch updates | Less review | A merge is a production deploy nobody looked at | Rejected |
+| I — Actions pinned by tag | Easier to read | A tag can be moved to other code | Rejected |
+
+## Consequences
+
+**Positive**
+
+- Every pull request, a fork's and Dependabot's included, shows whether the tests, the type check
+  and the build pass, before the merge that publishes.
+- A vulnerable or oddly licensed new dependency is stopped at the pull request.
+- Updates arrive in one reviewable pull request a week, a week old at the least.
+
+**Negative / accepted trade-offs**
+
+- GitHub Actions is a second third party that runs this repository's code. It holds no secret.
+- The Bun version is written in `ci.yml` and in `@types/bun`, and the two are kept in step by hand.
+- The owner's direct pushes to `main` are checked after they publish, not before.
+- CI builds without `SITE_URL`, so it does not exercise the publishing path. That is the point.
+- A grouped update that fails must be split by hand to find the cause.
+- The ruleset, the alerts and secret scanning live in GitHub's settings, where no test sees them.
+
+## Content invariants
+
+None changed. §6.1: CI reads the same public repository everyone can, and publishes nothing. §6.2
+to §6.5 gain a check: the build that validates every page's frontmatter now runs on every pull
+request.
+
+## Security considerations
+
+- **What it handles:** the repository's contents, which are public. No secret, no private content,
+  no reader data.
+- **A fork's pull request** runs with a read-only token and no secret, because the trigger is
+  `pull_request`. A workflow file changed in a fork's pull request runs as changed, with that same
+  read-only token. `pull_request_target` is never used.
+- **Supply chain:** actions are pinned to commit SHAs; Dependabot moves them, a week after release.
+  The install is from the frozen lockfile. The cooldown keeps a freshly published, possibly
+  compromised release out for seven days.
+- **No path to publishing:** Vercel publishes on a push to `main`, and no workflow can push: the
+  token is read-only and the checkout keeps no credentials. `ALGOLIA_WRITE_KEY` is never given to
+  GitHub.
+- **What leaves the system:** nothing new. GitHub already hosts the repository. CodeQL results and
+  Dependabot alerts stay in the repository's Security tab.
+- **Residual risk accepted:** a pinned SHA stops an action changing under its tag, but not an
+  action or a dependency that was already malicious when it was pinned: an update a week old that
+  passes the checks can still be merged by a person, and review is the control. The owner's bypass
+  means a direct push is not gated.
+- The checks this adds to the audit are written into
+  [`../security/checklist.mdx`](../security/checklist.mdx#tool-specific-checks).
+
+**Assumptions, to be checked on implementation and reported:** that `bunx next build` passes with no
+environment variable set, as on a fresh clone; that GitHub's dependency graph reads `bun.lock`, which
+dependency review needs to see transitive dependencies (if it reads only `package.json`, the ADR's
+decision 3 covers direct dependencies only, and the owner is told); and that the allowed-licence
+list covers every dependency in today's lockfile.
+
+## Implementation notes
+
+- [x] `.github/workflows/ci.yml`: jobs `verify` and `dependency-review`, to decisions 2, 3 and 5.
+- [x] `.github/workflows/codeql.yml`: job `Analyze`, to decisions 4 and 5. Both languages are analysed in the one job,
+      so the status check has the one name.
+- [x] `.github/dependabot.yml`, to decision 6.
+- [x] `src/lib/algolia.ts`: a build off Vercel completes without the Algolia variables, so decision 2 holds as written.
+- [x] Actions pinned to the commits of `actions/checkout` v7.0.1, `actions/setup-node` v7.1.0, `oven-sh/setup-bun` v2.2.0,
+      `actions/dependency-review-action` v5.0.0 and `github/codeql-action` v4.39.3, each read with `git ls-remote`.
+- [x] ADR-0046: `Superseded by` this ADR in part. Its Decision is not edited.
+- [x] Tests — `src/lib/github-automation.ts` holds the rules of decisions 1, 5 and 6, and
+      `src/lib/github-automation.test.ts` applies them to the files and to samples that break each one. It also
+      holds the Bun and Node versions in `ci.yml` to `package.json`. The workflows cannot run locally: their first
+      run on GitHub is the check, and the owner sees it.
+- [x] `bun run test`, `bun run types:check` and `bunx next build` pass. `bun run lint` does not run today.
+- [ ] For the owner, outside the repository: the settings of decision 8.
+
+**What the assumptions came to:**
+
+- `bunx next build` did not pass without variables: `src/lib/algolia.ts` made the search client from the two public
+  Algolia variables while pages prerendered. The owner's answer on 2026-11-14: CI builds without Algolia, and Vercel
+  keeps `bun run build`. So off Vercel the client now takes a placeholder pair when they are unset, and search in
+  that build finds nothing; on Vercel a missing one still fails the build (`searchCredentials`, tested). The build
+  then passes with every variable of `.env.example` set to nothing, which is close to a fresh clone, not the same:
+  the first run of `verify` settles it.
+- GitHub's dependency graph does not list `bun.lock` among the files it reads, so dependency review sees the direct
+  dependencies in `package.json` only, as decision 3 allowed for.
+- The allowed-licence list covers every installed package but one: `@img/sharp-libvips-*`, a transitive dependency
+  of Next.js, is `LGPL-3.0-or-later`. Dependency review does not see it today. Whether to allow that licence is
+  the owner's to decide if it ever fails a pull request.
+
+## Docs to update on implementation
+
+- [x] [`../architecture/system.mdx`](../architecture/system.mdx) — the checks before the merge
+- [x] [`../dfd/system.mdx`](../dfd/system.mdx) — contributors, Dependabot and the check, and its diagram
+- [x] [`../security/secrets.mdx`](../security/secrets.mdx) — what a build without the Algolia variables does
+- [x] [`../security/checklist.mdx`](../security/checklist.mdx) — the tool-specific checks for GitHub Actions and Dependabot
+- [x] [`../security/threat-model.mdx`](../security/threat-model.mdx) — the pull request checks, their boundary and the accepted risks
+- [x] `AGENTS.md` §10 and `nepal-dev-stack-and-map` — the new files, and CI in the stack
+- [x] `README.md`, `CONTRIBUTING.md` and `.github/PULL_REQUEST_TEMPLATE.md` — the checks a pull request gets
+- [x] [`./index.mdx`](./index.mdx) — index row and status
