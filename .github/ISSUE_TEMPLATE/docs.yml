@@ -1,0 +1,27 @@
+name: Documentation problem
+description: A page is wrong, out of date, unclear or missing.
+labels: [documentation]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        A package's or project's pages are written by its own maintainers. This issue reaches the site's maintainer, who passes it on.
+  - type: input
+    id: page
+    attributes:
+      label: Page
+      description: The address of the page, or where a page is missing.
+      placeholder: https://docs.nepal-dev.com/…
+    validations:
+      required: true
+  - type: textarea
+    id: problem
+    attributes:
+      label: What is wrong
+      description: Quote the text if you can, and say what the code or the package actually does.
+    validations:
+      required: true
+  - type: textarea
+    id: fix
+    attributes:
+      label: What it should say

@@ -90,6 +90,9 @@ private, so there is no setting to look for.
 - **A public project's pages carry nothing internal**: no secrets, tokens, internal hostnames,
   client names, personal data, or private code copied from your repository.
 - **Unsure whether something is public? Ask the owner.** Never decide it yourself.
+- **What you publish here is licensed.** Your pages and diagrams are published under
+  [CC BY 4.0](LICENSE-CONTENT), and code examples inside a page under [MIT](LICENSE) (ADR-0046). If
+  your project cannot accept that, don't publish here: ask the owner.
 
 ## 3. Where everything goes
 

@@ -352,6 +352,8 @@ owner, not into the maintainer documentation**, until they are fixed: those page
 ├── .agent-skills/         # every skill: nepal-dev-* (this project's own), vendored, installed; INDEX.md (§12)
 ├── .claude/skills/, .agents/skills/   # links into .agent-skills/, nothing else (ADR-0045)
 ├── README.md, PRODUCT.md, DESIGN.md   # overview; product truth and visual system (not published, §8)
+├── CONTRIBUTING.md, CODE_OF_CONDUCT.md, SECURITY.md, .github/   # for people on GitHub; they add no rule (ADR-0046)
+├── LICENSE, LICENSE-CONTENT   # MIT for code; CC BY 4.0 for content/ and diagrams/ (ADR-0046)
 ├── content/               # PUBLISHED: every page readers see; one folder per entry, at /<slug>
 │   └── docs/maintain/     # this site's own decisions (adr/) and design documents
 ├── diagrams/              # Archify diagrams, one pair each; the HTML is PUBLISHED

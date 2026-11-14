@@ -1,0 +1,32 @@
+name: Proposal
+description: A feature, a change to how the site works, or a new package or project to document.
+labels: [proposal]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Every feature and functional change here starts with an ADR that the owner approves before anything is built (ADR-0001). This issue is where that conversation starts; please do not open a pull request with the code first.
+  - type: textarea
+    id: problem
+    attributes:
+      label: The problem
+      description: Who has it, and what they cannot do today.
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: What you propose
+    validations:
+      required: true
+  - type: textarea
+    id: options
+    attributes:
+      label: Other options you considered
+  - type: checkboxes
+    id: public
+    attributes:
+      label: Public only
+      options:
+        - label: Nothing in this proposal is private. Everything in this repository is published.
+          required: true

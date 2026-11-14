@@ -57,6 +57,12 @@ What is installed **today** (verified from `package.json`, `node_modules` and th
 │                        #   start at INDEX.md (§12, ADR-0009, ADR-0045); not published
 ├── .claude/skills/, .agents/skills/   # relative symlinks into .agent-skills/, nothing else (ADR-0045)
 ├── README.md            # project overview and getting started
+├── CONTRIBUTING.md      # how to contribute, for people; restates this agreement and adds no rule (ADR-0046)
+├── CODE_OF_CONDUCT.md   # Contributor Covenant 2.1 (ADR-0046)
+├── SECURITY.md          # how to report a vulnerability or leaked private content, privately (ADR-0046)
+├── LICENSE              # MIT: the code (ADR-0046)
+├── LICENSE-CONTENT      # CC BY 4.0: content/ and diagrams/ (ADR-0046)
+├── .github/             # issue forms, pull request template, CODEOWNERS; no workflows (ADR-0046)
 ├── PRODUCT.md           # product truth for UI work (impeccable reads it); not published (§8)
 ├── DESIGN.md            # the home page's visual system, with .impeccable/design.json; not published (§8)
 ├── PROJECT_AGENTS.md    # guide for repositories that include this one as a git submodule (§1)

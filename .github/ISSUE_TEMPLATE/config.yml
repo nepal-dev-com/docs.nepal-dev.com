@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Report a security problem or leaked private content
+    url: https://github.com/nepal-dev-com/docs.nepal-dev.com/security/policy
+    about: Never in a public issue. The security policy says how to report it privately.
+  - name: Read the docs
+    url: https://docs.nepal-dev.com/docs
+    about: How the site works, and every decision behind it.
