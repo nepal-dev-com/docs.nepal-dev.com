@@ -1,0 +1,161 @@
+{
+  "schema_version": 2,
+  "diagram_type": "workflow",
+  "meta": {
+    "title": "Trust boundaries",
+    "subtitle": "What crosses from the maintainer's machine through GitHub and npm into a consumer's application",
+    "quality_profile": "showcase",
+    "output": "trust-boundaries.html"
+  },
+  "lanes": [
+    {
+      "id": "maintainer",
+      "label": "Maintainer machine"
+    },
+    {
+      "id": "github",
+      "label": "GitHub"
+    },
+    {
+      "id": "registry",
+      "label": "npm"
+    },
+    {
+      "id": "consumer",
+      "label": "Consumer application"
+    }
+  ],
+  "mainPath": [
+    "source",
+    "repo",
+    "actions",
+    "npm",
+    "package"
+  ],
+  "nodes": [
+    {
+      "id": "dev",
+      "lane": "maintainer",
+      "col": 0,
+      "type": "backend",
+      "label": "Dev dependencies",
+      "sublabel": "typescript · tsdown · @types/bun · del-cli"
+    },
+    {
+      "id": "source",
+      "lane": "maintainer",
+      "col": 1,
+      "type": "database",
+      "label": "Source + lockfile"
+    },
+    {
+      "id": "secrets",
+      "lane": "github",
+      "col": 1,
+      "type": "security",
+      "label": "Repository secrets"
+    },
+    {
+      "id": "repo",
+      "lane": "github",
+      "col": 2,
+      "type": "database",
+      "label": "Repository"
+    },
+    {
+      "id": "actions",
+      "lane": "github",
+      "col": 3,
+      "type": "cloud",
+      "label": "Actions",
+      "sublabel": "checkout · setup-node · setup-bun · cache · codecov",
+      "width": 232
+    },
+    {
+      "id": "npm",
+      "lane": "registry",
+      "col": 4,
+      "type": "external",
+      "label": "npm registry"
+    },
+    {
+      "id": "user",
+      "lane": "consumer",
+      "col": 3,
+      "type": "external",
+      "label": "User input"
+    },
+    {
+      "id": "app",
+      "lane": "consumer",
+      "col": 4,
+      "type": "frontend",
+      "label": "App code"
+    },
+    {
+      "id": "package",
+      "lane": "consumer",
+      "col": 5,
+      "type": "backend",
+      "label": "nepali-number",
+      "sublabel": "no dependencies"
+    }
+  ],
+  "edges": [
+    {
+      "id": "build",
+      "from": "dev",
+      "to": "source",
+      "label": "runs at build",
+      "variant": "dashed",
+      "role": "branch"
+    },
+    {
+      "id": "push",
+      "from": "source",
+      "to": "repo",
+      "variant": "emphasis"
+    },
+    {
+      "id": "checkout",
+      "from": "repo",
+      "to": "actions",
+      "variant": "emphasis"
+    },
+    {
+      "id": "inject",
+      "from": "secrets",
+      "to": "actions",
+      "variant": "security",
+      "role": "branch"
+    },
+    {
+      "id": "publish",
+      "from": "actions",
+      "to": "npm",
+      "label": "publish",
+      "variant": "emphasis"
+    },
+    {
+      "id": "install",
+      "from": "npm",
+      "to": "package",
+      "label": "install",
+      "variant": "emphasis"
+    },
+    {
+      "id": "input",
+      "from": "user",
+      "to": "app",
+      "variant": "default",
+      "role": "branch"
+    },
+    {
+      "id": "call",
+      "from": "app",
+      "to": "package",
+      "variant": "default",
+      "role": "branch"
+    }
+  ]
+}

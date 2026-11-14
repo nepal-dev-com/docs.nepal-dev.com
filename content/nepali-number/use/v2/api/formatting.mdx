@@ -1,0 +1,134 @@
+---
+title: "Formatting"
+description: "Format numbers with lakh and crore grouping, fixed precision and Nepali digits using formatNepaliNumber, addNepaliCommas and removeFormatting."
+---
+
+> Every output below was produced by running the built package.
+
+Display formatting with Nepali (lakh/crore) grouping, fixed precision and Nepali digits.
+
+## Exports
+
+| Export | Signature | Returns |
+|---|---|---|
+| `formatNepaliNumber` | `(number: number \| string, options?: FormatOptions) => string` | Grouped, rounded, Nepali-digit string |
+| `addNepaliCommas` | `(number: string \| number) => string` | The same digits with lakh/crore commas inserted |
+| `removeFormatting` | `(formattedString: string \| number) => number` | The raw number behind a formatted string |
+
+---
+
+## `formatNepaliNumber(number, options?)`
+
+The all-in-one display formatter: rounds to `precision`, drops an all-zero decimal part, groups
+with Nepali commas, and converts to Nepali digits.
+
+```ts
+formatNepaliNumber(number: number | string, options?: FormatOptions): string
+```
+
+| Option | Type | Default | Effect |
+|---|---|---|---|
+| `useNepaliDigits` | `boolean` | `true` | `false` keeps English digits |
+| `addCommas` | `boolean` | `true` | `false` skips grouping |
+| `precision` | `number` | `2` | Decimal places, applied with `Number.prototype.toFixed` |
+| `trimZero` | `boolean` | `true` | Drops the decimal part when it is all zeros (`.00`) — a partly-zero part such as `.50` is kept |
+| `currency` | `boolean` | — | **Accepted but ignored** — use [`toNepaliCurrency`](./currency.mdx) |
+| `currencySymbol` | `string` | — | **Accepted but ignored** — use [`toNepaliCurrency`](./currency.mdx) |
+
+**Returns.** The formatted string. Zero, `NaN` and unparseable input return `"०"` (or
+`"०.००"` with `trimZero: false`).
+
+```ts
+import { formatNepaliNumber } from "nepali-number"
+
+formatNepaliNumber(1234567)                            // → "१२,३४,५६७"
+formatNepaliNumber(12345678)                           // → "१,२३,४५,६७८"
+formatNepaliNumber(1234567.891)                        // → "१२,३४,५६७.८९"
+formatNepaliNumber(1234567.5)                          // → "१२,३४,५६७.५०"
+formatNepaliNumber(1000.001)                           // → "१,०००"      .00 trimmed
+formatNepaliNumber(999)                                // → "९९९"
+formatNepaliNumber(-1234567)                           // → "-१२,३४,५६७"
+formatNepaliNumber("१२३४५६")                           // → "१,२३,४५६"
+formatNepaliNumber("12३4")                             // → "१,२३४"
+formatNepaliNumber(0)                                  // → "०"
+formatNepaliNumber("")                                 // → "०"
+formatNepaliNumber("abc")                              // → "०"
+
+formatNepaliNumber(1234567, { useNepaliDigits: false }) // → "12,34,567"
+formatNepaliNumber(1234567, { addCommas: false })       // → "१२३४५६७"
+formatNepaliNumber(1234.567, { precision: 0 })          // → "१,२३५"
+formatNepaliNumber(1234.5, { precision: 3 })            // → "१,२३४.५००"
+formatNepaliNumber(0, { trimZero: false })              // → "०.००"
+```
+
+**Notes.**
+
+- **String input with commas is not supported**: `formatNepaliNumber("1,234")` → `"१"`. Strip
+  commas first with [`removeFormatting`](#removeformattingformattedstring)
+  ([limitations](./limitations.mdx#formatnepalinumber-stops-at-the-first-comma)).
+- Rounding uses `toFixed`, so binary floating point shows through:
+  `formatNepaliNumber(1.005)` → `"१"` ([limitations](./limitations.mdx#floating-point-rounding)).
+
+---
+
+## `addNepaliCommas(number)`
+
+Inserts Nepali/Indian grouping commas into an English-digit number string: the last three
+digits, then groups of two. Nothing else changes — no rounding, no digit conversion.
+
+```ts
+addNepaliCommas(number: string | number): string
+```
+
+| Parameter | Type | Default | Notes |
+|---|---|---|---|
+| `number` | `string \| number` | — | **English digits only**; a leading `-` and a decimal part are preserved |
+
+```ts
+import { addNepaliCommas } from "nepali-number"
+
+addNepaliCommas(1234567)          // → "12,34,567"
+addNepaliCommas("12345678")       // → "1,23,45,678"
+addNepaliCommas("-12345678.9")    // → "-1,23,45,678.9"
+addNepaliCommas(1234.5678)        // → "1,234.5678"   decimals untouched
+addNepaliCommas(1000)             // → "1,000"
+addNepaliCommas(999)              // → "999"
+addNepaliCommas(0)                // → "0"
+addNepaliCommas("")               // → ""
+addNepaliCommas("abc")            // → "abc"
+```
+
+**Notes.** Nepali-digit input is grouped wrongly: `addNepaliCommas("१२३४५६७")` →
+`"१२३४,५६७"`. Convert with `toEnglish` first, or use `formatNepaliNumber`
+([limitations](./limitations.mdx#addnepalicommas-needs-english-digits)).
+
+---
+
+## `removeFormatting(formattedString)`
+
+Reverses formatting: converts Nepali digits, removes commas, whitespace and every character
+that is not a digit, `.` or `-` (currency symbols included), and returns a `number`.
+
+```ts
+removeFormatting(formattedString: string | number): number
+```
+
+| Parameter | Type | Default | Notes |
+|---|---|---|---|
+| `formattedString` | `string \| number` | — | Any formatted amount |
+
+**Returns.** A `number`. Empty or digit-free input returns **`0`**; input whose remaining
+characters do not form a number returns **`NaN`**.
+
+```ts
+import { removeFormatting } from "nepali-number"
+
+removeFormatting("रू १२,३४,५६७.८९")   // → 1234567.89
+removeFormatting("12,34,567")         // → 1234567
+removeFormatting("-१,२३४.५")          // → -1234.5
+removeFormatting("12३4")              // → 1234
+removeFormatting(1234)                // → 1234
+removeFormatting("")                  // → 0
+removeFormatting("abc")               // → 0
+removeFormatting("1-2")               // → NaN
+```

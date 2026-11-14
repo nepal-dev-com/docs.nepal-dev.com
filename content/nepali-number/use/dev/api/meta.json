@@ -1,0 +1,13 @@
+{
+  "title": "API reference",
+  "pages": [
+    "index",
+    "conversion",
+    "formatting",
+    "words",
+    "currency",
+    "utils",
+    "types",
+    "limitations"
+  ]
+}

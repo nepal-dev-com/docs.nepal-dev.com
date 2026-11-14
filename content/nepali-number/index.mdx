@@ -1,0 +1,48 @@
+---
+title: nepali-number
+description: "Convert, format and spell out numbers in Nepali (Devanagari) from JavaScript or TypeScript: digits, lakh and crore grouping, words, ordinals and Nepali Rupees."
+---
+
+`nepali-number` is a zero-dependency TypeScript library for working with numbers in Nepali
+(Devanagari) script. It ships ESM, CommonJS, UMD and IIFE builds with type declarations, so the
+same code runs in Node.js, Bun, Deno, bundlers and a plain `<script>` tag.
+
+```ts
+import { toNepali, formatNepaliNumber, toNepaliWords, toNepaliCurrency } from "nepali-number"
+
+toNepali(2081)                    // → "२०८१"
+formatNepaliNumber(1234567)       // → "१२,३४,५६७"
+toNepaliWords(1234567)            // → "बाह्र लाख चौंतीस हजार पाँच सय सतसट्ठी"
+toNepaliCurrency(1234567.89)      // → "रू १२,३४,५६७.८९"
+```
+
+## What it does
+
+- **Digits both ways**: `0-9` ⇄ `०-९`, in plain numbers or inside any text.
+- **Nepali grouping**: `1,23,45,678`, with precision and trailing-zero control.
+- **Words**: Nepali cardinals (`एक सय तेईस`), English words with Nepali scales (`twelve lakh`),
+  Nepali ordinals (`पाँचौं`) and short forms (`१२ लाख`).
+- **Currency**: `रू १२,३४,५६७.८९` as a figure, and rupees and paisa in words
+  (`बाह्र रुपैयाँ पचास पैसा`).
+- **Utilities**: normalise typed input, detect and validate digit systems, pad and round.
+- **Any digits in**: every function reads English, Nepali or mixed digits.
+- **Never throws** for its declared input types: invalid input returns a documented default.
+
+It exports 21 named, pure functions and has no runtime dependencies.
+
+## Install
+
+```bash
+npm install nepali-number
+```
+
+## Where to go next
+
+| You want to | Read |
+|---|---|
+| Install it and import it in your runtime | [Getting started](./use/v2/getting-started.mdx) |
+| Solve a common task | [Recipes](./use/v2/guides/recipes.mdx) |
+| Look up a function, its options and its outputs | [API reference](./use/v2/api/index.mdx) |
+| Know the edge cases before relying on them | [Limitations](./use/v2/api/limitations.mdx) |
+| Move a codebase from v1 | [Migrating from v1 to v2](./use/v2/guides/migration-v1-to-v2.mdx) |
+| Change, review or release the package | [Maintainer documentation](./maintain/index.mdx) |

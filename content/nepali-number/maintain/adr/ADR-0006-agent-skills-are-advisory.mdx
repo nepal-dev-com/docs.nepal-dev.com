@@ -1,0 +1,82 @@
+---
+title: "ADR-0006 — Agent skills are advisory; this repository's documentation is binding"
+description: "Agent skills are used freely for method, but they never grant a permission that nepali-number's working agreement withholds."
+---
+
+- **Status:** Proposed
+- **Date:** 2026-10-30
+- **Deciders:** [@puncoz](https://github.com/puncoz)
+- **Approved by:** —
+- **Approved on:** —
+- **Supersedes:** —
+- **Superseded by:** —
+- **Semver impact:** none (process only)
+- **Design documents:** `AGENTS.md` §12
+
+## Context
+
+Contributors may have a library of installed skills (brainstorming, debugging, planning, TDD,
+TypeScript, code review, release management…). Used, they make work consistent. But they are
+written for generic projects, and several carry process opinions that contradict this
+repository: a brainstorming skill that writes specs to its own folder and commits them, a
+planning skill that proceeds straight to implementation, a release skill that bumps the version
+and publishes, skills that add dependencies freely.
+
+## Decision
+
+1. **Use skills**: invoke any skill that fits, and name it. Process skills come before
+   implementation skills.
+2. **Precedence**: `AGENTS.md` and `docs/` are binding; skills are advisory; default behaviour
+   comes last.
+3. **No skill grants a permission this repository withholds**: code before approval, commits,
+   tags, version bumps or publishing, new dependencies or tooling, a different docs layout,
+   output changes without a semver decision, *what*-comments, language or security decisions,
+   and tool behaviour asserted from recall.
+4. **Skills stop at the gate**: a workflow that ends in "implement" ends here at
+   `Status: Proposed`; one that ends in "commit" or "publish" ends at a proposed commit message.
+5. **Report what was dropped**: when a rule cuts a skill short, say which skill, which step,
+   and which rule.
+6. **No skills are vendored** into the repository. Any installed skill may be used under this
+   file. Vendoring a pinned set would be its own ADR.
+
+## Options considered
+
+| Option | Pros | Cons | Verdict |
+|---|---|---|---|
+| A — Skills advisory, repo docs binding | Method from skills, authority from the repo | Agents must reconcile the two | Chosen |
+| B — Skills binding | Simple | Skills would bypass the ADR gate, the commit rule and publishing | Rejected |
+| C — No skills | No conflicts | Loses consistent method | Rejected |
+| D — Vendor a pinned set of trusted skills | Reviewed, reproducible method | Maintenance cost out of proportion for a small library today | Deferred |
+
+## Consequences
+
+**Positive**
+
+- Consistent method without giving up the gate.
+
+**Negative / accepted trade-offs**
+
+- Some skill steps are routinely dropped (spec folders, commits, publishing) and must be
+  reported.
+
+**For consumers**
+
+- None.
+
+## Package invariants
+
+None directly.
+
+## Security considerations
+
+Prevents skills from adding dependencies, running install or publish commands, or making
+security decisions on the owner's behalf.
+
+## Implementation notes
+
+- [ ] `AGENTS.md` §12 holds the precedence and the "no skill authorises" table.
+- Tests: not applicable (process only).
+
+## Docs to update on implementation
+
+- [ ] `docs/adr/README.md` — status.

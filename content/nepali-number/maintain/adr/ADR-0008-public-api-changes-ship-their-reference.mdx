@@ -1,0 +1,90 @@
+---
+title: "ADR-0008 — A public API change ships its reference and a semver decision"
+description: "A change consumers can observe ships its API reference with real example outputs and states whether it is a patch, minor or major."
+---
+
+- **Status:** Proposed
+- **Date:** 2026-10-30
+- **Deciders:** [@puncoz](https://github.com/puncoz)
+- **Approved by:** —
+- **Approved on:** —
+- **Supersedes:** —
+- **Superseded by:** —
+- **Semver impact:** none (process only)
+- **Design documents:** `AGENTS.md` §2, §6, §8; `docs/api/`; `docs/release/versioning.md`;
+  `docs/_templates/api.md`
+
+## Context
+
+The package's API is not only its signatures. Consumers render its **output strings** to
+people and often compare them in their own tests. `toNepaliWords(21)` returning `"एक्काईस"` is
+as much a part of the contract as the function's name.
+
+Semver for a library like this is easy to get wrong in both directions: a "fix" to a spelling
+breaks every consumer snapshot; a new optional option is a minor release even though nothing
+existing changes. The release workflow derives the bump from commit prefixes, so the
+classification has to be made deliberately, before the commit exists.
+
+Reviewing an API change from code alone is also hard: the reviewer has to run it in their head.
+Reviewing a page of real signatures and outputs is easy.
+
+## Decision
+
+1. **An ADR that changes anything a consumer can import or observe** ships the updated
+   `docs/api/<domain>.md` in the same change, written from `docs/_templates/api.md`: the exact
+   signature, every option and default, and example outputs for typical, Nepali-digit, zero,
+   negative, decimal, ≥ 1 crore and invalid input. The two are reviewed together.
+2. **Every ADR states its semver impact** in its header, following
+   [`docs/release/versioning.md`](../release/versioning.mdx):
+   - **major** — removing or renaming an export or option; changing a parameter, a default or a
+     return type; **changing the output for any existing input**, except as in "patch";
+     changing the published shape (`exports`, formats, global name, dropping a runtime).
+   - **minor** — a new export, a new optional option, a new accepted input type, or newly
+     handling input that previously returned the safe default.
+   - **patch** — a fix that brings output in line with the documented behaviour in
+     `docs/api/`, where the old output contradicted the reference; performance with identical
+     output.
+3. **Output changes carry a before/after table** in the ADR.
+4. **The proposed commit message matches the impact** (`feat:`, `feat!:`, `fix:`, `perf:`).
+
+## Options considered
+
+| Option | Pros | Cons | Verdict |
+|---|---|---|---|
+| A — Reference + semver decision with every API ADR; output changes are major unless they fix a documented contradiction | Reviewable; classification made before the commit; consumers protected | Some fixes to wrong-but-undocumented output wait for a major | Chosen |
+| B — Treat all output corrections as patches | Faster fixes | Breaks consumer snapshots in patch releases | Rejected |
+| C — Treat every output change as major | Simplest rule | Even fixing a documented bug needs a major | Rejected |
+
+## Consequences
+
+**Positive**
+
+- API review happens on paper; the release bump is decided by the owner, not by habit.
+
+**Negative / accepted trade-offs**
+
+- Wrong-but-undocumented output (several entries in `docs/api/limitations.md`) can only change
+  in a major, or once the owner decides the reference should have said otherwise. Accepted.
+
+**For consumers**
+
+- Patch and minor upgrades do not change existing output except to fix a documented bug.
+
+## Package invariants
+
+Implements §6.5 (output strings are the contract).
+
+## Security considerations
+
+None — this change adds no dependency, no regular expression and no CI or publishing change.
+
+## Implementation notes
+
+- [ ] `docs/api/` exists with a page per domain and `limitations.md`.
+- [ ] `docs/release/versioning.md` states the policy above.
+- [ ] `docs/_templates/api.md` exists.
+- Tests: not applicable (process only).
+
+## Docs to update on implementation
+
+- [ ] `docs/adr/README.md` — status.

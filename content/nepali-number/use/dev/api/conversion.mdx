@@ -1,0 +1,137 @@
+---
+title: "Conversion"
+description: "Convert digits between 0-9 and Devanagari, and parse Nepali-digit strings into JavaScript numbers, with toNepali, toEnglish, parseNepaliNumber and convert."
+---
+
+> Every output below was produced by running the built package.
+
+Digit-for-digit conversion between `0-9` and `०-९`, and parsing Nepali-digit strings into
+JavaScript numbers. These are the building blocks the other domains use.
+
+## Exports
+
+| Export | Signature | Returns |
+|---|---|---|
+| `toNepali` | `(input: string \| number) => string` | The input with every `0-9` replaced by `०-९` |
+| `toEnglish` | `(input: string \| number) => string` | The input with every `०-९` replaced by `0-9` |
+| `parseNepaliNumber` | `(nepaliNumber: string) => number` | A JavaScript number, `0` when unparseable |
+| `convert` | `(text: string, toNepaliNumber?: boolean) => string` | `toNepali` or `toEnglish`, chosen by the flag |
+
+---
+
+## `toNepali(input)`
+
+Replaces each English digit with its Nepali digit. Every other character — letters, signs,
+commas, decimal points, Devanagari text — is kept as it is.
+
+```ts
+toNepali(input: string | number): string
+```
+
+| Parameter | Type | Default | Notes |
+|---|---|---|---|
+| `input` | `string \| number` | — | Numbers are stringified with `toString()` first |
+
+**Returns.** A string of the same shape. Never fails for a string or number.
+
+```ts
+import { toNepali } from "nepali-number"
+
+toNepali(123)            // → "१२३"
+toNepali(1234567.89)     // → "१२३४५६७.८९"
+toNepali(-12.5)          // → "-१२.५"
+toNepali(0)              // → "०"
+toNepali("Room 12B")     // → "Room १२B"
+toNepali("12३")          // → "१२३"      mixed digits
+toNepali("१२३")          // → "१२३"      already Nepali
+toNepali("")             // → ""
+```
+
+**Notes.** A `number` is stringified by JavaScript, so very large or very small numbers come
+out in exponent form (`toNepali(1e21)` → `"१e+२१"`). Pass a string to keep the exact digits.
+
+---
+
+## `toEnglish(input)`
+
+Replaces each Nepali digit with its English digit, keeping everything else.
+
+```ts
+toEnglish(input: string | number): string
+```
+
+| Parameter | Type | Default | Notes |
+|---|---|---|---|
+| `input` | `string \| number` | — | Numbers are returned as their `toString()` |
+
+```ts
+import { toEnglish } from "nepali-number"
+
+toEnglish("१२३")          // → "123"
+toEnglish("-१२.५")        // → "-12.5"
+toEnglish("रू १,२३४")      // → "रू 1,234"
+toEnglish("12३४")         // → "1234"
+toEnglish(123)            // → "123"
+toEnglish("")             // → ""
+```
+
+---
+
+## `parseNepaliNumber(nepaliNumber)`
+
+Parses a string written in Nepali, English or mixed digits into a JavaScript `number`. Commas
+and spaces are removed first, so grouped input parses correctly.
+
+```ts
+parseNepaliNumber(nepaliNumber: string): number
+```
+
+| Parameter | Type | Default | Notes |
+|---|---|---|---|
+| `nepaliNumber` | `string` | — | Commas and spaces are ignored |
+
+**Returns.** The parsed number, or **`0`** when nothing numeric can be read.
+
+```ts
+import { parseNepaliNumber } from "nepali-number"
+
+parseNepaliNumber("१२३")             // → 123
+parseNepaliNumber("१२,३४५.६७")       // → 12345.67
+parseNepaliNumber("१,२३,४५,६७८")     // → 12345678
+parseNepaliNumber("-१२.५")           // → -12.5
+parseNepaliNumber("12३")             // → 123
+parseNepaliNumber("123")             // → 123
+parseNepaliNumber("")                // → 0
+parseNepaliNumber("abc")             // → 0
+parseNepaliNumber("12abc")           // → 12     reads the leading number
+```
+
+**Notes.** `0` is returned both for `"०"` and for garbage; check with
+[`validateNepaliNumber`](./utils.mdx#validatenepalinumberinput) first when the difference matters
+([limitations](./limitations.mdx#parsing-cannot-tell-zero-from-invalid)).
+
+---
+
+## `convert(text, toNepaliNumber?)`
+
+Converts the digits inside free text in either direction. A convenience over `toNepali` /
+`toEnglish` when the direction is a runtime value.
+
+```ts
+convert(text: string, toNepaliNumber?: boolean): string
+```
+
+| Parameter | Type | Default | Notes |
+|---|---|---|---|
+| `text` | `string` | — | Any text |
+| `toNepaliNumber` | `boolean` | `true` | `true` → Nepali digits, `false` → English digits |
+
+```ts
+import { convert } from "nepali-number"
+
+convert("Age 25")                           // → "Age २५"
+convert("Price: 1,250")                     // → "Price: १,२५०"
+convert("मेरो उमेर २५ वर्ष", false)          // → "मेरो उमेर 25 वर्ष"
+convert("१२३", false)                       // → "123"
+convert("")                                 // → ""
+```

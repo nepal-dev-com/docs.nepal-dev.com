@@ -1,0 +1,143 @@
+---
+title: "Getting started"
+description: "Install nepali-number and import it in Node, Bun, Deno, a bundler, TypeScript or a script tag, then convert, format and spell out a number."
+---
+
+> Every output below was produced by running the built package.
+
+How to install `nepali-number` and import it in every environment it supports. At the end you
+will have converted, formatted and spelled out a number.
+
+## Before you start
+
+- **Version.** This guide describes v2 (`package.json` 2.0.0). At the time of writing the npm
+  `latest` tag is still **1.0.3**, which has a different API — check with
+  `npm view nepali-number version`. If you are on v1, see the
+  [migration guide](./guides/migration-v1-to-v2.mdx).
+- **Runtimes.** CI tests Node.js 20, 22 and 24. The build uses no Node, DOM or other host APIs,
+  so it also runs in Bun, Deno, browsers, web workers and edge runtimes.
+- **Dependencies.** None. The package adds about 2.8 kB gzipped.
+
+## 1. Install
+
+```bash
+npm install nepali-number
+# or
+pnpm add nepali-number
+yarn add nepali-number
+bun add nepali-number
+```
+
+## 2. Import
+
+Every function is a **named export** from the package root. There is no default export.
+
+### ES modules — Node, Bun, Vite, webpack, esbuild, Rollup
+
+```js
+import { toNepali, formatNepaliNumber, toNepaliWords } from "nepali-number"
+
+toNepali(2081)                 // → "२०८१"
+formatNepaliNumber(1234567)    // → "१२,३४,५६७"
+toNepaliWords(21)              // → "एक्काईस"
+```
+
+Bundlers resolve `exports.import` → `dist/nepali-number.js` and tree-shake unused functions.
+
+### CommonJS — Node `require`, Jest
+
+```js
+const { toNepali, formatNepaliNumber } = require("nepali-number")
+
+toNepali(2081)                 // → "२०८१"
+```
+
+### TypeScript
+
+Types ship with the package (`.d.ts` for `import`, `.d.cts` for `require`); no `@types`
+package is needed. Any `moduleResolution` that understands `exports` (`bundler`, `node16`,
+`nodenext`) works.
+
+```ts
+import { formatNepaliNumber, detectNumberSystem } from "nepali-number"
+
+const label: string = formatNepaliNumber(1234.5)    // → "१,२३४.५०"
+```
+
+The option types are not exported yet; derive them when you need to name them:
+
+```ts
+import type { formatNepaliNumber, toNepaliCurrency } from "nepali-number"
+
+type FormatOptions = NonNullable<Parameters<typeof formatNepaliNumber>[1]>
+type CurrencyOptions = NonNullable<Parameters<typeof toNepaliCurrency>[1]>
+```
+
+See [types](./api/types.mdx).
+
+### Deno
+
+```ts
+import { toNepali } from "npm:nepali-number"
+```
+
+### Browser, no build step
+
+The IIFE build exposes a global **`nepaliNumber`** (lower-case `n`):
+
+```html
+<script src="https://unpkg.com/nepali-number@2/dist/nepali-number.iife.js"></script>
+<script>
+  const { toNepali, formatNepaliNumber } = nepaliNumber
+  document.querySelector("#price").textContent = formatNepaliNumber(1234567)   // "१२,३४,५६७"
+</script>
+```
+
+Pin the major version (`@2`) in CDN URLs so a future major cannot change your page. The UMD
+build (`dist/nepali-number.umd.js`) works the same way and also registers with AMD loaders.
+
+### Browser, native modules
+
+```html
+<script type="module">
+  import { toNepali } from "https://cdn.jsdelivr.net/npm/nepali-number@2/dist/nepali-number.js"
+  console.log(toNepali(123))   // "१२३"
+</script>
+```
+
+## 3. Try the main features
+
+```js
+import {
+  toNepali, toEnglish, parseNepaliNumber,
+  formatNepaliNumber, toNepaliWords, toEnglishWords, toNepaliOrdinal, toDecimalWord,
+  toNepaliCurrency, toNepaliCurrencyWords,
+} from "nepali-number"
+
+toNepali(123)                         // → "१२३"
+toEnglish("१२३")                      // → "123"
+parseNepaliNumber("१२,३४५.६७")        // → 12345.67
+
+formatNepaliNumber(1234567.891)       // → "१२,३४,५६७.८९"
+toNepaliWords(1234567)                // → "बाह्र लाख चौंतीस हजार पाँच सय सतसट्ठी"
+toEnglishWords(1234567)               // → "twelve lakh thirty four thousand five hundred sixty seven"
+toNepaliOrdinal(5)                    // → "पाँचौं"
+toDecimalWord(25000000)               // → "२.५० करोड"
+
+toNepaliCurrency(1234567.89)          // → "रू १२,३४,५६७.८९"
+toNepaliCurrencyWords(250)            // → "दुई सय पचास रुपैयाँ"
+```
+
+## Pitfalls
+
+- Formatting a **string with commas** misreads it — `formatNepaliNumber("1,234")` → `"१"`
+  ([limitations](./api/limitations.mdx#formatnepalinumber-stops-at-the-first-comma)).
+- Words functions need **integers** — `toNepaliWords(12.5)` → `""`
+  ([limitations](./api/limitations.mdx#words-and-ordinals-need-integers)).
+- Invalid input reads as **zero** rather than failing
+  ([limitations](./api/limitations.mdx#parsing-cannot-tell-zero-from-invalid)).
+
+## See also
+
+- [Recipes](./guides/recipes.mdx)
+- [API reference](./api/index.mdx)

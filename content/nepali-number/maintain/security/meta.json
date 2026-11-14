@@ -1,0 +1,9 @@
+{
+  "title": "Security",
+  "pages": [
+    "index",
+    "threat-model",
+    "secrets",
+    "checklist"
+  ]
+}

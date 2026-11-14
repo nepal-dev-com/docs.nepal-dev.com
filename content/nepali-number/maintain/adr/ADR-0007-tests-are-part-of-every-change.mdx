@@ -1,0 +1,88 @@
+---
+title: "ADR-0007 — Tests are part of every change, run with `bun test`"
+description: "Every nepali-number change ships tests for its happy path and obvious failures, asserting exact output strings, run with bun test."
+---
+
+- **Status:** Proposed
+- **Date:** 2026-10-30
+- **Deciders:** [@puncoz](https://github.com/puncoz)
+- **Approved by:** —
+- **Approved on:** —
+- **Supersedes:** —
+- **Superseded by:** —
+- **Semver impact:** none (process only)
+- **Design documents:** `AGENTS.md` §3, §5, §11
+
+## Context
+
+The package is pure string and number transformation, which makes it cheap to test and costly
+to get wrong silently: an off-by-one in grouping, a wrong word for one number out of a hundred,
+a float that rounds the wrong way. Its consumers render the output to people.
+
+`bun test` is already the runner (`package.json` `test` script), with coverage always on
+(`bunfig.toml`: text + lcov). 149 tests across the five domains pass; CI uploads coverage to
+Codecov from the Node 24 job. Tests sit beside the code and import from the domain's
+`index.ts` (`from "."`).
+
+This ADR records that practice as a rule and sets what a change's tests must cover.
+
+## Decision
+
+1. **Every change ships tests** for its happy path and its obvious failure paths. For this
+   package that means, per affected export: English digits, Nepali digits, mixed digits,
+   empty string, zero, negative, decimal, a large value (≥ 1 crore), invalid input, and the
+   boundary specific to the function (99/100 for words, 4/5 for ordinals, 3/4 digits for
+   commas). Part of being done, not a follow-up.
+2. **A bug fix starts with a test that fails for the bug's reason.**
+3. **A test must have been seen to fail** (written first, or checked by breaking the code)
+   before it counts.
+4. **Runner: `bun test`**, tests beside the code as `<domain>.test.ts`, importing from `"."`,
+   typed with `@types/bun`. Coverage stays on.
+5. **Language tables are tested by value.** A change to `src/constants.ts` asserts the exact
+   strings it produces, so a spelling change is visible in the test diff.
+6. **Tests assert exact strings** with `toBe`, never `toContain` or regex matches on output.
+7. **The built package is smoke-tested**: CI packs the tarball, installs it and `require`s it.
+   A change to the `exports` map or formats extends that smoke test to cover ESM `import`.
+8. **Coverage target**: every function and every reachable line. Unreachable defensive
+   fallbacks (today: three in `src/words/words.ts`) are acceptable and listed in the ADR that
+   adds them.
+
+## Options considered
+
+| Option | Pros | Cons | Verdict |
+|---|---|---|---|
+| A — `bun test`, built in, as today | No extra dependency; fast; already in use | Smaller ecosystem than Vitest | Chosen |
+| B — Vitest | Rich ecosystem | Extra dependency for no gain here | Rejected |
+| C — Tests optional for small changes | Faster small changes | A one-word table change is small and breaking | Rejected |
+
+## Consequences
+
+**Positive**
+
+- Every output a consumer sees is pinned by a test.
+
+**Negative / accepted trade-offs**
+
+- Every change takes longer. Accepted.
+
+**For consumers**
+
+- Fewer silent output changes between releases.
+
+## Package invariants
+
+Guards §6.4 (no throwing for declared inputs) and §6.5 (output strings are the contract).
+
+## Security considerations
+
+Tests for input parsing include a long hostile string (ReDoS check, ADR-0005). Tests never
+contain a real secret.
+
+## Implementation notes
+
+- [ ] `AGENTS.md` §3 and §5 describe the rule and commands — done with this ADR.
+- Tests: the rule is already followed by the 149 existing tests.
+
+## Docs to update on implementation
+
+- [ ] `docs/adr/README.md` — status.

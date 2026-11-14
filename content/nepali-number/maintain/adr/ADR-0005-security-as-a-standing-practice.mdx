@@ -1,0 +1,87 @@
+---
+title: "ADR-0005 — Supply-chain security is a standing practice"
+description: "Every nepali-number change is checked for supply-chain risk, every ADR has a security section, and an audit runs before each release."
+---
+
+- **Status:** Proposed
+- **Date:** 2026-10-30
+- **Deciders:** [@puncoz](https://github.com/puncoz)
+- **Approved by:** —
+- **Approved on:** —
+- **Supersedes:** —
+- **Superseded by:** —
+- **Semver impact:** none (process only)
+- **Design documents:** `AGENTS.md` §9, `docs/security/README.md`, `threat-model.md`,
+  `secrets.md`, `checklist.md`, `docs/_templates/security.md`
+
+## Context
+
+`nepali-number` holds no data, makes no network calls and reads no secrets. It runs inside
+other people's applications — servers, browsers, build tools — with their privileges. The ways
+it can hurt them are those of any npm package:
+
+- **A compromised release**: a stolen publish credential, or a CI workflow tricked into
+  publishing attacker code.
+- **A malicious or compromised dependency**: today there are no runtime dependencies, and four
+  dev dependencies that run on maintainers' and CI machines.
+- **Install-time code execution**: a lifecycle script that runs on every consumer's machine.
+- **Denial of service through input**: a regular expression with catastrophic backtracking,
+  or unbounded recursion, reachable from user-supplied strings (form fields are a typical
+  input to `parseNepaliNumber` and `formatNepaliNumber`).
+
+Security added once, before some release, misses the decisions made along the way.
+
+## Decision
+
+1. **Security is a property of every change.** Every ADR has a mandatory *Security
+   considerations* section. "None" is a valid answer; an omitted section is not.
+2. **The owner decides** dependency additions, CI token scopes, publishing method and
+   provenance, and they are recorded (ADR-0004).
+3. **A per-change checklist** (`AGENTS.md` §9) is run for the rows a change touches.
+4. **A release audit** (`docs/security/checklist.md`) runs before each release.
+5. **Living security documents** in `docs/security/`: threat model, secrets inventory, release
+   checklist, and per-change analyses when warranted.
+6. **Principles**: zero runtime dependencies (ADR-0009); no lifecycle scripts that run on
+   consumers; the tarball contains only `dist/` plus npm's always-included files; no I/O or
+   globals in library code; no secret literals anywhere; CI workflows declare least-privilege
+   permissions; release runs only after CI passes.
+
+## Options considered
+
+| Option | Pros | Cons | Verdict |
+|---|---|---|---|
+| A — Standing practice, per-change checks, release audit | Decisions are made deliberately when they are cheapest | Overhead on each ADR | Chosen |
+| B — Rely on zero dependencies alone | Little overhead | Ignores publishing, CI and ReDoS risk | Rejected |
+
+## Consequences
+
+**Positive**
+
+- Supply-chain decisions are visible and reviewed.
+
+**Negative / accepted trade-offs**
+
+- Every ADR is a little longer. Accepted.
+
+**For consumers**
+
+- A package whose release path and contents are deliberately controlled.
+
+## Package invariants
+
+Directly supports §6.1 (zero runtime dependencies) and §6.2 (environment-agnostic).
+
+## Security considerations
+
+This ADR is the security policy.
+
+## Implementation notes
+
+- [ ] `docs/security/` files exist and describe the current surface.
+- [ ] `AGENTS.md` §9 holds the per-change checklist.
+- [ ] `docs/_templates/security.md` exists.
+- Tests: not applicable (process only).
+
+## Docs to update on implementation
+
+- [ ] `docs/adr/README.md` — status.

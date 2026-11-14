@@ -1,0 +1,100 @@
+{
+  "schema_version": 1,
+  "diagram_type": "tree",
+  "meta": {
+    "title": "How each consumer resolves the package",
+    "subtitle": "Which published file each kind of consumer gets from the exports map and the legacy fields",
+    "output": "consumer-resolution.html",
+    "quality_profile": "showcase"
+  },
+  "layout": {
+    "direction": "right"
+  },
+  "nodes": [
+    {
+      "id": "consumer",
+      "label": "Consumer"
+    },
+    {
+      "id": "import",
+      "label": "import",
+      "sublabel": "Node, Bun, Deno, Vite, webpack 5, esbuild",
+      "parent": "consumer"
+    },
+    {
+      "id": "import-file",
+      "label": "exports.import",
+      "sublabel": "nepali-number.js + .d.ts",
+      "parent": "import"
+    },
+    {
+      "id": "require",
+      "label": "require",
+      "sublabel": "Node, Bun, Jest",
+      "parent": "consumer"
+    },
+    {
+      "id": "require-file",
+      "label": "exports.require",
+      "sublabel": "nepali-number.cjs + .d.cts",
+      "parent": "require"
+    },
+    {
+      "id": "legacy",
+      "label": "no exports support",
+      "sublabel": "legacy tooling",
+      "parent": "consumer"
+    },
+    {
+      "id": "main",
+      "label": "main",
+      "parent": "legacy"
+    },
+    {
+      "id": "main-file",
+      "label": "nepali-number.cjs",
+      "parent": "main"
+    },
+    {
+      "id": "module",
+      "label": "module",
+      "parent": "legacy"
+    },
+    {
+      "id": "module-file",
+      "label": "nepali-number.js",
+      "parent": "module"
+    },
+    {
+      "id": "browser",
+      "label": "browser",
+      "parent": "legacy"
+    },
+    {
+      "id": "browser-file",
+      "label": "nepali-number.umd.js",
+      "parent": "browser"
+    },
+    {
+      "id": "script",
+      "label": "<script> from unpkg",
+      "parent": "consumer"
+    },
+    {
+      "id": "script-file",
+      "label": "unpkg field",
+      "sublabel": "nepali-number.iife.js",
+      "parent": "script"
+    },
+    {
+      "id": "other",
+      "label": "other exports conditions",
+      "parent": "consumer"
+    },
+    {
+      "id": "other-file",
+      "label": "nepali-number.umd.js",
+      "parent": "other"
+    }
+  ]
+}

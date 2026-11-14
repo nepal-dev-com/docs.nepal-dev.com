@@ -1,0 +1,124 @@
+{
+  "schema_version": 2,
+  "diagram_type": "workflow",
+  "meta": {
+    "title": "Module layering",
+    "subtitle": "Each arrow is an import between neighbouring layers; a module may also import from any layer further along (ADR-0009)",
+    "quality_profile": "showcase",
+    "output": "module-layering.html"
+  },
+  "lanes": [
+    {
+      "id": "entry",
+      "label": "Public entry"
+    },
+    {
+      "id": "domains",
+      "label": "Domains"
+    },
+    {
+      "id": "data",
+      "label": "Language data"
+    }
+  ],
+  "mainPath": [
+    "barrel",
+    "currency",
+    "words",
+    "utils",
+    "formatting",
+    "conversion",
+    "constants"
+  ],
+  "nodes": [
+    {
+      "id": "barrel",
+      "lane": "entry",
+      "col": 0,
+      "type": "frontend",
+      "label": "nepali-number.ts",
+      "sublabel": "public barrel · build entry"
+    },
+    {
+      "id": "currency",
+      "lane": "domains",
+      "col": 1,
+      "type": "backend",
+      "label": "currency/"
+    },
+    {
+      "id": "words",
+      "lane": "domains",
+      "col": 2,
+      "type": "backend",
+      "label": "words/"
+    },
+    {
+      "id": "utils",
+      "lane": "domains",
+      "col": 3,
+      "type": "backend",
+      "label": "utils/"
+    },
+    {
+      "id": "formatting",
+      "lane": "domains",
+      "col": 4,
+      "type": "backend",
+      "label": "formatting/"
+    },
+    {
+      "id": "conversion",
+      "lane": "domains",
+      "col": 5,
+      "type": "backend",
+      "label": "conversion/"
+    },
+    {
+      "id": "constants",
+      "lane": "data",
+      "col": 5,
+      "type": "database",
+      "label": "constants.ts",
+      "sublabel": "digits · words · ordinals · scales"
+    }
+  ],
+  "edges": [
+    {
+      "id": "barrel-currency",
+      "from": "barrel",
+      "to": "currency",
+      "variant": "emphasis"
+    },
+    {
+      "id": "currency-words",
+      "from": "currency",
+      "to": "words",
+      "variant": "emphasis"
+    },
+    {
+      "id": "words-utils",
+      "from": "words",
+      "to": "utils",
+      "variant": "emphasis"
+    },
+    {
+      "id": "utils-formatting",
+      "from": "utils",
+      "to": "formatting",
+      "variant": "emphasis"
+    },
+    {
+      "id": "formatting-conversion",
+      "from": "formatting",
+      "to": "conversion",
+      "variant": "emphasis"
+    },
+    {
+      "id": "conversion-constants",
+      "from": "conversion",
+      "to": "constants",
+      "variant": "emphasis"
+    }
+  ]
+}

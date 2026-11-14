@@ -1,0 +1,101 @@
+---
+title: "ADR-0002 — Documentation is a living snapshot; decisions are immutable"
+description: "Design documents describe nepali-number as it stands and are edited in place, while approved decisions are superseded and never rewritten."
+---
+
+- **Status:** Proposed
+- **Date:** 2026-10-30
+- **Deciders:** [@puncoz](https://github.com/puncoz)
+- **Approved by:** —
+- **Approved on:** —
+- **Supersedes:** —
+- **Superseded by:** [ADR-0010](./ADR-0010-documentation-lives-in-nepal-dev-verse.mdx) (in part:
+  decisions 2, 5 and 7, where documents live, how they are grouped and how a diagram is written)
+- **Semver impact:** none (process only)
+- **Design documents:** `docs/README.md`, every directory `README.md`, `docs/_templates/`
+
+## Context
+
+Before this ADR the package's documentation was a single long `README.md` and an
+`AGENTS.md`. Both had drifted from the code, and the drift was the kind consumers hit:
+
+- The README imported `FormatOptions`, `CurrencyOptions` and `NumberSystem` from the package;
+  none of them is exported.
+- The README's browser example used the global `NepaliNumber`; the build's global is
+  `nepaliNumber`.
+- The README's currency-words example ended in `"उनासी पैसा"` (79 paisa) for `.89`; the code
+  returns `"उनान्नब्बे पैसा"`.
+- `AGENTS.md` documented `FormatOptions` defaults as `false` (they are `true` for
+  `useNepaliDigits` and `addCommas`), an options argument on `toNepaliCurrencyWords` (it has
+  none), title-case output from `toEnglishWords` (it is lower case), and a rule that every
+  function calls `normalize()` first (none does).
+
+Documentation that describes a different version is worse than none, because it is believed.
+
+## Decision
+
+1. **Two kinds of document:**
+   - `docs/adr/` — **immutable once approved**; superseded, never rewritten.
+   - `README.md` and everything else under `docs/` — **living snapshots** of the package as it
+     stands, edited in place. No revision tables, no "previously X, now Y", no strikethrough.
+     What is no longer true is deleted. Git, ADRs and GitHub release notes hold the history.
+     The v1 → v2 migration guide is the one exception: its subject is a difference.
+2. **Typed directories**: `api/`, `architecture/`, `guides/`, `release/`, `security/`, each with
+   a `README.md` of its conventions, and `_templates/` with a starting point for each. Which
+   ones a change requires is the table in `AGENTS.md` §8.
+3. **Example outputs are produced by running the built package**, never written from
+   expectation.
+4. **`README.md` is a summary for npm**: what the package is, install, import in each runtime,
+   a short tour and a one-line-per-export table linking to `docs/api/`. The full reference lives
+   in `docs/api/`.
+5. **Diagrams are Mermaid** in fenced blocks. No binary or externally hosted images.
+6. **An implementation is not complete while a document contradicts it.**
+7. **Skill-generated specs and plans** go into these directories (usually the ADR and its
+   `docs/api/` page), not into a skill's own folder layout.
+
+The design-document types of an application (app flows, ERDs, DFDs, RBAC matrices, sequence
+and state diagrams, PRDs) are deliberately absent: a stateless function library has no screens,
+storage, actors or roles. A future ADR adds a directory if the package ever needs one.
+
+## Options considered
+
+| Option | Pros | Cons | Verdict |
+|---|---|---|---|
+| A — Living docs in typed directories + immutable ADRs; README as summary | Each document has one job; the current package is always one read away; README stays readable on npm | More files | Chosen |
+| B — Everything in README | One place | Already 545 lines and drifted; npm page becomes a reference manual | Rejected |
+| C — Generated API docs (TypeDoc) only | Never drifts from signatures | Does not capture outputs, edge cases or limitations; a new dev dependency | Rejected for now |
+
+## Consequences
+
+**Positive**
+
+- A reader finds the current package in `docs/api/`, the reasons in `docs/adr/`.
+- Consumers see real outputs, including the surprising ones.
+
+**Negative / accepted trade-offs**
+
+- Example outputs must be re-run when code changes. Accepted: that is the point.
+
+**For consumers**
+
+- Accurate documentation; the README no longer shows imports that fail.
+
+## Package invariants
+
+None directly.
+
+## Security considerations
+
+None directly. `docs/security/` follows the living-snapshot rule, so the threat model and
+secrets inventory are kept accurate rather than historical.
+
+## Implementation notes
+
+- [ ] `docs/README.md` and each directory `README.md` exist.
+- [ ] `docs/_templates/` holds the templates.
+- [ ] `AGENTS.md` §8 states the two kinds and the "write before building" table.
+- Tests: not applicable (process only).
+
+## Docs to update on implementation
+
+- [ ] `docs/adr/README.md` — status on approval.
