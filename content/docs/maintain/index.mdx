@@ -50,10 +50,12 @@ flowchart LR
 | [`security/`](./security/index.mdx) | Threat model, data classification, secrets, audit checklist | Always kept accurate; per-feature analyses when warranted |
 | [`_templates/`](./_templates/index.mdx) | A starting point for each document type | — |
 
-Agent skills are not part of this project. They are tooling for contributors, vendored in
-`.claude/agent-skills/` outside `content/`, so they are never published: `INDEX.md` routes
+Agent skills are not part of this project. They are tooling for contributors, kept in
+`.agent-skills/` outside `content/`, so they are never published: `INDEX.md` routes
 tasks to skills and `SOURCES.md` records provenance
-([ADR-0009](./adr/ADR-0009-trusted-agent-skills-are-vendored.mdx)).
+([ADR-0009](./adr/ADR-0009-trusted-agent-skills-are-vendored.mdx)). The working agreement is
+`AGENTS.md` with its `nepal-dev-*` skills there, which hold the depth of each of its sections
+([ADR-0045](./adr/ADR-0045-agents-md-keeps-the-standing-rules-and-in-house-skills-hold-the-rest.mdx)).
 
 ## Conventions for every design document
 

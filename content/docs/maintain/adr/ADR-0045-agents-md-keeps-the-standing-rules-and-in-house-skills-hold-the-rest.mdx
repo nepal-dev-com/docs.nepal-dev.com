@@ -1,0 +1,279 @@
+---
+title: "ADR-0045 — AGENTS.md keeps the standing rules, and in-house skills hold the rest"
+description: "AGENTS.md and PROJECT_AGENTS.md keep the rules every task needs. The depth moves, unchanged, into nepal-dev skills in a root .agent-skills folder, loaded only when a task calls for them."
+---
+
+- **Status:** Approved
+- **Date:** 2026-11-14
+- **Deciders:** [@puncoz](https://github.com/puncoz)
+- **Approved by:** [@puncoz](https://github.com/puncoz)
+- **Approved on:** 2026-11-14
+- **Supersedes:** [ADR-0009](./ADR-0009-trusted-agent-skills-are-vendored.mdx) in part: where the skills
+  live (decisions 1, 3 and 4), where in-house skills go (decision 6), decision 5 (skills are now linked
+  into `.claude/skills/`), and decision 9 for where the installed skills sit
+- **Superseded by:** —
+- **Design documents:** `AGENTS.md`, `PROJECT_AGENTS.md`, `.agent-skills/INDEX.md`,
+  `.agent-skills/SOURCES.md`, [`../index.mdx`](../index.mdx). Nothing a reader sees changes, so there is no
+  app flow (ADR-0008).
+
+## Context
+
+- `AGENTS.md` is 60,241 bytes in 755 lines, about 15,000 tokens. `CLAUDE.md` imports it, so the whole
+  file is in context for every session and every request, whatever the task. A typo fix carries the
+  Archify publishing rules; a diagram carries the Vercel hosting row.
+- By section: §1 *What this project is* 8.9 KB, §5 *Stack and commands* 9.4 KB, §8 *Documentation
+  duties* 9.3 KB, §10 *Repository map* 7.1 KB, §12 *Skills* 6.2 KB, §2 *The ADR gate* 4.2 KB, §9
+  *Security and privacy* 3.5 KB, §3 *Execution rules* 3.5 KB, §4 2.3 KB, §7 1.8 KB, §11 1.5 KB,
+  §6 1.4 KB, the managed Next.js block 1.2 KB.
+- `PROJECT_AGENTS.md` is 31,776 bytes. Consuming repositories read it whole. Its largest sections are
+  §4 *Two sets of docs* 6.6 KB, §3 *Where everything goes* 4.9 KB, §8 *Diagrams* 3.6 KB, §5 *Versions*
+  3.0 KB and §6 *Several repositories* 2.6 KB. Its §8 repeats `AGENTS.md` §8.
+- What the documentation says (read on 2026-11-14):
+  - Claude Code's memory guide: "target under 200 lines per CLAUDE.md file. Longer files consume
+    more context and reduce adherence." An entry that is "a multi-step procedure or only matters for
+    one part of the codebase" belongs in a skill or a path-scoped rule.
+  - The same guide: `@` imports "don't reduce its context cost, because imported files load together
+    with" the file that imports them. Splitting a file into imported files saves nothing.
+  - The same guide: instructions are "context, not enforced configuration". Only a hook blocks an
+    action outright.
+  - Claude Code's skills guide: "a skill's body loads only when it's used, so long reference
+    material costs almost nothing until you need it." The names and descriptions of project skills
+    in `.claude/skills/` are listed in every session; each description is cut at 1,536 characters.
+  - The same guide: a skill with `paths` in its frontmatter is loaded "automatically only when
+    working with files matching the patterns".
+  - The same guide: a `.claude/skills/` folder in a subdirectory loads "the first time Claude reads
+    or edits a file in that subdirectory". A submodule is such a subdirectory.
+  - The same guide: after a conversation is compacted, the first 5,000 tokens of each invoked skill
+    are re-attached, so "put the most important instructions near the top of `SKILL.md`".
+    `CLAUDE.md` is always reloaded in full.
+  - The vendored `writing-for-agents` skill names the move *progressive disclosure*: keep in the
+    file what every branch needs, put behind a pointer what only some reach. The pointer's wording,
+    not its target, decides how reliably the material is read.
+- **Not settled by the documentation.** Claude Code's guides do not say whether a symlinked folder in
+  `.claude/skills/` is discovered. Public issue reports conflict: the CLI is reported to follow a
+  symlinked skill folder, the desktop app to skip it, and a symlinked `skills` folder as a whole to
+  fail in some versions. Which folder other agents read is also taken from third-party lists, not
+  from each vendor: they name `.agents/skills/` for Codex, Cursor, Gemini CLI and GitHub Copilot.
+- 147 references across the repository cite a section by number (`AGENTS.md §3`, `§8`, `§12.2`), 39
+  of the files in approved ADRs, which cannot be edited (ADR-0001).
+- The trusted skills are in `.claude/agent-skills/` today: 19 `SKILL.md` files from 8 sources, 1.1 MB,
+  with `INDEX.md` and `SOURCES.md` (ADR-0009). In-house skills were given `.claude/agent-skills/local/`,
+  which does not exist yet. `.claude/skills/` holds three skills the owner installed: `archify`,
+  `hallmark` and `design-taste-frontend`.
+- The owner's direction for this ADR: one folder at the repository root, `.agent-skills/`, for every
+  skill, linked into `.claude/` for Claude Code; other agents link first, then work; no fixed size
+  limit, but the must-have rules stay in `AGENTS.md` at a high level with the depth in skills that
+  load on need; in-house skills carry a `nepal-dev` prefix; `PROJECT_AGENTS.md` is included. On review
+  the owner added: every skill is linked for Claude Code, the vendored ones too, and the three
+  installed skills move with the rest.
+
+## Decision
+
+1. **Every skill lives in `.agent-skills/` at the repository root.** The vendored sets move there
+   from `.claude/agent-skills/`, unchanged, at the same pinned commits, with `INDEX.md` and
+   `SOURCES.md`. In-house skills sit beside them, one folder each:
+   `.agent-skills/nepal-dev-<topic>/SKILL.md`. `.claude/agent-skills/` is removed. The three skills
+   the owner installed in `.claude/skills/` (`archify`, `hallmark`, `design-taste-frontend`) move to
+   `.agent-skills/<name>/` too, unchanged.
+2. **In-house skills are named `nepal-dev-<topic>`.** The prefix marks a skill as this project's own,
+   apart from anything vendored or installed. The folder name and the frontmatter `name` are the same.
+   No vendored or installed skill may take the prefix.
+3. **`AGENTS.md` and `PROJECT_AGENTS.md` keep what every task needs; the depth moves to skills.**
+   There is no fixed size limit. A rule stays in the file when it applies whatever the task, or when
+   breaking it cannot be undone. It stays as the rule itself, in full. Procedures, tables, maps and
+   reference move.
+4. **Sections keep their numbers and headings** in both files. Each section keeps its standing rules
+   and names the skill that holds its depth, so every existing `AGENTS.md §N` reference still lands
+   on the rule or one pointer away from it.
+5. **What stays in `AGENTS.md`:**
+   - §1: what the project is, in a few lines; everything in `content/` is published.
+   - §2: the gate, the *Does my change need an ADR?* table, and "propose, then stop".
+   - §3: every execution rule (never commit, what an agent may run, installs after a yes, stay inside
+     the repository, don't publish by accident, report honestly).
+   - §4: check what is verifiable, ask what is undetermined, always with options and a recommendation.
+   - §5: the commands table and the `bun run build` warning.
+   - §6: the five content invariants.
+   - §7: the comment rule and the brace rule, in a few lines.
+   - §8: docs and tests are part of the same change; living documents are snapshots.
+   - §9: "never guess at a security decision" and the principles that hold regardless of stack.
+   - §11: the router in decision 8.
+   - §12: precedence, the *No skill authorises…* table, "skills stop at the gate", "name the skill".
+6. **The depth moves as it is written today.** No rule is reworded, weakened or dropped in the move.
+
+   | Skill | Holds | From |
+   |---|---|---|
+   | `nepal-dev-adr-workflow` | The five workflow steps, people as GitHub usernames, the app flow's contents | `AGENTS.md` §2 |
+   | `nepal-dev-site-picture` | The current state: one shape per entry, the solar system, the home page, Cache Components, analytics, deploys, SEO | §1 |
+   | `nepal-dev-stack-and-map` | The stack table and the repository map | §5, §10 |
+   | `nepal-dev-docs-duties` | The three kinds of document, page format, *Write before building*, *Always check these* | §8 |
+   | `nepal-dev-diagrams` | Archify with Mermaid: how to run it, how to publish, what the build rejects. One source for both files | §8, `PROJECT_AGENTS.md` §8 |
+   | `nepal-dev-security-check` | The per-change table, full audits, tool-specific rules | §9 |
+   | `nepal-dev-project-layout` | Where everything goes; a project with several repositories | `PROJECT_AGENTS.md` §3, §6 |
+   | `nepal-dev-project-pages` | The two sets of docs; what every page must do | `PROJECT_AGENTS.md` §4, §7 |
+   | `nepal-dev-project-versions` | Version lines | `PROJECT_AGENTS.md` §5 |
+
+   `PROJECT_AGENTS.md` keeps the snippet a project pastes (§1), public only (§2), "edit only your two
+   folders", what the build checks (§9), git (§10), commands (§11), never guess (§12), the hand-over
+   list (§13) and §14. `AGENTS.md` §12.2's detail is already in `INDEX.md`; what only `AGENTS.md`
+   holds today moves there.
+7. **In-house skills are part of the working agreement, not advice.** They rank with `AGENTS.md`,
+   above vendored and installed skills (ADR-0006, ADR-0009 decision 11). `INDEX.md` lists them first,
+   in a section of their own, and says so.
+8. **A skill is reached in three ways, so that one missing does not lose the rule.**
+   - **The router, for every agent.** `AGENTS.md` §11 and `PROJECT_AGENTS.md` §13 each hold a table an
+     agent checks before starting. A row names a trigger a task can be checked against and the skill
+     to read in full first. The rows are binding.
+
+     | Before you… | Read |
+     |---|---|
+     | propose, write, revise or approve an ADR or an app flow | `nepal-dev-adr-workflow` |
+     | change anything under `src/`, or need to know how the site looks or behaves today | `nepal-dev-site-picture` |
+     | look for where something lives, or touch config, dependencies, routes or the build | `nepal-dev-stack-and-map` |
+     | add or edit a page under `content/`, or finish any implementation | `nepal-dev-docs-duties` |
+     | write or change a diagram, a flow or a wireframe, or touch `diagrams/` | `nepal-dev-diagrams` |
+     | touch a secret, an env var, a route handler, a third party, input, logging, or a page's privacy | `nepal-dev-security-check` |
+
+   - **The description, where the agent lists skills.** Each `SKILL.md` has `name` and `description`
+     frontmatter. The description starts with the triggers, in the words a request would use.
+   - **The paths, where the agent supports them.** A skill tied to files sets `paths`
+     (`nepal-dev-diagrams`: `diagrams/**`; `nepal-dev-docs-duties`: `content/**`;
+     `nepal-dev-site-picture`: `src/**`), so working on a matching file loads it.
+9. **Each skill puts its hardest rules first** and stays under 500 lines, so what survives a
+   compacted conversation is the part that matters.
+10. **Claude Code reaches every skill through links.** `.claude/skills/<skill folder>` is a relative
+    symlink to that skill's folder in `.agent-skills/`, one per skill, committed: the nine in-house
+    skills, the 19 vendored ones and the three installed ones. `.claude/skills/` holds links only.
+    The documented paths (`.claude/skills/archify/bin/archify.mjs`) resolve through the link and stay
+    as written.
+11. **The overrides are binding however a skill loads.** A vendored or installed skill can now load by
+    itself, without `INDEX.md` being read first. So `AGENTS.md` §12 says: whenever one loads, by any
+    route, read its rows in `INDEX.md` § Overrides before following it. The pinned copy still wins
+    over an installed plugin's skill of the same name.
+12. **Other agents link first, then work.** `AGENTS.md` says: when your tool has a project skills
+    folder and it holds no `nepal-dev-*` link, link each `.agent-skills/nepal-dev-*` into it, reload,
+    then start the task. `.agents/skills/nepal-dev-*` links are committed too, for the tools that
+    read that folder. A link made for another tool's folder is left in the working tree for the
+    owner. A link always points inside this repository. A tool with no skills folder, or a machine
+    where links cannot be made, reads the `SKILL.md` the router names.
+13. **In a consuming repository**, the submodule brings its own links. `PROJECT_AGENTS.md` names each
+    skill by its path from that file, so an agent reads it directly whatever the tool. Nothing is
+    written into the consuming repository's own skills folder without that repository's owner.
+14. **A test guards the split** (`src/lib/agent-docs.test.ts`, ADR-0007): both files keep their
+    numbered sections; every skill a router names exists; every `.agent-skills/nepal-dev-*` folder has
+    a `SKILL.md` whose `name` matches and whose description is not empty; each has its link in
+    `.claude/skills/` and `.agents/skills/`, resolving to it; each is named by a router; nothing
+    outside the in-house skills uses the prefix; every `SKILL.md` in `.agent-skills/` has a link in
+    `.claude/skills/`, and every entry there is a link that resolves inside `.agent-skills/`.
+15. **ESLint ignores `.agent-skills/**`**, as it ignores `.claude/**` (ADR-0009).
+
+**Assumptions**
+
+- The installed skills' own installers and update checks keep working from the new place. An
+  updater that puts a real folder back in `.claude/skills/` fails the test, and the folder is moved
+  again.
+- Claude Code discovers a symlinked skill folder. This is not documented; it is tested first in
+  implementation. If it fails, the router still loads every skill, and the choice in option D goes
+  to the owner.
+- `.agents/skills/` is read by the tools the third-party lists name. Checked against each vendor's
+  documentation in implementation; a tool it is wrong for falls under decision 12.
+
+## Options considered
+
+| Option | Pros | Cons | Verdict |
+|---|---|---|---|
+| A — Standing rules in the two files; depth in `nepal-dev-*` skills in a root `.agent-skills/`; router, descriptions and paths; links for Claude Code and `.agents/skills/` | Far less text in every request; three ways to reach a skill; one folder for any agent; the owner's direction | Symlink discovery is undocumented; links fail on Windows without Developer Mode; more files to keep in step | Chosen |
+| B — As A, but skills stay in `.claude/agent-skills/local/` with the router only (ADR-0009 decision 6) | No move; no links | One way to reach a skill; a Claude-named folder for every agent | Rejected by the owner's direction |
+| C — As A, but link only the `nepal-dev-*` skills and leave the installed ones in `.claude/skills/` | 22 fewer descriptions in every session; `INDEX.md` is always read before a vendored skill | Two kinds of skill folder; vendored skills are not found by the agent itself | Rejected by the owner on review: every skill is linked, and A is read that way |
+| D — Real folders in `.claude/skills/`, with `.agent-skills/` linking to them | Claude Code needs no symlink | The shared folder becomes the link; a Claude-named folder holds the source | Held: the fallback if symlinked skills are not discovered |
+| E — Path-scoped rules in `.claude/rules/` | Load by themselves on matching files | Claude Code only; fire on files, not on tasks | Rejected: `paths` on a skill does the same |
+| F — Split the files into parts imported with `@` | Easier to edit | Saves nothing: imports load with the file | Rejected |
+| G — Hooks that block `git commit`, `bun run build` and `vercel` | The only control that is enforced, not read | A settings change with its own risks; Claude Code only | Not in this ADR; worth its own |
+| H — Leave it as it is | Nothing to do | Every request carries about 15,000 tokens, and a long file is followed less well | Rejected |
+
+## Consequences
+
+**Positive**
+
+- A request carries the standing rules only; a typical task adds one or two skills.
+- The rules that apply to every task are no longer surrounded by ones that do not.
+- One folder, named for no tool, holds every skill.
+- The diagram rules have one source instead of two.
+
+**Negative / accepted trade-offs**
+
+- A rule in a skill is applied only if the skill is loaded. The three ways in decision 8 and the test
+  are the control; they are not a guarantee.
+- The same response is not guaranteed for any change to a prompt. What is kept is the same rules,
+  word for word, and the same process.
+- Symlinks: undocumented in Claude Code, and on Windows a clone gets a text file in place of a link
+  unless `core.symlinks` is on. The router covers both.
+- Approved ADRs keep naming `.claude/agent-skills/`. They are not edited; this ADR records the move.
+- Every skill's description is in every Claude Code session: 31 of them. Claude Code drops
+  descriptions when the listing passes 1% of the context window.
+- A vendored skill can load without its overrides being read first. Decision 11 is the control.
+
+## Content invariants
+
+None changed. §6 stays in `AGENTS.md` in full. `.agent-skills/` is outside `content/` and `public/`,
+so nothing in it is published (§6.1, ADR-0009).
+
+## Security considerations
+
+No data, endpoint or secret is touched. Three process risks:
+
+- **A security rule that is not read is not applied.** The rules that block harm stay in `AGENTS.md`
+  on every request: never commit or push, never `bun run build`, never `vercel`, stay inside the
+  repository, installs only after a yes, private stays private, the owner decides security
+  questions, and the principles in §9. Only the per-change table and the audit procedure move.
+- **A link is a path an agent follows.** Every link is relative, points to `.agent-skills/nepal-dev-*`
+  inside this repository, and is checked by the test. An agent never links into or out of the home
+  directory.
+- **Supply chain.** The vendored skills move unchanged at their pinned commits; `SOURCES.md` moves
+  with them. In-house skills are written here and reviewed by the owner like a design document. The
+  prefix rule keeps a downloaded skill from passing as one.
+
+## Implementation notes
+
+- [x] First: make one `nepal-dev-*` skill and its link, and confirm Claude Code lists it and loads it
+      by description, by `paths` and from a submodule path. Report the result before the rest; on a
+      failure, put option D to the owner. Result (Claude Code CLI, macOS): linked skills are listed
+      as soon as the link exists. A skill with `paths` is left out of the list until a matching file
+      is read or written, then listed; so `paths` hides the description until then. Loading from a
+      submodule path was not tested.
+- [x] Move `.claude/agent-skills/` and the three installed skills to `.agent-skills/`; fix the
+      relative links in `INDEX.md` and `SOURCES.md`; confirm no file changed in the move; run
+      Archify's `check` through the link.
+- [x] Create the nine `nepal-dev-*` skills, moving the text as it stands, hardest rules first.
+- [x] Rewrite `AGENTS.md` and `PROJECT_AGENTS.md` to decisions 3 to 5, sections kept, routers in
+      place. Leave the managed Next.js block untouched.
+- [x] Check the move line by line: every line of today's two files is in the new files, in one
+      skill, or in `INDEX.md`. Report any line removed as a duplicate, with where it still stands.
+- [x] Links in `.claude/skills/` for every skill, and in `.agents/skills/` for the in-house ones.
+      Check each vendor's documentation for the folder its tool reads. Result: OpenAI's Codex
+      documentation names `.agents/skills`; the other tools were not checked against their vendors,
+      and whether any of them follows a symlink there was not tested.
+- [x] `INDEX.md` and `SOURCES.md`: the in-house section, their rank, the prefix, how one is added.
+- [x] `eslint.config.mjs` ignores `.agent-skills/**`. Confirm Tailwind and the build do not pick the
+      folder up.
+- [x] `src/lib/agent-docs.test.ts` — decision 14: the happy path, and failures for a missing section,
+      a router row without a file, a folder without a matching `name`, a missing or broken link, a
+      skill no router names, and the prefix on a vendored skill.
+- [x] Check behaviour: give fresh agents the same tasks against the old and the new files (a typo
+      fix, a new route, a new dependency, a diagram, a page under `content/`, an env var, a page
+      written from a consuming repository) and compare which rules each applies. Report the result.
+      Result: four fresh agents dry-ran an env-var banner, a diagram update, a new dependency and a
+      first page from a consuming repository against the new files. Each read the skills its task
+      named and applied the gate, the no-commit rule, the ask-with-options rule and the diagram
+      commands. They were not run against the old files, so this is a check, not a comparison.
+- [x] `bun run test`, `bun run types:check` and `bunx next build` pass. `bun run lint` does not run
+      today (`AGENTS.md` §5).
+
+## Docs to update on implementation
+
+- [x] `AGENTS.md` and `PROJECT_AGENTS.md` — as above
+- [x] `README.md` — the project structure and the skills paragraph
+- [x] [`../index.mdx`](../index.mdx) — where the working agreement and the skills live
+- [x] `.agent-skills/INDEX.md` and `SOURCES.md`
+- [x] [`./ADR-0009-trusted-agent-skills-are-vendored.mdx`](./ADR-0009-trusted-agent-skills-are-vendored.mdx) —
+      `Superseded by` in part, on approval
+- [x] [`./index.mdx`](./index.mdx) — index row and status

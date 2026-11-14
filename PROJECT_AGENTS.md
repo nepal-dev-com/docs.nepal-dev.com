@@ -16,6 +16,8 @@ repositories: what to maintain, where each thing goes, and how versions and diag
 
 Everything outside your project's folders is governed by [`AGENTS.md`](AGENTS.md), this
 repository's working agreement. Where this guide is silent, `AGENTS.md` applies.
+The owner is nepal-dev.com, and `puncoz` decides and approves for it: *ask the owner* in this guide
+means ask `puncoz`.
 
 **In short:**
 
@@ -28,6 +30,20 @@ repository's working agreement. Where this guide is silent, `AGENTS.md` applies.
   from it and from where the page sits, automatically (§4.4, §7).
 - **Everything is published.** Nothing private goes here (§2).
 - **You edit; a human commits** (§10).
+
+**How this guide is laid out** ([ADR-0045](content/docs/maintain/adr/ADR-0045-agents-md-keeps-the-standing-rules-and-in-house-skills-hold-the-rest.mdx)). This file holds the rules every task needs.
+The depth is in this repository's own skills, `.agent-skills/nepal-dev-<topic>/SKILL.md`, next to
+this file (from your repository: `<submodule-path>/.agent-skills/…`). They are part of this guide
+and as binding as it. **Before starting, check your task against the table in §13 and read every
+skill it names, in full.** Where a section says **Depth:**, the skill it names holds the rest of
+that section, with its numbered subsections (§3.1, §4.4, §5.2, §8.1 and so on).
+
+**The skills for you** are the three `nepal-dev-project-*` skills and `nepal-dev-diagrams`. The other
+`nepal-dev-*` skills, and everything else in `.agent-skills/`, are for work on the site itself: leave
+them. Claude Code may list a skill by itself once it has read or edited a file in the submodule
+(`.claude/skills/` there links to each), and some only after a matching file is touched. Don't wait
+for that: read the `SKILL.md` from its path, as any other tool does. Don't add anything to your own
+repository's skills folder for this without your repository's owner.
 
 ## 1. Add this to your project's `AGENTS.md` or `CLAUDE.md`
 
@@ -74,54 +90,14 @@ private, so there is no setting to look for.
 - **A public project's pages carry nothing internal**: no secrets, tokens, internal hostnames,
   client names, personal data, or private code copied from your repository.
 - **Unsure whether something is public? Ask the owner.** Never decide it yourself.
+- **What you publish here is licensed.** Your pages and diagrams are published under
+  [CC BY 4.0](LICENSE-CONTENT), and code examples inside a page under [MIT](LICENSE) (ADR-0046). If
+  your project cannot accept that, don't publish here: ask the owner.
 
 ## 3. Where everything goes
 
 Each project or package has one folder, **`content/<project-slug>/`**, published at
 **`/<project-slug>`**, and its diagrams in **`diagrams/<project-slug>/`**. Those two are yours.
-
-A package, which always has version lines:
-
-```
-content/<project-slug>/
-├── meta.json              # title, description and the `catalog` entry (§3.1)
-├── index.mdx              # the overview, at /<project-slug>
-├── use/                   # USER DOCS (§4.1), one folder per version (§5)
-│   ├── meta.json          # {"title": "Use"}; optional "pages" orders the older lines
-│   ├── dev/               # unreleased work on the default branch, at /<project-slug>/use/dev
-│   │   ├── meta.json      # {"title": "dev", "version": "4.0.0-dev", "channel": "dev"}
-│   │   ├── index.mdx
-│   │   └── ...
-│   ├── v3/                # a released line; the folder name is yours
-│   │   ├── meta.json      # {"name": "v3.2", "version": "3.2.0", "channel": "latest"} → /<project-slug>/use/v3.2
-│   │   └── ...
-│   └── lts-2/             # an older line
-│       ├── meta.json      # {"name": "2.x LTS", "version": "2.9.1", "channel": "legacy"} → /<project-slug>/use/2.x-lts
-│       └── ...
-└── maintain/              # MAINTAINER DOCS (§4.2), not versioned: the default branch
-    ├── meta.json          # {"title": "Maintain"}; optional "pages" orders the sidebar
-    ├── adr/               # your ADRs, if you keep them: index.mdx + ADR-NNNN-*.mdx
-    └── ...                # architecture, local setup, tests, releasing, contributing
-
-diagrams/<project-slug>/
-├── request-flow.json      # the Archify source (not served)
-└── request-flow.html      # the checked Archify view, published at /diagrams/<project-slug>/request-flow.html
-```
-
-A project without releases has the same shape, with its pages directly in `use/`. With releases
-it uses `dev/` and one released line (§5). A project of several repositories adds a folder per
-repository (§6).
-
-**The address follows the folder:**
-
-| File | Address |
-|---|---|
-| `content/<slug>/index.mdx` | `/<slug>` |
-| `content/<slug>/use/<line>/<page>.mdx` | `/<slug>/use/<line's URL segment>/<page>` |
-| `content/<slug>/use/<page>.mdx` (a project without lines) | `/<slug>/use/<page>` |
-| `content/<slug>/maintain/<page>.mdx` | `/<slug>/maintain/<page>` |
-| `content/<slug>/maintain/adr/index.mdx` | `/<slug>/maintain/adr` |
-| `diagrams/<slug>/<diagram>.html` | `/diagrams/<slug>/<diagram>.html` |
 
 **Rules for the folders:**
 
@@ -134,46 +110,9 @@ repository (§6).
 - **Writing and updating pages inside your folders needs no ADR**, as long as they follow this
   guide.
 
-### 3.1 The catalogue entry
-
-The root `meta.json` carries the entry that the home page, search and `llms.txt` are built from:
-
-```json
-{
-  "title": "lodestar",
-  "description": "Keyboard-first command palette for React.",
-  "catalog": {
-    "kind": "package",
-    "ecosystem": "npm",
-    "visibility": "public",
-    "repository": "https://github.com/example/lodestar",
-    "registry": "https://www.npmjs.com/package/lodestar",
-    "featured": false
-  }
-}
-```
-
-- `kind` is `package` or `project`.
-- `ecosystem` is `npm`, `composer`, `pypi`, `go`, `cargo` or `other`: required for a package,
-  optional for a project.
-- `visibility` must be `public`.
-- `repository` and `registry` are optional `https` URLs. A project of several repositories uses
-  `repositories` instead (§6).
-- `featured` (default `false`) is the owner's call: ask.
-
-### 3.2 The overview and the sidebar
-
-- **`index.mdx` is the overview, and every track's sidebar starts with it.** The sidebar lists it
-  as *Overview*, first in each Use line (or in `use/` when it has no lines) and in `maintain/`,
-  and the overview itself shows the sidebar of your Use track, or of Maintain when there is no Use
-  ([ADR-0025](content/docs/maintain/adr/ADR-0025-the-overview-has-the-same-sidebar-as-its-tracks.mdx)).
-  Don't add a page of your own to lead back to it.
-- **Order pages with `pages`** in a folder's `meta.json`, listing page and folder names.
-- **Group a long track with separators.** A `"---Label---"` entry in `pages` draws a small label
-  over the folders after it
-  ([ADR-0027](content/docs/maintain/adr/ADR-0027-the-sidebar-is-a-scale-ladder-with-one-lifted-orbit.mdx)).
-  Use it when a track has more than five or so folders, and put top-level pages before the first
-  one.
+**Depth:** `.agent-skills/nepal-dev-project-layout/SKILL.md` holds the folder tree for a package
+and a project, the address each file gets, the catalogue entry in the root `meta.json` (§3.1), and
+the overview and sidebar order (§3.2). Read it before creating a folder or editing a `meta.json`.
 
 ## 4. Two sets of docs to maintain
 
@@ -183,68 +122,6 @@ Maintain.
 
 The build lets a track be missing, and the switch between them then hides it. That is only for a
 track with nothing to say yet, such as a brand-new project. It is not a way to skip one.
-
-### 4.1 Use: docs for users
-
-**Who:** people installing, calling or operating what you built, who have not read its source.
-**Where:** `content/<project-slug>/use/`, inside the version line it describes (§5).
-
-| Page | What it holds | Suggested place |
-|---|---|---|
-| Getting started | Install command, smallest working example, requirements | `getting-started.mdx` |
-| Guides | How to do each real task, one task to a page | `guides/` |
-| API or reference | Every public function, option, command and default | `api/` |
-| Configuration | Every setting, its default and its effect | `configuration.mdx` |
-| Upgrading and release notes | What changed in this version and how to move to it | `release-notes.mdx` |
-
-The file names are suggestions. Use the ones that suit the package, and leave out what does not
-apply. No `demo.mdx` yet: demos wait for their own ADR.
-
-Everything here is checked against that version's code (§7).
-
-### 4.2 Maintain: docs for maintainers
-
-**Who:** people changing the code, reviewing it, releasing it or taking it over.
-**Where:** `content/<project-slug>/maintain/`. It has no version lines and describes the default
-branch as it stands.
-
-| Page or folder | What it holds |
-|---|---|
-| `architecture/` | How it is built: modules, boundaries, why it is shaped this way |
-| `local-setup.mdx` | Getting a working checkout: prerequisites, commands, sample data with invented values |
-| `testing.mdx` | How to run the tests and what they must cover |
-| `releasing.mdx` | How a release is cut, including the docs' part (§5.2) |
-| `contributing.mdx` | How changes are proposed, reviewed and merged |
-| `adr/` | Your decisions, if you keep them (below) |
-| `app-flow/`, `prd/`, `api/`, `dfd/`, `sequence/`, `state/`, `erd/`, `rbac/`, `security/` | Design documents, when the project needs them |
-
-The names are suggestions, like those in §4.1, except `adr/`, which the sidebar looks for.
-
-**Start from the templates** in
-[`content/docs/maintain/_templates/`](content/docs/maintain/_templates/index.mdx): copy one into
-your own `maintain/` folder and fill it in. Each Mermaid fence in a template is bare, and only
-that folder is allowed to do so: once copied, each one needs its `<Diagram>` and Archify view (§8).
-Each template's `description` is a placeholder, and the build can't tell: replace it with your own.
-
-**Two kinds of Maintain page:**
-
-- **Living documents** describe things as they stand now, and are edited in place. No revision
-  tables, no "previously X, now Y". What is no longer true is deleted; git and the ADRs hold the
-  history.
-- **ADRs** record a decision and are not rewritten once approved. A new ADR supersedes an old one,
-  and both link to each other.
-
-**ADRs go in a folder named `adr`.** The sidebar shows such a folder as a constellation, one moon
-per ADR phased by its status
-([ADR-0019](content/docs/maintain/adr/ADR-0019-adr-folders-show-as-a-constellation-in-the-sidebar.mdx)).
-Title each `ADR-NNNN — …` and keep the template's `- **Status:** Approved` line (Approved,
-Proposed, Superseded or Rejected) near the top. The folder's `index.mdx` is the full list.
-
-**People in an ADR are GitHub usernames**, written as a profile link:
-`- **Deciders:** [@puncoz](https://github.com/puncoz)` and the same for `Approved by`.
-The owner is nepal-dev.com, and `puncoz` decides and approves for it. When a decider's or approver's GitHub username is not already known
-(in your project's existing ADRs or from the owner), ask for it. Never write a display name in its
-place, and never guess a username.
 
 ### 4.3 When to update which
 
@@ -258,94 +135,19 @@ Update the docs **in the same change as the code**:
 | A flow that a diagram shows | The diagram's Mermaid **and** its Archify view (§8) |
 | Something released | §5.2 |
 
-### 4.4 What search engines and share cards get
-
-Everything here is automatic. It comes from where the page sits and from its frontmatter, so you
-write no metadata and no tags ([ADR-0035](content/docs/maintain/adr/ADR-0035-every-page-is-ready-for-search-and-sharing.mdx)).
-The one thing you write is the page's `description` (§7).
-
-| Your page | In search | Canonical link | In `sitemap.xml` |
-|---|---|---|---|
-| The overview, or a page in an unversioned `use/` | Yes | Itself | Yes |
-| A page in the `latest` line | Yes | Itself | Yes |
-| A page in `maintain/` | Yes | Itself | Yes |
-| A page in a `legacy` line, with the same path in `latest` | Yes | **That page in `latest`** | No |
-| A page in a `legacy` line, with no such page in `latest` | Yes | Itself | Yes |
-| A page in `use/dev/` | No, `noindex, follow` | None | No |
-| A page in a folder named `_templates` | No, `noindex, follow` | None | No |
-
-So **a package with only `dev` is out of search until its first release**, apart from its overview and
-Maintain. Keep a page's path the same from one line to the next: that is how an older page finds its
-counterpart in `latest`.
-
-From the same facts, each page also gets:
-
-- **A title** with the page, its entry and the site: `Install — lodestar — Nepal Dev Verse` on `latest`,
-  `Install — lodestar 2.x LTS — Nepal Dev Verse` on an older line, `lodestar — Nepal Dev Verse` on the overview.
-- **A share image at 1200 by 630**, drawn at build: the brand mark, your entry's planet, its name, the
-  track, the line with its moon, then the page's title and description. Don't add your own.
-- **Structured data**: `TechArticle` and breadcrumbs on a page, and on an overview `SoftwareSourceCode`
-  with your repository and latest version from the catalogue. A page that is `noindex`, or whose
-  canonical link is another page, carries none.
-
-Search only sees your pages once the site has an address (`SITE_URL`, set by the owner). A local build
-without it says `noindex` on every page, which is expected. Canonical links and sitemaps are hints:
-nothing here promises a ranking.
+**Depth:** `.agent-skills/nepal-dev-project-pages/SKILL.md` holds which pages Use holds (§4.1),
+which pages Maintain holds, its templates, living documents and ADRs, and how people are named in an
+ADR (§4.2), and what search engines and share cards get (§4.4). Read it before writing or editing
+any page.
 
 ## 5. Versions
 
 **Only the Use track is versioned.** Maintain and the overview have one copy.
 
-### 5.1 Lines
-
-A version line is a folder in `use/`, with `version` and `channel` in its `meta.json`.
-
-| Channel | Means | Folder | Address | Who has it |
-|---|---|---|---|---|
-| `dev` | Unreleased work on the default branch | Always `use/dev/` | Always `/<project-slug>/use/dev` | Packages, and projects that ship releases |
-| `latest` | The current release | Your choice | From its `name` | Exactly one, once anything is released |
-| `legacy` | An older release still documented | Your choice | From its `name` | Packages only |
-
-- **`version` is the exact version the line documents**, read from your manifest: `3.2.0`,
-  `4.0.0-dev`. The site prints it on every page of the line and in its Markdown, so don't repeat it
-  by hand on each page.
-- **`name` is what readers see**: any string the package uses, such as `v1.0`, `4.x` or `2024 LTS`.
-  Without it the folder name is used. `dev` has no `name` of its own.
-- **The URL segment comes from the name:** lowercase, spaces as `-`, other characters outside
-  `a-z 0-9 . _ -` dropped. `2.x LTS` gives `2.x-lts`.
-- **A package with only `dev` is unreleased.**
-- **A package has lines from the start**: its `use/` holds only line folders, no pages directly.
-- **Older lines** are listed in the version menu in `use/meta.json` `pages` order, otherwise newest
-  version first.
-- **The site adds the notices itself**: pages on `dev` and on older lines say so and link to the
-  latest. Don't write your own banner.
-- **A released line keeps describing its version.** Correct mistakes in it; new behaviour goes in
-  `dev/`.
-- **Search follows the channel** (§4.4): `latest` is indexed, an older page points search engines at
-  the same path in `latest`, and `dev` stays out. Changing a `channel` is all it takes.
-
-**A project is unversioned by default**: its `use/` holds pages directly. A project that ships
-releases has `use/dev/` and at most one released line (`channel: "latest"`), never `legacy` lines:
-older versions are for packages
-([ADR-0024](content/docs/maintain/adr/ADR-0024-a-project-can-span-several-repositories.mdx)).
-
-### 5.2 Releasing
-
-**A package:**
-
-1. Copy `use/dev/` to a new folder, for example `use/v4/`.
-2. In the new folder's `meta.json`, set its `name`, its `version` and `channel: "latest"`.
-3. In the previous `latest` line's `meta.json`, set `channel: "legacy"`.
-4. In `use/dev/meta.json`, set the next `version`, and keep working in `dev/`.
-
-**A project** copies `dev/` to the new released line and removes the previous one.
-
-### 5.3 Links that don't go stale
-
-- **Link to `/<project-slug>/use/latest/…`** from your README and registry page. It redirects to
-  the line marked `latest`, or to `dev` before the first release.
-- **A link to a line that no longer exists** redirects to the same path in `latest`.
-- **`/<project-slug>/use`** opens the first page of the latest line.
+**Depth:** `.agent-skills/nepal-dev-project-versions/SKILL.md` holds the lines and their channels,
+`version` and `name`, and URL segments (§5.1), how to release (§5.2), and links that don't go stale
+(§5.3). Read it before creating or changing a version line, releasing, or linking to a versioned
+page.
 
 ## 6. A project with several repositories
 
@@ -355,53 +157,14 @@ folder, one overview and one planet
 Each repository includes this submodule and writes its own folders. Both sets of docs (§4) apply to
 each repository.
 
-```json
-"catalog": {
-  "kind": "project",
-  "visibility": "public",
-  "repositories": [
-    { "id": "frontend", "name": "Frontend", "url": "https://github.com/example/acme-web", "primary": true },
-    { "id": "backend", "name": "Backend", "url": "https://github.com/example/acme-server" },
-    { "id": "api", "name": "API" }
-  ]
-}
-```
-
-- **`repositories`** replaces `repository`: two or more, on a project only. `id` is the
-  repository's folder name: lowercase letters, digits and hyphens, unique, not `dev`, `latest`,
-  `adr` or a line's URL segment. `name` is what readers see (the `id` without it). `url` is an
-  optional `https` URL. Exactly one repository has `primary: true`.
-- **A private repository** is listed without `url`, or not at all: listing it publishes its name
-  and location. Ask the owner.
-- **Folders.** Each repository's pages go in `use/<id>/` and `maintain/<id>/`; either may be
-  missing. With lines, the folders sit inside each line: `use/dev/<id>/`, `use/<line>/<id>/`.
-  Pages about the whole project (an architecture across the repositories) sit beside them. A
-  repository folder shows as a sidebar station titled with the repository's `name`, unless its
-  `meta.json` sets a `title`.
-
-  ```
-  content/acme/
-  ├── meta.json        # catalog.repositories: frontend (primary), backend, api
-  ├── index.mdx
-  ├── use/
-  │   ├── frontend/
-  │   ├── backend/
-  │   └── api/
-  └── maintain/
-      ├── architecture.mdx
-      ├── frontend/
-      ├── backend/
-      └── api/
-  ```
-
-- **Who edits what.** The **primary** repository edits the root `meta.json`, `index.mdx`,
-  `use/meta.json`, `maintain/meta.json`, each line's `meta.json`, every page outside a
-  repository folder, and does releases. **Every other repository** edits only its own folders
-  and its diagrams, named `diagrams/<project-slug>/<id>-<slug>.json` and `.html`. Need a change
-  outside your folders? Ask the primary repository's maintainers or the owner. The build cannot
-  check this rule; keep to it.
+- **Only the primary repository edits the project's shared files** and does releases. Every
+  other repository edits only its own folders and its diagrams.
 - **The list of repositories, their ids and which one is primary** are agreed with the owner,
-  like the slug.
+  like the slug. **A private repository** is listed without `url`, or not at all: ask the owner.
+
+**Depth:** `.agent-skills/nepal-dev-project-layout/SKILL.md` holds the `repositories` list, the
+folders for each repository, and who edits what, in full. Read it before working on a project of
+several repositories.
 
 ## 7. What every page must do
 
@@ -415,24 +178,9 @@ These are this site's content invariants (`AGENTS.md` §6):
    `src/components/mdx.tsx` only: Fumadocs' defaults and `<Diagram>`. Another component is a
    site change (§3). Every diagram's Markdown is its Mermaid.
 
-Format:
-
-- **Every page is `.mdx`.** Write Markdown, plus a registered component where it helps. In
-  prose, MDX reads `<` and `{` as JSX: put a `<slug>`-style placeholder in backticks or escape
-  it (`\<slug>`), close void tags (`<br />`), and use `{/* … */}` for comments.
-- **Frontmatter `title` and `description` are both required**, on every page in every track and line.
-  Fumadocs renders the title, so don't repeat it as an `#` heading. The description shows under the
-  title on the page, in search results and on the share image; the build fails without one (§9).
-- **Write the description for someone reading a search result:** one or two plain sentences, about
-  160 characters at most, saying what the page is for, read from the page itself. Name the thing, not
-  the document: "Add lodestar to a React project and open the command palette with one hook.", not
-  "This page describes installation." No space words, keyword lists or version numbers, which the
-  site adds itself.
-- **Links between pages are relative paths that start with `./` or `../`**
-  (`./getting-started.mdx`). Only those resolve to page URLs.
-- **No binary or externally hosted images.** Draw it as a diagram (§8). The one exception is
-  automatic: a GitHub profile link, `[@user](https://github.com/user)`, shows as a chip with the
-  avatar loaded from GitHub (ADR-0020).
+**Depth:** `.agent-skills/nepal-dev-project-pages/SKILL.md` holds the format: `.mdx` and its
+escaping, the required `title` and `description` and how to write the description, relative links,
+and images. Read it before writing or editing any page.
 
 ## 8. Diagrams: Mermaid and Archify, always together
 
@@ -449,67 +197,12 @@ screen wireframes are all diagrams.
 Both show the same thing, and **both change in the same change**. A Mermaid fence alone, or an
 Archify file alone, fails the build.
 
-### 8.1 Steps
+A diagram of anything private never goes in `diagrams/`: its HTML is published. No HTML prototypes
+or HTML wireframes.
 
-Archify is the skill in this repository at `.claude/skills/archify`. Its schemas are in
-`.claude/skills/archify/schemas/`. Run everything from the submodule root.
-
-1. **Write the Mermaid** for the diagram.
-2. **Write the Archify candidate**, showing the same nodes and links, in a working folder under
-   `.archify/` (gitignored). Use the type that fits: `architecture`, `workflow`, `sequence`,
-   `dataflow`, `lifecycle`, `erd`, `class`, `tree`, `timeline` or `waterfall`. Use Archify's classic
-   style: no `visual_preset`.
-3. **Deliver and check it**, without the browser gate:
-
-   ```sh
-   node .claude/skills/archify/bin/archify.mjs deliver <type> <candidate.json> <output.html> --quality showcase --json
-   node .claude/skills/archify/bin/archify.mjs check <output.html> --require-provenance
-   ```
-
-   Don't run `finalize`, `browser-check` or `visual-check`, whatever the skill's own steps say: they
-   launch Chrome. Run them only if the owner asks. Never upgrade Archify; tell the owner when it
-   reports an update.
-4. **Publish the pair**: copy the candidate and the checked HTML, byte for byte, to
-   `diagrams/<project-slug>/<slug>.json` and `<slug>.html`. The `<slug>` is lowercase letters,
-   digits and hyphens. Never copy a `*.delivery*.json` receipt or any other working file: they hold
-   local paths.
-5. **Then embed it in the page**, with the Mermaid fence and nothing else inside the `<Diagram>`:
-
-   ````mdx
-   <Diagram src="/diagrams/<project-slug>/request-flow.html" title="Request flow">
-
-   ```mermaid
-   flowchart LR
-     Parser --> Router --> Handler
-   ```
-
-   </Diagram>
-   ````
-
-Keep that order. If a running `next dev` sees a page before its diagram's files exist, it fails on
-every page until it next reloads the content. Saving a page usually clears it; if not, restart it.
-
-The site does the rest: the frame fits the diagram, follows the site's theme, starts Live, and
-shows only the diagram and its controls.
-
-### 8.2 Screens
-
-**Screens are `block-beta` wireframes**, phone width first, with invented sample values, each with
-its Archify view: an `architecture` diagram drawn from the Mermaid, its boxes inside a labelled
-phone-screen region, one per screen. Name them `<feature>-screen-<n>`. No HTML prototypes or HTML
-wireframes.
-
-### 8.3 What the build refuses
-
-The build fails, naming the page or file, on:
-
-- a Mermaid fence outside a `<Diagram>`;
-- a `<Diagram>` without a plain `src` and `title`, or without exactly one Mermaid fence;
-- a `src` outside `/diagrams/<project-slug>/<slug>.html`, or without its file;
-- an HTML without its JSON, a JSON without its HTML, or an HTML no page uses;
-- anything else in `diagrams/`, anything in `public/diagrams/`, and a receipt.
-
-A diagram of anything private never goes in `diagrams/`: its HTML is published.
+**Depth:** `.agent-skills/nepal-dev-diagrams/SKILL.md` holds the steps and the Archify commands
+(§8.1), screens as wireframes (§8.2), and what the build refuses (§8.3). Read it before writing or
+changing a diagram, a flow or a wireframe. Run only the Archify commands it gives.
 
 ## 9. What the build checks in your folders
 
@@ -581,6 +274,20 @@ what it means, and a recommendation listed first. The owner may also answer with
 own.
 
 ## 13. Before you hand over
+
+**Which skills to read.** Check the task against every row, and read each skill a row names, in
+full, before the work it covers. The rows are binding. The skills are in
+`.agent-skills/<name>/SKILL.md`, next to this file.
+
+| Before you… | Read |
+|---|---|
+| create your folder, or edit a `meta.json`, the catalogue entry or the sidebar order | `nepal-dev-project-layout` |
+| work on a project made of several repositories | `nepal-dev-project-layout` |
+| write or edit any page, in Use or in Maintain, or an ADR of your project | `nepal-dev-project-pages` |
+| create or change a version line, release, or link to a versioned page | `nepal-dev-project-versions` |
+| write or change a diagram, a flow or a wireframe, or touch `diagrams/` | `nepal-dev-diagrams` |
+
+**The checklist.**
 
 - [ ] Only `content/<project-slug>/` and `diagrams/<project-slug>/` changed (on a project of several
       repositories, only your own parts of them, §6).

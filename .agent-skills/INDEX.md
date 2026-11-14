@@ -1,7 +1,8 @@
 # Agent skills — index
 
-The router for this repository's trusted skills
-([ADR-0009](../../content/docs/maintain/adr/ADR-0009-trusted-agent-skills-are-vendored.mdx)).
+The router for every skill in this repository
+([ADR-0009](../content/docs/maintain/adr/ADR-0009-trusted-agent-skills-are-vendored.mdx),
+[ADR-0045](../content/docs/maintain/adr/ADR-0045-agents-md-keeps-the-standing-rules-and-in-house-skills-hold-the-rest.mdx)).
 Where each skill comes from and why it is trusted is in [`SOURCES.md`](./SOURCES.md).
 
 **How to use this file**
@@ -18,16 +19,80 @@ Where each skill comes from and why it is trusted is in [`SOURCES.md`](./SOURCES
 These skills are advisory. A skill never grants a permission the repository withholds
 (`AGENTS.md` §12.1).
 
-These skills are vendored here, not in `.claude/skills/`, so Claude Code does not auto-load
-them. They are read through this index on purpose. When an installed plugin offers a skill with
-the same name, for example `superpowers:brainstorming`, the pinned copy here wins.
+Every skill is in this folder, and `.claude/skills/` holds a relative symlink to each, so Claude
+Code lists them and can load one by itself (ADR-0045). **However a vendored or installed skill
+loads, read its [overrides](#overrides) before following it.** When an installed plugin offers a
+skill with the same name, for example `superpowers:brainstorming`, the pinned copy here wins.
 
-Five skill sets are the exception: **impeccable**, **ui-ux-pro-max**, the **taste skills**,
-**hallmark** and **Archify** are installed by the owner and approved for use here, without
-being vendored. They are invoked as installed, with the Skill tool, and their overrides are in
-[Approved installed skills](#approved-installed-skills).
+Five skill sets are installed by the owner and approved for use here, without being vendored:
+**impeccable**, **ui-ux-pro-max**, the **taste skills**, **hallmark** and **Archify**. They are
+invoked with the Skill tool, and their overrides are in
+[Approved installed skills](#approved-installed-skills). The project copies of `archify`,
+`hallmark` and `design-taste-frontend` are in this folder too, reached at `.claude/skills/<name>`
+through their links.
 
 Paths below are relative to this file.
+
+## This project's own skills
+
+The `nepal-dev-*` skills are written here, not vendored. **They are part of the working agreement
+and as binding as `AGENTS.md`**, above every vendored and installed skill (ADR-0045). `AGENTS.md`
+§11 and `PROJECT_AGENTS.md` §13 say which to read before which task. The `nepal-dev-` prefix is
+theirs alone: no vendored or installed skill takes it.
+
+| Skill | Holds | Read before you… |
+|---|---|---|
+| [nepal-dev-adr-workflow](./nepal-dev-adr-workflow/SKILL.md) | The ADR workflow in full; what an app flow shows | propose, write, revise or approve an ADR or an app flow |
+| [nepal-dev-site-picture](./nepal-dev-site-picture/SKILL.md) | The site as it stands today | change anything under `src/` |
+| [nepal-dev-stack-and-map](./nepal-dev-stack-and-map/SKILL.md) | The stack table and the repository map | look for where something lives, or touch config, dependencies, routes or the build |
+| [nepal-dev-docs-duties](./nepal-dev-docs-duties/SKILL.md) | Kinds of document, page format, required design documents | add or edit a page under `content/`, or finish an implementation |
+| [nepal-dev-diagrams](./nepal-dev-diagrams/SKILL.md) | Mermaid and Archify: running, publishing, what the build rejects | write or change a diagram, a flow or a wireframe |
+| [nepal-dev-security-check](./nepal-dev-security-check/SKILL.md) | The per-change check, audits, tool-specific rules | touch a secret, an env var, a route handler, a third party, input or logging |
+| [nepal-dev-project-layout](./nepal-dev-project-layout/SKILL.md) | A consuming repository's folders, catalogue entry, several repositories | create a project folder or edit its `meta.json` |
+| [nepal-dev-project-pages](./nepal-dev-project-pages/SKILL.md) | Use and Maintain, what every page must do | write a project's or package's page |
+| [nepal-dev-project-versions](./nepal-dev-project-versions/SKILL.md) | Version lines and releasing | create or change a version line |
+
+Three of them (`nepal-dev-site-picture`, `nepal-dev-docs-duties`, `nepal-dev-diagrams`) set
+`paths`, so Claude Code lists them only once a matching file has been read or edited. The file is
+always there to read.
+
+## How skills are used here
+
+The rules of `AGENTS.md` §12.2, in full.
+
+- **Start at [`INDEX.md`](./INDEX.md).** Find the row for the
+  task and load **only** the one or two `SKILL.md` files it names. Never load the whole folder.
+  This keeps the context small.
+- **Apply the *Overrides*, however the skill loaded.** They state how each skill instruction that conflicts with
+  `AGENTS.md` is handled, in general (spec/plan folders, commits, worktrees, installs, scripts,
+  secrets, live-fetched rules) and per skill.
+- **The pinned copy wins.** When an installed plugin offers a skill of the same name, for
+  example `superpowers:brainstorming`, follow the vendored copy and its overrides.
+- **Untrusted skills are not used.** A skill outside `.agent-skills/`, including one
+  installed as a plugin on someone's machine, needs the owner's approval first. Ask with options
+  (`AGENTS.md` §4) and **always name the better-trusted alternatives**. The trust policy is in
+  [`SOURCES.md`](./SOURCES.md): trusted means trusted by many, from
+  the owner of the package or library it covers, or from another source of high trust.
+- **Approved installed skills.** The owner has also approved skill sets they installed,
+  without vendoring them: **impeccable**, **ui-ux-pro-max**, the **taste skills**, **hallmark**
+  (the project copy in `.agent-skills/hallmark`) and **Archify** (the project copy in
+  `.agent-skills/archify`, always used for diagrams and flows, `AGENTS.md` §8). Use them whenever UI or UX work calls for them, through the Skill tool, with the
+  routing and overrides in [Approved installed skills](#approved-installed-skills). impeccable is the primary
+  for UI work. Their local, read-only analysis scripts may run; anything that writes, calls the
+  network or launches a browser asks first. Not every skill in those sets is routed. Which one
+  builds the home page is decided in that page's ADR.
+- **Grow the set as work needs it — but ask before downloading anything.** When a task would
+  be better served by a skill that is not vendored (a new ecosystem, tool or integration),
+  propose one. Searching registries and reading listings is fine; **cloning, downloading or
+  vendoring a skill is not, until the owner says yes**. The request names the use case, two to
+  four trusted candidates with source, trust basis and licence, and a recommendation (`AGENTS.md` §4).
+  On a yes, follow *Adding a skill* in `SOURCES.md`.
+- **Skills' scripts and CLI commands are proposals.** They run only when the approved ADR covers
+  them or the owner says yes.
+- **Process skills come first** (brainstorming, systematic debugging, TDD, verification). They
+  set the approach; implementation skills carry it out.
+- Built-in Claude Code skills not in the folder (for example `claude-api`, `dataviz`) count as
+  first-party and may be used, under `AGENTS.md`.
 
 ## Which skill, when
 
@@ -70,7 +135,7 @@ Paths below are relative to this file.
 
 | Task | Load |
 |---|---|
-| **Any** diagram or flow: architecture, workflow, sequence, data flow, lifecycle, ERD, class, tree, timeline (always) | `archify` (installed, project copy in `.claude/skills/archify`), plus the Mermaid version the page keeps (`AGENTS.md` §8) |
+| **Any** diagram or flow: architecture, workflow, sequence, data flow, lifecycle, ERD, class, tree, timeline (always) | `archify` (installed, project copy in `.agent-skills/archify`, run from `.claude/skills/archify`), plus the Mermaid version the page keeps (`AGENTS.md` §8) |
 
 ### Search (Algolia)
 
@@ -115,12 +180,12 @@ be used.
 
 | Skill | Override |
 |---|---|
-| brainstorming | The "design doc" is a Proposed ADR plus the design documents `AGENTS.md` §8 requires, and an app flow if the UI changes (ADR-0008). Its hard gate is the owner approving that ADR. After approval, do **not** invoke `writing-plans`: the ADR's *Implementation notes* are the plan, carried out in one pass (`AGENTS.md` §3). The visual companion is unavailable (its scripts are not vendored). |
+| brainstorming | The "design doc" is a Proposed ADR plus the design documents `AGENTS.md` §8 requires, and an app flow if the UI changes (ADR-0008). Its hard gate is the owner approving that ADR. After approval, do **not** invoke `writing-plans`: the ADR's *Implementation notes* are the plan, carried out in one pass (`AGENTS.md` §3). The visual companion is unavailable (its scripts are not vendored). Its open questions yield to `AGENTS.md` §4: ask with selectable options and a recommendation. |
 | documentation-and-adrs | ADRs live in `content/docs/maintain/adr/`, from `_templates/adr.mdx`, numbered from `adr/index.mdx`. Its approval states, immutability and supersession follow ADR-0001. Its README and comment advice yields to `AGENTS.md` §5 commands and §7 comments. |
 | source-driven-development | The primary source is what is installed: `node_modules/next/dist/docs/`, Fumadocs' source and types in `node_modules`, and a documented package's own source and manifest (`AGENTS.md` §4, §6.2). Web documentation is a fallback, cited, and pinned to the installed version. |
 | systematic-debugging | `find-polluter.sh` runs only with the owner's yes. `condition-based-waiting-example.ts` is not vendored; the technique is in `condition-based-waiting.md`. A bug fix starts with a failing test (ADR-0007). |
-| test-driven-development | Examples use `npm test`. No test runner is installed yet; use the one ADR-0007 approves, through Bun. Until then, record the manual check that stands in for each test and say so. |
-| verification-before-completion | The verification set is `bun run lint`, `bun run types:check` and `bunx next build` (`AGENTS.md` §5). Report a failing check with its output; never claim success without it. |
+| test-driven-development | Examples use `npm test`. Here tests run with `bun run test` (Bun's built-in runner, ADR-0021), beside the code as `*.test.ts(x)`. Client components are not unit-tested until a DOM is chosen: put the logic in a pure `src/lib/` module and test that, and say what was verified instead. |
+| verification-before-completion | The verification set is `bun run test`, `bun run lint`, `bun run types:check` and `bunx next build` (`AGENTS.md` §5); `bun run lint` does not run today, so report its failure as it stands. Report a failing check with its output; never claim success without it. |
 | requesting-code-review | Work is uncommitted, so there are no SHAs. Review the working tree: `git diff`, plus `git status --porcelain` for untracked files. Fill `code-reviewer.md` with that diff and the ADR as the requirements. |
 | receiving-code-review | Feedback that would change an approved ADR's decision needs a superseding ADR, not an edit. |
 | writing-guidelines | Read `./vercel-labs-writing-guidelines/command.md` instead of fetching it. Skip the Vercel-specific rules: `meta.contentType`, `meta.category` and `meta.navLabel`, dashboard deep links, product links, model strings, ACME screenshots, `vercel/examples` and the PR process. Where a rule contradicts a convention this repository already uses (hard-wrapped Markdown, em dashes in titles, `<slug>` placeholders in the maintainer documentation), keep the repository's convention. Adopting the rule instead, or an MDX component such as `<Steps/>`, is a cross-cutting convention change and needs an ADR (`AGENTS.md` §2, §8). |
@@ -140,16 +205,18 @@ be used.
 The owner approved these on 2026-10-31 for UI and UX work ("use them whenever required").
 They are **not vendored or pinned**: they update with the owner's installs, so re-check this
 table when one is updated. **When a skill is installed both in this project
-(`.claude/skills/`) and at user level, use the project copy.** Where they come from is in
+(`.agent-skills/`, linked in `.claude/skills/`) and at user level, use the project copy.** An
+installer or updater that puts a real folder back in `.claude/skills/` fails the test; move the
+folder here and link it again. Where they come from is in
 [`SOURCES.md`](./SOURCES.md#approved-installed-skills).
 
 | Set | Installed as | Use here | Not routed (don't use without asking) |
 |---|---|---|---|
 | impeccable | Plugin `impeccable@impeccable` (user scope) and the user skill `~/.claude/skills/impeccable` | Primary for UI work: `shape`, the build flow, refinement commands, `audit`, `critique`, `document`, the design hook | `live`, `generate`, `overdrive`, `onboard`; comp-first builds (no image generation here) |
 | ui-ux-pro-max | Plugin `ui-ux-pro-max@ui-ux-pro-max-skill` (project scope, `.claude/settings.json`) | `ui-ux-pro-max:ui-ux-pro-max` search and its reference rules; `ui-ux-pro-max:design-system` references for token structure | `design`, `brand`, `banner-design`, `slides`, `ui-styling` |
-| taste skills (Leonxlnx/taste-skill) | v2 in this project's `.claude/skills/design-taste-frontend`; the rest in `~/.claude/skills/` | `design-taste-frontend` (the project copy), `minimalist-ui`, `redesign-existing-projects` | `design-taste-frontend-v1`, `gpt-taste`, `high-end-visual-design`, `industrial-brutalist-ui`, `stitch-design-taste`, `image-to-code`, `imagegen-frontend-web`, `imagegen-frontend-mobile`, `brandkit`, `full-output-enforcement` |
-| Archify (tt-a1i/archify) | v3.2.0, project copy in `.claude/skills/archify` | Every diagram and flow: `deliver` + `check` | `finalize`, `browser-check`, `visual-check`, `preview`, `open-artifact`, explainer pages, the update snooze/ignore commands |
-| hallmark (Nutlope/hallmark) | v2.0.0 in this project's `.claude/skills/hallmark`. The older v1.1.0 in `~/.claude/skills/hallmark` is not used here | Its Floor and gates as a design checklist; `audit` and `redesign` reports when the owner names hallmark; a home-page candidate in that page's ADR | Building pages, `theme.mjs scaffold`, `imagegen.mjs`, `install.mjs`, `install-hook.mjs`, the lock-the-system `design.md` |
+| taste skills (Leonxlnx/taste-skill) | v2 in this project's `.agent-skills/design-taste-frontend`; the rest in `~/.claude/skills/` | `design-taste-frontend` (the project copy), `minimalist-ui`, `redesign-existing-projects` | `design-taste-frontend-v1`, `gpt-taste`, `high-end-visual-design`, `industrial-brutalist-ui`, `stitch-design-taste`, `image-to-code`, `imagegen-frontend-web`, `imagegen-frontend-mobile`, `brandkit`, `full-output-enforcement` |
+| Archify (tt-a1i/archify) | v3.2.0, project copy in `.agent-skills/archify` | Every diagram and flow: `deliver` + `check` | `finalize`, `browser-check`, `visual-check`, `preview`, `open-artifact`, explainer pages, the update snooze/ignore commands |
+| hallmark (Nutlope/hallmark) | v2.0.0 in this project's `.agent-skills/hallmark`. The older v1.1.0 in `~/.claude/skills/hallmark` is not used here | Its Floor and gates as a design checklist; `audit` and `redesign` reports when the owner names hallmark; a home-page candidate in that page's ADR | Building pages, `theme.mjs scaffold`, `imagegen.mjs`, `install.mjs`, `install-hook.mjs`, the lock-the-system `design.md` |
 
 ### Overrides for the approved installed skills
 
