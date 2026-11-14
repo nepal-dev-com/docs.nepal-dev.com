@@ -16,6 +16,6 @@
 - [ ] Tests cover the happy path and the obvious failures.
 - [ ] The design documents, `README.md`, `AGENTS.md` and the ADR index match the change.
 - [ ] Every diagram has its Mermaid inside a `<Diagram>` and its Archify pair in `diagrams/`.
-- [ ] `bun run test`, `bun run types:check` and `bunx next build` pass. I did **not** run `bun run build`.
+- [ ] `bun run test`, `bun run types:check` and `bunx next build` pass locally; CI runs them again. I did **not** run `bun run build`.
 
 <!-- Merging to main publishes at once: the site and the search index, with no preview (ADR-0042). -->

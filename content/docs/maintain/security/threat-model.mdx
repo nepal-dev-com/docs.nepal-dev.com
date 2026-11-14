@@ -4,14 +4,15 @@ description: "What could go wrong on this site, what is at risk, and how each th
 ---
 
 - **Status:** Current
-- **Last updated:** 2026-11-05
+- **Last updated:** 2026-11-14
 - **Related ADRs:** ADR-0005, [ADR-0016](../adr/ADR-0016-home-search-is-the-fumadocs-dialog-and-private-projects-render-server-side.mdx),
   [ADR-0017](../adr/ADR-0017-the-whole-site-is-one-solar-system.mdx),
   [ADR-0011](../adr/ADR-0011-archify-diagrams-are-embedded-from-sandboxed-html.mdx),
   [ADR-0022](../adr/ADR-0022-diagrams-show-archify-on-the-page-and-mermaid-in-markdown.mdx),
   [ADR-0020](../adr/ADR-0020-people-in-adrs-are-github-usernames-shown-as-profile-chips.mdx),
   [ADR-0041](../adr/ADR-0041-readers-are-counted-by-vercel-and-by-google-with-consent.mdx),
-  [ADR-0042](../adr/ADR-0042-only-main-deploys-straight-to-production-on-vercel.mdx)
+  [ADR-0042](../adr/ADR-0042-only-main-deploys-straight-to-production-on-vercel.mdx),
+  [ADR-0047](../adr/ADR-0047-github-checks-every-pull-request-and-dependabot-proposes-the-updates.mdx)
 
 > Snapshot of the system as it stands today. Edit in place; never record what changed.
 
@@ -35,6 +36,7 @@ static markup listing three invented projects from `src/components/home/private-
 | Secrets / environment variables | Yes | Listed in [`secrets.mdx`](./secrets.mdx); in Vercel's Production environment, the write key marked *Sensitive* (ADR-0042) |
 | Third-party integrations | Yes | Algolia (search). GitHub serves the avatar in each profile chip to the reader's browser, without a referrer (ADR-0020). The page actions' Open in ChatGPT, Claude, Cursor and Scira links, on docs pages and the home page, send a public page's URL to that service when the reader clicks one. The fonts are fetched by `next/font` at build time and served from the site's own origin |
 | Build and deploy | Yes | Vercel builds `main` only, with `bun run build`, so a push to `main` publishes the site and the search index; other branches get no deployment, and a fork deployment someone authorizes or a CLI deploy builds with no variables, so it cannot publish (`vercel.json`, ADR-0042, ADR-0043) |
+| Pull request checks | Yes | GitHub Actions runs the tests, the type check, `bunx next build`, dependency review and CodeQL on every pull request and push to `main`, a fork's code included, with a read-only token and no secret; it cannot push or publish. Dependabot opens one grouped update a week, never merged by itself (`.github/`, ADR-0047) |
 | Logging / audit trail | No | The sync script prints a record count |
 
 Each ADR that adds a surface updates this table in the same change.
@@ -64,6 +66,7 @@ Crossed today, each in [`../dfd/system.mdx`](../dfd/system.mdx):
 
 | Boundary | Carries |
 |---|---|
+| Pull request ↔ GitHub Actions | The pull request's tree, run on GitHub's runners with a read-only token and no secret (ADR-0047) |
 | GitHub ↔ Vercel build | A full clone of `main` on every push to it (ADR-0042) |
 | Vercel build ↔ Algolia | Every page's search record, with the write key |
 | Browser ↔ Algolia | Search queries and results, with the search-only key |
@@ -89,8 +92,10 @@ Anticipated, each documented by the ADR that introduces it:
 | Google receives a cookieless ping with each reader's IP address and user agent before they choose, under Consent Mode v2 advanced; some EU authorities treat that as needing consent too (A5). | The owner chose advanced mode for fuller, modelled reports (ADR-0041). | No cookie and no client ID before *Allow*; ads signals always denied; Google signals off; IP not kept by GA4; Global Privacy Control declines. |
 | gtag.js and Vercel's scripts are loaded live and unpinned, so a change on their side runs on every page. | Both are the vendors' own scripts, the only way they are offered (ADR-0041). | No other tag can be added without an ADR; no Tag Manager. |
 | Each page's address and title reach Vercel and Google. | Every page is public today (ADR-0041). | The private-documentation ADR must keep analytics off private pages. |
-| Anyone who can push to `main`, or change the Vercel project, publishes to the site and the search index at once; no preview stands between (A1, A3). | The owner chose a direct production build with no previews (ADR-0042). | Agents never commit or push (`AGENTS.md` §3); the owner reviews every change; GitHub branch protection on `main` is the owner's to set. |
-| A compromised dependency runs during the Vercel build with `ALGOLIA_WRITE_KEY` in its environment (A2, A3). | The same exposure as the owner's machine, now on every push to `main` (ADR-0042). | `--frozen-lockfile` and a lockfile reviewed by the owner; Bun pinned to 1.4.4; installs need the owner's yes. |
+| Anyone who can push to `main`, or change the Vercel project, publishes to the site and the search index at once; no preview stands between (A1, A3). | The owner chose a direct production build with no previews (ADR-0042). | Agents never commit or push (`AGENTS.md` §3); the owner reviews every change; pull requests are checked before the merge, and a ruleset on `main` requires those checks (ADR-0047). The owner's own direct push is checked only after it has published. |
+| A compromised dependency runs during the Vercel build with `ALGOLIA_WRITE_KEY` in its environment (A2, A3). | The same exposure as the owner's machine, now on every push to `main` (ADR-0042). | `--frozen-lockfile` and a lockfile reviewed by the owner; Bun pinned to 1.4.4; installs need the owner's yes; Dependabot proposes no release younger than seven days, and dependency review fails a pull request that adds a direct dependency with a known vulnerability (ADR-0047). |
+| A dependency update that passes the checks is still malicious, or an action was already malicious at the commit it is pinned to (A2, A3). | Updates are worth having, and no check proves a release clean (ADR-0047). | The seven-day cooldown; pinned SHAs; grouped updates the owner reviews and merges by hand; CI holds no secret, so only the Vercel build is exposed. |
+| Dependency review sees only the direct dependencies in `package.json`: GitHub's dependency graph does not read `bun.lock`. | Bun is the package manager (ADR-0043, ADR-0044). | Dependabot alerts and the lockfile diff in each update. |
 | Search and the live site disagree for the minute between the sync and the deployment going live, and after an *Instant Rollback*. | The index is written by the build (ADR-0042). | Roll back with a `git revert` on `main`, which moves both. |
 | Visitors take the invented private projects as real, and their links return the 404 (A5). | The owner's decision, ADR-0017. | Replacing the list is a one-file change. |
 

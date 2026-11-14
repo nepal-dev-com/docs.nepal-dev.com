@@ -43,12 +43,28 @@
       "row": 2
     },
     {
+      "id": "contributor",
+      "type": "external",
+      "label": "Contributors",
+      "sublabel": "and Dependabot",
+      "stage": 0,
+      "row": 1
+    },
+    {
       "id": "content",
       "type": "database",
       "label": "D1 · content/",
       "sublabel": "MDX + diagrams/",
       "stage": 1,
       "row": 0
+    },
+    {
+      "id": "ci",
+      "type": "security",
+      "label": "0.1 Check",
+      "sublabel": "GitHub Actions · no secret",
+      "stage": 1,
+      "row": 1
     },
     {
       "id": "env",
@@ -153,6 +169,20 @@
       "to": "content",
       "label": "pages, owner commits",
       "variant": "default"
+    },
+    {
+      "id": "pull-request",
+      "from": "contributor",
+      "to": "ci",
+      "label": "pull request",
+      "variant": "default"
+    },
+    {
+      "id": "checked",
+      "from": "ci",
+      "to": "content",
+      "label": "checks; owner merges",
+      "variant": "dashed"
     },
     {
       "id": "to-build",

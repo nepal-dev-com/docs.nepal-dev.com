@@ -147,6 +147,8 @@ Unclear which side the change falls on? It needs an ADR.
 - **Don't publish by accident.** `bun run build` also pushes every page to the live Algolia
   index (§5). Verify with `bunx next build` instead. A push to `main` publishes the site and the
   index on Vercel (ADR-0042), so it is the owner's alone; never run `vercel` or `vercel --prod`.
+  GitHub Actions only checks: no workflow publishes, reads a secret, or uses `pull_request_target`,
+  and every action is pinned to a commit SHA (ADR-0047).
 - **Use the skills — they do not outrank this file.** See §12.
 - **Never guess — ask.** See §4.
 - **Report honestly.** If something is blocked, unverified, or skipped, say so plainly,
@@ -352,7 +354,8 @@ owner, not into the maintainer documentation**, until they are fixed: those page
 ├── .agent-skills/         # every skill: nepal-dev-* (this project's own), vendored, installed; INDEX.md (§12)
 ├── .claude/skills/, .agents/skills/   # links into .agent-skills/, nothing else (ADR-0045)
 ├── README.md, PRODUCT.md, DESIGN.md   # overview; product truth and visual system (not published, §8)
-├── CONTRIBUTING.md, CODE_OF_CONDUCT.md, SECURITY.md, .github/   # for people on GitHub; they add no rule (ADR-0046)
+├── CONTRIBUTING.md, CODE_OF_CONDUCT.md, SECURITY.md   # for people on GitHub; they add no rule (ADR-0046)
+├── .github/               # issue forms, PR template, CODEOWNERS; workflows/ (checks only) and dependabot.yml (ADR-0047)
 ├── LICENSE, LICENSE-CONTENT   # MIT for code; CC BY 4.0 for content/ and diagrams/ (ADR-0046)
 ├── content/               # PUBLISHED: every page readers see; one folder per entry, at /<slug>
 │   └── docs/maintain/     # this site's own decisions (adr/) and design documents

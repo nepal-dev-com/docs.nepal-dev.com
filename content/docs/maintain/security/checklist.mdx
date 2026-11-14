@@ -4,9 +4,10 @@ description: "The full security audits run before the first public deployment an
 ---
 
 - **Status:** Current
-- **Last updated:** 2026-11-05
+- **Last updated:** 2026-11-14
 - **Related ADRs:** ADR-0005, ADR-0011, [ADR-0041](../adr/ADR-0041-readers-are-counted-by-vercel-and-by-google-with-consent.mdx),
-  [ADR-0042](../adr/ADR-0042-only-main-deploys-straight-to-production-on-vercel.mdx)
+  [ADR-0042](../adr/ADR-0042-only-main-deploys-straight-to-production-on-vercel.mdx),
+  [ADR-0047](../adr/ADR-0047-github-checks-every-pull-request-and-dependabot-proposes-the-updates.mdx)
 
 > Snapshot of the system as it stands today. Edit in place; never record what changed.
 
@@ -115,3 +116,23 @@ and unauthorized access first, abuse and logic flaws second.
 - [ ] The production build log shows Bun 1.4.4, Node 26, the history check passing and
       `search updated: N records`, and no variable's value.
 - [ ] Production deploys came from Git pushes to `main`, never from `vercel --prod`.
+
+### GitHub Actions and Dependabot (ADR-0047)
+
+- [ ] `.github/workflows/` holds `ci.yml` and `codeql.yml` only. Every action is pinned to a full commit
+      SHA, top-level `permissions` is `contents: read`, and the only write any job has is
+      `security-events` for CodeQL (the tests in `src/lib/github-automation.test.ts` check all three).
+- [ ] No workflow uses `pull_request_target`, reads a secret, or runs `bun run build`, the search sync
+      or a deploy.
+- [ ] The repository's Actions secrets and variables are empty. `ALGOLIA_WRITE_KEY` is in Vercel only.
+- [ ] In the repository's Actions settings, the default `GITHUB_TOKEN` permission is read-only, and
+      workflows may not create or approve pull requests.
+- [ ] A pinned SHA is the commit of the version in its comment: for an annotated tag, the commit the
+      tag points to (`git ls-remote --tags <repository> '<tag>^{}'`).
+- [ ] `.github/dependabot.yml` updates `bun` and `github-actions` at `/` only, weekly, grouped, with a
+      seven-day cooldown. No pull request merges by itself: auto-merge is off.
+- [ ] Dependabot alerts, Dependabot security updates, secret scanning and push protection are on.
+      CodeQL default setup is off, since `codeql.yml` is the setup.
+- [ ] The ruleset on `main` requires a pull request with `verify`, `dependency-review` and `Analyze`
+      passing, blocks force pushes and deletion, and lets only the repository admin role bypass it.
+- [ ] No open Dependabot alert or code scanning alert is older than its fix.
