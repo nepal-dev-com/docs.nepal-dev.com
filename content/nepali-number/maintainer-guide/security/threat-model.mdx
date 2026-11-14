@@ -4,8 +4,8 @@ description: "What could make nepali-number harmful to the applications that ins
 ---
 
 - **Status:** Current
-- **Last updated:** 2026-10-30
-- **Related ADRs:** [ADR-0005](../adr/ADR-0005-security-as-a-standing-practice.mdx), [ADR-0009](../adr/ADR-0009-package-invariants.mdx)
+- **Last updated:** 2026-11-14
+- **Related ADRs:** [ADR-0005](../adr/ADR-0005-security-as-a-standing-practice.mdx), [ADR-0009](../adr/ADR-0009-package-invariants.mdx), [ADR-0012](../adr/ADR-0012-read-every-number-once-exactly.mdx)
 
 > Snapshot of the package as it stands today. Edit in place; never record what changed.
 
@@ -62,39 +62,45 @@ flowchart LR
 | Compromised GitHub Action | A third-party action is altered | Actions pinned to major versions (`@v5`, `@v2`) | Not pinned to commit SHAs |
 | Install-time execution | A lifecycle script runs on `npm install` | No `prepare` / `preinstall` / `install` / `postinstall` scripts | — |
 | Tarball contains extra files | Secrets or tooling published by accident | `files: ["dist"]`; `npm pack --dry-run` in the release checklist | — |
-| ReDoS | Crafted long input makes a regular expression backtrack | No pattern is exponential (see below) | **Two patterns are quadratic** and reachable with direct calls: `validateNepaliNumber` and `addNepaliCommas`. No long-input test yet |
-| Unbounded work | Huge input makes words functions recurse deeply | Recursion depth follows the number's magnitude; `toNepaliWords(1.7e308)` finishes in under 2 ms | — |
-| Wrong amount in words | A table error produces a wrong word on an invoice | Tests assert exact strings for each word table ([ADR-0007](../adr/ADR-0007-tests-are-part-of-every-change.mdx)) | Float rounding of paisa ([limitations](../../user-guide/dev/api/limitations.mdx#floating-point-rounding)) |
+| ReDoS | Crafted long input makes a regular expression backtrack | Numbers are read by a single-pass scanner with no regular expression ([ADR-0012](../adr/ADR-0012-read-every-number-once-exactly.mdx)); the four patterns left are linear (see below) | The suite runs each reader on 100 000-character hostile strings with a time bound; the figures below are measured by hand |
+| Unbounded work | Huge input makes a function run long or recurse deeply | Every export is linear in its input length; `toNepaliWords(1.7e308)` finishes in 0.1 ms | A caller that passes megabytes of digits gets megabytes of words back; capping input length stays the caller's choice |
+| Wrong amount in words | A table error produces a wrong word on an invoice | Tests assert exact strings for each word table ([ADR-0007](../adr/ADR-0007-tests-are-part-of-every-change.mdx)); amounts are rounded on their decimal digits, never as floats | A `number` argument has already been rounded by JavaScript ([limitations](../../user-guide/dev/api/limitations.mdx#a-number-argument-has-already-been-rounded-by-javascript)) |
 
 ### Regular expressions in `src/`
 
 | Location | Pattern | Assessment |
 |---|---|---|
-| `conversion.ts` `toNepali` | `/[0-9]/g` | Linear |
-| `conversion.ts` `parseNepaliNumber` | `/[, ]/g` | Linear |
-| `formatting.ts` `formatNepaliNumber` | `/\.0+$/` | Linear (single quantifier, anchored) |
-| `formatting.ts` `addNepaliCommas` | `/\B(?=(\d{2})+(?!\d))/g` | Lookahead re-scans the remaining digits at each position — quadratic in the digit count, bounded by how long a number string can be |
-| `formatting.ts` `removeFormatting` | `/[,\s]/g`, `/[^\d.-]/g` | Linear |
-| `utils.ts` `validateNepaliNumber` | `/^[०-९]*\.?[०-९]*$/` | **Quadratic** on a long digit run that fails at the end: the two `*` quantifiers split the run every possible way before giving up |
-| `utils.ts` (others) | `/[0-9]/`, `/[०-९]/`, `/[,\s]/g`, `/\./g`, `/\s+/g`, `/,+/g`, `/\.+/g` | Linear |
+| `words.ts` `splitWords` (the word parsers) | `/\s+/` in `split` | Linear |
+| `utils.ts` `normalize` | `/\s+/g`, `/,+/g`, `/\.+/g` | Linear: one quantifier each, nothing after it to backtrack into |
+
+Everything else walks the string by character code: `scanDecimal` and the digit mappers in
+`conversion/decimal.ts`, and the number finder in `text/`.
 
 ### Measured on hostile input
 
-Bun 1.4.4, Apple Silicon, from source:
+Node 24.21.0, Apple Silicon, against the built `dist/nepali-number.cjs`:
 
 | Call | 10 000 characters | 100 000 characters |
 |---|---|---|
-| `validateNepaliNumber("१".repeat(n) + "x")` | 37 ms | **5.5 s** |
-| `addNepaliCommas("1".repeat(n))` | 61 ms | **6.4 s** |
-| Every other export tried (`toNepali`, `toEnglish`, `parseNepaliNumber`, `normalize`, `removeFormatting`, `formatNepaliNumber`, `isMixedNumber`) | under 2 ms | under 4 ms |
+| `validateNepaliNumber("१".repeat(n) + "x")` | 0.6 ms | 1.8 ms |
+| `isValidNumber("9".repeat(n) + "x")` | 0.3 ms | 1.1 ms |
+| `parseNepaliNumber("1,".repeat(n / 2) + "x")` | 0.4 ms | 0.4 ms |
+| `addNepaliCommas("1".repeat(n))` | 2.0 ms | 3.0 ms |
+| `formatNepaliNumber("9".repeat(n))` | 0.7 ms | 4.1 ms |
+| `normalize`, `removeFormatting`, `parseNepaliWords` | under 1 ms | under 2 ms |
+| `findNumbers("1,".repeat(n / 2))` | 0.5 ms | 0.9 ms |
+| `sortNumbers` (`n / 10` values) | 0.5 ms | 2.5 ms |
+| `spellOutNumbers("9".repeat(n))` | 1.4 ms | 6.9 ms |
+| `toNepaliWords("9".repeat(n))` | 1.8 ms | 7.5 ms |
 
-`addNepaliCommas` is safe when reached through `formatNepaliNumber`, whose integer part is at
-most ~22 digits (`toFixed` switches to exponent form at 10²¹). Called directly — and
-`validateNepaliNumber` is typically called directly on a form field — a consumer that passes
-unbounded user input can block its event loop for seconds. Until fixed (an ADR: the output
-must not change), consumers should cap input length; a fix needs no new dependency.
+Ten times the input costs at most ten times the time: no call is quadratic.
+
+**Depth.** No export recurses in proportion to its input. Above the largest scale the word
+functions loop over 19-digit groups, so `toNepaliWords` on 3 000 000 digits returns (about
+0.3 s) instead of exhausting the stack. The suite spells a 300 000-digit number in each word
+function.
 
 ## Residual risk
 
 The release-path gaps above are accepted only until the release workflow is completed; the ADR
-that completes it closes them. The two quadratic patterns are open findings awaiting an ADR.
+that completes it closes them.

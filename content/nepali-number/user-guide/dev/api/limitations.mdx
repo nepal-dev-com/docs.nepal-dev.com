@@ -1,6 +1,6 @@
 ---
 title: "Limitations"
-description: "Behaviour in nepali-number that surprises people, such as float rounding and comma handling, with a workaround for each."
+description: "Behaviour in nepali-number that surprises people, such as float precision, numbers in prose and traditional unit factors, with a workaround for each."
 ---
 
 > Every output below was produced by running the built package.
@@ -13,172 +13,110 @@ output, so each fix is an ADR with a semver decision
 
 | # | Limitation | Affects | Workaround |
 |---|---|---|---|
-| 1 | [Option types are not exported](#option-types-are-not-exported) | TypeScript users | Derive from `Parameters<…>` |
-| 2 | [`formatNepaliNumber` stops at the first comma](#formatnepalinumber-stops-at-the-first-comma) | `formatNepaliNumber`, `toNepaliCurrency` | `removeFormatting` first |
-| 3 | [`addNepaliCommas` needs English digits](#addnepalicommas-needs-english-digits) | `addNepaliCommas` | `toEnglish` first |
-| 4 | [`currency` / `currencySymbol` in `FormatOptions` are ignored](#currency-options-in-formatoptions-are-ignored) | `formatNepaliNumber` | `toNepaliCurrency` |
-| 5 | [Words and ordinals need integers](#words-and-ordinals-need-integers) | `toNepaliWords`, `toEnglishWords`, `toNepaliOrdinal` | `Math.trunc`, or `toNepaliCurrencyWords` |
-| 6 | [Floating-point rounding](#floating-point-rounding) | Everything that rounds | Round in integer paisa yourself |
-| 7 | [Parsing cannot tell zero from invalid](#parsing-cannot-tell-zero-from-invalid) | `parseNepaliNumber`, words, currency | Validate first |
-| 8 | [Digit checks expect a single character](#digit-checks-expect-a-single-character) | `isNepaliDigit`, `isEnglishDigit` | Check length first |
-| 9 | [`validateNepaliNumber` rejects signs and English digits](#validatenepalinumber-rejects-signs-and-english-digits) | `validateNepaliNumber` | Strip the sign; `toNepali` first |
-| 10 | [`toDecimalWord` does not abbreviate negatives](#todecimalword-does-not-abbreviate-negatives) | `toDecimalWord` | Abbreviate the absolute value |
-| 11 | [`padZeros` pads in front of the sign](#padzeros-pads-in-front-of-the-sign) | `padZeros` | Pad the absolute value |
-| 12 | [`null` and `undefined` throw](#null-and-undefined-throw) | Most exports, from JavaScript | Guard before calling |
-| 13 | [Precision above `Number.MAX_SAFE_INTEGER`](#precision-above-numbermax_safe_integer) | Everything that parses | Keep values below 9 × 10¹⁵ |
-| 14 | [Very long input is slow in two functions](#very-long-input-is-slow-in-two-functions) | `validateNepaliNumber`, `addNepaliCommas` | Cap input length |
+| 1 | [Functions that return a `number` lose precision on very large values](#functions-that-return-a-number-lose-precision-on-very-large-values) | `parseNepaliNumber`, `removeFormatting`, `parseNepaliWords`, `parseEnglishWords`, `parseNepaliCurrency`, `findNumbers` | Keep the digits as a string or a `bigint` |
+| 2 | [A `number` argument has already been rounded by JavaScript](#a-number-argument-has-already-been-rounded-by-javascript) | Everything that reads a `number` | Pass a string or a `bigint` |
+| 3 | [Invalid input returns an empty result, not zero](#invalid-input-returns-an-empty-result-not-zero) | Everything that reads a number | Check with `isValidNumber`, or use `\|\|` for a fallback |
+| 4 | [Character converters do not validate](#character-converters-do-not-validate) | `toNepali`, `toEnglish`, `convert` | `isValidNumber` first |
+| 5 | [Ordinals need whole numbers](#ordinals-need-whole-numbers) | `toNepaliOrdinal`, `toEnglishOrdinal`, `toNepaliOrdinalNumber`, `toEnglishOrdinalNumber` | `Math.trunc` first |
+| 6 | [A sign is never read inside prose](#a-sign-is-never-read-inside-prose) | `findNumbers`, `extractNumbers`, `replaceNumbers`, `spellOutNumbers` | Check the character before `index` |
+| 7 | [Unit conversions are floating point](#unit-conversions-are-floating-point) | `convertLandArea`, `convertWeight` and the unit formatters | Round for display |
+| 8 | [`validateNepaliNumber` rejects English digits](#validatenepalinumber-rejects-english-digits) | `validateNepaliNumber` | `isValidNumber` |
 
 ---
 
-## Option types are not exported
+## Functions that return a `number` lose precision on very large values
 
-`FormatOptions`, `CurrencyOptions` and `NumberSystem` are declared in `dist/nepali-number.d.ts`
-but missing from its `export { … }` list.
-
-```ts
-import type { FormatOptions } from "nepali-number"   // ✗ error TS2459: declared locally, not exported
-```
-
-**Workaround.** Derive them — see [types](./types.mdx#deriving-them-in-your-code).
-
-## `formatNepaliNumber` stops at the first comma
-
-String input is read with `parseFloat`, which stops at a comma.
+Reading and formatting are exact at any size: digits are handled as decimal strings. A function
+whose **return type** is `number` still has to fit the result into a JavaScript number, which
+holds integers exactly only up to 9 007 199 254 740 991.
 
 ```ts
-formatNepaliNumber("1,234")      // → "१"
-toNepaliCurrency("1,234")        // → "रू १.००"
+toNepaliWords("9007199254740993")       // exact: the words end in "…त्रियानब्बे"
+parseNepaliNumber("9007199254740993")   // → 9007199254740992
 ```
 
-**Workaround.** `formatNepaliNumber(removeFormatting("1,234"))` → `"१,२३४"`.
+**Workaround.** Keep large values as strings or `bigint`s and pass them straight to the
+formatting and word functions.
 
-## `addNepaliCommas` needs English digits
+## A `number` argument has already been rounded by JavaScript
 
-Grouping uses `\d`, which matches only ASCII digits; Nepali digits get only the final comma.
+The package reads the shortest decimal that JavaScript prints for a `number`. Arithmetic done
+before the call has already lost digits.
 
 ```ts
-addNepaliCommas("१२३४५६७")       // → "१२३४,५६७"
+formatNepaliNumber(0.1 + 0.2, { precision: 20 })    // → "०.३०००००००००००००००४०००"
+formatNepaliNumber("0.3", { precision: 20 })        // → "०.३०००००००००००००००००००"
 ```
 
-**Workaround.** `toNepali(addNepaliCommas(toEnglish("१२३४५६७")))` → `"१२,३४,५६७"`, or
-`formatNepaliNumber("१२३४५६७")` → `"१२,३४,५६७"`.
+**Workaround.** Keep money as integer paisa, or pass decimal strings.
 
-## `currency` options in `FormatOptions` are ignored
+## Invalid input returns an empty result, not zero
 
-`formatNepaliNumber` accepts `currency` and `currencySymbol` but never reads them.
+Input that is not a number returns `NaN` from functions that return a number, `""` from
+functions that return a string, and `false` from checks. Zero is returned only for zero.
 
 ```ts
-formatNepaliNumber(1234, { currency: true })   // → "१,२३४"
+parseNepaliNumber("abc")        // → NaN
+formatNepaliNumber("12abc")     // → ""
+toNepaliWords("")               // → ""
 ```
 
-**Workaround.** `toNepaliCurrency(1234)` → `"रू १,२३४.००"`.
+**Workaround.** `formatNepaliNumber(value) || "०"` where a zero fallback is wanted.
 
-## Words and ordinals need integers
+## Character converters do not validate
 
-Word tables are indexed by the number, so a fraction finds no entry.
+`toNepali`, `toEnglish` and `convert` map digits character by character and leave everything
+else alone, so they accept any text.
 
 ```ts
-toNepaliWords(12.5)       // → ""
-toEnglishWords(12.5)      // → ""
-toNepaliOrdinal(12.5)     // → ""
+toNepali("12abc")               // → "१२abc"
 ```
 
-**Workaround.** `toNepaliWords(Math.trunc(n))`; for money,
-`toNepaliCurrencyWords(12.5)` → `"बाह्र रुपैयाँ पचास पैसा"`.
+**Workaround.** `isValidNumber(input)` first when the input must be a number.
 
-## Floating-point rounding
+## Ordinals need whole numbers
 
-Rounding uses `toFixed` and `Math.round` on binary floating-point values, so decimals that
-cannot be represented exactly round the "wrong" way.
+There is no ordinal of `12.5`.
 
 ```ts
-formatNepaliNumber(1.005)        // → "१"        (1.005 is stored as 1.00499…)
-roundNepali(1.005)               // → "१.००"
-toNepaliCurrencyWords(1.005)     // → "एक रुपैयाँ"
+toNepaliOrdinal(12.5)           // → ""
+toEnglishOrdinal(12.5)          // → ""
 ```
 
-**Workaround.** Keep money as integer paisa in your own code and divide only for display.
+**Workaround.** `toNepaliOrdinal(Math.trunc(n))`.
 
-## Parsing cannot tell zero from invalid
+## A sign is never read inside prose
 
-`parseNepaliNumber` returns `0` for unparseable input, and reads only a leading number. Every
-function built on it inherits this.
+In a sentence a hyphen is more often a separator than a minus, so the text functions read
+`"-5"` as `5`.
 
 ```ts
-parseNepaliNumber("abc")         // → 0
-parseNepaliNumber("12abc")       // → 12
-toNepaliWords("abc")             // → "शून्य"
-toNepaliCurrencyWords("abc")     // → "शून्य रुपैयाँ"
+extractNumbers("तापक्रम -5 डिग्री")     // → [5]
+extractNumbers("9841-123456")         // → [9841, 123456]
 ```
 
-**Workaround.** Validate first: `validateNepaliNumber` for Nepali input, or your own check
-for English input.
+**Workaround.** Use [`findNumbers`](./text.mdx#findnumberstext) and look at
+`text[match.index - 1]`.
 
-## Digit checks expect a single character
+## Unit conversions are floating point
+
+Traditional units convert through fixed factors that are not round in metric, so results carry
+binary floating-point digits.
 
 ```ts
-isNepaliDigit("५६")     // → true    substring of "०१२३४५६७८९"
-isEnglishDigit("5a")    // → true    parseInt reads the leading digit
-isEnglishDigit(" 5")    // → true
+convertLandArea(1, "ropani", "sqm")     // → 508.73704704
 ```
 
-**Workaround.** Check `Array.from(char).length === 1` first, or test the whole string with
-`/^[०-९]+$/` or `/^[0-9]+$/`.
+**Workaround.** Round for display with
+[`roundNepali`](./utils.mdx) or `formatNepaliNumber`.
 
-## `validateNepaliNumber` rejects signs and English digits
+## `validateNepaliNumber` rejects English digits
+
+It checks that a number is written in Nepali digits.
 
 ```ts
-validateNepaliNumber("-१२३")     // → false
-validateNepaliNumber("123")      // → false
+validateNepaliNumber("123")     // → false
+isValidNumber("123")            // → true
 ```
 
-**Workaround.** Strip a leading `-` and run `toNepali` on the input before validating.
-
-## `toDecimalWord` does not abbreviate negatives
-
-Negative numbers are below every scale, so they fall through to plain formatting.
-
-```ts
-toDecimalWord(-1200000)          // → "-१२,००,०००"
-```
-
-**Workaround.** `"-" + toDecimalWord(Math.abs(n))` → `"-१२ लाख"`.
-
-## `padZeros` pads in front of the sign
-
-```ts
-padZeros(-5, 4)                  // → "००-५"
-```
-
-**Workaround.** `(n < 0 ? "-" : "") + padZeros(Math.abs(n), 3)` → `"-००५"`.
-
-## `null` and `undefined` throw
-
-These are outside the declared parameter types. TypeScript prevents them; plain JavaScript
-does not.
-
-```js
-toNepali(null)               // ✗ TypeError: Cannot read properties of null (reading 'toString')
-formatNepaliNumber(null)     // ✗ TypeError: Cannot read properties of null (reading 'toFixed')
-normalize(undefined)         // ✗ TypeError: Cannot read properties of undefined (reading 'trim')
-```
-
-**Workaround.** Guard optional values: `value == null ? "" : toNepali(value)`.
-
-## Precision above `Number.MAX_SAFE_INTEGER`
-
-All parsing goes through JavaScript `number`. Integers above 9 007 199 254 740 991 are not
-exact, and `toNepali` on such a `number` prints exponent form (`1e21` → `"१e+२१"`).
-
-**Workaround.** Pass digit strings to `toNepali` / `toEnglish`, which convert character by
-character and are exact at any length.
-
-## Very long input is slow in two functions
-
-Their regular expressions take time proportional to the **square** of the input length. A
-100 000-character string takes about 5.5 s in `validateNepaliNumber` and 6.4 s in
-`addNepaliCommas`; ordinary numbers are unaffected. Details in the
-[threat model](../../../maintainer-guide/security/threat-model.mdx#measured-on-hostile-input).
-
-**Workaround.** Reject over-long input before calling, e.g. `if (input.length > 50) { … }` for a
-form field.
+**Workaround.** Use `isValidNumber` to accept either script.

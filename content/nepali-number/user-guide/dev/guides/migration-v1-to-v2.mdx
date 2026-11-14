@@ -13,10 +13,11 @@ gone, and many new functions were added. There is no compatibility layer.
 
 | | v1 (1.0.3) | v2 |
 |---|---|---|
-| Exports | 6 functions | 21 functions in 5 domains |
+| Exports | 6 functions | 45 functions in 8 domains |
 | Digit choice | A `locale` argument: `"en"` (default) or `"ne"` | `useNepaliDigits` option, **default `true`** |
 | Formatting engine | `Intl.NumberFormat` | Own implementation, no `Intl` |
-| International grouping (`123,456,789`) | `englishNumberFormat` | Not provided |
+| International grouping (`123,456,789`) | `englishNumberFormat` | `grouping: "international"` option |
+| Input | Numbers and strings | `number`, `bigint` or string, in either script, read exactly |
 | Invalid locale / type | Throws `TypeError` | Nothing throws for declared input types |
 | Builds | CJS + ESM | ESM, CJS, UMD, IIFE + `.d.ts` / `.d.cts` |
 
@@ -72,25 +73,67 @@ toNepaliCurrency(123456789.0154)                                  // → "रू
 `formatNepaliNumber` drops an all-zero decimal part by default (`1000` → `"१,०००"`); pass
 `trimZero: false` to keep it.
 
-### `englishNumberFormat` / `englishAmountFormat` → no direct equivalent
+### `englishNumberFormat` / `englishAmountFormat` → `formatNepaliNumber` with `grouping`
 
-v2 formats only in the Nepali (lakh/crore) system. For international grouping, use the
-platform and convert the digits:
+Pass `grouping: "international"`, with `useNepaliDigits: false` for English digits.
 
 ```ts
-import { toNepali } from "nepali-number"
+formatNepaliNumber("123456789", { useNepaliDigits: false, grouping: "international" })
+// → "123,456,789"
 
-const intl = new Intl.NumberFormat("en-US", { maximumFractionDigits: 2 })
+formatNepaliNumber("123456789.0154", { useNepaliDigits: false, grouping: "international" })
+// → "123,456,789.02"
 
-intl.format(123456789)              // → "123,456,789"
-toNepali(intl.format(123456789))    // → "१२३,४५६,७८९"
+formatNepaliNumber(123456789, { grouping: "international" })
+// → "१२३,४५६,७८९"
 ```
+
+## v2 behaviour to know
+
+These are the rules v2 follows. Check any code that depended on something else.
+
+- **Invalid input returns `NaN` or `""`, never zero.** A function that returns a number returns
+  `NaN`, one that returns a string returns `""`.
+
+  ```ts
+  parseNepaliNumber("abc")    // → NaN
+  formatNepaliNumber("abc")   // → ""
+  toNepaliWords("abc")        // → ""
+  ```
+
+- **`parseNepaliNumber` reads the whole string or nothing.** Trailing text makes it `NaN`; to
+  pull the digits out of any text use `removeFormatting`.
+
+  ```ts
+  parseNepaliNumber("12abc")   // → NaN
+  removeFormatting("12abc")    // → 12
+  ```
+
+- **Rounding is half away from zero, on the digits as written**, not on the binary float.
+
+  ```ts
+  formatNepaliNumber(1.005)   // → "१.०१"
+  roundNepali(2.5, 0)         // → "३"
+  roundNepali(-2.5, 0)        // → "-३"
+  ```
+
+- **`detectNumberSystem` returns `"none"`** for text without digits:
+  `detectNumberSystem("abcd")` → `"none"`.
+- **A negative amount carries its sign before the symbol**: `toNepaliCurrency(-1234.5)` →
+  `"-रू १,२३४.५०"`.
+- **`padZeros` counts the sign in the length**: `padZeros(-5, 4)` → `"-००५"`.
+- **`FormatOptions` has no `currency` or `currencySymbol`.** Use `toNepaliCurrency` and its
+  `currencySymbol` option.
+- **`isNepaliDigit` and `isEnglishDigit` test exactly one character**: `isNepaliDigit("५६")` →
+  `false`, `isEnglishDigit("5a")` → `false`.
 
 ## Checklist
 
-- [ ] Replace each import using the table above.
+- [ ] Replace each import using the sections above.
 - [ ] Wherever v1 relied on the default `"en"` locale, pass `{ useNepaliDigits: false }`.
-- [ ] Remove `try`/`catch` around v1 calls that guarded the `TypeError` for an invalid locale.
+- [ ] Wherever v1 used `englishNumberFormat` or `englishAmountFormat`, pass
+      `grouping: "international"`.
+- [ ] Remove `try`/`catch` around v1 calls that guarded the `TypeError` for an invalid locale,
+      and check for `NaN` or `""` instead.
 - [ ] Re-check snapshot tests: trimmed `.00`, and Nepali digits by default.
-- [ ] Read [limitations](../api/limitations.mdx) — especially comma-grouped string input to
-      `formatNepaliNumber`.
+- [ ] Read [limitations](../api/limitations.mdx).

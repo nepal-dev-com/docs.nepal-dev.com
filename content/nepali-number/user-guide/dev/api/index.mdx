@@ -18,38 +18,67 @@ hang off the global `nepaliNumber` ([getting started](../getting-started.mdx)).
 
 | Domain | Export | Signature | Example |
 |---|---|---|---|
-| [Conversion](./conversion.mdx) | [`toNepali`](./conversion.mdx#tonepaliinput) | `(input: string \| number) => string` | `123` → `"१२३"` |
-| | [`toEnglish`](./conversion.mdx#toenglishinput) | `(input: string \| number) => string` | `"१२३"` → `"123"` |
-| | [`parseNepaliNumber`](./conversion.mdx#parsenepalinumbernepalinumber) | `(nepaliNumber: string) => number` | `"१२,३४५.६७"` → `12345.67` |
-| | [`convert`](./conversion.mdx#converttext-tonepalinumber) | `(text: string, toNepaliNumber?: boolean) => string` | `"Age 25"` → `"Age २५"` |
-| [Formatting](./formatting.mdx) | [`formatNepaliNumber`](./formatting.mdx#formatnepalinumbernumber-options) | `(number: number \| string, options?: FormatOptions) => string` | `1234567` → `"१२,३४,५६७"` |
-| | [`addNepaliCommas`](./formatting.mdx#addnepalicommasnumber) | `(number: string \| number) => string` | `1234567` → `"12,34,567"` |
-| | [`removeFormatting`](./formatting.mdx#removeformattingformattedstring) | `(formattedString: string \| number) => number` | `"रू १२,३४,५६७.८९"` → `1234567.89` |
-| [Words](./words.mdx) | [`toNepaliWords`](./words.mdx#tonepaliwordsnumber) | `(number: number \| string) => string` | `123` → `"एक सय तेईस"` |
-| | [`toEnglishWords`](./words.mdx#toenglishwordsnumber) | `(number: number \| string) => string` | `123` → `"one hundred twenty three"` |
-| | [`toNepaliOrdinal`](./words.mdx#tonepaliordinalnumber) | `(number: number \| string) => string` | `1` → `"पहिलो"` |
-| | [`toDecimalWord`](./words.mdx#todecimalwordnumber) | `(number: number \| string) => string` | `1200000` → `"१२ लाख"` |
-| [Currency](./currency.mdx) | [`toNepaliCurrency`](./currency.mdx#tonepalicurrencyamount-options) | `(amount: number \| string, options?: CurrencyOptions) => string` | `1234567.89` → `"रू १२,३४,५६७.८९"` |
-| | [`toNepaliCurrencyWords`](./currency.mdx#tonepalicurrencywordsamount) | `(amount: number \| string) => string` | `250` → `"दुई सय पचास रुपैयाँ"` |
-| [Utils](./utils.mdx) | [`normalize`](./utils.mdx#normalizeinput) | `(input: string) => string` | `"  १२३  ४५६  "` → `"१२३४५६"` |
-| | [`detectNumberSystem`](./utils.mdx#detectnumbersysteminput) | `(input: string) => NumberSystem \| number` | `"12३४"` → `"mixed"` |
-| | [`validateNepaliNumber`](./utils.mdx#validatenepalinumberinput) | `(input: string) => boolean` | `"१२३.४५"` → `true` |
-| | [`isNepaliDigit`](./utils.mdx#isnepalidigitchar) | `(char: string) => boolean` | `"५"` → `true` |
-| | [`isEnglishDigit`](./utils.mdx#isenglishdigitchar) | `(char: string) => boolean` | `"5"` → `true` |
-| | [`isMixedNumber`](./utils.mdx#ismixednumberinput) | `(input: string) => boolean` | `"12३४"` → `true` |
-| | [`padZeros`](./utils.mdx#padzerosnumber-length) | `(number: number \| string, length: number) => string` | `(42, 5)` → `"०००४२"` |
-| | [`roundNepali`](./utils.mdx#roundnepalinumber-decimals) | `(number: number \| string, decimals?: number) => string` | `3.14159` → `"३.१४"` |
+| [Conversion](./conversion.mdx) | `toNepali` | `(input: NumericInput) => string` | `123` → `"१२३"` |
+| | `toEnglish` | `(input: NumericInput) => string` | `"१२३"` → `"123"` |
+| | `parseNepaliNumber` | `(input: NumericInput) => number` | `"१२,३४५.६७"` → `12345.67` |
+| | `convert` | `(text: string, toNepaliNumber?: boolean) => string` | `"Age 25"` → `"Age २५"` |
+| [Formatting](./formatting.mdx) | `formatNepaliNumber` | `(number: NumericInput, options?: FormatOptions) => string` | `1234567` → `"१२,३४,५६७"` |
+| | `addNepaliCommas` | `(number: NumericInput, grouping?: "nepali" \| "international") => string` | `1234567` → `"12,34,567"` |
+| | `formatPercent` | `(value: NumericInput, options?: PercentOptions) => string` | `12.5` → `"१२.५०%"` |
+| | `removeFormatting` | `(formattedString: string \| number) => number` | `"रू १२,३४,५६७.८९"` → `1234567.89` |
+| [Words](./words.mdx) | `toNepaliWords` | `(number: NumericInput) => string` | `123` → `"एक सय तेईस"` |
+| | `toEnglishWords` | `(number: NumericInput, options?: EnglishWordsOptions) => string` | `123` → `"one hundred twenty three"` |
+| | `toNepaliOrdinal` | `(number: NumericInput) => string` | `1` → `"पहिलो"` |
+| | `toEnglishOrdinal` | `(number: NumericInput, options?: EnglishWordsOptions) => string` | `21` → `"twenty first"` |
+| | `toNepaliOrdinalNumber` | `(number: NumericInput, options?: OrdinalNumberOptions) => string` | `5` → `"५औं"` |
+| | `toEnglishOrdinalNumber` | `(number: NumericInput, options?: OrdinalNumberOptions) => string` | `21` → `"21st"` |
+| | `toDecimalWord` | `(number: NumericInput, options?: DecimalWordOptions) => string` | `1200000` → `"१२ लाख"` |
+| | `parseNepaliWords` | `(words: string) => number` | `"एक सय तेईस"` → `123` |
+| | `parseEnglishWords` | `(words: string) => number` | `"twenty-three"` → `23` |
+| [Currency](./currency.mdx) | `toNepaliCurrency` | `(amount: NumericInput, options?: CurrencyOptions) => string` | `1234567.89` → `"रू १२,३४,५६७.८९"` |
+| | `toNepaliCurrencyWords` | `(amount: NumericInput, options?: CurrencyWordsOptions) => string` | `250` → `"दुई सय पचास रुपैयाँ"` |
+| | `toEnglishCurrencyWords` | `(amount: NumericInput, options?: EnglishCurrencyWordsOptions) => string` | `250` → `"two hundred fifty rupees"` |
+| | `parseNepaliCurrency` | `(text: string) => number` | `"Rs. 1,234/-"` → `1234` |
+| [Fractions](./fractions.mdx) | `toNepaliFraction` | `(value: NumericInput) => string` | `1.5` → `"डेढ"` |
+| | `toNepaliFractionWords` | `(numerator: NumericInput, denominator: NumericInput) => string` | `(2, 5)` → `"दुई बटा पाँच"` |
+| | `toNepaliMultiplier` | `(times: NumericInput) => string` | `2` → `"दोब्बर"` |
+| [Units](./units.mdx) | `convertLandArea` | `(value: number, from: LandUnit, to: LandUnit) => number` | `(1, "ropani", "sqft")` → `5476` |
+| | `formatRopani` | `(value: number, options?: UnitFormatOptions) => string` | `6438.578125` → `"१-२-३-१"` |
+| | `formatBigha` | `(value: number, options?: UnitFormatOptions) => string` | `72900` → `"१-०-०"` |
+| | `parseLandArea` | `(text: string, system: "ropani" \| "bigha") => number` | `("१-२-३-१", "ropani")` → `6438.578125` |
+| | `convertWeight` | `(value: number, from: WeightUnit, to: WeightUnit) => number` | `(1, "tola", "lal")` → `100` |
+| | `formatTola` | `(value: number, options?: UnitFormatOptions) => string` | `29.1595` → `"२-५०"` |
+| [Text](./text.mdx) | `findNumbers` | `(text: string) => NumberMatch[]` | `"३ वटा"` → one match, value `3` |
+| | `extractNumbers` | `(text: string) => number[]` | `"३ वटा र 1,200"` → `[3, 1200]` |
+| | `replaceNumbers` | `(text: string, replacer: (match: NumberMatch) => string) => string` | Each number replaced |
+| | `spellOutNumbers` | `(text: string, options?: SpellOutOptions) => string` | `"३ वटा"` → `"तीन वटा"` |
+| | `compareNumbers` | `(a: NumericInput, b: NumericInput) => number` | `("१२३", 123)` → `0` |
+| | `sortNumbers` | `<T extends NumericInput>(values: readonly T[], order?: "asc" \| "desc") => T[]` | `["१०", 9]` → `[9, "१०"]` |
+| [Utils](./utils.mdx) | `normalize` | `(input: string) => string` | `"  १२३  ४५६  "` → `"१२३४५६"` |
+| | `detectNumberSystem` | `(input: string) => NumberSystem` | `"12३४"` → `"mixed"` |
+| | `isValidNumber` | `(input: string) => boolean` | `"-1,234.5"` → `true` |
+| | `validateNepaliNumber` | `(input: string) => boolean` | `"१२३.४५"` → `true` |
+| | `isNepaliDigit` | `(char: string) => boolean` | `"५"` → `true` |
+| | `isEnglishDigit` | `(char: string) => boolean` | `"5"` → `true` |
+| | `isMixedNumber` | `(input: string) => boolean` | `"12३४"` → `true` |
+| | `padZeros` | `(number: NumericInput, length: number, options?: PadOptions) => string` | `(42, 5)` → `"०००४२"` |
+| | `roundNepali` | `(number: NumericInput, decimals?: number) => string` | `3.14159` → `"३.१४"` |
 
-Types: [`FormatOptions`, `CurrencyOptions`, `NumberSystem`](./types.mdx) — defined, but **not yet
-importable** from the package.
+Every input, option and result type is exported: see [types](./types.mdx).
 
 ## Behaviour that holds across the API
 
+- **Numbers are read once, exactly.** `NumericInput` is `number | bigint | string`. Digits are
+  handled as decimal strings, so formatting and words are exact at any size
+  ([how a number is read](./conversion.mdx#how-a-number-is-read)).
 - **Both digit systems are accepted everywhere** a number is read: `"123"`, `"१२३"` and mixed
   `"12३"` are the same number.
-- **Invalid input never throws** (for the declared parameter types). Each function documents
-  its safe default — usually `0`, `"०"`, `"शून्य"`, `""` or `false`.
-- **Grouping is Nepali/Indian**: the last three digits, then pairs — `1,23,45,678`.
+- **Invalid input never throws, and never reads as zero.** A function that returns a number
+  returns `NaN`, one that returns a string returns `""`, a check returns `false`, a list is
+  empty.
+- **Rounding is half away from zero** on the decimal digits as written: `1.005` at two places
+  is `1.01`.
+- **Grouping is Nepali** by default: the last three digits, then pairs — `1,23,45,678`.
 - **Scales** used by words and abbreviations, from `src/constants.ts`:
 
   | Value | Nepali | English label | Ordinal |
@@ -64,8 +93,5 @@ importable** from the package.
   | 10¹⁵ | पद्म | padma | पदमौं |
   | 10¹⁷ | शंख | shankh | शंखौं |
   | 10¹⁹ | महाशंख | maha-shankh | महाशंखौं |
-
-- **Numbers are JavaScript `number`s.** Values beyond `Number.MAX_SAFE_INTEGER`
-  (9 007 199 254 740 991) lose precision, and decimals follow binary floating point.
 
 Read [**limitations**](./limitations.mdx) before relying on edge-case behaviour.

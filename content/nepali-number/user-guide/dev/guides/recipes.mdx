@@ -1,60 +1,135 @@
 ---
 title: "Recipes"
-description: "Copy-ready nepali-number solutions for form input, displaying amounts, prices in words, mixed-language text and framework helpers."
+description: "Copy-ready nepali-number solutions for form input, amounts, cheques in words, big numbers, percentages, sorting, land area, mixed-language text and framework helpers."
 ---
 
 > Every output below was produced by running the built package.
 
-Short, copy-ready solutions to common tasks. Each one works around the package's
-[limitations](../api/limitations.mdx) where they apply.
+Short, copy-ready solutions to common tasks. Edge cases are listed in the
+[limitations](../api/limitations.mdx).
 
 ## Read a number a person typed
 
-People type with either keyboard, add spaces and commas, and double a key by accident.
-Normalise, then parse — and tell "zero" apart from "not a number".
+People type with either keyboard and add spaces and commas. `parseNepaliNumber` reads all of
+that, and returns `NaN` — never a false zero — when the text is not a number.
 
 ```ts
-import { normalize, toEnglish, parseNepaliNumber } from "nepali-number"
+import { parseNepaliNumber } from "nepali-number"
 
 function readAmount(raw: string): number | null {
-  const cleaned = toEnglish(normalize(raw)).replace(/,/g, "")
-  if (!/^-?(\d+\.?\d*|\.\d+)$/.test(cleaned)) {
-    return null
-  }
-  return parseNepaliNumber(cleaned)
+  const value = parseNepaliNumber(raw)
+  return Number.isNaN(value) ? null : value
 }
 
-readAmount(" १२,३४,,५६७ ")   // → 1234567
-readAmount("12३4.5")          // → 1234.5
-readAmount("०")               // → 0
-readAmount("abc")             // → null
+readAmount(" १२,३४,५६७ ")   // → 1234567
+readAmount("12३4.5")         // → 1234.5
+readAmount("०")              // → 0
+readAmount("abc")            // → null
+readAmount("")               // → null
 ```
 
 ## Display an amount
 
 ```ts
-import { formatNepaliNumber, toNepaliCurrency, removeFormatting } from "nepali-number"
+import { formatNepaliNumber, toNepaliCurrency } from "nepali-number"
 
-formatNepaliNumber(1234567.5)                            // → "१२,३४,५६७.५०"
+formatNepaliNumber(1234567.5)                             // → "१२,३४,५६७.५०"
 formatNepaliNumber(1234567.5, { useNepaliDigits: false }) // → "12,34,567.50"
-toNepaliCurrency(1234567.5)                              // → "रू १२,३४,५६७.५०"
-toNepaliCurrency(1234567.5, { showPaisa: false })        // → "रू १२,३४,५६८"
+toNepaliCurrency(1234567.5)                               // → "रू १२,३४,५६७.५०"
+toNepaliCurrency(1234567.5, { showPaisa: false })         // → "रू १२,३४,५६८"
 
-// A value that is already a formatted string: strip it first.
-formatNepaliNumber(removeFormatting("12,34,567"))        // → "१२,३४,५६७"
+// A value that is already a formatted string is read as it is.
+formatNepaliNumber("12,34,567")                           // → "१२,३४,५६७"
 ```
 
 ## Write a cheque or invoice amount in words
 
+`only: true` closes the amount the way a cheque does.
+
 ```ts
-import { toNepaliCurrencyWords, toEnglishWords } from "nepali-number"
+import { toNepaliCurrencyWords, toEnglishCurrencyWords } from "nepali-number"
 
-toNepaliCurrencyWords(1250.5)    // → "एक हजार दुई सय पचास रुपैयाँ पचास पैसा"
+toNepaliCurrencyWords(1250.5)                    // → "एक हजार दुई सय पचास रुपैयाँ पचास पैसा"
+toNepaliCurrencyWords(1250.5, { only: true })    // → "एक हजार दुई सय पचास रुपैयाँ पचास पैसा मात्र"
+toNepaliCurrencyWords(250, { only: true })       // → "दुई सय पचास रुपैयाँ मात्र"
+toEnglishCurrencyWords(1250.5, { only: true })   // → "one thousand two hundred fifty rupees fifty paisa only"
+```
 
-// English, capitalised, with "only" — composed in your code.
-const words = toEnglishWords(Math.trunc(1250.5))
-const sentence = words.charAt(0).toUpperCase() + words.slice(1) + " rupees only"
-// → "One thousand two hundred fifty rupees only"
+## Keep big numbers exact
+
+A JavaScript `number` holds only about 16 digits; past 2⁵³ it has already been rounded before
+the package sees it. Pass a `bigint` or a string of digits instead.
+
+```ts
+import { formatNepaliNumber, toNepaliCurrency, toNepaliWords } from "nepali-number"
+
+formatNepaliNumber(9007199254740993)       // → "९,००,७१,९९,२५,४७,४०,९९२"   rounded by JavaScript
+formatNepaliNumber(9007199254740993n)      // → "९,००,७१,९९,२५,४७,४०,९९३"   exact
+
+formatNepaliNumber(12345678901234567890n)  // → "१,२३,४५,६७,८९,०१,२३,४५,६७,८९०"
+toNepaliCurrency("12345678901234567890.5") // → "रू १,२३,४५,६७,८९,०१,२३,४५,६७,८९०.५०"
+toNepaliWords(10n ** 19n)                  // → "एक महाशंख"
+```
+
+## Show a percentage
+
+```ts
+import { formatPercent } from "nepali-number"
+
+formatPercent(12.5)                          // → "१२.५०%"
+formatPercent(50)                            // → "५०%"
+formatPercent(0.125, { isRatio: true })      // → "१२.५०%"
+formatPercent(7.25, { symbol: " प्रतिशत" })   // → "७.२५ प्रतिशत"
+```
+
+## Sort a column written in both scripts
+
+`sortNumbers` orders by value and returns the items as they were written. For rows, use
+`compareNumbers` as the comparator.
+
+```ts
+import { sortNumbers, compareNumbers } from "nepali-number"
+
+sortNumbers(["१०", 9, "1,000", "२.५"])           // → ["२.५", 9, "१०", "1,000"]
+sortNumbers(["१०", 9, "1,000", "२.५"], "desc")   // → ["1,000", "१०", 9, "२.५"]
+
+const rows = [
+  { name: "क", amount: "१,२००" },
+  { name: "ख", amount: 950 },
+  { name: "ग", amount: "10,000" },
+]
+
+[...rows].sort((a, b) => compareNumbers(a.amount, b.amount)).map((row) => row.name)
+// → ["ख", "क", "ग"]
+```
+
+## Spell out the numbers in a sentence
+
+```ts
+import { spellOutNumbers } from "nepali-number"
+
+spellOutNumbers("मसँग ३ वटा किताब र 1,200 रुपैयाँ छ")
+// → "मसँग तीन वटा किताब र एक हजार दुई सय रुपैयाँ छ"
+
+spellOutNumbers("I have 21 books", { words: "english" })
+// → "I have twenty one books"
+```
+
+Every number is spelled out, years and phone numbers included. To choose which ones, use
+[`replaceNumbers`](../api/text.mdx#replacenumberstext-replacer).
+
+## Land area in ropani
+
+`formatRopani` takes square feet unless `from` says otherwise.
+
+```ts
+import { convertLandArea, formatRopani, parseLandArea } from "nepali-number"
+
+convertLandArea(10000, "sqft", "ropani")                // → 1.8261504747991235
+formatRopani(10000)                                     // → "१-१३-०-३.४९"
+formatRopani(10000, { style: "words" })                 // → "१ रोपनी १३ आना ३.४९ दाम"
+formatRopani(2.5, { from: "ropani", style: "words" })   // → "२ रोपनी ८ आना"
+parseLandArea("१-२-३-१", "ropani")                      // → 6438.578125 (square feet)
 ```
 
 ## Headline figures
@@ -79,10 +154,13 @@ convert("मेरो तलब रू ५०,०००", false)          // →
 ## Rank, position, edition
 
 ```ts
-import { toNepaliOrdinal } from "nepali-number"
+import { toNepaliOrdinal, toNepaliOrdinalNumber } from "nepali-number"
 
-const places = [1, 2, 3, 4, 5].map(toNepaliOrdinal)
+[1, 2, 3, 4, 5].map((n) => toNepaliOrdinal(n))
 // → ["पहिलो", "दोस्रो", "तेस्रो", "चौथो", "पाँचौं"]
+
+[1, 2, 3, 4, 5].map((n) => toNepaliOrdinalNumber(n))
+// → ["१लो", "२रो", "३रो", "४थो", "५औं"]
 ```
 
 ## Zero-padded identifiers

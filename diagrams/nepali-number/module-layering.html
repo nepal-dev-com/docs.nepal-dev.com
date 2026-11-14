@@ -5196,7 +5196,7 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
         <div class="pulse-dot"></div>
         <h1>Module layering</h1>
       </div>
-      <p class="subtitle">Each arrow is an import between neighbouring layers; a module may also import from any layer further along (ADR-0009)</p>
+      <p class="subtitle">Each arrow is a direct import. The barrel re-exports every domain, and every domain reads numbers through conversion (ADR-0009, ADR-0012)</p>
     </div>
 
 
@@ -5204,9 +5204,9 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
     <!-- Main Diagram -->
     <div class="diagram-container" data-detail-level="read"
          data-preset-badge-editorial-plate="ARCHIFY / PLATE 04">
-      <svg viewBox="0 0 844 528" data-layout-contract="readable-v2" role="img" lang="en" aria-labelledby="archify-diagram-title archify-diagram-description" data-animation="trace" data-preset="classic" data-quality-profile="showcase" data-node-ui="">
+      <svg viewBox="0 0 838 652" data-reader-fit="width-first" data-layout-contract="readable-v2" role="img" lang="en" aria-labelledby="archify-diagram-title archify-diagram-description" data-animation="trace" data-preset="classic" data-quality-profile="showcase" data-node-ui="">
         <title id="archify-diagram-title">Module layering</title>
-        <desc id="archify-diagram-description">Each arrow is an import between neighbouring layers; a module may also import from any layer further along (ADR-0009)</desc>
+        <desc id="archify-diagram-description">Each arrow is a direct import. The barrel re-exports every domain, and every domain reads numbers through conversion (ADR-0009, ADR-0012)</desc>
         <!-- Definitions -->
         <defs>
           <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
@@ -5251,14 +5251,17 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
         <rect width="100%" height="100%" fill="url(#grid)" />
 
         <!-- Swimlanes -->
-        <rect data-graph-role="structural-frame" data-composition-frame-kind="lane" data-composition-frame-id="lane-0" x="40" y="52" width="788" height="104" rx="10" class="c-lane" stroke-width="1"/>
+        <rect data-graph-role="structural-frame" data-composition-frame-kind="lane" data-composition-frame-id="lane-0" x="40" y="52" width="782" height="104" rx="10" class="c-lane" stroke-width="1"/>
         <text x="54" y="74" class="t-muted" font-size="10" font-weight="600">01 / Public entry</text>
 
-        <rect data-graph-role="structural-frame" data-composition-frame-kind="lane" data-composition-frame-id="lane-1" x="40" y="176" width="788" height="104" rx="10" class="c-lane" stroke-width="1"/>
-        <text x="54" y="198" class="t-muted" font-size="10" font-weight="600">02 / Domains</text>
+        <rect data-graph-role="structural-frame" data-composition-frame-kind="lane" data-composition-frame-id="lane-1" x="40" y="176" width="782" height="104" rx="10" class="c-lane" stroke-width="1"/>
+        <text x="54" y="198" class="t-muted" font-size="10" font-weight="600">02 / Leaf domains</text>
 
-        <rect data-graph-role="structural-frame" data-composition-frame-kind="lane" data-composition-frame-id="lane-2" x="40" y="300" width="788" height="104" rx="10" class="c-lane" stroke-width="1"/>
-        <text x="54" y="322" class="t-muted" font-size="10" font-weight="600">03 / Language data</text>
+        <rect data-graph-role="structural-frame" data-composition-frame-kind="lane" data-composition-frame-id="lane-2" x="40" y="300" width="782" height="104" rx="10" class="c-lane" stroke-width="1"/>
+        <text x="54" y="322" class="t-muted" font-size="10" font-weight="600">03 / Core domains</text>
+
+        <rect data-graph-role="structural-frame" data-composition-frame-kind="lane" data-composition-frame-id="lane-3" x="40" y="424" width="782" height="104" rx="10" class="c-lane" stroke-width="1"/>
+        <text x="54" y="446" class="t-muted" font-size="10" font-weight="600">04 / Language data</text>
 
         <!-- Phase headers -->
 
@@ -5268,11 +5271,14 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
 
         <!-- Edge paths -->
         <path data-edge-from="barrel" data-edge-to="currency" data-edge-key="0" data-edge-id="barrel-currency" data-composition-routing="workflow-v2-auto" data-edge-role="" data-composition-points="188,119;238,119;238,217" d="M 188 119 L 230 119 Q 238 119 238 127 L 238 217" class="a-emphasis" data-animate="edge" style="--step:0" stroke-width="1.8" marker-end="url(#arrowhead-emphasis)"/>
-        <path data-edge-from="conversion" data-edge-to="constants" data-edge-key="1" data-edge-id="conversion-constants" data-composition-routing="workflow-v2-auto" data-edge-role="" data-composition-points="734,269;734,341" d="M 734 269 L 734 341" class="a-emphasis" data-animate="edge" style="--step:5" stroke-width="1.8" marker-end="url(#arrowhead-emphasis)"/>
-        <path data-edge-from="currency" data-edge-to="words" data-edge-key="2" data-edge-id="currency-words" data-composition-routing="workflow-v2-auto" data-edge-role="" data-composition-points="284,243;316,243" d="M 284 243 L 316 243" class="a-emphasis" data-animate="edge" style="--step:1" stroke-width="1.8" marker-end="url(#arrowhead-emphasis)"/>
-        <path data-edge-from="formatting" data-edge-to="conversion" data-edge-key="3" data-edge-id="formatting-conversion" data-composition-routing="workflow-v2-auto" data-edge-role="" data-composition-points="656,243;688,243" d="M 656 243 L 688 243" class="a-emphasis" data-animate="edge" style="--step:4" stroke-width="1.8" marker-end="url(#arrowhead-emphasis)"/>
-        <path data-edge-from="utils" data-edge-to="formatting" data-edge-key="4" data-edge-id="utils-formatting" data-composition-routing="workflow-v2-auto" data-edge-role="" data-composition-points="532,243;564,243" d="M 532 243 L 564 243" class="a-emphasis" data-animate="edge" style="--step:3" stroke-width="1.8" marker-end="url(#arrowhead-emphasis)"/>
-        <path data-edge-from="words" data-edge-to="utils" data-edge-key="5" data-edge-id="words-utils" data-composition-routing="workflow-v2-auto" data-edge-role="" data-composition-points="408,243;440,243" d="M 408 243 L 440 243" class="a-emphasis" data-animate="edge" style="--step:2" stroke-width="1.8" marker-end="url(#arrowhead-emphasis)"/>
+        <path data-edge-from="conversion" data-edge-to="constants" data-edge-key="1" data-edge-id="conversion-constants" data-composition-routing="workflow-v2-auto" data-edge-role="" data-composition-points="734,393;734,465" d="M 734 393 L 734 465" class="a-emphasis" data-animate="edge" style="--step:4" stroke-width="1.8" marker-end="url(#arrowhead-emphasis)"/>
+        <path data-edge-from="currency" data-edge-to="words" data-edge-key="2" data-edge-id="currency-words" data-composition-routing="workflow-v2-auto" data-edge-role="" data-composition-points="238,269;238,367;316,367" d="M 238 269 L 238 359 Q 238 367 246 367 L 316 367" class="a-emphasis" data-animate="edge" style="--step:1" stroke-width="1.8" marker-end="url(#arrowhead-emphasis)"/>
+        <path data-edge-from="formatting" data-edge-to="conversion" data-edge-key="3" data-edge-id="formatting-conversion" data-composition-routing="workflow-v2-auto" data-edge-role="" data-composition-points="486,341;486,325;734,325;734,341" d="M 486 341 L 486 333 Q 486 325 494 325 L 726 325 Q 734 325 734 333 L 734 341" class="a-emphasis" data-animate="edge" style="--step:3" stroke-width="1.8" marker-end="url(#arrowhead-emphasis)"/>
+        <path data-edge-from="fractions" data-edge-to="words" data-edge-key="4" data-edge-id="fractions-words" data-composition-routing="workflow-v2-auto" data-edge-role="branch" data-composition-points="362,269;362,341" d="M 362 269 L 362 341" class="a-default" data-animate="edge" style="--step:10" stroke-width="1.4" marker-end="url(#arrowhead)"/>
+        <path data-edge-from="text" data-edge-to="words" data-edge-key="5" data-edge-id="text-words" data-composition-routing="workflow-v2-auto" data-edge-role="branch" data-composition-points="440,243;424,243;424,360;408,360" d="M 440 243 L 432 243 Q 424 243 424 251 L 424 352 Q 424 360 416 360 L 408 360" class="a-default" data-animate="edge" style="--step:11" stroke-width="1.4" marker-end="url(#arrowhead)"/>
+        <path data-edge-from="units" data-edge-to="conversion" data-edge-key="6" data-edge-id="units-conversion" data-composition-routing="workflow-v2-auto" data-edge-role="branch" data-composition-points="656,243;758,243;758,341" d="M 656 243 L 750 243 Q 758 243 758 251 L 758 341" class="a-default" data-animate="edge" style="--step:12" stroke-width="1.4" marker-end="url(#arrowhead)"/>
+        <path data-edge-from="utils" data-edge-to="conversion" data-edge-key="7" data-edge-id="utils-conversion" data-composition-routing="workflow-v2-auto" data-edge-role="branch" data-composition-points="656,367;688,367" d="M 656 367 L 688 367" class="a-default" data-animate="edge" style="--step:12" stroke-width="1.4" marker-end="url(#arrowhead)"/>
+        <path data-edge-from="words" data-edge-to="formatting" data-edge-key="8" data-edge-id="words-formatting" data-composition-routing="workflow-v2-auto" data-edge-role="" data-composition-points="408,367;440,367" d="M 408 367 L 440 367" class="a-emphasis" data-animate="edge" style="--step:2" stroke-width="1.8" marker-end="url(#arrowhead-emphasis)"/>
 
         <!-- Nodes -->
         <g id="node-barrel" data-node-id="barrel" data-node-label="nepali-number.ts" tabindex="0" role="button" aria-label="Focus nepali-number.ts, public barrel · build entry, Public entry" aria-pressed="false" data-node-kind="frontend" data-node-sublabel="public barrel · build entry" data-node-context="Public entry">
@@ -5289,8 +5295,8 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
           <text data-detail="context" x="118" y="131" class="t-muted" font-size="8" text-anchor="middle">public barrel · build entry</text>
         </g>
 
-        <g id="node-currency" data-node-id="currency" data-node-label="currency/" tabindex="0" role="button" aria-label="Focus currency/, Domains" aria-pressed="false" data-node-kind="backend" data-node-context="Domains">
-          <title>currency/ · Domains</title>
+        <g id="node-currency" data-node-id="currency" data-node-label="currency/" tabindex="0" role="button" aria-label="Focus currency/, Leaf domains" aria-pressed="false" data-node-kind="backend" data-node-context="Leaf domains">
+          <title>currency/ · Leaf domains</title>
           <rect x="192" y="217" width="92" height="52" rx="8" class="c-mask"/>
           <rect x="192" y="217" width="92" height="52" rx="8" class="c-backend" data-animate="node" style="--step:1" stroke-width="1.5"/>
           <g aria-hidden="true" data-semantic-sigil="backend" class="semantic-sigil s-backend" transform="translate(198 223) scale(0.6875)">
@@ -5299,56 +5305,87 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
           <text data-node-label="" x="240.7" y="238" class="t-primary" font-size="11" font-weight="600" text-anchor="middle">currency/</text>
         </g>
 
-        <g id="node-words" data-node-id="words" data-node-label="words/" tabindex="0" role="button" aria-label="Focus words/, Domains" aria-pressed="false" data-node-kind="backend" data-node-context="Domains">
-          <title>words/ · Domains</title>
+        <g id="node-fractions" data-node-id="fractions" data-node-label="fractions/" tabindex="0" role="button" aria-label="Focus fractions/, Leaf domains" aria-pressed="false" data-node-kind="backend" data-node-context="Leaf domains">
+          <title>fractions/ · Leaf domains</title>
           <rect x="316" y="217" width="92" height="52" rx="8" class="c-mask"/>
-          <rect x="316" y="217" width="92" height="52" rx="8" class="c-backend" data-animate="node" style="--step:2" stroke-width="1.5"/>
+          <rect x="316" y="217" width="92" height="52" rx="8" class="c-backend" data-animate="node" style="--step:8" stroke-width="1.5"/>
           <g aria-hidden="true" data-semantic-sigil="backend" class="semantic-sigil s-backend" transform="translate(322 223) scale(0.6875)">
             <path d="M6 3 3 8l3 5M10 3l3 5-3 5"/>
           </g>
-          <text data-node-label="" x="362" y="238" class="t-primary" font-size="11" font-weight="600" text-anchor="middle">words/</text>
+          <text data-node-label="" x="368" y="238" class="t-primary" font-size="11" font-weight="600" text-anchor="middle">fractions/</text>
         </g>
 
-        <g id="node-utils" data-node-id="utils" data-node-label="utils/" tabindex="0" role="button" aria-label="Focus utils/, Domains" aria-pressed="false" data-node-kind="backend" data-node-context="Domains">
-          <title>utils/ · Domains</title>
+        <g id="node-text" data-node-id="text" data-node-label="text/" tabindex="0" role="button" aria-label="Focus text/, Leaf domains" aria-pressed="false" data-node-kind="backend" data-node-context="Leaf domains">
+          <title>text/ · Leaf domains</title>
           <rect x="440" y="217" width="92" height="52" rx="8" class="c-mask"/>
-          <rect x="440" y="217" width="92" height="52" rx="8" class="c-backend" data-animate="node" style="--step:3" stroke-width="1.5"/>
+          <rect x="440" y="217" width="92" height="52" rx="8" class="c-backend" data-animate="node" style="--step:9" stroke-width="1.5"/>
           <g aria-hidden="true" data-semantic-sigil="backend" class="semantic-sigil s-backend" transform="translate(446 223) scale(0.6875)">
             <path d="M6 3 3 8l3 5M10 3l3 5-3 5"/>
           </g>
-          <text data-node-label="" x="486" y="238" class="t-primary" font-size="11" font-weight="600" text-anchor="middle">utils/</text>
+          <text data-node-label="" x="486" y="238" class="t-primary" font-size="11" font-weight="600" text-anchor="middle">text/</text>
         </g>
 
-        <g id="node-formatting" data-node-id="formatting" data-node-label="formatting/" tabindex="0" role="button" aria-label="Focus formatting/, Domains" aria-pressed="false" data-node-kind="backend" data-node-context="Domains">
-          <title>formatting/ · Domains</title>
+        <g id="node-units" data-node-id="units" data-node-label="units/" tabindex="0" role="button" aria-label="Focus units/, Leaf domains" aria-pressed="false" data-node-kind="backend" data-node-context="Leaf domains">
+          <title>units/ · Leaf domains</title>
           <rect x="564" y="217" width="92" height="52" rx="8" class="c-mask"/>
-          <rect x="564" y="217" width="92" height="52" rx="8" class="c-backend" data-animate="node" style="--step:4" stroke-width="1.5"/>
+          <rect x="564" y="217" width="92" height="52" rx="8" class="c-backend" data-animate="node" style="--step:10" stroke-width="1.5"/>
           <g aria-hidden="true" data-semantic-sigil="backend" class="semantic-sigil s-backend" transform="translate(570 223) scale(0.6875)">
             <path d="M6 3 3 8l3 5M10 3l3 5-3 5"/>
           </g>
-          <text data-node-label="" x="610" y="249.2" class="t-primary" font-size="11" font-weight="600" text-anchor="middle">formatting/</text>
+          <text data-node-label="" x="610" y="238" class="t-primary" font-size="11" font-weight="600" text-anchor="middle">units/</text>
         </g>
 
-        <g id="node-conversion" data-node-id="conversion" data-node-label="conversion/" tabindex="0" role="button" aria-label="Focus conversion/, Domains" aria-pressed="false" data-node-kind="backend" data-node-context="Domains">
-          <title>conversion/ · Domains</title>
-          <rect x="688" y="217" width="92" height="52" rx="8" class="c-mask"/>
-          <rect x="688" y="217" width="92" height="52" rx="8" class="c-backend" data-animate="node" style="--step:5" stroke-width="1.5"/>
-          <g aria-hidden="true" data-semantic-sigil="backend" class="semantic-sigil s-backend" transform="translate(694 223) scale(0.6875)">
+        <g id="node-words" data-node-id="words" data-node-label="words/" tabindex="0" role="button" aria-label="Focus words/, Core domains" aria-pressed="false" data-node-kind="backend" data-node-context="Core domains">
+          <title>words/ · Core domains</title>
+          <rect x="316" y="341" width="92" height="52" rx="8" class="c-mask"/>
+          <rect x="316" y="341" width="92" height="52" rx="8" class="c-backend" data-animate="node" style="--step:2" stroke-width="1.5"/>
+          <g aria-hidden="true" data-semantic-sigil="backend" class="semantic-sigil s-backend" transform="translate(322 347) scale(0.6875)">
             <path d="M6 3 3 8l3 5M10 3l3 5-3 5"/>
           </g>
-          <text data-node-label="" x="734" y="249.2" class="t-primary" font-size="11" font-weight="600" text-anchor="middle">conversion/</text>
+          <text data-node-label="" x="362" y="362" class="t-primary" font-size="11" font-weight="600" text-anchor="middle">words/</text>
         </g>
 
-        <g id="node-constants" data-node-id="constants" data-node-label="constants.ts" tabindex="0" role="button" aria-label="Focus constants.ts, digits · words · ordinals · scales, Language data" aria-pressed="false" data-node-kind="database" data-node-sublabel="digits · words · ordinals · scales" data-node-context="Language data">
-          <title>constants.ts · digits · words · ordinals · scales · Language data</title>
-          <rect x="648" y="341" width="172" height="52" rx="8" class="c-mask"/>
-          <rect x="648" y="341" width="172" height="52" rx="8" class="c-database" data-animate="node" style="--step:6" stroke-width="1.5"/>
-          <g aria-hidden="true" data-semantic-sigil="database" class="semantic-sigil s-database" transform="translate(654 347) scale(0.6875)">
+        <g id="node-formatting" data-node-id="formatting" data-node-label="formatting/" tabindex="0" role="button" aria-label="Focus formatting/, Core domains" aria-pressed="false" data-node-kind="backend" data-node-context="Core domains">
+          <title>formatting/ · Core domains</title>
+          <rect x="440" y="341" width="92" height="52" rx="8" class="c-mask"/>
+          <rect x="440" y="341" width="92" height="52" rx="8" class="c-backend" data-animate="node" style="--step:3" stroke-width="1.5"/>
+          <g aria-hidden="true" data-semantic-sigil="backend" class="semantic-sigil s-backend" transform="translate(446 347) scale(0.6875)">
+            <path d="M6 3 3 8l3 5M10 3l3 5-3 5"/>
+          </g>
+          <text data-node-label="" x="486" y="373.2" class="t-primary" font-size="11" font-weight="600" text-anchor="middle">formatting/</text>
+        </g>
+
+        <g id="node-utils" data-node-id="utils" data-node-label="utils/" tabindex="0" role="button" aria-label="Focus utils/, Core domains" aria-pressed="false" data-node-kind="backend" data-node-context="Core domains">
+          <title>utils/ · Core domains</title>
+          <rect x="564" y="341" width="92" height="52" rx="8" class="c-mask"/>
+          <rect x="564" y="341" width="92" height="52" rx="8" class="c-backend" data-animate="node" style="--step:12" stroke-width="1.5"/>
+          <g aria-hidden="true" data-semantic-sigil="backend" class="semantic-sigil s-backend" transform="translate(570 347) scale(0.6875)">
+            <path d="M6 3 3 8l3 5M10 3l3 5-3 5"/>
+          </g>
+          <text data-node-label="" x="610" y="362" class="t-primary" font-size="11" font-weight="600" text-anchor="middle">utils/</text>
+        </g>
+
+        <g id="node-conversion" data-node-id="conversion" data-node-label="conversion/" tabindex="0" role="button" aria-label="Focus conversion/, exact decimal reader, Core domains" aria-pressed="false" data-node-kind="backend" data-node-sublabel="exact decimal reader" data-node-context="Core domains">
+          <title>conversion/ · exact decimal reader · Core domains</title>
+          <rect x="688" y="341" width="92" height="52" rx="8" class="c-mask"/>
+          <rect x="688" y="341" width="92" height="52" rx="8" class="c-backend" data-animate="node" style="--step:4" stroke-width="1.5"/>
+          <g aria-hidden="true" data-semantic-sigil="backend" class="semantic-sigil s-backend" transform="translate(694 347) scale(0.6875)">
+            <path d="M6 3 3 8l3 5M10 3l3 5-3 5"/>
+          </g>
+          <text data-node-label="" data-detail-anchor="" x="734" y="373.2" class="t-primary" font-size="11" font-weight="600" text-anchor="middle">conversion/</text>
+          <text data-detail="context" x="734" y="386.9" class="t-muted" font-size="7" text-anchor="middle">exact decimal reader</text>
+        </g>
+
+        <g id="node-constants" data-node-id="constants" data-node-label="constants.ts" tabindex="0" role="button" aria-label="Focus constants.ts, digits · words · scales · units, Language data" aria-pressed="false" data-node-kind="database" data-node-sublabel="digits · words · scales · units" data-node-context="Language data">
+          <title>constants.ts · digits · words · scales · units · Language data</title>
+          <rect x="654" y="465" width="160" height="52" rx="8" class="c-mask"/>
+          <rect x="654" y="465" width="160" height="52" rx="8" class="c-database" data-animate="node" style="--step:5" stroke-width="1.5"/>
+          <g aria-hidden="true" data-semantic-sigil="database" class="semantic-sigil s-database" transform="translate(660 471) scale(0.6875)">
             <ellipse cx="8" cy="4" rx="5" ry="2"/>
             <path d="M3 4v8c0 1.1 2.2 2 5 2s5-.9 5-2V4M3 8c0 1.1 2.2 2 5 2s5-.9 5-2"/>
           </g>
-          <text data-node-label="" data-detail-anchor="" x="734" y="362" class="t-primary" font-size="11" font-weight="600" text-anchor="middle">constants.ts</text>
-          <text data-detail="context" x="734" y="379" class="t-muted" font-size="8" text-anchor="middle">digits · words · ordinals · scales</text>
+          <text data-node-label="" data-detail-anchor="" x="734" y="486" class="t-primary" font-size="11" font-weight="600" text-anchor="middle">constants.ts</text>
+          <text data-detail="context" x="734" y="503" class="t-muted" font-size="8" text-anchor="middle">digits · words · scales · units</text>
         </g>
 
         <!-- Edge labels -->
@@ -5359,20 +5396,23 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
 
 
 
+
+
+
         <!-- Legend -->
         <g data-legend="" data-legend-bridge="">
-          <text x="20" y="428" class="t-primary" font-size="12" font-weight="650">Legend</text>
-          <g data-legend-semantic-kind="frontend" data-legend-kind="frontend" data-legend-label="User UI" data-legend-x="20" data-legend-baseline="448" data-legend-width="76">
-            <rect x="20" y="440" width="14" height="9" rx="2" class="c-frontend" stroke-width="1"/>
-            <text x="42" y="448" class="t-muted" font-size="7.5" font-weight="500">User UI</text>
+          <text x="20" y="552" class="t-primary" font-size="12" font-weight="650">Legend</text>
+          <g data-legend-semantic-kind="frontend" data-legend-kind="frontend" data-legend-label="User UI" data-legend-x="20" data-legend-baseline="572" data-legend-width="76">
+            <rect x="20" y="564" width="14" height="9" rx="2" class="c-frontend" stroke-width="1"/>
+            <text x="42" y="572" class="t-muted" font-size="7.5" font-weight="500">User UI</text>
           </g>
-          <g data-legend-semantic-kind="backend" data-legend-kind="backend" data-legend-label="Agent logic" data-legend-x="103" data-legend-baseline="448" data-legend-width="95">
-            <rect x="103" y="440" width="14" height="9" rx="2" class="c-backend" stroke-width="1"/>
-            <text x="125" y="448" class="t-muted" font-size="7.5" font-weight="500">Agent logic</text>
+          <g data-legend-semantic-kind="backend" data-legend-kind="backend" data-legend-label="Agent logic" data-legend-x="103" data-legend-baseline="572" data-legend-width="95">
+            <rect x="103" y="564" width="14" height="9" rx="2" class="c-backend" stroke-width="1"/>
+            <text x="125" y="572" class="t-muted" font-size="7.5" font-weight="500">Agent logic</text>
           </g>
-          <g data-legend-semantic-kind="database" data-legend-kind="database" data-legend-label="Context / trace" data-legend-x="205" data-legend-baseline="448" data-legend-width="113">
-            <rect x="205" y="440" width="14" height="9" rx="2" class="c-database" stroke-width="1"/>
-            <text x="227" y="448" class="t-muted" font-size="7.5" font-weight="500">Context / trace</text>
+          <g data-legend-semantic-kind="database" data-legend-kind="database" data-legend-label="Context / trace" data-legend-x="205" data-legend-baseline="572" data-legend-width="113">
+            <rect x="205" y="564" width="14" height="9" rx="2" class="c-database" stroke-width="1"/>
+            <text x="227" y="572" class="t-muted" font-size="7.5" font-weight="500">Context / trace</text>
           </g>
         </g>
       </svg>

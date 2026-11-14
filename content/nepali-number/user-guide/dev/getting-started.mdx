@@ -16,7 +16,7 @@ will have converted, formatted and spelled out a number.
   [migration guide](./guides/migration-v1-to-v2.mdx).
 - **Runtimes.** CI tests Node.js 20, 22 and 24. The build uses no Node, DOM or other host APIs,
   so it also runs in Bun, Deno, browsers, web workers and edge runtimes.
-- **Dependencies.** None. The package adds about 2.8 kB gzipped.
+- **Dependencies.** None. The package adds about 7.5 kB gzipped.
 
 ## 1. Install
 
@@ -64,13 +64,13 @@ import { formatNepaliNumber, detectNumberSystem } from "nepali-number"
 const label: string = formatNepaliNumber(1234.5)    // → "१,२३४.५०"
 ```
 
-The option types are not exported yet; derive them when you need to name them:
+The input, option and result types are exported too:
 
 ```ts
-import type { formatNepaliNumber, toNepaliCurrency } from "nepali-number"
+import type { NumericInput, FormatOptions, CurrencyOptions } from "nepali-number"
 
-type FormatOptions = NonNullable<Parameters<typeof formatNepaliNumber>[1]>
-type CurrencyOptions = NonNullable<Parameters<typeof toNepaliCurrency>[1]>
+const options: FormatOptions = { useNepaliDigits: false }
+const amount: NumericInput = "१,२३४.५"
 ```
 
 See [types](./api/types.mdx).
@@ -110,8 +110,10 @@ build (`dist/nepali-number.umd.js`) works the same way and also registers with A
 ```js
 import {
   toNepali, toEnglish, parseNepaliNumber,
-  formatNepaliNumber, toNepaliWords, toEnglishWords, toNepaliOrdinal, toDecimalWord,
+  formatNepaliNumber, formatPercent,
+  toNepaliWords, toEnglishWords, toNepaliOrdinal, toDecimalWord,
   toNepaliCurrency, toNepaliCurrencyWords,
+  toNepaliFraction, formatRopani, spellOutNumbers, sortNumbers,
 } from "nepali-number"
 
 toNepali(123)                         // → "१२३"
@@ -119,23 +121,33 @@ toEnglish("१२३")                      // → "123"
 parseNepaliNumber("१२,३४५.६७")        // → 12345.67
 
 formatNepaliNumber(1234567.891)       // → "१२,३४,५६७.८९"
+formatPercent(12.5)                   // → "१२.५०%"
 toNepaliWords(1234567)                // → "बाह्र लाख चौंतीस हजार पाँच सय सतसट्ठी"
+toNepaliWords(12.5)                   // → "बाह्र दशमलव पाँच"
 toEnglishWords(1234567)               // → "twelve lakh thirty four thousand five hundred sixty seven"
 toNepaliOrdinal(5)                    // → "पाँचौं"
 toDecimalWord(25000000)               // → "२.५० करोड"
 
 toNepaliCurrency(1234567.89)          // → "रू १२,३४,५६७.८९"
 toNepaliCurrencyWords(250)            // → "दुई सय पचास रुपैयाँ"
+
+toNepaliFraction(1.5)                 // → "डेढ"
+formatRopani(6438.578125)             // → "१-२-३-१"
+spellOutNumbers("I have 21 books", { words: "english" })   // → "I have twenty one books"
+sortNumbers(["१०", 9, "1,000", "२.५"])                     // → ["२.५", 9, "१०", "1,000"]
 ```
 
 ## Pitfalls
 
-- Formatting a **string with commas** misreads it — `formatNepaliNumber("1,234")` → `"१"`
-  ([limitations](./api/limitations.mdx#formatnepalinumber-stops-at-the-first-comma)).
-- Words functions need **integers** — `toNepaliWords(12.5)` → `""`
-  ([limitations](./api/limitations.mdx#words-and-ordinals-need-integers)).
-- Invalid input reads as **zero** rather than failing
-  ([limitations](./api/limitations.mdx#parsing-cannot-tell-zero-from-invalid)).
+- Input that is **not a number** returns `""` or `NaN`, never zero —
+  `formatNepaliNumber("abc")` → `""`
+  ([limitations](./api/limitations.mdx#invalid-input-returns-an-empty-result-not-zero)).
+- The **whole string** must be a number — `parseNepaliNumber("12abc")` → `NaN`. Use
+  [`removeFormatting`](./api/formatting.mdx#removeformattingformattedstring) to pull digits out
+  of any text.
+- A function that **returns a `number`** is not exact above 2⁵³; keep large values as strings or
+  `bigint`s
+  ([limitations](./api/limitations.mdx#functions-that-return-a-number-lose-precision-on-very-large-values)).
 
 ## See also
 

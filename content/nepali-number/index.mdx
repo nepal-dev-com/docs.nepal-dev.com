@@ -19,16 +19,24 @@ toNepaliCurrency(1234567.89)      // → "रू १२,३४,५६७.८९"
 ## What it does
 
 - **Digits both ways**: `0-9` ⇄ `०-९`, in plain numbers or inside any text.
-- **Nepali grouping**: `1,23,45,678`, with precision and trailing-zero control.
-- **Words**: Nepali cardinals (`एक सय तेईस`), English words with Nepali scales (`twelve lakh`),
-  Nepali ordinals (`पाँचौं`) and short forms (`१२ लाख`).
-- **Currency**: `रू १२,३४,५६७.८९` as a figure, and rupees and paisa in words
-  (`बाह्र रुपैयाँ पचास पैसा`).
+- **Grouping**: Nepali `1,23,45,678` or international `123,456,789`, with precision, sign and
+  percent formatting.
+- **Words**: Nepali cardinals with decimals (`बाह्र दशमलव पाँच`), English words in Nepali or
+  international scales, ordinals (`पाँचौं`, `५औं`, `twenty first`, `21st`), short forms
+  (`१२ लाख`), and words back to numbers.
+- **Currency**: `रू १२,३४,५६७.८९` as a figure, rupees and paisa in Nepali or English words
+  (`बाह्र रुपैयाँ पचास पैसा`), cheque wording, and parsing amounts.
+- **Fractions and multipliers**: `डेढ`, `साढे तीन`, `दुई बटा पाँच`, `दोब्बर`.
+- **Traditional units**: रोपनी-आना-पैसा-दाम, बिघा-कट्ठा-धुर and तोला-लाल.
+- **Numbers in text**: find, replace and spell out the numbers in a sentence; compare and sort
+  numbers written in either script.
 - **Utilities**: normalise typed input, detect and validate digit systems, pad and round.
-- **Any digits in**: every function reads English, Nepali or mixed digits.
-- **Never throws** for its declared input types: invalid input returns a documented default.
+- **Exact at any size**: every function reads English, Nepali or mixed digits, as a `number`, a
+  `bigint` or a string, without passing through floating point.
+- **Never throws** for its declared input types: input that is not a number returns `""` or
+  `NaN`.
 
-It exports 21 named, pure functions and has no runtime dependencies.
+It exports 45 named, pure functions and has no runtime dependencies.
 
 ## Install
 

@@ -1,0 +1,259 @@
+---
+title: "Units"
+description: "Convert and format Nepal's traditional land units (ropani-aana-paisa-dam, bigha-kattha-dhur) and gold weights (tola, lal), in Nepali or English digits."
+---
+
+> Every output below was produced by running the built package.
+
+Traditional land and weight units: converting between them, writing an area as
+`१-२-३-१` or `१ रोपनी २ आना ३ पैसा १ दाम`, and reading such a record back.
+
+## Factors
+
+| Land unit | Name in code | Equals | Square feet |
+|---|---|---|---|
+| रोपनी | `"ropani"` | 16 आना | 5476 |
+| आना | `"aana"` | 4 पैसा | 342.25 |
+| पैसा | `"paisa"` | 4 दाम | 85.5625 |
+| दाम | `"dam"` | — | 21.390625 |
+| बिघा | `"bigha"` | 20 कट्ठा | 72 900 |
+| कट्ठा | `"kattha"` | 20 धुर | 3645 |
+| धुर | `"dhur"` | — | 182.25 |
+| square foot | `"sqft"` | — | 1 |
+| square metre | `"sqm"` | — | 1 / 0.09290304 |
+
+| Weight unit | Name in code | Equals | Grams |
+|---|---|---|---|
+| तोला | `"tola"` | 100 लाल | 11.6638 |
+| लाल | `"lal"` | — | 0.116638 |
+| gram | `"gram"` | — | 1 |
+| kilogram | `"kilogram"` | 1000 gram | 1000 |
+
+One figure is fixed for each unit; regional variants are not covered.
+
+## Exports
+
+| Export | Signature | Returns |
+|---|---|---|
+| `convertLandArea` | `(value: number, from: LandUnit, to: LandUnit) => number` | The area in another unit |
+| `formatRopani` | `(value: number, options?: UnitFormatOptions) => string` | रोपनी-आना-पैसा-दाम |
+| `formatBigha` | `(value: number, options?: UnitFormatOptions) => string` | बिघा-कट्ठा-धुर |
+| `parseLandArea` | `(text: string, system: "ropani" \| "bigha") => number` | Square feet from a record in notation |
+| `convertWeight` | `(value: number, from: WeightUnit, to: WeightUnit) => number` | The weight in another unit |
+| `formatTola` | `(value: number, options?: UnitFormatOptions) => string` | तोला-लाल |
+
+Types, importable from the package root ([types](./types.mdx)):
+
+```ts
+type LandUnit = "ropani" | "aana" | "paisa" | "dam" | "bigha" | "kattha" | "dhur" | "sqft" | "sqm"
+type WeightUnit = "tola" | "lal" | "gram" | "kilogram"
+
+interface UnitFormatOptions {
+  from?: LandUnit | WeightUnit
+  style?: "notation" | "words"
+  useNepaliDigits?: boolean
+}
+```
+
+---
+
+## `convertLandArea(value, from, to)`
+
+```ts
+convertLandArea(value: number, from: LandUnit, to: LandUnit): number
+```
+
+**Returns.** The area in `to`. The result is a floating-point number and is not rounded. An
+unknown unit, `NaN` or `Infinity` returns `NaN`.
+
+```ts
+import { convertLandArea } from "nepali-number"
+
+convertLandArea(1, "ropani", "sqft")       // → 5476
+convertLandArea(1, "ropani", "aana")       // → 16
+convertLandArea(1, "ropani", "dam")        // → 256
+convertLandArea(5, "aana", "sqft")         // → 1711.25
+convertLandArea(1, "bigha", "kattha")      // → 20
+convertLandArea(1, "bigha", "sqft")        // → 72900
+convertLandArea(1.5, "bigha", "sqft")      // → 109350             decimal
+convertLandArea(1, "ropani", "sqm")        // → 508.73704704       to float precision
+convertLandArea(1, "bigha", "ropani")      // → 13.31263696128561  to float precision
+convertLandArea(0, "ropani", "sqft")       // → 0                  zero
+convertLandArea(-1, "ropani", "sqft")      // → -5476              negative
+convertLandArea(10000000, "sqft", "bigha") // → 137.17421124828533 ≥ 1 crore
+convertLandArea(NaN, "ropani", "sqft")     // → NaN                invalid input
+```
+
+**Notes.** Values go through square feet, so a result can carry a floating-point error in its
+last digits. Round for display, or use [`formatRopani`](#formatropanivalue-options) and
+[`formatBigha`](#formatbighavalue-options), which round for you.
+
+---
+
+## `formatRopani(value, options?)`
+
+Writes an area in the hill system: रोपनी, आना, पैसा, दाम.
+
+```ts
+formatRopani(value: number, options?: UnitFormatOptions): string
+```
+
+| Option | Type | Default | Notes |
+|---|---|---|---|
+| `from` | `LandUnit` | `"sqft"` | The unit `value` is in |
+| `style` | `"notation" \| "words"` | `"notation"` | `१-२-३-१`, or parts with their unit names |
+| `useNepaliDigits` | `boolean` | `true` | `false` gives English digits; unit names stay Devanagari |
+
+**Returns.** The four parts. रोपनी, आना and पैसा are whole numbers; दाम is rounded to two
+places with trailing zeros dropped. A negative value, `NaN`, `Infinity` or a `from` that is
+not a land unit returns `""`.
+
+```ts
+import { formatRopani } from "nepali-number"
+
+formatRopani(5476)                                // → "१-०-०-०"
+formatRopani(6438.578125)                         // → "१-२-३-१"
+formatRopani(6000)                                // → "१-१-२-०.५"     दाम rounded
+formatRopani(12345)                               // → "२-४-०-१.१२"
+formatRopani(1, { from: "ropani" })               // → "१-०-०-०"
+formatRopani(1, { from: "bigha" })                // → "१३-५-०-०.०४"   across systems
+formatRopani(6438.578125, { useNepaliDigits: false })  // → "1-2-3-1"
+formatRopani(6438.578125, { style: "words" })     // → "१ रोपनी २ आना ३ पैसा १ दाम"
+formatRopani(5476, { style: "words" })            // → "१ रोपनी"       zero parts omitted
+formatRopani(0)                                   // → "०-०-०-०"       zero
+formatRopani(0, { style: "words" })               // → "० रोपनी"
+formatRopani(54760000)                            // → "१००००-०-०-०"   ≥ 1 crore, no grouping
+formatRopani(-5476)                               // → ""              negative
+formatRopani(NaN)                                 // → ""              invalid input
+```
+
+**Notes.** When rounding lifts दाम to 4, it carries into पैसा (and on upward), so a part never
+shows its own base. `notation` always shows all four parts; `words` omits zero parts.
+
+---
+
+## `formatBigha(value, options?)`
+
+Writes an area in the Terai system: बिघा, कट्ठा, धुर.
+
+```ts
+formatBigha(value: number, options?: UnitFormatOptions): string
+```
+
+Options are those of [`formatRopani`](#formatropanivalue-options).
+
+**Returns.** The three parts. बिघा and कट्ठा are whole numbers; धुर is rounded to two places
+with trailing zeros dropped. A negative value, `NaN`, `Infinity` or a `from` that is not a
+land unit returns `""`.
+
+```ts
+import { formatBigha } from "nepali-number"
+
+formatBigha(72900)                                // → "१-०-०"
+formatBigha(1.5, { from: "bigha" })               // → "१-१०-०"
+formatBigha(10000)                                // → "०-२-१४.८७"     धुर rounded
+formatBigha(1.5, { from: "bigha", useNepaliDigits: false })  // → "1-10-0"
+formatBigha(1.5, { from: "bigha", style: "words" })  // → "१ बिघा १० कट्ठा"
+formatBigha(0)                                    // → "०-०-०"         zero
+formatBigha(0, { style: "words" })                // → "० बिघा"
+formatBigha(729000000)                            // → "१००००-०-०"     ≥ 1 crore, no grouping
+formatBigha(-72900)                               // → ""              negative
+formatBigha(NaN)                                  // → ""              invalid input
+```
+
+---
+
+## `parseLandArea(text, system)`
+
+Reads a land record written in notation.
+
+```ts
+parseLandArea(text: string, system: "ropani" | "bigha"): number
+```
+
+**Returns.** The area in **square feet**. `text` is hyphen-separated parts: exactly four for
+`"ropani"`, exactly three for `"bigha"`. Each part may use English or Nepali digits and may
+have a decimal. Anything else returns `NaN`.
+
+```ts
+import { parseLandArea } from "nepali-number"
+
+parseLandArea("१-२-३-१", "ropani")     // → 6438.578125
+parseLandArea("1-2-3-1", "ropani")     // → 6438.578125     English digits
+parseLandArea("1-10-0", "bigha")       // → 109350
+parseLandArea("१-१-२-०.५", "ropani")   // → 6000.0703125    decimal part
+parseLandArea("0-0-0-0", "ropani")     // → 0               zero
+parseLandArea("0-20-0-0", "ropani")    // → 6845            a part above its base is accepted
+parseLandArea("1-2-3", "ropani")       // → NaN             three parts
+parseLandArea("1-2-3-1", "bigha")      // → NaN             four parts
+parseLandArea("-1-2-3-1", "ropani")    // → NaN             no sign
+parseLandArea("abc", "ropani")         // → NaN             invalid input
+parseLandArea("", "ropani")            // → NaN
+```
+
+**Notes.** For another unit, pass the result on:
+`convertLandArea(parseLandArea("१-२-३-१", "ropani"), "sqft", "sqm")`. Because
+`formatRopani` rounds दाम, a formatted area does not always parse back to the same number
+(`6000` → `"१-१-२-०.५"` → `6000.0703125`).
+
+---
+
+## `convertWeight(value, from, to)`
+
+```ts
+convertWeight(value: number, from: WeightUnit, to: WeightUnit): number
+```
+
+**Returns.** The weight in `to`, as an unrounded floating-point number. An unknown unit, `NaN`
+or `Infinity` returns `NaN`.
+
+```ts
+import { convertWeight } from "nepali-number"
+
+convertWeight(1, "tola", "gram")           // → 11.6638
+convertWeight(1, "tola", "lal")            // → 100
+convertWeight(2.5, "tola", "gram")         // → 29.1595            decimal
+convertWeight(1, "kilogram", "gram")       // → 1000
+convertWeight(1, "kilogram", "tola")       // → 85.73535211509113  to float precision
+convertWeight(0, "tola", "gram")           // → 0                  zero
+convertWeight(-1, "tola", "gram")          // → -11.6638           negative
+convertWeight(NaN, "tola", "gram")         // → NaN                invalid input
+```
+
+---
+
+## `formatTola(value, options?)`
+
+Writes a weight as तोला and लाल.
+
+```ts
+formatTola(value: number, options?: UnitFormatOptions): string
+```
+
+| Option | Type | Default | Notes |
+|---|---|---|---|
+| `from` | `WeightUnit` | `"gram"` | The unit `value` is in |
+| `style` | `"notation" \| "words"` | `"notation"` | `२-५०`, or `२ तोला ५० लाल` |
+| `useNepaliDigits` | `boolean` | `true` | `false` gives English digits; unit names stay Devanagari |
+
+**Returns.** तोला as a whole number and लाल rounded to two places with trailing zeros
+dropped. A negative value, `NaN`, `Infinity` or a `from` that is not a weight unit returns
+`""`.
+
+```ts
+import { formatTola } from "nepali-number"
+
+formatTola(29.1595)                               // → "२-५०"
+formatTola(29.1595, { style: "words" })           // → "२ तोला ५० लाल"
+formatTola(50)                                    // → "४-२८.६८"       लाल rounded
+formatTola(1, { from: "tola" })                   // → "१-०"
+formatTola(1, { from: "tola", style: "words" })   // → "१ तोला"
+formatTola(1, { from: "kilogram" })               // → "८५-७३.५४"
+formatTola(29.1595, { useNepaliDigits: false })   // → "2-50"
+formatTola(0)                                     // → "०-०"           zero
+formatTola(0, { style: "words" })                 // → "० तोला"
+formatTola(-5)                                    // → ""              negative
+formatTola(NaN)                                   // → ""              invalid input
+```
+
+**Notes.** When rounding lifts लाल to 100, it carries into तोला.

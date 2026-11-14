@@ -6,6 +6,9 @@
     "formatting",
     "words",
     "currency",
+    "fractions",
+    "units",
+    "text",
     "utils",
     "types",
     "limitations"

@@ -4,7 +4,7 @@ description: "How tsdown builds nepali-number into ESM, CommonJS, UMD and IIFE f
 ---
 
 - **Status:** Current
-- **Last updated:** 2026-10-30
+- **Last updated:** 2026-11-14
 - **Related ADRs:** [ADR-0009](../adr/ADR-0009-package-invariants.mdx)
 
 > Snapshot of the package as it stands today. Edit in place; never record what changed.
@@ -35,15 +35,18 @@ Sizes from the current build:
 
 | File | Format | Size | gzip |
 |---|---|---|---|
-| `dist/nepali-number.js` | ESM | 9.23 kB | 2.85 kB |
-| `dist/nepali-number.cjs` | CommonJS | 9.33 kB | 2.85 kB |
-| `dist/nepali-number.umd.js` | UMD, global `nepaliNumber` | 9.42 kB | 2.92 kB |
-| `dist/nepali-number.iife.js` | IIFE, global `nepaliNumber` | 9.24 kB | 2.83 kB |
-| `dist/nepali-number.d.ts` | Types for ESM | 4.23 kB | |
-| `dist/nepali-number.d.cts` | Types for CommonJS | 4.23 kB | |
+| `dist/nepali-number.js` | ESM | 22.06 kB | 7.53 kB |
+| `dist/nepali-number.cjs` | CommonJS | 22.50 kB | 7.66 kB |
+| `dist/nepali-number.umd.js` | UMD, global `nepaliNumber` | 22.20 kB | 7.59 kB |
+| `dist/nepali-number.iife.js` | IIFE, global `nepaliNumber` | 22.03 kB | 7.50 kB |
+| `dist/nepali-number.d.ts` | Types for ESM | 21.69 kB | |
+| `dist/nepali-number.d.cts` | Types for CommonJS | 21.69 kB | |
 
-The tarball (`npm pack --dry-run`) holds 9 files, 11.7 kB packed: the six above plus
+The tarball (`npm pack --dry-run`) holds 9 files, 34.9 kB packed: the six above plus
 `package.json`, `README.md` and `LICENSE`. `files: ["dist"]` keeps everything else out.
+
+Every format carries all eight domains. A bundler that tree-shakes the ESM file keeps only the
+functions a consumer imports, with the word tables they use.
 
 ## Entry points
 
@@ -91,7 +94,7 @@ affected because they read files directly.
 
 Verified against the current build: ESM `import` and CJS `require` in Node 24, `import` in Bun
 1.4.4, the ESM file in Deno 2.9, and the IIFE and UMD files exposing a global `nepaliNumber`
-object.
+object. Each one exposes the same 45 functions.
 
 ## Type-checking
 

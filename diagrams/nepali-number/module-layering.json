@@ -3,7 +3,7 @@
   "diagram_type": "workflow",
   "meta": {
     "title": "Module layering",
-    "subtitle": "Each arrow is an import between neighbouring layers; a module may also import from any layer further along (ADR-0009)",
+    "subtitle": "Each arrow is a direct import. The barrel re-exports every domain, and every domain reads numbers through conversion (ADR-0009, ADR-0012)",
     "quality_profile": "showcase",
     "output": "module-layering.html"
   },
@@ -13,8 +13,12 @@
       "label": "Public entry"
     },
     {
-      "id": "domains",
-      "label": "Domains"
+      "id": "leaves",
+      "label": "Leaf domains"
+    },
+    {
+      "id": "core",
+      "label": "Core domains"
     },
     {
       "id": "data",
@@ -25,7 +29,6 @@
     "barrel",
     "currency",
     "words",
-    "utils",
     "formatting",
     "conversion",
     "constants"
@@ -41,38 +44,60 @@
     },
     {
       "id": "currency",
-      "lane": "domains",
+      "lane": "leaves",
       "col": 1,
       "type": "backend",
       "label": "currency/"
     },
     {
+      "id": "fractions",
+      "lane": "leaves",
+      "col": 2,
+      "type": "backend",
+      "label": "fractions/"
+    },
+    {
+      "id": "text",
+      "lane": "leaves",
+      "col": 3,
+      "type": "backend",
+      "label": "text/"
+    },
+    {
+      "id": "units",
+      "lane": "leaves",
+      "col": 4,
+      "type": "backend",
+      "label": "units/"
+    },
+    {
       "id": "words",
-      "lane": "domains",
+      "lane": "core",
       "col": 2,
       "type": "backend",
       "label": "words/"
     },
     {
-      "id": "utils",
-      "lane": "domains",
-      "col": 3,
-      "type": "backend",
-      "label": "utils/"
-    },
-    {
       "id": "formatting",
-      "lane": "domains",
-      "col": 4,
+      "lane": "core",
+      "col": 3,
       "type": "backend",
       "label": "formatting/"
     },
     {
+      "id": "utils",
+      "lane": "core",
+      "col": 4,
+      "type": "backend",
+      "label": "utils/"
+    },
+    {
       "id": "conversion",
-      "lane": "domains",
+      "lane": "core",
       "col": 5,
       "type": "backend",
-      "label": "conversion/"
+      "label": "conversion/",
+      "sublabel": "exact decimal reader"
     },
     {
       "id": "constants",
@@ -80,7 +105,7 @@
       "col": 5,
       "type": "database",
       "label": "constants.ts",
-      "sublabel": "digits · words · ordinals · scales"
+      "sublabel": "digits · words · scales · units"
     }
   ],
   "edges": [
@@ -97,14 +122,8 @@
       "variant": "emphasis"
     },
     {
-      "id": "words-utils",
+      "id": "words-formatting",
       "from": "words",
-      "to": "utils",
-      "variant": "emphasis"
-    },
-    {
-      "id": "utils-formatting",
-      "from": "utils",
       "to": "formatting",
       "variant": "emphasis"
     },
@@ -119,6 +138,34 @@
       "from": "conversion",
       "to": "constants",
       "variant": "emphasis"
+    },
+    {
+      "id": "fractions-words",
+      "from": "fractions",
+      "to": "words",
+      "variant": "default",
+      "role": "branch"
+    },
+    {
+      "id": "text-words",
+      "from": "text",
+      "to": "words",
+      "variant": "default",
+      "role": "branch"
+    },
+    {
+      "id": "units-conversion",
+      "from": "units",
+      "to": "conversion",
+      "variant": "default",
+      "role": "branch"
+    },
+    {
+      "id": "utils-conversion",
+      "from": "utils",
+      "to": "conversion",
+      "variant": "default",
+      "role": "branch"
     }
   ]
 }

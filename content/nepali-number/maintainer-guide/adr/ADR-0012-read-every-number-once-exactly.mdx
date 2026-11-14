@@ -1,0 +1,290 @@
+---
+title: "ADR-0012 — Read every number once, exactly: decimal-string core, bigint input, one invalid-input rule"
+description: "Every export reads its number once into exact decimal digits, accepts bigint, rounds on the written digits and returns one documented result for invalid input."
+---
+
+- **Status:** Approved
+- **Date:** 2026-11-14
+- **Deciders:** [@puncoz](https://github.com/puncoz)
+- **Approved by:** [@puncoz](https://github.com/puncoz)
+- **Approved on:** 2026-11-14
+- **Supersedes:** —
+- **Superseded by:** —
+- **Semver impact:** major — absorbed by the unreleased 2.0.0 (owner decision, 2026-11-14)
+- **Design documents:** [`user-guide/dev/api/conversion.mdx`](../../user-guide/dev/api/conversion.mdx),
+  `user-guide/dev/api/types.mdx`, `user-guide/dev/api/limitations.mdx`,
+  `maintainer-guide/architecture/system.mdx`
+
+## Context
+
+Every export that reads a number does it through JavaScript `number`: `parseFloat`, `Number`,
+`toFixed`, `Math.round`. Each domain does it slightly differently, and most of the entries in
+[limitations](../../user-guide/dev/api/limitations.mdx) come from that one fact. Run against the
+built package today:
+
+| Call | Today | Cause |
+|---|---|---|
+| `parseNepaliNumber("abc")` | `0` | Invalid input and zero are the same result |
+| `parseNepaliNumber("12abc")` | `12` | `parseFloat` reads a leading number |
+| `parseNepaliNumber("1.2.3")` | `1.2` | Same |
+| `parseNepaliNumber("−५")` (U+2212) | `0` | Only ASCII `-` is a sign |
+| `parseNepaliNumber("12345678901234567890")` | `12345678901234567000` | Float precision |
+| `formatNepaliNumber("1,234")` | `"१"` | `parseFloat` stops at the comma |
+| `formatNepaliNumber(1.005)` | `"१"` | `toFixed` on a binary float |
+| `roundNepali(1.005)` | `"१.००"` | `Math.round` on a binary float |
+| `roundNepali(-2.5, 0)` | `"-२"` | `Math.round` rounds half toward +∞ |
+| `formatNepaliNumber(-0.001)` | `"-०"` | Sign kept after rounding to zero |
+| `toNepali(1e21)` | `"१e+२१"` | `toString()` exponent form |
+| `formatNepaliNumber(1e21)` | `"१e,+२१"` | Same, then grouped |
+| `formatNepaliNumber(Infinity)` | `"Infin,ity"` | Not treated as invalid |
+| `formatNepaliNumber(12345678901234567890n)` | throws `TypeError` | `bigint` is not handled |
+| `formatNepaliNumber(1.5, { precision: 101 })` | throws `RangeError` | `toFixed` range, breaks invariant 4 |
+| `toNepali(null)` | throws `TypeError` | Reachable from plain JavaScript |
+
+Three further facts about the current code:
+
+- **Types are unreachable.** `FormatOptions`, `CurrencyOptions` and `NumberSystem` are declared
+  in `dist/nepali-number.d.ts` but missing from its `export { … }` list, so consumers cannot
+  import them.
+- **Avoidable work on every call.** `toNepali` runs `NEPALI_DIGITS.split("")` once per digit.
+  The word functions call `parseNepaliNumber(String(number))` again at every level of their
+  recursion.
+- **Two quadratic regular expressions.** A 100 000-character string takes about 5.5 s in
+  `validateNepaliNumber` and 6.4 s in `addNepaliCommas`
+  ([limitations](../../user-guide/dev/api/limitations.mdx)).
+
+The owner has asked for the existing functions to be fixed and for the package to grow
+(ADR-0013 to ADR-0018). Those ADRs all need one answer to "what is a number, and what happens
+when the input is not one", so this ADR comes first and the others build on it.
+
+**Owner decision, 2026-11-14.** `package.json` says `2.0.0`, but npm's `latest` is 1.0.3 and no
+2.x has been published. [@puncoz](https://github.com/puncoz) decided that output-changing fixes
+fold into the still-unpublished 2.0.0 instead of waiting for a 3.0.0 or arriving as opt-in
+options.
+
+## Decision
+
+### 1. One internal reader
+
+`src/conversion/` gains an internal function, not exported from the package:
+
+```ts
+parseDecimal(input: NumericInput): { negative: boolean; integer: string; fraction: string } | null
+```
+
+`integer` and `fraction` are ASCII digit strings; `integer` has no leading zeros. `null` means
+the input is not a number. **Every export that reads a number calls it once**, and all rounding,
+grouping and word-building works on those digit strings. No value passes through binary floating
+point on the way in, and recursion works on the parsed digits instead of parsing again.
+
+### 2. `NumericInput`, with `bigint`
+
+```ts
+export type NumericInput = number | bigint | string
+```
+
+Every export that reads a number takes `NumericInput`.
+
+| Input | Read as |
+|---|---|
+| `string` | The whole string, after trimming, must match: optional sign `+`, `-` or `−` (U+2212); ASCII and/or Devanagari digits, mixed allowed; commas and spaces between integer digits ignored; at most one `.`; at least one digit. `".5"` and `"5."` are valid |
+| `number` | The shortest round-trip decimal string, with exponent form expanded exactly (`1e21` is 1 followed by 21 zeros). `-0` is `0`. `NaN` and `±Infinity` are invalid |
+| `bigint` | Exact |
+| `null`, `undefined` | Outside the declared types, reachable from JavaScript. Treated as invalid instead of throwing |
+
+Invalid strings: `""`, `"."`, `"1.2.3"`, `"12abc"`, `"1e3"`, letters, and currency symbols
+(`"रू ५००"`). Currency strings are read by `parseNepaliCurrency` (ADR-0015) or the lenient
+`removeFormatting` (ADR-0013).
+
+### 3. One invalid-input rule (owner decision D1)
+
+| A function that returns | Returns for invalid input |
+|---|---|
+| a number | `NaN` |
+| a string | `""` |
+| a boolean | `false` |
+| an array | `[]` |
+
+`toNepali`, `toEnglish` and `convert` convert characters and do not read a number. They never
+reject text; only `null` and `undefined` give `""`.
+
+### 4. One rounding rule (owner decision D2)
+
+Wherever a function rounds, it rounds **half away from zero on the decimal digits as written**.
+A result that rounds to zero carries no minus sign.
+
+### 5. The conversion exports
+
+```ts
+toNepali(input: NumericInput): string
+toEnglish(input: NumericInput): string
+parseNepaliNumber(input: NumericInput): number
+convert(text: string, toNepaliNumber?: boolean): string   // unchanged
+```
+
+| Input | Today | After |
+|---|---|---|
+| `parseNepaliNumber("abc")` | `0` | `NaN` |
+| `parseNepaliNumber("")` | `0` | `NaN` |
+| `parseNepaliNumber(".")` | `0` | `NaN` |
+| `parseNepaliNumber("12abc")` | `12` | `NaN` |
+| `parseNepaliNumber("1.2.3")` | `1.2` | `NaN` |
+| `parseNepaliNumber("1e3")` | `1000` | `NaN` |
+| `parseNepaliNumber("रू ५००")` | `0` | `NaN` |
+| `parseNepaliNumber("−५")` | `0` | `-5` |
+| `parseNepaliNumber("-१,२३४.५")` | `-1234.5` | `-1234.5` |
+| `parseNepaliNumber("१२,३४५.६७")` | `12345.67` | `12345.67` |
+| `toNepali(1e21)` | `"१e+२१"` | `"१०००००००००००००००००००००"` |
+| `toNepali(123n)` | `"१२३"` | `"१२३"` |
+| `toNepali(null)` | throws `TypeError` | `""` |
+| `toEnglish(null)` | throws `TypeError` | `""` |
+| `toNepali("Price 1,234.50")` | `"Price १,२३४.५०"` | `"Price १,२३४.५०"` |
+
+`parseNepaliNumber` still returns a JavaScript `number`, so a value beyond 2^53 loses precision
+in *its* result. That stays a documented limitation. The functions that format or spell a number
+do not use that result and are exact.
+
+### 6. Types are exported
+
+Each domain `index.ts` adds `export type * from "./types"`. `NumericInput`, `FormatOptions`,
+`CurrencyOptions`, `NumberSystem` and the option types ADR-0013 to ADR-0018 add become
+importable from the package root.
+
+### 7. Performance
+
+- `toNepali` and `toEnglish` map digits by character code in one pass. No per-digit
+  `split("")`, no `indexOf` per character.
+- Each call parses once. Recursion in `words` and `currency` passes parsed digits.
+- `validateNepaliNumber` and `addNepaliCommas` are rewritten as single-pass scanners (ADR-0013),
+  replacing the two regular expressions measured at 5.5 s and 6.4 s on 100 000 characters.
+
+### 8. Layering
+
+Unchanged: `constants ← conversion ← formatting ← utils ← words ← currency`. `parseDecimal` and
+its digit-string helpers (round, group) sit in `conversion`, the lowest domain. The new domains
+in ADR-0016 to ADR-0018 (`fractions`, `units`, `text`) are leaves: they import only downward and
+nothing imports them.
+
+## Options considered
+
+| Option | Pros | Cons | Verdict |
+|---|---|---|---|
+| A — One exact decimal-string reader in `conversion`, used by every export | One definition of "a number"; exact at any size; float rounding gone; no throwing | Rewrites the arithmetic in `formatting`, `utils`, `words`, `currency`; more code | Chosen |
+| B — Keep `number`, patch each limitation where it shows | Small diffs | Float rounding and the 2^53 ceiling cannot be patched; five slightly different parsers remain | Rejected |
+| C — `bigint` scaled integers internally | Exact, fast | Needs a fixed scale; arbitrary fractions still need string work; `bigint` literals constrain the build target | Rejected |
+| D — Depend on a decimal library | No arithmetic to maintain | Breaks invariant 1 (zero runtime dependencies) | Rejected |
+
+### Owner decisions
+
+The ADR is written on the recommended option of each row, assumed until the owner picks.
+
+| Decision | Options (with the actual outputs) | Recommended | Consequence |
+|---|---|---|---|
+| **D1** — What invalid input returns | **(a)** One rule: `parseNepaliNumber("abc")` → `NaN`, `formatNepaliNumber("abc")` → `""`, `toNepaliWords("abc")` → `""`, `roundNepali("abc")` → `""`. **(b)** Keep today's zero-like results: `0`, `"०"`, `"शून्य"`, `"०.००"`. **(c)** `NaN` from the parser only; string functions keep `"०"` / `"शून्य"` | (a) | (a) A consumer can tell "zero" from "not a number" everywhere, and a UI shows nothing instead of a false `०`. Code that relied on `0` for bad input must check `Number.isNaN` or `isValidNumber`. (b) Limitation 7 stays for good. (c) Two rules to document, and a form still shows `०` for garbage |
+| **D2** — Rounding | **(a)** Half away from zero on written digits: `formatNepaliNumber(1.005)` → `"१.०१"`, `roundNepali(2.5, 0)` → `"३"`, `roundNepali(-2.5, 0)` → `"-३"`, `roundNepali(0.125)` → `"०.१३"`. **(b)** Half to even: `"१.००"`, `"२"`, `"-२"`, `"०.१२"`. **(c)** Keep float `toFixed` / `Math.round`: `"१"`, `"३"`, `"-२"`, `"०.१३"` | (a) | (a) Matches what people expect of money and school arithmetic; symmetric for negatives. (b) Unbiased over many values, but `2.5` → `2` surprises. (c) Limitation 6 stays |
+| **D3** — `null` / `undefined` from JavaScript | **(a)** Treated as invalid: `toNepali(null)` → `""`, `formatNepaliNumber(undefined)` → `""`; the TypeScript types still exclude them. **(b)** Keep throwing `TypeError` | (a) | (a) Limitation 12 goes; nothing changes for TypeScript users. (b) No runtime guard, smaller code |
+| **D4** — Strings in exponent form | **(a)** Invalid: `parseNepaliNumber("1e3")` → `NaN` (a `number` in exponent form is still read). **(b)** Accepted: `1000` | (a) | (a) The string grammar is exactly what `isValidNumber` documents. (b) Keeps today's result, but `"1e3"` is not something a person types as a number |
+
+## Consequences
+
+**Positive**
+
+- One definition of a number, and one of invalid input, across the whole API.
+- Exact at any size: `bigint` and long digit strings format and spell without loss.
+- Limitations 1, 6, 7, 12 and 13 are fixed here; 2, 3, 8 to 11 and 14 are fixed on top of this in
+  ADR-0013 and ADR-0014.
+- Invariant 4 holds for real: no `RangeError` from `precision`, no `TypeError` from `bigint`.
+
+**Negative / accepted trade-offs**
+
+- The package carries its own digit-string rounding and grouping. The minified build grows; the
+  number is measured at implementation (invariant 8).
+- String arithmetic is slower per call than `toFixed` for ordinary numbers. Parsing once and the
+  linear scanners offset this; the difference is measured at implementation.
+- `parseNepaliNumber` still returns a `number` and is still inexact beyond 2^53.
+
+**For consumers**
+
+- Keeps working: every call with a valid `number` or digit string whose result did not depend on
+  float rounding.
+- Breaks: code that expects `0`, `"०"` or `"शून्य"` for invalid input; code that relied on
+  `parseNepaliNumber("12abc")` → `12`; snapshots containing a float-rounded value such as
+  `formatNepaliNumber(1.005)` → `"१"`.
+- Must change: test the parser's result with `Number.isNaN`, or call `isValidNumber` first.
+- **`user-guide/v2/` describes a 2.0.0 that was never published.** With these changes folded into
+  2.0.0, that line no longer describes what will ship. It must be re-cut from `user-guide/dev/`
+  when 2.0.0 is released. This ADR does not edit `v2/`; the owner decides when it is re-cut.
+
+## Package invariants
+
+- **1, 2, 3** — kept. No dependency, no host global, no state.
+- **4** — strengthened. `precision` out of range, `bigint`, `NaN`, `Infinity`, `null` and
+  `undefined` no longer throw. The safe defaults change (D1) and are documented on every API
+  page.
+- **5** — outputs change, listed above and in ADR-0013 to ADR-0015. Semver decided by the owner
+  on 2026-11-14.
+- **6** — kept. The digit string stays in `src/constants.ts`.
+- **7** — kept. The reader matches explicit `0-9` and `०-९` code points, never `\d`.
+- **8** — named exports only. The build grows; measured at implementation.
+
+No invariant is departed from.
+
+## Security considerations
+
+- **New input parsing.** `parseDecimal` is a single left-to-right pass over the string with no
+  regular expression and no backtracking, so its time is proportional to the input length.
+  Behaviour on empty, whitespace-only, huge, `NaN`, `Infinity` and non-digit input is defined
+  above, tested and documented.
+- **Hostile input.** A 100 000-character string of digits, of commas, and of mixed garbage is
+  part of the test suite for every number-reading export, with a time bound.
+- **Exponent expansion.** A `number` expands to at most a few hundred digits (`1e308`,
+  `5e-324`). A `string` in exponent form is rejected (D4), so a short string cannot ask for a
+  huge expansion.
+- **`bigint`.** Converted with `toString()`. Its length is bounded by the caller's own value.
+- No dependency, no CI or publishing change, no logging.
+- Residual risk accepted: a caller that passes a multi-megabyte string gets a result in linear
+  time and memory. Capping input length stays the caller's choice.
+
+## Implementation notes
+
+- [ ] `src/conversion/`: internal `parseDecimal` and digit-string helpers (round half away from
+      zero, group, compare), with TSDoc; not exported from the barrel.
+- [ ] `src/conversion/types.ts`: `NumericInput`.
+- [ ] `toNepali`, `toEnglish`: character-code mapping; exponent expansion for `number`;
+      `null` / `undefined` → `""`.
+- [ ] `parseNepaliNumber`: `NumericInput` in, `NaN` for invalid.
+- [ ] Every domain `index.ts`: `export type * from "./types"`.
+- [ ] `formatting`, `utils`, `words`, `currency` read through `parseDecimal` (their own output
+      changes are ADR-0013, ADR-0014, ADR-0015).
+- [ ] Tests — the happy path **and** the obvious failure paths (ADR-0007): English, Nepali and
+      mixed digits, `bigint`, empty, whitespace, zero, `-0`, negative, U+2212, decimal,
+      ≥ 1 crore, above 2^53, exponent-form numbers, `NaN`, `Infinity`, `null`, `undefined`,
+      invalid strings, 100 000-character hostile strings.
+- [ ] A type test that `NumericInput`, `FormatOptions`, `CurrencyOptions` and `NumberSystem`
+      import from the built `dist/nepali-number.d.ts`.
+- [ ] Measure the minified build before and after, and record it in the architecture page.
+- [ ] `bun run type-check`, `bun run test` and `bun run build` pass.
+- [ ] Built CJS loaded with `node`; outputs match `user-guide/dev/api/`.
+
+## Docs to update on implementation
+
+- [ ] `user-guide/dev/api/conversion.mdx` — replace the "Proposed in" line with the "produced by
+      running the built package" line once every output is checked.
+- [ ] `user-guide/dev/api/types.mdx` — types are importable; `NumericInput`.
+- [ ] `user-guide/dev/api/index.mdx` — signatures, "Behaviour that holds across the API".
+- [ ] `user-guide/dev/api/limitations.mdx` — delete what is fixed; keep the 2^53 note for
+      `parseNepaliNumber`.
+- [ ] `user-guide/dev/guides/migration-v1-to-v2.mdx` — invalid-input results, rounding, strict
+      parsing.
+- [ ] `user-guide/dev/guides/recipes.mdx` — any recipe that works around a fixed limitation.
+- [ ] `maintainer-guide/architecture/system.mdx` and its diagram — the reader in `conversion`,
+      type re-exports, build size.
+- [ ] `maintainer-guide/security/threat-model.mdx` — the hostile-input measurements.
+- [ ] `README.md` — API summary, examples.
+- [ ] `AGENTS.md` §6 invariant 4 (safe defaults) and the `nepali-number-stack-and-map` and
+      `nepali-number-writing-code` skills — export counts, types now re-exported, test counts.
+- [ ] `maintainer-guide/adr/index.mdx` — index row + status.
+- [ ] `user-guide/v2/` — flagged for the owner: re-cut from `dev/` at the 2.0.0 release.
+- [ ] Proposed commit message:
+      `feat!: read every number exactly, accept bigint, return NaN or "" for invalid input`
+      with a `BREAKING CHANGE:` footer listing the invalid-input results and the rounding rule.

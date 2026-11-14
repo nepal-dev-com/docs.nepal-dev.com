@@ -1,0 +1,252 @@
+---
+title: "ADR-0014 — Words: decimals, exact big numbers, English ordinals, digit ordinals, words to number"
+description: "Word functions read decimals and exact big numbers, gain English and digit ordinals, and two parsers turn Nepali or English words back into a number."
+---
+
+- **Status:** Approved
+- **Date:** 2026-11-14
+- **Deciders:** [@puncoz](https://github.com/puncoz)
+- **Approved by:** [@puncoz](https://github.com/puncoz)
+- **Approved on:** 2026-11-14
+- **Supersedes:** —
+- **Superseded by:** —
+- **Semver impact:** major — absorbed by the unreleased 2.0.0 (owner decision, 2026-11-14)
+- **Design documents:** [`user-guide/dev/api/words.mdx`](../../user-guide/dev/api/words.mdx),
+  `user-guide/dev/api/types.mdx`, `user-guide/dev/api/limitations.mdx`,
+  `user-guide/dev/guides/migration-v1-to-v2.mdx`
+
+## Context
+
+This ADR builds on
+[ADR-0012](./ADR-0012-read-every-number-once-exactly.mdx): the `NumericInput` type, the exact
+decimal-string reading of every number, the one invalid-input rule and the rounding rule. It
+applies them to the `words` domain and adds what the domain lacks.
+
+What the four exports do today, run against the built package:
+
+- **Decimals have no words.** `toNepaliWords(12.5)`, `toEnglishWords(12.5)` and
+  `toNepaliOrdinal(12.5)` return `""`, because the word tables are indexed by the number.
+  `toNepaliWords("12.0")` returns `"बाह्र"` while `toNepaliWords("12.50")` returns `""`.
+- **Big numbers are wrong without saying so.** Input goes through `parseFloat`, so
+  `toNepaliWords("12345678901234567890")` ends in `"… सतसट्ठी हजार एक सय अठसट्ठी"`; the real
+  last digits are `…67,890`. A `bigint` is accepted at run time (not by the types) and loses
+  the same digits.
+- **Invalid input reads as zero.** `toNepaliWords("abc")` → `"शून्य"`, `toEnglishWords("abc")` →
+  `"zero"`, `toNepaliOrdinal("abc")` → `"शून्यौं"`, `toDecimalWord("abc")` → `"०"`.
+- **`toDecimalWord` does not abbreviate negatives.** `toDecimalWord(-1200000)` →
+  `"-१२,००,०००"`.
+- **Every recursive step parses again.** `toNepaliWords` turns its number into a string and
+  parses it on each level of the recursion.
+- **Three fallbacks are unreachable** (`return String(number)` after the scale loop), which is
+  the only uncovered code in the package.
+- **There are no English ordinals, no digit ordinals (`५औं`, `5th`), no international
+  (million, billion) English, and no way back from words to a number.**
+
+One thing is noticed and deliberately left alone. The language data in `src/constants.ts` is
+not consistent with itself: `NEPALI_WORDS[19]` is `उन्नाइस` while `NEPALI_ORDINALS[19]` is
+`उन्नाईसौं`; the scale `पद्म` has the ordinal `पदमौं`; `अर्ब` has `अरबौं` and `खर्ब` has
+`खरबौं`. Which spelling is right is the owner's call (ADR-0004), and every one of them is an
+output string. **This ADR changes no existing word.** A spelling review of the 0–99 words, the
+ordinals and the scale labels is a follow-up ADR of its own.
+
+## Decision
+
+Written on the recommended option of every row in *Owner decisions* below; each is assumed
+until the owner picks.
+
+### Shared behaviour
+
+- Every export that reads a number takes `NumericInput` (`number | bigint | string`) and reads
+  it once, exactly (ADR-0012). The recursion works on digit strings, with no re-parsing.
+- Invalid input returns `""` from the string-returning exports and `NaN` from the two parsers
+  (ADR-0012, decision D1).
+- The three unreachable fallbacks are removed.
+
+### Changed exports
+
+```ts
+toNepaliWords(number: NumericInput): string
+toEnglishWords(number: NumericInput, options?: EnglishWordsOptions): string
+toNepaliOrdinal(number: NumericInput): string
+toDecimalWord(number: NumericInput, options?: DecimalWordOptions): string
+```
+
+- **`toNepaliWords`** reads a fraction digit by digit after `दशमलव`; trailing fraction zeros
+  are dropped, so `"12.0"` and `"12.50"` read as `12` and `12.5`. Above महाशंख the count
+  recurses (`10n ** 21n` → `"एक सय महाशंख"`).
+- **`toEnglishWords`** reads a fraction digit by digit after `point`, and takes options:
+
+  | Option | Type | Default | Effect |
+  |---|---|---|---|
+  | `system` | `"nepali" \| "international"` | `"nepali"` | `"international"` uses thousand, million, billion … decillion (10³³), recursing above |
+  | `hyphenate` | `boolean` | `false` | `true` joins tens and ones: `"twenty-three"` |
+  | `and` | `boolean` | `false` | `true` puts `and` after `hundred` when something follows: `"one hundred and twenty three"` |
+
+- **`toNepaliOrdinal`** keeps every integer output; a non-integer or invalid input returns
+  `""`.
+- **`toDecimalWord`** abbreviates negatives, and takes options:
+
+  | Option | Type | Default | Effect |
+  |---|---|---|---|
+  | `precision` | `number` | `2` | Decimal places when the value is not an exact multiple of its scale; not an integer in 0–100 → `2` |
+  | `useNepaliDigits` | `boolean` | `true` | `false` keeps English digits; the scale label stays Nepali |
+
+### New exports
+
+```ts
+toEnglishOrdinal(number: NumericInput, options?: EnglishWordsOptions): string
+toNepaliOrdinalNumber(number: NumericInput, options?: OrdinalNumberOptions): string
+toEnglishOrdinalNumber(number: NumericInput, options?: OrdinalNumberOptions): string
+parseNepaliWords(words: string): number
+parseEnglishWords(words: string): number
+```
+
+- **`toEnglishOrdinal`**: the cardinal from `toEnglishWords` with its last word made ordinal
+  (`first`, `second`, `third`, `fifth`, `eighth`, `ninth`, `twelfth`, `twentieth`, otherwise
+  `-th`). Zero is `"zeroth"`; a negative is `"negative …"`; a non-integer returns `""`.
+- **`toNepaliOrdinalNumber`**: digits and a suffix, `लो` `रो` `रो` `थो` for 1–4 and `औं` from 5,
+  with no grouping. `OrdinalNumberOptions` is `{ useNepaliDigits?: boolean }`, default `true`.
+  A non-integer, a negative or invalid input returns `""`.
+- **`toEnglishOrdinalNumber`**: digits and `st` / `nd` / `rd` / `th`, chosen by the last two
+  digits (11, 12 and 13 take `th`). `useNepaliDigits` defaults to `false` here.
+- **`parseNepaliWords`**: the inverse of `toNepaliWords` for the words in `src/constants.ts`:
+  an optional `ऋण`, scale groups from large to small, and an optional `दशमलव` followed by
+  digit words. Anything else returns `NaN`.
+- **`parseEnglishWords`**: case-insensitive; accepts hyphens, `and`, and the scales of both
+  systems. Anything else returns `NaN`.
+
+### Language data added to `src/constants.ts`
+
+`दशमलव`; the ordinal digit suffixes `लो`, `रो`, `रो`, `थो`, `औं`; English `point`, the
+international scale names, and the irregular English ordinal words.
+
+### Before and after
+
+| Input | Today | After |
+|---|---|---|
+| `toNepaliWords(12.5)` | `""` | `"बाह्र दशमलव पाँच"` |
+| `toNepaliWords(3.14)` | `""` | `"तीन दशमलव एक चार"` |
+| `toNepaliWords(0.05)` | `""` | `"शून्य दशमलव शून्य पाँच"` |
+| `toNepaliWords("12.50")` | `""` | `"बाह्र दशमलव पाँच"` |
+| `toNepaliWords("12345678901234567890")` | `"… सतसट्ठी हजार एक सय अठसट्ठी"` | `"… सतसट्ठी हजार आठ सय नब्बे"` |
+| `toNepaliWords("abc")`, `toNepaliWords("")` | `"शून्य"` | `""` |
+| `toEnglishWords(12.5)` | `""` | `"twelve point five"` |
+| `toEnglishWords("abc")`, `toEnglishWords("")` | `"zero"` | `""` |
+| `toNepaliOrdinal("abc")`, `toNepaliOrdinal("")` | `"शून्यौं"` | `""` |
+| `toDecimalWord(-1200000)` | `"-१२,००,०००"` | `"-१२ लाख"` |
+| `toDecimalWord(-1250000)` | `"-१२,५०,०००"` | `"-१२.५० लाख"` |
+| `toDecimalWord("abc")`, `toDecimalWord("")` | `"०"` | `""` |
+
+Every other output documented in `user-guide/dev/api/words.mdx` today is unchanged.
+
+## Options considered
+
+| Option | Pros | Cons | Verdict |
+|---|---|---|---|
+| A — Extend the four exports in place and add five beside them | One name per job; fixes land where people already call | Output changes for decimals, invalid input and negatives | Chosen |
+| B — Leave the four untouched; add `toNepaliDecimalWords`, `toNepaliWordsExact` … | No output change | Two functions for every job; the wrong ones stay the obvious ones | Rejected |
+| C — One `toWords(number, { language, form })` | Fewer names | Replaces four published names; `language` contradicts the Nepali-only decision | Rejected |
+| D — Fix the inconsistent spellings here as well | One review | Mixes language decisions with API decisions; each spelling is its own output change | Rejected: follow-up ADR |
+
+### Owner decisions
+
+| Decision | Options (with the actual output strings) | Recommended | Consequence |
+|---|---|---|---|
+| Word for the decimal point | `दशमलव`: `12.5` → `"बाह्र दशमलव पाँच"` · `दशमलब`: `"बाह्र दशमलब पाँच"` | `दशमलव` | New entry in `src/constants.ts`; the string is contract once released |
+| How a fraction is read | Digit by digit: `3.14` → `"तीन दशमलव एक चार"` · As a number: `"तीन दशमलव चौध"` | Digit by digit | Digit by digit is unambiguous (`0.05` and `0.5` differ) and is what `parseNepaliWords` can invert |
+| Trailing fraction zeros | Dropped: `"12.50"` → `"बाह्र दशमलव पाँच"`, `"12.0"` → `"बाह्र"` · Kept as written: `"बाह्र दशमलव पाँच शून्य"`, `"बाह्र दशमलव शून्य"` | Dropped | A `number` never carries them, so dropping makes `12.5` and `"12.50"` agree |
+| English word for the decimal point | `point`: `"twelve point five"` · `decimal`: `"twelve decimal five"` | `point` | New English string |
+| Ordinal digit suffixes for 1–4 | Irregular: `"१लो"`, `"२रो"`, `"३रो"`, `"४थो"` · Regular: `"१औं"`, `"२औं"`, `"३औं"`, `"४औं"` | Irregular | Matches `toNepaliOrdinal` (पहिलो, दोस्रो, तेस्रो, चौथो); adds `लो`, `रो`, `थो` |
+| Ordinal digit suffix from 5 | `औं`: `"५औं"`, `"२१औं"` · `ौं`: `"५ौं"` | `औं` | Same suffix the ordinal words carry |
+| Digit ordinals of a negative | `""` · `"-५औं"` | `""` | A negative rank has no written convention; `""` keeps the function simple |
+| Digit ordinal of zero | `"०औं"` / `"0th"` · `""` | `"०औं"` / `"0th"` | Agrees with `toNepaliOrdinal(0)` → `"शून्यौं"` |
+| English ordinal of a Nepali scale | Suffix `-th`: `100000` → `"one lakhth"`, `10000000` → `"one croreth"` · `""` for exact scale multiples | Suffix `-th` | Every integer gets an ordinal |
+| Negative `toDecimalWord` | Abbreviated: `"-१२ लाख"` · As today: `"-१२,००,०००"` | Abbreviated | Removes a documented limitation |
+| Invalid input | `""` (ADR-0012 D1) · As today: `"शून्य"`, `"zero"`, `"शून्यौं"`, `"०"` | `""` | Decided once in ADR-0012; listed here because four outputs change |
+| Existing spellings (`उन्नाइस` / `उन्नाईसौं`, `पद्म` / `पदमौं`, `अर्ब` / `अरबौं`) | Leave all as they are · Review them in this ADR | Leave | No existing word changes here; a spelling-review ADR follows |
+
+## Consequences
+
+**Positive**
+
+- Decimals, exact big numbers and negatives work in every word function.
+- Words can be read back into a number, which makes form input and tests possible.
+- The domain reaches full coverage: the unreachable fallbacks are gone.
+
+**Negative / accepted trade-offs**
+
+- The minified build grows: five exports, the international scale names, the English ordinal
+  words and two parsers. The number is measured at implementation (invariant 8).
+- `parseNepaliWords` and `parseEnglishWords` return a JavaScript `number`, so a parsed value
+  above 2⁵³ is not exact. Documented in the reference.
+- `parseNepaliWords` reads only the spellings in `src/constants.ts`. A variant spelling is
+  `NaN` until the spelling review decides whether variants are accepted.
+
+**For consumers**
+
+- Code that relied on `""` for a decimal, or on `"शून्य"` / `"zero"` / `"शून्यौं"` / `"०"` for
+  invalid input, sees a different string. Check validity with `isValidNumber` (ADR-0013)
+  instead of comparing with the zero word.
+- Code that added its own minus sign in front of `toDecimalWord(Math.abs(n))` keeps working.
+- Every integer output documented today is unchanged.
+
+## Package invariants
+
+- **1, 2, 3** — no dependency, no host global, no state: kept.
+- **4 — no throwing.** Every new and changed export returns `""` or `NaN` for invalid content.
+  `bigint` becomes a declared input type.
+- **5 — output strings are the contract.** The changes are listed in the before/after table
+  and are absorbed by the unreleased 2.0.0.
+- **6 — language data has one home.** `दशमलव`, the suffixes and every English word go into
+  `src/constants.ts`; the parsers build their lookup from the same tables, so a word can never
+  be written by one function and unreadable by the other.
+- **7 — Unicode-aware.** The parsers split on whitespace and compare whole words; no `\d`, no
+  `.length` arithmetic on Devanagari.
+- **8 — small.** Grows; measured at implementation.
+- **Layering** is unchanged: `words` imports `conversion`, `formatting` and `utils`.
+
+## Security considerations
+
+- **New input parsing.** `parseNepaliWords` and `parseEnglishWords` read untrusted strings.
+  Both are single-pass scanners over whitespace-separated tokens with a table lookup per
+  token: no regular expression with a quantifier over unbounded input, so time is linear. Each
+  is tested with a 100 000-character hostile string (one long token, and 50 000 valid tokens).
+- **Recursion depth.** The word builders recurse once per scale group. Input length is
+  bounded by the core reader (ADR-0012), so depth is bounded too; the test uses a
+  1 000-digit `bigint`.
+- Empty, whitespace-only, huge, `NaN`, `Infinity` and non-digit input have a defined, tested
+  and documented result.
+- No dependency, no CI or publishing change, no logging.
+
+## Implementation notes
+
+- [ ] `src/constants.ts`: `दशमलव`, the ordinal digit suffixes, `point`, the international
+      scales, the English ordinal words.
+- [ ] `src/words/types.ts`: `EnglishWordsOptions`, `DecimalWordOptions`,
+      `OrdinalNumberOptions`; `export type * from "./types"` in `src/words/index.ts`.
+- [ ] `src/words/words.ts`: rework the four exports on the ADR-0012 reader; add the five new
+      exports; remove the unreachable fallbacks; TSDoc on all nine.
+- [ ] Tests — the happy path **and** the obvious failure paths (ADR-0007): English and Nepali
+      digits, empty, zero, negative, decimal, ≥ 1 crore, `bigint` above 2⁵³, invalid; a
+      round trip `parseNepaliWords(toNepaliWords(n)) === n` and the English equivalent over a
+      range of values; the hostile-input tests above.
+- [ ] `bun run type-check`, `bun run test` and `bun run build` pass.
+- [ ] Built CJS loaded with `node`; outputs match `user-guide/dev/api/words.mdx`.
+
+## Docs to update on implementation
+
+- [ ] `user-guide/dev/api/words.mdx` — check every output against the build and restore the
+      "produced by running the built package" line.
+- [ ] `user-guide/dev/api/index.mdx`, `user-guide/dev/api/types.mdx` — the new exports and types.
+- [ ] `user-guide/dev/api/limitations.mdx` — delete *Words and ordinals need integers* and
+      *`toDecimalWord` does not abbreviate negatives*; add the precision of the two parsers.
+- [ ] `user-guide/dev/guides/migration-v1-to-v2.mdx` — the changed outputs.
+- [ ] `user-guide/dev/guides/recipes.mdx` — a words-to-number recipe.
+- [ ] `README.md` — API summary and examples.
+- [ ] `docs/agent-skills/nepali-number-stack-and-map/SKILL.md` — export count, test count,
+      coverage.
+- [ ] `maintainer-guide/security/threat-model.mdx` — the two parsers.
+- [ ] `maintainer-guide/adr/index.mdx` — index row + status.
+- [ ] Proposed commit message:
+      `feat(words)!: read decimals and big numbers exactly, add ordinals and word parsing`
+      with a `BREAKING CHANGE:` footer listing the before/after table.
