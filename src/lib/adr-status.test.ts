@@ -35,12 +35,12 @@ describe('adrNumber and adrShortTitle', () => {
 
 describe('isAdrFolder', () => {
   test('a folder named adr, in any entry', () => {
-    expect(isAdrFolder('docs/maintain/adr')).toBe(true);
-    expect(isAdrFolder('lodestar/maintain/adr')).toBe(true);
+    expect(isAdrFolder('docs/maintainer-guide/adr')).toBe(true);
+    expect(isAdrFolder('lodestar/maintainer-guide/adr')).toBe(true);
   });
 
   test('anything else', () => {
-    expect(isAdrFolder('docs/maintain/adrs')).toBe(false);
+    expect(isAdrFolder('docs/maintainer-guide/adrs')).toBe(false);
     expect(isAdrFolder('docs/adr/notes')).toBe(false);
     expect(isAdrFolder(undefined)).toBe(false);
   });

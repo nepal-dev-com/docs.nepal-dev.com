@@ -367,7 +367,7 @@
   "boundaries": [
     {
       "kind": "region",
-      "label": "Phone screen · the open Decisions station, on /docs/maintain/adr/ADR-0016-…",
+      "label": "Phone screen · the open Decisions station, on /docs/maintainer-guide/adr/ADR-0016-…",
       "wraps": [
         "head",
         "m1",

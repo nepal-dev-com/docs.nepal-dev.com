@@ -2,6 +2,7 @@ import type * as PageTree from 'fumadocs-core/page-tree';
 import type { CatalogEntry } from './catalog';
 import { isOverviewItem } from './catalog-plugin';
 import type { Channel } from './catalog-schema';
+import { maintainerGuide, trackName, trackOf, type Track } from './tracks';
 
 export { zoomIn, zoomOut } from './zoom';
 
@@ -10,7 +11,7 @@ export interface Level {
   name: string;
   url?: string;
   current?: true;
-  track?: 'use' | 'maintain';
+  track?: Track;
   line?: { name: string; channel: Channel };
 }
 
@@ -58,8 +59,8 @@ function pathTo(folder: PageTree.Folder, url: string): { folders: PageTree.Folde
 }
 
 function sideLevel(track: PageTree.Folder, line: PageTree.Folder | undefined, entry: CatalogEntry): Level {
-  const name = lastSegment(track) === 'use' ? 'Use' : 'Maintain';
-  const level: Level = { kind: 'side', name, track: name === 'Use' ? 'use' : 'maintain' };
+  const side = trackOf(lastSegment(track)) ?? maintainerGuide;
+  const level: Level = { kind: 'side', name: trackName(side), track: side };
   if (line) {
     const info = entry.lines.find((item) => item.folder === lastSegment(line));
     level.line = { name: String(line.name), channel: info?.channel ?? 'latest' };

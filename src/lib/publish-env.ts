@@ -13,7 +13,7 @@ export function publishRefusal(env: Record<string, string | undefined>): string 
   if (missing.length === 0) {
     return undefined;
   }
-  return `Publishing needs ${missing.join(', ')}: set them in the environment (content/docs/maintain/security/secrets.mdx).`;
+  return `Publishing needs ${missing.join(', ')}: set them in the environment (content/docs/maintainer-guide/security/secrets.mdx).`;
 }
 
 /** The checked values, or the refusal as an error before anything is published. */

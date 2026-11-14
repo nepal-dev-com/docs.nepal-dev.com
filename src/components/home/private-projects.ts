@@ -12,18 +12,18 @@ export const privateProjects: PrivateProject[] = [
     slug: 'harbor-ops',
     description: 'Operations dashboard for a shipping client.',
     audience: 'client',
-    tracks: 'Use, Maintain',
+    tracks: 'User guide, Maintainer guide',
   },
   {
     slug: 'fieldnote',
     description: 'Offline survey app for field teams.',
     audience: 'client',
-    tracks: 'Use',
+    tracks: 'User guide',
   },
   {
     slug: 'tessera',
     description: 'Internal billing and invoicing service.',
     audience: 'internal',
-    tracks: 'Maintain',
+    tracks: 'Maintainer guide',
   },
 ];

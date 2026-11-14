@@ -2,7 +2,7 @@
   "schema_version": 1,
   "diagram_type": "architecture",
   "meta": {
-    "title": "Screen 3 — Use page with a nested orbit",
+    "title": "Screen 3 — User guide page with a nested orbit",
     "subtitle": "Wireframe at phone width, drawn from its Mermaid version · sidebar scale ladder",
     "output": "sidebar-scale-ladder-screen-3.html",
     "animation": "trace",
@@ -28,22 +28,36 @@
         60
       ],
       "size": [
-        324,
+        436,
         70
       ],
       "sublabel": "npm package"
     },
     {
-      "id": "sw",
-      "type": "external",
-      "label": "☀ | ☾",
+      "id": "ug",
+      "type": "backend",
+      "label": "User guide",
+      "sublabel": "current, filled",
       "pos": [
-        376,
-        60
+        40,
+        142
       ],
       "size": [
-        100,
-        58
+        212,
+        70
+      ]
+    },
+    {
+      "id": "mg",
+      "type": "backend",
+      "label": "Maintainer guide",
+      "pos": [
+        264,
+        142
+      ],
+      "size": [
+        212,
+        70
       ]
     },
     {
@@ -52,7 +66,7 @@
       "label": "full moon",
       "pos": [
         40,
-        142
+        224
       ],
       "size": [
         436,
@@ -66,7 +80,7 @@
       "label": "• Overview (landmark)",
       "pos": [
         40,
-        224
+        306
       ],
       "size": [
         436,
@@ -79,7 +93,7 @@
       "label": "• Install (landmark)",
       "pos": [
         40,
-        294
+        376
       ],
       "size": [
         436,
@@ -92,7 +106,7 @@
       "label": "○ Reference",
       "pos": [
         40,
-        364
+        446
       ],
       "size": [
         436,
@@ -106,7 +120,7 @@
       "label": "◎ Guides",
       "pos": [
         54,
-        476
+        558
       ],
       "size": [
         408,
@@ -120,7 +134,7 @@
       "label": "∘ Theming",
       "pos": [
         54,
-        558
+        640
       ],
       "size": [
         408,
@@ -133,7 +147,7 @@
       "label": "◦ Recipes",
       "pos": [
         54,
-        628
+        710
       ],
       "size": [
         408,
@@ -147,7 +161,7 @@
       "label": "◉ Forms (probe, tinted)",
       "pos": [
         54,
-        710
+        792
       ],
       "size": [
         408,
@@ -160,7 +174,7 @@
       "label": "∘ Tables",
       "pos": [
         54,
-        780
+        862
       ],
       "size": [
         408,
@@ -173,7 +187,7 @@
       "label": "○ Migrating",
       "pos": [
         40,
-        864
+        946
       ],
       "size": [
         436,
@@ -185,10 +199,11 @@
   "boundaries": [
     {
       "kind": "region",
-      "label": "Phone screen · the sidebar on /lodestar/use/v0.1/guides/recipes/forms",
+      "label": "Phone screen · the sidebar on /lodestar/user-guide/v0.1/guides/recipes/forms",
       "wraps": [
         "chip",
-        "sw",
+        "ug",
+        "mg",
         "moon",
         "ov",
         "in",

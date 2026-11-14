@@ -93,7 +93,7 @@
   "boundaries": [
     {
       "kind": "region",
-      "label": "Phone screen · the left sidebar, /lodestar/use/v0.1/install",
+      "label": "Phone screen · the left sidebar, /lodestar/user-guide/v0.1/install",
       "wraps": [
         "h",
         "a1",

@@ -1,0 +1,23 @@
+{
+  "schema_version": 1,
+  "diagram_type": "architecture",
+  "meta": {
+    "title": "Screen 2 — Maintainer guide current",
+    "subtitle": "Wireframe at phone width, drawn from its Mermaid version · the guide switch",
+    "output": "guide-switch-screen-2.html",
+    "animation": "trace",
+    "quality_profile": "showcase",
+    "legend": { "entries": { "backend": { "label": "Control or link" }, "external": { "label": "Content" } } }
+  },
+  "components": [
+    { "id": "chip", "type": "backend", "label": "● lodestar", "sublabel": "npm package", "pos": [40, 60], "size": [436, 70] },
+    { "id": "ug", "type": "backend", "label": "User guide", "pos": [40, 142], "size": [212, 70] },
+    { "id": "mg", "type": "backend", "label": "Maintainer guide", "sublabel": "current, filled", "pos": [264, 142], "size": [212, 70] },
+    { "id": "ov", "type": "external", "label": "Overview", "pos": [40, 224], "size": [436, 58] },
+    { "id": "arch", "type": "external", "label": "◉ Architecture (current page)", "pos": [40, 294], "size": [436, 58] },
+    { "id": "dec", "type": "external", "label": "○ Decisions", "sublabel": "6 ▸ (closed)", "pos": [40, 364], "size": [436, 70] }
+  ],
+  "boundaries": [
+    { "kind": "region", "label": "Phone screen · the sidebar on /lodestar/maintainer-guide/architecture", "wraps": ["chip", "ug", "mg", "ov", "arch", "dec"], "pad": 22 }
+  ]
+}

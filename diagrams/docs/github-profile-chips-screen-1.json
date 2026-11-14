@@ -187,7 +187,7 @@
   "boundaries": [
     {
       "kind": "region",
-      "label": "Phone screen · /<project-slug>/maintain/adr/ADR-0007-…",
+      "label": "Phone screen · /<project-slug>/maintainer-guide/adr/ADR-0007-…",
       "wraps": [
         "menu",
         "title",

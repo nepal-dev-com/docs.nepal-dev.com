@@ -20,12 +20,12 @@ By taking part you agree to the [Code of Conduct](CODE_OF_CONDUCT.md).
 
 **Every feature and functional change starts with an Architecture Decision Record, and nothing is
 built until the owner approves it**
-([ADR-0001](content/docs/maintain/adr/ADR-0001-adr-driven-development-workflow.mdx)). A pull request
+([ADR-0001](content/docs/maintainer-guide/adr/ADR-0001-adr-driven-development-workflow.mdx)). A pull request
 with unapproved feature code will be asked to start again from a proposal.
 
 1. **Propose.** Open a proposal issue. Once the idea has a shape, an ADR is written in
-   [`content/docs/maintain/adr/`](content/docs/maintain/adr/index.mdx) from the
-   [template](content/docs/maintain/_templates/adr.mdx), with `Status: Proposed`. A change a person
+   [`content/docs/maintainer-guide/adr/`](content/docs/maintainer-guide/adr/index.mdx) from the
+   [template](content/docs/maintainer-guide/_templates/adr.mdx), with `Status: Proposed`. A change a person
    can see also ships its app flow.
 2. **Review.** The maintainer reviews it, and it is revised in place.
 3. **Approve.** The maintainer marks it `Approved`.
@@ -67,26 +67,26 @@ bunx next build
   is known; you need not fix it.
 - **Tests are part of the change**: the happy path and the obvious failures. A bug fix starts with a
   test that fails for the bug's reason
-  ([ADR-0007](content/docs/maintain/adr/ADR-0007-tests-are-part-of-every-change.mdx)).
-- **Documentation is part of the change.** The design documents in `content/docs/maintain/` describe
+  ([ADR-0007](content/docs/maintainer-guide/adr/ADR-0007-tests-are-part-of-every-change.mdx)).
+- **Documentation is part of the change.** The design documents in `content/docs/maintainer-guide/` describe
   the site as it stands now; update them in place, and delete what is no longer true
-  ([ADR-0002](content/docs/maintain/adr/ADR-0002-living-design-documentation.mdx)).
+  ([ADR-0002](content/docs/maintainer-guide/adr/ADR-0002-living-design-documentation.mdx)).
 - **New dependencies need an ADR** and the maintainer's yes.
 - **Comments explain why, never what**, and every branch takes braces
-  ([ADR-0003](content/docs/maintain/adr/ADR-0003-code-comment-policy.mdx)).
+  ([ADR-0003](content/docs/maintainer-guide/adr/ADR-0003-code-comment-policy.mdx)).
 - **Ask, don't guess.** When something is undetermined (scope, naming, whether something is public),
   ask in the issue or the pull request
-  ([ADR-0004](content/docs/maintain/adr/ADR-0004-ask-never-guess.mdx)).
+  ([ADR-0004](content/docs/maintainer-guide/adr/ADR-0004-ask-never-guess.mdx)).
 
 ## Pull requests
 
 - Branch from `main` in your fork, and keep one change to a pull request.
 - Fill in the pull request template. Link the issue and the approved ADR.
 - **There is no preview deployment.** Only `main` deploys, and a pull request from a fork is never
-  built by the host ([ADR-0042](content/docs/maintain/adr/ADR-0042-only-main-deploys-straight-to-production-on-vercel.mdx)).
+  built by the host ([ADR-0042](content/docs/maintainer-guide/adr/ADR-0042-only-main-deploys-straight-to-production-on-vercel.mdx)).
   GitHub Actions checks it instead: the tests, the type check, the build, a review of any dependency
   you add, and CodeQL
-  ([ADR-0047](content/docs/maintain/adr/ADR-0047-github-checks-every-pull-request-and-dependabot-proposes-the-updates.mdx)).
+  ([ADR-0047](content/docs/maintainer-guide/adr/ADR-0047-github-checks-every-pull-request-and-dependabot-proposes-the-updates.mdx)).
   The checks must pass before a merge.
 - **In a workflow**, pin every action to a full commit SHA, keep the token read-only, and never use
   `pull_request_target` or a secret. A test holds these rules. A change to CI needs an ADR.
@@ -133,4 +133,4 @@ task. Two rules matter most: an agent never commits or pushes here, and never ru
 
 By contributing you agree that your code is licensed under the [MIT licence](LICENSE), and your
 pages and diagrams under [CC BY 4.0](LICENSE-CONTENT)
-([ADR-0046](content/docs/maintain/adr/ADR-0046-the-code-is-mit-the-docs-are-cc-by-and-the-repository-gets-its-community-files.mdx)).
+([ADR-0046](content/docs/maintainer-guide/adr/ADR-0046-the-code-is-mit-the-docs-are-cc-by-and-the-repository-gets-its-community-files.mdx)).

@@ -1,6 +1,6 @@
 /**
- * One string per page saying where it sits: `<slug>:maintain`, `<slug>:use` or
- * `<slug>:use:<line>`. Stored in the record's `tag`, which is the index's one facet, so the home
+ * One string per page saying where it sits: `<slug>:maintainer-guide`, `<slug>:user-guide` or
+ * `<slug>:user-guide:<line>`. Stored in the record's `tag`, which is the index's one facet, so the home
  * search can filter by package, track and line without changing index settings (ADR-0014).
  */
 export function scopeTag(slug: string, track?: string, line?: string): string {

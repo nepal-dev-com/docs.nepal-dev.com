@@ -91,26 +91,26 @@
     {
       "id": "use",
       "type": "backend",
-      "label": "Use →",
+      "label": "User guide →",
       "pos": [
         54,
         452
       ],
       "size": [
-        93,
+        198,
         58
       ]
     },
     {
       "id": "maint",
       "type": "backend",
-      "label": "Maintain",
+      "label": "Maintainer guide",
       "pos": [
-        159,
+        264,
         452
       ],
       "size": [
-        93,
+        198,
         58
       ]
     },
@@ -119,11 +119,11 @@
       "type": "backend",
       "label": "Registry ↗",
       "pos": [
-        264,
-        452
+        54,
+        522
       ],
       "size": [
-        93,
+        198,
         58
       ]
     },
@@ -132,11 +132,11 @@
       "type": "backend",
       "label": "Repository",
       "pos": [
-        369,
-        452
+        264,
+        522
       ],
       "size": [
-        93,
+        198,
         70
       ],
       "sublabel": "↗"
@@ -147,7 +147,7 @@
       "label": "planet with labelled moons v1.4",
       "pos": [
         54,
-        534
+        604
       ],
       "size": [
         408,
@@ -161,7 +161,7 @@
       "label": "the package's own overview page",
       "pos": [
         40,
-        630
+        700
       ],
       "size": [
         436,

@@ -77,7 +77,7 @@
     {
       "id": "l1",
       "type": "backend",
-      "label": "[Use →]  Maintain  Demo",
+      "label": "[User guide →]  Maintainer guide  Demo",
       "pos": [
         54,
         406
@@ -140,7 +140,7 @@
         436,
         70
       ],
-      "sublabel": "Project · [Use →] Maintain"
+      "sublabel": "Project · [User guide →] Maintainer guide"
     }
   ],
   "boundaries": [

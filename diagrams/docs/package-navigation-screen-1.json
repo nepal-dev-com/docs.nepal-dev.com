@@ -91,7 +91,7 @@
     {
       "id": "track",
       "type": "backend",
-      "label": "Use (current) | Maintain",
+      "label": "User guide (current) | Maintainer guide",
       "pos": [
         54,
         312
@@ -139,7 +139,7 @@
         436,
         70
       ],
-      "sublabel": "v0.1 · 0.1.4 · latest · Use · Maintain"
+      "sublabel": "v0.1 · 0.1.4 · latest · User guide · Maintainer guide"
     },
     {
       "id": "h1",

@@ -598,13 +598,12 @@
 .planet-banner {
   order: -1;
   display: flex;
-  align-items: center;
+  flex-direction: column;
   gap: 8px;
 }
 
 .planet-chip {
   display: flex;
-  flex: 1;
   min-width: 0;
   align-items: center;
   gap: 9px;
@@ -648,8 +647,8 @@
 }
 
 .planet-sides {
-  display: flex;
-  flex: none;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
   gap: 2px;
   padding: 3px;
   background: var(--home-bg-2);
@@ -658,11 +657,13 @@
 }
 
 .planet-sides a {
-  position: relative;
   display: grid;
   place-items: center;
-  width: 32px;
-  height: 32px;
+  min-height: 32px;
+  padding: 5px 6px;
+  font: 500 12.5px/1.25 var(--home-font-text);
+  text-align: center;
+  text-wrap: balance;
   color: var(--home-muted);
   border-radius: 7px;
   transition: color 0.2s, background-color 0.2s;
@@ -681,46 +682,6 @@
   color: var(--home-ink);
   background: var(--home-panel);
   box-shadow: 0 1px 4px var(--home-shadow-near);
-}
-
-.planet-sides svg {
-  width: 16px;
-  height: 16px;
-}
-
-.planet-sides a[aria-current] .side-sun {
-  color: var(--home-star);
-}
-
-.planet-side-tip {
-  position: absolute;
-  top: calc(100% + 8px);
-  right: 0;
-  z-index: 30;
-  padding: 4px 8px;
-  font: 400 12px var(--home-font-text);
-  white-space: nowrap;
-  color: var(--home-ink);
-  background: var(--home-panel);
-  border: 1px solid var(--home-line);
-  border-radius: 7px;
-  box-shadow: 0 4px 12px var(--home-shadow);
-  opacity: 0;
-  pointer-events: none;
-  transform: translateY(-2px);
-  transition: opacity 0.15s, transform 0.15s;
-}
-
-@media (hover: hover) {
-  .planet-sides a:hover .planet-side-tip {
-    opacity: 1;
-    transform: none;
-  }
-}
-
-.planet-sides a:focus-visible .planet-side-tip {
-  opacity: 1;
-  transform: none;
 }
 
 #nd-sidebar .moon-phase,
@@ -1404,7 +1365,7 @@
   .orbit-ring-planet,
   .orbit-item,
   .orbit-dot,
-  .planet-side-tip,
+  .planet-sides a,
   .trajectory-bar,
   .trajectory-bar-chevron {
     transition: none;
@@ -2315,7 +2276,7 @@
 }
 
 .scale-strip li[data-kind='side'] .scale-mark {
-  color: var(--home-star);
+  color: var(--home-muted);
 }
 
 .scale-strip li[data-kind='orbit'] .scale-mark {

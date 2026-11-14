@@ -9,18 +9,12 @@ import { shareImageSize, siteUrl } from '@/lib/seo';
 import { shareFonts } from '@/lib/share-fonts';
 import { getPageImageUrl } from '@/lib/shared';
 import { source } from '@/lib/source';
+import { trackName } from '@/lib/tracks';
 
 const domain = siteUrl?.host;
 
 async function respond(image: ReactElement) {
   return new ImageResponse(image, { ...shareImageSize, fonts: await shareFonts() });
-}
-
-function trackName(track: 'use' | 'maintain' | undefined) {
-  if (!track) {
-    return undefined;
-  }
-  return track === 'use' ? 'Use' : 'Maintain';
 }
 
 export async function GET(_req: Request, { params }: RouteContext<'/og/[...slug]'>) {
@@ -59,7 +53,7 @@ export async function GET(_req: Request, { params }: RouteContext<'/og/[...slug]
               label: overview ? kindName[ring] : context.entry.title,
               ring,
               kind: context.entry.kind,
-              track: trackName(context.track),
+              track: context.track && trackName(context.track),
               line: context.version && { name: context.version.line, channel: context.version.channel },
             }
           : undefined

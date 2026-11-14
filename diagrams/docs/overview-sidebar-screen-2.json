@@ -2,7 +2,7 @@
   "schema_version": 1,
   "diagram_type": "architecture",
   "meta": {
-    "title": "Screen 2 — Maintain page",
+    "title": "Screen 2 — Maintainer guide page",
     "subtitle": "Wireframe at phone width, drawn from its Mermaid version · overview sidebar",
     "output": "overview-sidebar-screen-2.html",
     "animation": "trace",
@@ -28,23 +28,36 @@
         60
       ],
       "size": [
-        324,
+        436,
         58
       ]
     },
     {
-      "id": "sw",
-      "type": "external",
-      "label": "☀ | ☾ curr",
+      "id": "ug",
+      "type": "backend",
+      "label": "User guide",
       "pos": [
-        376,
-        60
+        40,
+        130
       ],
       "size": [
-        100,
+        212,
         70
+      ]
+    },
+    {
+      "id": "mg",
+      "type": "backend",
+      "label": "Maintainer guide",
+      "sublabel": "current, filled",
+      "pos": [
+        264,
+        130
       ],
-      "sublabel": "ent"
+      "size": [
+        212,
+        70
+      ]
     },
     {
       "id": "ov",
@@ -52,7 +65,7 @@
       "label": "○ Overview",
       "pos": [
         40,
-        142
+        224
       ],
       "size": [
         436,
@@ -65,7 +78,7 @@
       "label": "◉ Releasing (current, tinted)",
       "pos": [
         40,
-        212
+        294
       ],
       "size": [
         436,
@@ -78,7 +91,7 @@
       "label": "○ Architecture",
       "pos": [
         54,
-        312
+        394
       ],
       "size": [
         408,
@@ -92,7 +105,7 @@
       "label": "○ Decisions",
       "pos": [
         54,
-        438
+        520
       ],
       "size": [
         408,
@@ -104,10 +117,11 @@
   "boundaries": [
     {
       "kind": "region",
-      "label": "Phone screen · the sidebar on /lodestar/maintain/releasing",
+      "label": "Phone screen · the sidebar on /lodestar/maintainer-guide/releasing",
       "wraps": [
         "chip",
-        "sw",
+        "ug",
+        "mg",
         "ov",
         "p1",
         "h1",

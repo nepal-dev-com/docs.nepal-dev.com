@@ -7,5 +7,5 @@
     "repository": "https://github.com/nepal-dev-com/docs.nepal-dev.com",
     "featured": false
   },
-  "pages": ["index", "maintain"]
+  "pages": ["index", "maintainer-guide"]
 }

@@ -1,8 +1,8 @@
 # Agent skills — index
 
 The router for every skill in this repository
-([ADR-0009](../content/docs/maintain/adr/ADR-0009-trusted-agent-skills-are-vendored.mdx),
-[ADR-0045](../content/docs/maintain/adr/ADR-0045-agents-md-keeps-the-standing-rules-and-in-house-skills-hold-the-rest.mdx)).
+([ADR-0009](../content/docs/maintainer-guide/adr/ADR-0009-trusted-agent-skills-are-vendored.mdx),
+[ADR-0045](../content/docs/maintainer-guide/adr/ADR-0045-agents-md-keeps-the-standing-rules-and-in-house-skills-hold-the-rest.mdx)).
 Where each skill comes from and why it is trusted is in [`SOURCES.md`](./SOURCES.md).
 
 **How to use this file**
@@ -15,7 +15,7 @@ Where each skill comes from and why it is trusted is in [`SOURCES.md`](./SOURCES
 4. Name the skill in your response, and report any step an override cut short
    (`AGENTS.md` §12.4).
 
-**Precedence:** `AGENTS.md` and `content/docs/maintain/` (ADRs, design documents) are binding.
+**Precedence:** `AGENTS.md` and `content/docs/maintainer-guide/` (ADRs, design documents) are binding.
 These skills are advisory. A skill never grants a permission the repository withholds
 (`AGENTS.md` §12.1).
 
@@ -150,7 +150,7 @@ The rules of `AGENTS.md` §12.2, in full.
 | Task | Load |
 |---|---|
 | A route handler, env var, secret, user input, third-party call or private-content decision (`AGENTS.md` §9) | [security-and-hardening](./addyosmani-agent-skills/skills/security-and-hardening/SKILL.md) |
-| A full pre-deploy or pre-release audit | security-and-hardening + [`references/security-checklist.md`](./addyosmani-agent-skills/references/security-checklist.md), alongside `content/docs/maintain/security/checklist.mdx` |
+| A full pre-deploy or pre-release audit | security-and-hardening + [`references/security-checklist.md`](./addyosmani-agent-skills/references/security-checklist.md), alongside `content/docs/maintainer-guide/security/checklist.mdx` |
 | Adding or upgrading a dependency, or auditing the dependency tree | [supply-chain-risk-auditor](./trailofbits-skills/plugins/supply-chain-risk-auditor/skills/supply-chain-risk-auditor/SKILL.md) |
 
 No row fits? Use default behaviour under `AGENTS.md`. If a skill would serve the task better,
@@ -164,7 +164,7 @@ be used.
 
 | A skill says… | Here |
 |---|---|
-| Write the spec or plan to its own folder (`docs/superpowers/specs/`, `docs/decisions/`, `plans/`, …) | Write it as an ADR and its design documents under `content/docs/maintain/` (ADR-0002) |
+| Write the spec or plan to its own folder (`docs/superpowers/specs/`, `docs/decisions/`, `plans/`, …) | Write it as an ADR and its design documents under `content/docs/maintainer-guide/` (ADR-0002) |
 | Commit, push, open a PR, or create a branch or worktree | Don't. Leave the change in the working tree (`AGENTS.md` §3) |
 | Proceed to implementation after the plan or design | Stop at `Status: Proposed` until the owner approves (`AGENTS.md` §12.3) |
 | Install a package, a global CLI or another skill (`npx skills add`, `npx …`, `bunx …` setup) | Only with an approved ADR or the owner's yes (`AGENTS.md` §2, §12.2) |
@@ -181,7 +181,7 @@ be used.
 | Skill | Override |
 |---|---|
 | brainstorming | The "design doc" is a Proposed ADR plus the design documents `AGENTS.md` §8 requires, and an app flow if the UI changes (ADR-0008). Its hard gate is the owner approving that ADR. After approval, do **not** invoke `writing-plans`: the ADR's *Implementation notes* are the plan, carried out in one pass (`AGENTS.md` §3). The visual companion is unavailable (its scripts are not vendored). Its open questions yield to `AGENTS.md` §4: ask with selectable options and a recommendation. |
-| documentation-and-adrs | ADRs live in `content/docs/maintain/adr/`, from `_templates/adr.mdx`, numbered from `adr/index.mdx`. Its approval states, immutability and supersession follow ADR-0001. Its README and comment advice yields to `AGENTS.md` §5 commands and §7 comments. |
+| documentation-and-adrs | ADRs live in `content/docs/maintainer-guide/adr/`, from `_templates/adr.mdx`, numbered from `adr/index.mdx`. Its approval states, immutability and supersession follow ADR-0001. Its README and comment advice yields to `AGENTS.md` §5 commands and §7 comments. |
 | source-driven-development | The primary source is what is installed: `node_modules/next/dist/docs/`, Fumadocs' source and types in `node_modules`, and a documented package's own source and manifest (`AGENTS.md` §4, §6.2). Web documentation is a fallback, cited, and pinned to the installed version. |
 | systematic-debugging | `find-polluter.sh` runs only with the owner's yes. `condition-based-waiting-example.ts` is not vendored; the technique is in `condition-based-waiting.md`. A bug fix starts with a failing test (ADR-0007). |
 | test-driven-development | Examples use `npm test`. Here tests run with `bun run test` (Bun's built-in runner, ADR-0021), beside the code as `*.test.ts(x)`. Client components are not unit-tested until a DOM is chosen: put the logic in a pure `src/lib/` module and test that, and say what was verified instead. |
@@ -194,7 +194,7 @@ be used.
 | web-design-guidelines | Read `./vercel-labs-web-interface-guidelines/command.md` instead of fetching it. Findings on an unapproved change go into its app flow, not into code. Its *Content & Copy* rules (Title Case headings) contradict writing-guidelines (sentence case). No convention is decided yet, so raise it with the owner (`AGENTS.md` §4). |
 | react-best-practices | Load `SKILL.md`, then only the `rules/*.md` files whose topic matches. `AGENTS.md` and `README.md` inside that skill are the compiled full rule set and upstream notes; don't load them. |
 | next-bundle-optimizer | Audit mode by default. Use `bunx next …` and `bunx node …` for `pnpm exec`. Write exports to the session scratchpad, not `/tmp` or the repository. `next analyze --output` builds but does not publish; `bun run build` does, so never use it. The linked companion skills (`next-cache-components-optimizer`, `next-partial-prefetching-optimizer`, `next-dev-loop`) are not vendored; don't install them. Fix mode needs the owner's request or an approved ADR. |
-| algolia-data-modeling | This index serves documentation pages, not a catalogue: skip the ecommerce, variant and merchandising sections. The "index contract" is a design document in `content/docs/maintain/` (architecture, with the DFD and API pages), written with the ADR that changes the records, not `algolia/index-contract.md`. A record field reaches every reader of the search-only key (`AGENTS.md` §9). |
+| algolia-data-modeling | This index serves documentation pages, not a catalogue: skip the ecommerce, variant and merchandising sections. The "index contract" is a design document in `content/docs/maintainer-guide/` (architecture, with the DFD and API pages), written with the ADR that changes the records, not `algolia/index-contract.md`. A record field reaches every reader of the search-only key (`AGENTS.md` §9). |
 | algolia-index-configuration | Recommends; does not write. A settings change to the live index is publishing and needs the owner's yes. |
 | algolia-audit | Live reads and writes go through `algolia-cli` or `algolia-mcp`, which are not vendored: ask the owner first. Never use `ALGOLIA_WRITE_KEY`. `algolia-events-insights` and `algolia-release-qa` are not vendored. Report findings to the owner in the `AGENTS.md` §9 format, not into published pages. |
 | security-and-hardening | Findings go to the owner, not into the maintainer documentation, until fixed (`AGENTS.md` §9). Whether a page or route is public is the owner's decision (`AGENTS.md` §4). |
@@ -232,7 +232,7 @@ files, calls the network, launches a browser or server, or writes outside the re
 
 | Skill | Override |
 |---|---|
-| impeccable | `PRODUCT.md`, `DESIGN.md` and `.impeccable/` live at the repository root by the owner's decision (`AGENTS.md` §8); they are not published, and decisions still go in ADRs. "Finish the job" applies inside an approved ADR's scope, not before it. A `shape` brief becomes the ADR's app flow in `content/docs/maintain/app-flow/`, not a separate file. Documentation pages are the **Read** mode; the home page's mode is the owner's call, recorded in its ADR. `typeset` and `colorize` recommend fonts and colours, but adding a font file or a font service is a dependency. `live` injects a script into page source, runs a local helper and may edit the CSP, so it runs only with the owner's yes, and its injection is removed before work ends. If the engine binary is missing, ask before the launcher downloads it. The skill copy (engine 0.1.18) and the plugin copy that runs the hook (engine 0.1.15) can drift; `/impeccable doctor` reports it. |
+| impeccable | `PRODUCT.md`, `DESIGN.md` and `.impeccable/` live at the repository root by the owner's decision (`AGENTS.md` §8); they are not published, and decisions still go in ADRs. "Finish the job" applies inside an approved ADR's scope, not before it. A `shape` brief becomes the ADR's app flow in `content/docs/maintainer-guide/app-flow/`, not a separate file. Documentation pages are the **Read** mode; the home page's mode is the owner's call, recorded in its ADR. `typeset` and `colorize` recommend fonts and colours, but adding a font file or a font service is a dependency. `live` injects a script into page source, runs a local helper and may edit the CSP, so it runs only with the owner's yes, and its injection is removed before work ends. If the engine binary is missing, ask before the launcher downloads it. The skill copy (engine 0.1.18) and the plugin copy that runs the hook (engine 0.1.15) can drift; `/impeccable doctor` reports it. |
 | ui-ux-pro-max | Never use `--persist`: its `design-system/<slug>/` files sit outside the allowed locations, and the visual system belongs in `DESIGN.md`. Pass `--stack nextjs` or `--stack html-tailwind`. Its shadcn guidance assumes Radix components; Fumadocs UI has its own, so check against the installed Fumadocs source. Google Fonts pairings it suggests are proposals for an ADR. Keep private project names out of search queries. Never edit the plugin's files, even when a script fails. |
 | design-taste-frontend (project copy) | For the home page and showcase surfaces only; documentation pages follow impeccable's Read mode. `draw.mjs` writes `.taste-skill/` and `~/.taste-skill/history.json`, `assets.mjs` downloads third-party media into `assets/`, and `inspect.mjs` and `scenes.mjs` launch headless Chrome: each needs the owner's yes. Its required motion layer, picture quota, fonts and icon libraries are ADR decisions, not defaults. "Decide instead of asking" yields to `AGENTS.md` §4. Some files its `SKILL.md` names (`library/scenes.json`, scene demos) are not in the installed copy. |
 | minimalist-ui | Use its restraint, hierarchy and spacing; its fonts (Geist, Inter), icon sets and picsum placeholder images are proposals for an ADR. |

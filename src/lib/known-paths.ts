@@ -1,6 +1,7 @@
 import { getSlugs } from 'fumadocs-core/source';
 import { lineInfo, lineSlugs } from './catalog-plugin';
 import type { CatalogMeta } from './catalog-schema';
+import { userGuide } from './tracks';
 
 /** The top-level routes in `src/app` and files in `public/`, which share the root with pages. */
 export const siteRoutes = new Set([
@@ -25,7 +26,7 @@ export function isSiteRoute(pathname: string): boolean {
 }
 
 /**
- * Every path with a page behind it: each page's URL, and each `/<slug>/use` and line root that
+ * Every path with a page behind it: each page's URL, and each `/<slug>/user-guide` and line root that
  * redirects to a first page (ADR-0015 decision 1).
  */
 export function knownPaths(files: string[], getMeta: (path: string) => CatalogMeta | undefined): Set<string> {
@@ -36,13 +37,13 @@ export function knownPaths(files: string[], getMeta: (path: string) => CatalogMe
     }
     known.add(`/${lineSlugs(file, getSlugs(file), getMeta).join('/')}`);
     const [slug, track, folder, ...rest] = file.split('/');
-    if (track !== 'use') {
+    if (track !== userGuide) {
       continue;
     }
-    known.add(`/${slug}/use`);
-    const line = rest.length > 0 ? lineInfo(folder, getMeta(`${slug}/use/${folder}/meta.json`)) : undefined;
+    known.add(`/${slug}/${userGuide}`);
+    const line = rest.length > 0 ? lineInfo(folder, getMeta(`${slug}/${userGuide}/${folder}/meta.json`)) : undefined;
     if (line) {
-      known.add(`/${slug}/use/${line.segment}`);
+      known.add(`/${slug}/${userGuide}/${line.segment}`);
     }
   }
   return known;

@@ -1,8 +1,8 @@
 # Agent skills — sources
 
 Provenance and trust policy for the skills in this folder
-([ADR-0009](../content/docs/maintain/adr/ADR-0009-trusted-agent-skills-are-vendored.mdx),
-[ADR-0045](../content/docs/maintain/adr/ADR-0045-agents-md-keeps-the-standing-rules-and-in-house-skills-hold-the-rest.mdx)).
+([ADR-0009](../content/docs/maintainer-guide/adr/ADR-0009-trusted-agent-skills-are-vendored.mdx),
+[ADR-0045](../content/docs/maintainer-guide/adr/ADR-0045-agents-md-keeps-the-standing-rules-and-in-house-skills-hold-the-rest.mdx)).
 Which skill to load for which task is in [`INDEX.md`](./INDEX.md).
 
 ## Trust policy

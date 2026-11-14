@@ -1,0 +1,43 @@
+---
+title: "Architecture Decision Records"
+description: "Every decision about how nepali-number is built, documented and released, with its status, from the first ADR to the latest."
+---
+
+Every feature and functional change starts here
+([ADR-0001](./ADR-0001-adr-driven-development-workflow.mdx)). Template:
+[`docs/_templates/adr.md`](https://github.com/puncoz-official/nepali-number-js/blob/main/docs/_templates/adr.md) in the repository.
+
+**Next free number: 0011**
+
+## Conventions
+
+- File name: `ADR-NNNN-kebab-title.mdx`, in this folder, numbered from the *next free number* above. Add the
+  index row and bump the number **in the same change** that creates the file, so ADRs in flight
+  cannot collide.
+- Title: `ADR-NNNN — ` and a short imperative statement of the decision ("Re-export the
+  option types"), with a `description` saying what was decided.
+- Status: `Proposed` → `Approved` (by the owner, with name and date) → optionally
+  `Superseded by ADR-NNNN`. A rejected proposal is marked `Rejected` and kept.
+- People are GitHub usernames written as profile links:
+  `[@puncoz](https://github.com/puncoz)`.
+- An approved ADR's **Decision** is never edited. Supersede it with a new ADR and cross-link
+  both.
+- Every ADR states its **semver impact**, and one that changes the public API ships its
+  API reference change in `user-guide/dev/api/` with it ([ADR-0008](./ADR-0008-public-api-changes-ship-their-reference.mdx)).
+- The **Security considerations** section is mandatory
+  ([ADR-0005](./ADR-0005-security-as-a-standing-practice.mdx)).
+
+## Index
+
+| ADR | Title | Status | Date |
+|---|---|---|---|
+| [0001](./ADR-0001-adr-driven-development-workflow.mdx) | Every change starts with an approved ADR | Proposed | 2026-10-30 |
+| [0002](./ADR-0002-living-design-documentation.mdx) | Documentation is a living snapshot; decisions are immutable | Proposed, superseded in part by 0010 | 2026-10-30 |
+| [0003](./ADR-0003-code-comment-policy.mdx) | Comments explain why; every export has TSDoc; every branch takes a block | Proposed | 2026-10-30 |
+| [0004](./ADR-0004-ask-never-guess.mdx) | Resolve ambiguity by asking, never by guessing | Proposed | 2026-10-30 |
+| [0005](./ADR-0005-security-as-a-standing-practice.mdx) | Supply-chain security is a standing practice | Proposed | 2026-10-30 |
+| [0006](./ADR-0006-agent-skills-are-advisory.mdx) | Agent skills are advisory; this repository's documentation is binding | Proposed | 2026-10-30 |
+| [0007](./ADR-0007-tests-are-part-of-every-change.mdx) | Tests are part of every change, run with `bun test` | Proposed | 2026-10-30 |
+| [0008](./ADR-0008-public-api-changes-ship-their-reference.mdx) | A public API change ships its reference and a semver decision | Proposed | 2026-10-30 |
+| [0009](./ADR-0009-package-invariants.mdx) | Hold the package invariants: zero dependencies, environment-agnostic, pure, non-throwing | Proposed | 2026-10-30 |
+| [0010](./ADR-0010-documentation-lives-in-nepal-dev-verse.mdx) | Documentation lives in Nepal Dev Verse, in a Use track and a Maintain track | Approved | 2026-11-14 |

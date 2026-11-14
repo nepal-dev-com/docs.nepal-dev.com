@@ -3,7 +3,7 @@
   "diagram_type": "workflow",
   "meta": {
     "title": "App flow — package navigation",
-    "subtitle": "Moving between a package's overview, its Use and Maintain tracks and its version lines",
+    "subtitle": "Moving between a package's overview, its User guide, its Maintainer guide and its version lines",
     "quality_profile": "showcase",
     "output": "package-navigation.html"
   },
@@ -14,11 +14,11 @@
     },
     {
       "id": "maintain",
-      "label": "Maintain track"
+      "label": "Maintainer guide"
     },
     {
       "id": "use",
-      "label": "Use track"
+      "label": "User guide"
     },
     {
       "id": "lines",
@@ -58,30 +58,30 @@
       "col": 2,
       "type": "frontend",
       "label": "Alias or old line",
-      "sublabel": "use/latest/… · a removed line"
+      "sublabel": "user-guide/latest/… · a removed line"
     },
     {
       "id": "maintain_node",
       "lane": "maintain",
       "col": 3,
       "type": "frontend",
-      "label": "Maintain",
-      "sublabel": "/lodestar/maintain/releasing"
+      "label": "Maintainer guide",
+      "sublabel": "/lodestar/maintainer-guide/releasing"
     },
     {
       "id": "use_latest",
       "lane": "use",
       "col": 2,
       "type": "frontend",
-      "label": "Use · latest line",
-      "sublabel": "/lodestar/use/v0.1/install"
+      "label": "User guide · latest line",
+      "sublabel": "/lodestar/user-guide/v0.1/install"
     },
     {
       "id": "use_dev",
       "lane": "lines",
       "col": 3,
       "type": "frontend",
-      "label": "Use · dev line",
+      "label": "User guide · dev line",
       "sublabel": "banner: in development"
     },
     {
@@ -89,7 +89,7 @@
       "lane": "lines",
       "col": 4,
       "type": "frontend",
-      "label": "Use · older line",
+      "label": "User guide · older line",
       "sublabel": "banner: older version"
     },
     {
@@ -120,14 +120,14 @@
       "id": "to-use",
       "from": "overview",
       "to": "use_latest",
-      "label": "track switch: Use",
+      "label": "track switch: User guide",
       "variant": "emphasis"
     },
     {
       "id": "to-maintain",
       "from": "overview",
       "to": "maintain_node",
-      "label": "track switch: Maintain",
+      "label": "track switch: Maintainer guide",
       "variant": "default",
       "role": "branch"
     },

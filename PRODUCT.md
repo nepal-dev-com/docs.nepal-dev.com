@@ -14,7 +14,7 @@ web
   default or a supported version.
 - **Maintainers** — the people who look after a package or project: they need its
   architecture, local setup, tests, release process and contribution notes. Each package and
-  project has a Maintain track for them beside the Use track (owner's decision, 2026-10-31).
+  project has a Maintainer guide for them beside the User guide (owner's decision, 2026-10-31).
 - **Project stakeholders** — collaborators, clients or teammates reading the documentation of
   public and private projects by Nepalese developers.
 - **Authors** — Nepalese developers anywhere in the world, who write their package's or project's
@@ -51,8 +51,8 @@ installed version) without leaving for the source code.
 - Search is Algolia, opened from the docs layout.
 - Every page is published on several surfaces at once: the site, the search index,
   `llms.txt` / `llms-full.txt`, per-page Markdown and Open Graph images.
-- The site's own decisions and design documents are published as the Maintain track of the
-  `docs` project, at `/docs/maintain`.
+- The site's own decisions and design documents are published as the Maintainer guide of the
+  `docs` project, at `/docs/maintainer-guide`.
 
 ## Capabilities and Constraints
 
@@ -82,7 +82,7 @@ installed version) without leaving for the source code.
   reader choose between options before they can search. The design decisions inside that steer
   are delegated to the builder and recorded in ADR-0014.
 - The whole site is one solar system (owner's steer, 2026-11-01; ADR-0017): the star is
-  nepal-dev.com, packages and projects are planets, version lines are moons, Use and Maintain are a
+  nepal-dev.com, packages and projects are planets, version lines are moons, User guide and the Maintainer guide are a
   planet's day and night sides, on every page.
 - The Verse is the sky around that one system (owner's choice, 2026-11-01; ADR-0029): a still
   sky on every page, a mark of its own, and a scale ladder readers zoom through, from the Verse

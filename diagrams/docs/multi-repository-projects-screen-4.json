@@ -2,7 +2,7 @@
   "schema_version": 1,
   "diagram_type": "architecture",
   "meta": {
-    "title": "Screen 4 — Maintain track",
+    "title": "Screen 4 — Maintainer guide",
     "subtitle": "Wireframe at phone width, drawn from its Mermaid version · multi repository projects",
     "output": "multi-repository-projects-screen-4.html",
     "animation": "trace",
@@ -28,22 +28,36 @@
         60
       ],
       "size": [
-        324,
+        436,
         70
       ],
       "sublabel": "Project"
     },
     {
-      "id": "sw",
-      "type": "external",
-      "label": "☀ | ☾",
+      "id": "ug",
+      "type": "backend",
+      "label": "User guide",
       "pos": [
-        376,
-        60
+        40,
+        142
       ],
       "size": [
-        100,
-        58
+        212,
+        70
+      ]
+    },
+    {
+      "id": "mg",
+      "type": "backend",
+      "label": "Maintainer guide",
+      "sublabel": "current, filled",
+      "pos": [
+        264,
+        142
+      ],
+      "size": [
+        212,
+        70
       ]
     },
     {
@@ -52,7 +66,7 @@
       "label": "◉ Architecture (current, spans the repositories)",
       "pos": [
         40,
-        142
+        224
       ],
       "size": [
         436,
@@ -65,7 +79,7 @@
       "label": "○ Releasing",
       "pos": [
         40,
-        212
+        294
       ],
       "size": [
         436,
@@ -78,7 +92,7 @@
       "label": "○ Frontend",
       "pos": [
         54,
-        312
+        394
       ],
       "size": [
         408,
@@ -92,7 +106,7 @@
       "label": "○ Backend",
       "pos": [
         54,
-        438
+        520
       ],
       "size": [
         408,
@@ -106,7 +120,7 @@
       "label": "○ API",
       "pos": [
         54,
-        564
+        646
       ],
       "size": [
         408,
@@ -118,10 +132,11 @@
   "boundaries": [
     {
       "kind": "region",
-      "label": "Phone screen · the sidebar on /acme/maintain/architecture",
+      "label": "Phone screen · the sidebar on /acme/maintainer-guide/architecture",
       "wraps": [
         "chip",
-        "sw",
+        "ug",
+        "mg",
         "arc1",
         "arc2",
         "h1",

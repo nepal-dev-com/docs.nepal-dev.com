@@ -7,11 +7,11 @@ own documentation into it. This guide is for the people and AI agents working in
 repositories: what to maintain, where each thing goes, and how versions and diagrams work.
 
 > **Status.** The convention is set out in
-> [ADR-0010](content/docs/maintain/adr/ADR-0010-projects-document-themselves-through-a-submodule.mdx),
+> [ADR-0010](content/docs/maintainer-guide/adr/ADR-0010-projects-document-themselves-through-a-submodule.mdx),
 > and the shape of your folder in
-> [ADR-0013](content/docs/maintain/adr/ADR-0013-packages-and-projects-share-one-catalogue-shape.mdx)
+> [ADR-0013](content/docs/maintainer-guide/adr/ADR-0013-packages-and-projects-share-one-catalogue-shape.mdx)
 > and
-> [ADR-0015](content/docs/maintain/adr/ADR-0015-every-entry-lives-at-the-root-in-one-shape-and-one-look.mdx),
+> [ADR-0015](content/docs/maintainer-guide/adr/ADR-0015-every-entry-lives-at-the-root-in-one-shape-and-one-look.mdx),
 > all **Approved**.
 
 Everything outside your project's folders is governed by [`AGENTS.md`](AGENTS.md), this
@@ -21,17 +21,17 @@ means ask `puncoz`.
 
 **In short:**
 
-- You maintain **two sets of docs**: **Use**, for people using it, and **Maintain**, for people
+- You maintain **two sets of docs**: **User guide**, for people using it, and **Maintainer guide**, for people
   who look after it (§4).
 - You edit **only two folders**: `content/<project-slug>/` and `diagrams/<project-slug>/` (§3).
-- **Use is versioned, Maintain is not** (§5).
+- **The User guide is versioned, the Maintainer guide is not** (§5).
 - **Every diagram is Mermaid and Archify together**, on every page, in both tracks (§8).
 - **Every page has a `description`**, and the build fails without one. Search and share cards follow
   from it and from where the page sits, automatically (§4.4, §7).
 - **Everything is published.** Nothing private goes here (§2).
 - **You edit; a human commits** (§10).
 
-**How this guide is laid out** ([ADR-0045](content/docs/maintain/adr/ADR-0045-agents-md-keeps-the-standing-rules-and-in-house-skills-hold-the-rest.mdx)). This file holds the rules every task needs.
+**How this guide is laid out** ([ADR-0045](content/docs/maintainer-guide/adr/ADR-0045-agents-md-keeps-the-standing-rules-and-in-house-skills-hold-the-rest.mdx)). This file holds the rules every task needs.
 The depth is in this repository's own skills, `.agent-skills/nepal-dev-<topic>/SKILL.md`, next to
 this file (from your repository: `<submodule-path>/.agent-skills/…`). They are part of this guide
 and as binding as it. **Before starting, check your task against the table in §13 and read every
@@ -56,8 +56,8 @@ Replace `<submodule-path>` with where the submodule is mounted (for example `doc
 `<submodule-path>/` is the puncoz-packages-docs repository, where this project's documentation
 is published. Before changing anything in it, read `<submodule-path>/PROJECT_AGENTS.md` and follow
 it. In short: edit only `<submodule-path>/content/<project-slug>/` and
-`<submodule-path>/diagrams/<project-slug>/`; keep both the Use docs (for users, versioned) and the
-Maintain docs (for maintainers, not versioned) current in the same change as the code; give every
+`<submodule-path>/diagrams/<project-slug>/`; keep both the User guide docs (for users, versioned) and the
+Maintainer guide docs (for maintainers, not versioned) current in the same change as the code; give every
 diagram both a Mermaid fence and its Archify view; give every page a frontmatter `description`,
 written for someone reading a search result; never commit, push or switch branches inside the
 submodule; never put private content there; ask the owner when anything is unclear.
@@ -68,8 +68,8 @@ repository's `id` in the project's catalogue:
 
 ```markdown
 This repository is `<repository-id>` in `<project-slug>`'s catalogue (primary: yes or no). Edit
-only `content/<project-slug>/use/<repository-id>/` (inside each line, when the project has lines),
-`content/<project-slug>/maintain/<repository-id>/` and `diagrams/<project-slug>/<repository-id>-*`;
+only `content/<project-slug>/user-guide/<repository-id>/` (inside each line, when the project has lines),
+`content/<project-slug>/maintainer-guide/<repository-id>/` and `diagrams/<project-slug>/<repository-id>-*`;
 only the primary repository edits the project's shared files.
 ```
 
@@ -77,7 +77,7 @@ only the primary repository edits the project's shared files.
 
 Every file under `content/` and every diagram's HTML is **published**: on the website, in the
 search index, in `llms.txt` / `llms-full.txt`, as per-page Markdown, in `sitemap.xml`, in the
-page's structured data and on its share image. Published is permanent. **That includes the Maintain
+page's structured data and on its share image. Published is permanent. **That includes the Maintainer guide
 track**: maintainer docs are public too. Every page's address and title also reach the site's analytics,
 Vercel Web Analytics and Google Analytics (ADR-0041).
 
@@ -117,8 +117,8 @@ the overview and sidebar order (§3.2). Read it before creating a folder or edit
 ## 4. Two sets of docs to maintain
 
 **Every package and project maintains both.** They have different readers, so a page belongs in
-exactly one. The test: does the reader need your repository open? If not, it is Use. If so, it is
-Maintain.
+exactly one. The test: does the reader need your repository open? If not, it is the User guide. If so, it is
+Maintainer guide.
 
 The build lets a track be missing, and the switch between them then hides it. That is only for a
 track with nothing to say yet, such as a brand-new project. It is not a way to skip one.
@@ -129,20 +129,20 @@ Update the docs **in the same change as the code**:
 
 | You changed… | Update |
 |---|---|
-| Public behaviour, an API, an option, a default or an install step | Use, in `use/dev/` (or `use/` on a project without lines) |
-| Internals, the build, the tests, the release process | Maintain |
-| A decision worth keeping | A new ADR in `maintain/adr/` |
+| Public behaviour, an API, an option, a default or an install step | User guide, in `user-guide/dev/` (or `user-guide/` on a project without lines) |
+| Internals, the build, the tests, the release process | Maintainer guide |
+| A decision worth keeping | A new ADR in `maintainer-guide/adr/` |
 | A flow that a diagram shows | The diagram's Mermaid **and** its Archify view (§8) |
 | Something released | §5.2 |
 
-**Depth:** `.agent-skills/nepal-dev-project-pages/SKILL.md` holds which pages Use holds (§4.1),
-which pages Maintain holds, its templates, living documents and ADRs, and how people are named in an
+**Depth:** `.agent-skills/nepal-dev-project-pages/SKILL.md` holds which pages the User guide holds (§4.1),
+which pages the Maintainer guide holds, its templates, living documents and ADRs, and how people are named in an
 ADR (§4.2), and what search engines and share cards get (§4.4). Read it before writing or editing
 any page.
 
 ## 5. Versions
 
-**Only the Use track is versioned.** Maintain and the overview have one copy.
+**Only the User guide is versioned.** The Maintainer guide and the overview have one copy.
 
 **Depth:** `.agent-skills/nepal-dev-project-versions/SKILL.md` holds the lines and their channels,
 `version` and `name`, and URL segments (§5.1), how to release (§5.2), and links that don't go stale
@@ -153,7 +153,7 @@ page.
 
 A project made of several repositories, such as a frontend, a backend and an API, is still one
 folder, one overview and one planet
-([ADR-0024](content/docs/maintain/adr/ADR-0024-a-project-can-span-several-repositories.mdx)).
+([ADR-0024](content/docs/maintainer-guide/adr/ADR-0024-a-project-can-span-several-repositories.mdx)).
 Each repository includes this submodule and writes its own folders. Both sets of docs (§4) apply to
 each repository.
 
@@ -184,8 +184,8 @@ and images. Read it before writing or editing any page.
 
 ## 8. Diagrams: Mermaid and Archify, always together
 
-**Every page that has a diagram embeds both**, in Use and in Maintain, with no exceptions
-([ADR-0022](content/docs/maintain/adr/ADR-0022-diagrams-show-archify-on-the-page-and-mermaid-in-markdown.mdx)).
+**Every page that has a diagram embeds both**, in the User guide and in the Maintainer guide, with no exceptions
+([ADR-0022](content/docs/maintainer-guide/adr/ADR-0022-diagrams-show-archify-on-the-page-and-mermaid-in-markdown.mdx)).
 Architecture, flows, sequences, states, data flows, ERDs, class diagrams, trees, timelines and
 screen wireframes are all diagrams.
 
@@ -214,10 +214,10 @@ The build fails, naming the file, on:
   `callback`, `sign-in`, `sign-out`, `og`, `apple-icon`, `search`, `static`, `assets`, `public`, `diagrams`,
   `_next`;
 - a line without `version` or `channel`;
-- `channel: "dev"` anywhere but `use/dev/`, or `use/dev/` with another channel;
+- `channel: "dev"` anywhere but `user-guide/dev/`, or `user-guide/dev/` with another channel;
 - a name whose segment is empty, `dev`, `latest` or ends in `.md`, or two lines with the same
   segment;
-- pages directly in a versioned `use/`;
+- pages directly in a versioned `user-guide/`;
 - two `latest` lines, `legacy` lines without a `latest`, or a `legacy` line in a project;
 - a page with no `description`, naming every such page (§7);
 - any diagram problem in §8.3.
@@ -283,7 +283,7 @@ full, before the work it covers. The rows are binding. The skills are in
 |---|---|
 | create your folder, or edit a `meta.json`, the catalogue entry or the sidebar order | `nepal-dev-project-layout` |
 | work on a project made of several repositories | `nepal-dev-project-layout` |
-| write or edit any page, in Use or in Maintain, or an ADR of your project | `nepal-dev-project-pages` |
+| write or edit any page, in the User guide or in the Maintainer guide, or an ADR of your project | `nepal-dev-project-pages` |
 | create or change a version line, release, or link to a versioned page | `nepal-dev-project-versions` |
 | write or change a diagram, a flow or a wireframe, or touch `diagrams/` | `nepal-dev-diagrams` |
 
@@ -292,7 +292,7 @@ full, before the work it covers. The rows are binding. The skills are in
 - [ ] Only `content/<project-slug>/` and `diagrams/<project-slug>/` changed (on a project of several
       repositories, only your own parts of them, §6).
 - [ ] Nothing private, internal or real in the pages or the diagrams (§2).
-- [ ] User-facing changes are in Use, in the right line; maintainer-facing changes are in Maintain
+- [ ] User-facing changes are in the User guide, in the right line; maintainer-facing changes are in the Maintainer guide
       (§4).
 - [ ] Commands, signatures, options, defaults and versions were read from the code (§7).
 - [ ] A line's `version` matches the manifest, and its `channel` is right (§5).

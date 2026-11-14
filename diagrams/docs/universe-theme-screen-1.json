@@ -201,7 +201,7 @@
   "boundaries": [
     {
       "kind": "region",
-      "label": "Phone screen · the sky and the mark, on /lodestar/use/v0.1/guides/forms (stage 1)",
+      "label": "Phone screen · the sky and the mark, on /lodestar/user-guide/v0.1/guides/forms (stage 1)",
       "wraps": [
         "mark",
         "search",

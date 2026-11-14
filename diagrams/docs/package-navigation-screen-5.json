@@ -2,7 +2,7 @@
   "schema_version": 1,
   "diagram_type": "architecture",
   "meta": {
-    "title": "Screen 5 — Maintain page",
+    "title": "Screen 5 — Maintainer guide page",
     "subtitle": "Wireframe at phone width, drawn from its Mermaid version · package navigation",
     "output": "package-navigation-screen-5.html",
     "animation": "trace",
@@ -77,7 +77,7 @@
     {
       "id": "track",
       "type": "backend",
-      "label": "Use | Maintain",
+      "label": "User guide | Maintainer guide",
       "pos": [
         40,
         200
@@ -117,7 +117,7 @@
   "boundaries": [
     {
       "kind": "region",
-      "label": "Phone screen · /<slug>/maintain/<page>",
+      "label": "Phone screen · /<slug>/maintainer-guide/<page>",
       "wraps": [
         "title",
         "search",

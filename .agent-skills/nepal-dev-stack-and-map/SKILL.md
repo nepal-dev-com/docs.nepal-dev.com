@@ -70,10 +70,10 @@ What is installed **today** (verified from `package.json`, `node_modules` and th
 ├── DESIGN.md            # the home page's visual system, with .impeccable/design.json; not published (§8)
 ├── PROJECT_AGENTS.md    # guide for repositories that include this one as a git submodule (§1)
 ├── content/             # PUBLISHED — every page readers see; one folder per entry, at /<slug> (ADR-0015)
-│   ├── <project-slug>/  # a package or project: meta.json `catalog`, index.mdx, use/ (dev/ + named lines), maintain/;
-│   │                    #   a project of several repositories has use/<id>/ and maintain/<id>/ per repository (ADR-0024)
+│   ├── <project-slug>/  # a package or project: meta.json `catalog`, index.mdx, user-guide/ (dev/ + named lines), maintainer-guide/;
+│   │                    #   a project of several repositories has user-guide/<id>/ and maintainer-guide/<id>/ per repository (ADR-0024)
 │   └── docs/            # this site as a project, at /docs: meta.json `catalog`, index.mdx
-│       └── maintain/    # its Maintain track: this site's own decisions and design documents
+│       └── maintainer-guide/    # its Maintainer guide: this site's own decisions and design documents
 │           ├── meta.json    # title, page order
 │           ├── index.mdx    # documentation map — what lives where
 │           ├── _templates/  # a starting point for each document type
@@ -89,7 +89,7 @@ What is installed **today** (verified from `package.json`, `node_modules` and th
 │           ├── rbac/        # access matrices (public vs private documentation)
 │           └── security/    # threat model, data classification, secrets, audit checklist
 ├── src/
-│   ├── proxy.ts         # catalogued paths: line redirects (use/latest, unknown lines), then /<page>.md and Markdown negotiation; any other unknown path: the true 404 (ADR-0034)
+│   ├── proxy.ts         # catalogued paths: line redirects (user-guide/latest, unknown lines), then /<page>.md and Markdown negotiation; any other unknown path: the true 404 (ADR-0034)
 │   ├── app/             # App Router: layout.tsx (fonts, theme), global.css (tokens), site.css (header, theme switch,
 │   │                    #   planet header, notices, planet row, stations, trajectory, footer), not-found.tsx (the 404),
 │   │                    #   (home)/ (home page, home.css), (site)/(docs)/[...slug]/ (every page, notebook layout),
@@ -129,4 +129,4 @@ What is installed **today** (verified from `package.json`, `node_modules` and th
 └── tsconfig.test.json   # the tests' check, with Bun's types (ADR-0021)
 ```
 
-The system as built is described in [`content/docs/maintain/architecture/system.mdx`](../../content/docs/maintain/architecture/system.mdx).
+The system as built is described in [`content/docs/maintainer-guide/architecture/system.mdx`](../../content/docs/maintainer-guide/architecture/system.mdx).

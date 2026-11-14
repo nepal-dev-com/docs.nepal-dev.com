@@ -13,7 +13,7 @@ Part of this repository's working agreement (ADR-0045): as binding as `AGENTS.md
 - `NEXT_PUBLIC_` publishes to the world. No secret is ever a string literal.
 - Findings go to the owner, not into the maintainer documentation, until they are fixed.
 - Never send private content to a third party without an approved ADR.
-- A new env var goes in `content/docs/maintain/security/secrets.mdx` and `.env.example`, name only.
+- A new env var goes in `content/docs/maintainer-guide/security/secrets.mdx` and `.env.example`, name only.
 
 ## Per-change check and full audits (`AGENTS.md` §9)
 
@@ -21,16 +21,16 @@ Part of this repository's working agreement (ADR-0045): as binding as `AGENTS.md
 
 | If the change… | Check |
 |---|---|
-| Introduces or reads a secret / env var | Not a literal in source · **`NEXT_PUBLIC_` publishes to the world** · added to `content/docs/maintain/security/secrets.mdx` **and** `.env.example` |
+| Introduces or reads a secret / env var | Not a literal in source · **`NEXT_PUBLIC_` publishes to the world** · added to `content/docs/maintainer-guide/security/secrets.mdx` **and** `.env.example` |
 | Adds a page to `content/` | Belongs to a public package or project (§6.1) · has a `description` · no secret, token, internal hostname, client name or personal data in text, examples or screenshots |
-| Adds a route handler or endpoint | Says what it exposes, to whom · documented in `content/docs/maintain/api/` · private content excluded or authorization enforced server-side |
+| Adds a route handler or endpoint | Says what it exposes, to whom · documented in `content/docs/maintainer-guide/api/` · private content excluded or authorization enforced server-side |
 | Sends anything to a third party (search, analytics, hosting) | Exactly what is sent, minimised · recorded as a DFD boundary crossing · never private content without an approved ADR |
 | Accepts input (search queries, URLs, MDX components that take props) | Validated · output encoded · no user-controlled HTML |
 | Adds logging or error handling | **No secrets, tokens or personal data** in logs or client responses |
 
 ### Full audits at gates
 
-The audits in [`content/docs/maintain/security/checklist.mdx`](../../content/docs/maintain/security/checklist.mdx) run **before the first
+The audits in [`content/docs/maintainer-guide/security/checklist.mdx`](../../content/docs/maintainer-guide/security/checklist.mdx) run **before the first
 internet-reachable deployment** and **before each release** of the site. Findings are reported
 as: what it is · where it is · how it would be exploited · the fix. Fix data exposure and
 unauthorized access first, abuse and logic flaws second. **Findings go to the owner, not into
@@ -41,5 +41,5 @@ the maintainer documentation**, until they are fixed: those pages are published 
 ### Tool-specific rules
 
 Algolia, Vercel Analytics and Google Analytics (ADR-0041) and Vercel hosting (ADR-0042) are adopted; their checks are in
-[`content/docs/maintain/security/checklist.mdx`](../../content/docs/maintain/security/checklist.mdx#tool-specific-checks). **The ADR that
+[`content/docs/maintainer-guide/security/checklist.mdx`](../../content/docs/maintainer-guide/security/checklist.mdx#tool-specific-checks). **The ADR that
 adopts a host, analytics, CI or an authentication provider adds its own checks** there.

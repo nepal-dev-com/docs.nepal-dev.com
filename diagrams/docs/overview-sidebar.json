@@ -14,11 +14,11 @@
     },
     {
       "id": "use",
-      "label": "Use sidebar"
+      "label": "User guide sidebar"
     },
     {
       "id": "maintain",
-      "label": "Maintain sidebar"
+      "label": "Maintainer guide sidebar"
     }
   ],
   "mainPath": [
@@ -40,20 +40,20 @@
       "col": 1,
       "type": "frontend",
       "label": "Overview",
-      "sublabel": "Use sidebar, Overview current"
+      "sublabel": "User guide sidebar"
     },
     {
       "id": "usepage",
       "lane": "use",
       "col": 2,
       "type": "frontend",
-      "label": "Use page",
+      "label": "User guide page",
       "sublabel": "the same sidebar"
     },
     {
       "id": "line",
-      "lane": "use",
-      "col": 3,
+      "lane": "reader",
+      "col": 2,
       "type": "frontend",
       "label": "That line's first page",
       "sublabel": "its sidebar"
@@ -63,7 +63,7 @@
       "lane": "maintain",
       "col": 2,
       "type": "backend",
-      "label": "Maintain page",
+      "label": "Maintainer guide page",
       "sublabel": "Overview first"
     }
   ],
@@ -94,7 +94,7 @@
       "id": "to_maintain",
       "from": "overview",
       "to": "maintainpage",
-      "label": "moon button",
+      "label": "Maintainer guide",
       "variant": "default",
       "role": "branch"
     },
@@ -102,7 +102,7 @@
       "id": "use_maintain",
       "from": "usepage",
       "to": "maintainpage",
-      "label": "moon button",
+      "label": "Maintainer guide",
       "variant": "default",
       "role": "branch"
     },
@@ -118,7 +118,7 @@
       "id": "sun",
       "from": "maintainpage",
       "to": "usepage",
-      "label": "sun button",
+      "label": "User guide",
       "variant": "dashed",
       "role": "return"
     },

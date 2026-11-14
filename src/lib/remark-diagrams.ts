@@ -4,7 +4,7 @@ import type { VFile } from 'vfile';
 import { embedSrcProblem } from './diagrams';
 
 /** Templates show the shape bare; a copy is wrapped before it builds (ADR-0022 decision 4). */
-const exempt = /(^|[\\/])content[\\/]docs[\\/]maintain[\\/]_templates[\\/]/;
+const exempt = /(^|[\\/])content[\\/]docs[\\/]maintainer-guide[\\/]_templates[\\/]/;
 
 type Node = Root | RootContent;
 

@@ -53,8 +53,8 @@ describe('folderBody (ADR-0027)', () => {
   });
 });
 
-describe("this site's Maintain belts (ADR-0027 decision 5)", () => {
-  const meta = JSON.parse(readFileSync(new URL('../../content/docs/maintain/meta.json', import.meta.url), 'utf8')) as {
+describe("this site's Maintainer guide belts (ADR-0027 decision 5)", () => {
+  const meta = JSON.parse(readFileSync(new URL('../../content/docs/maintainer-guide/meta.json', import.meta.url), 'utf8')) as {
     pages: string[];
   };
   const belts = meta.pages.filter((item) => /^---.+---$/.test(item));

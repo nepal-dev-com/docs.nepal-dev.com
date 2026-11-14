@@ -11,7 +11,7 @@ Part of this repository's working agreement (ADR-0045): as binding as `AGENTS.md
 
 ## First
 
-- Space words name places, never controls: Search, Overview, Use, Maintain, On this page and version names keep their plain names.
+- Space words name places, never controls: Search, Overview, User guide, Maintainer guide, On this page and version names keep their plain names.
 - Cache Components is on: use `use cache` and `<Suspense>`, not route segment configs such as `revalidate`.
 - Only `main` deploys, straight to production. Never `vercel` or `vercel --prod`.
 - Never a real private project name on the home page.
@@ -25,21 +25,21 @@ ADR-0036), its own documentation is **Nepal Dev Verse Docs**, and it links to Gi
 yet** besides the site itself, so the home page shows its empty states.
 
 - **One shape for every entry** (ADR-0013, ADR-0015). `content/<slug>/` has a `catalog` entry in
-  its `meta.json`, a `use/` track and a `maintain/` track. A versioned `use/` holds version
+  its `meta.json`, a `user-guide/` track and a `maintainer-guide/` track. A versioned `user-guide/` holds version
   lines: `dev/` for unreleased work in progress, and released lines whose URL segment is the
-  `name` set in their `meta.json` (any string, such as `v1.0` or `2024 LTS`). Maintain is not
+  `name` set in their `meta.json` (any string, such as `v1.0` or `2024 LTS`). The Maintainer guide is not
   versioned. A project has at most `dev` and one released line; older lines are for packages.
   A project of several repositories lists them in `catalog.repositories` (one primary) and gives
-  each a folder in each track, `use/<id>/` and `maintain/<id>/` (ADR-0024).
+  each a folder in each track, `user-guide/<id>/` and `maintainer-guide/<id>/` (ADR-0024).
 - **The build checks the shape.** Line redirects, version banners, scoped sidebars, search
   fields and `llms.txt` labels all come from it.
 - **The whole site is one solar system** (ADR-0015, ADR-0017, ADR-0018). The star is nepal-dev.com, the community (ADR-0036); a package
   is a solid planet, a project a ringed one; each version line is a moon (full = latest,
-  crescent = older, dashed new moon = `dev`); Use and Maintain are a planet's day and night
+  crescent = older, dashed new moon = `dev`); User guide and the Maintainer guide are a planet's day and night
   sides. The marks are drawn by `src/components/planet.tsx` and mean the same on every page.
   The system sits in a wider sky, the Verse (ADR-0029): the Verse mark, the still sky, the zoom
   (the scale strip, the Verse view, the morph) and its words. Space words name places, never
-  controls: Search, Overview, Use, Maintain, On this page and version names keep their plain
+  controls: Search, Overview, User guide, Maintainer guide, On this page and version names keep their plain
   names, and a space word always stands beside a plain sentence (DESIGN.md, *The Places, Not
   Controls Rule*). Every page stands on one still star field, never behind
   text, and shares the site header (the brand mark, nepal-dev.com's mountain and flag, and wordmark, nav, GitHub, the orrery theme
@@ -47,7 +47,7 @@ yet** besides the site itself, so the home page shows its empty states.
   Fumadocs notebook layout: the scale strip above every page in place of Fumadocs' breadcrumb
   (Verse ▸ System ▸ planet ▸ side and moon ▸ orbits ▸ page; going up zooms out); a planet header
   on each overview, its planet morphing from the home page's card; in the sidebar the planet row
-  (chip, a sun for Use and a moon for Maintain), the moon picker, then a scale ladder (ADR-0027): top-level
+  (the chip, then the guide switch: two named segments, *User guide* and *Maintainer guide*, with no icon, ADR-0048), the moon picker, then a scale ladder (ADR-0027): top-level
   pages as landmarks (*Overview* first in every track, ADR-0025), separators as belts, folders as
   orbit rows with only the open one a card, its pages satellites on an arc (one open at a time at
   each level, ADR-0023; a folder named `adr` a constellation of moons phased by status,

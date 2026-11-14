@@ -6,6 +6,7 @@ import { kindName, ringOf } from '@/lib/rings';
 import { PlanetMark, PlanetSystem } from '@/components/planet';
 import { PlanetMorph } from '@/components/zoom-page';
 import { zoomIn } from '@/lib/zoom';
+import { maintainerGuide, trackName, userGuide } from '@/lib/tracks';
 
 /** The card's kind line: the kind, and a project's number of repositories (ADR-0024). */
 export function kindLine(entry: CatalogEntry): string {
@@ -54,15 +55,15 @@ function PlanetCard({ entry, id }: { entry: CatalogEntry; id?: string }) {
           </dl>
         )}
         <div className="planet-links">
-          {entry.useUrl && (
-            <Link href={entry.useUrl} data-primary="" transitionTypes={[zoomIn]}>
-              Use
+          {entry.userGuideUrl && (
+            <Link href={entry.userGuideUrl} data-primary="" transitionTypes={[zoomIn]}>
+              {trackName(userGuide)}
               <ArrowRight aria-hidden />
             </Link>
           )}
-          {entry.maintainUrl && (
-            <Link href={entry.maintainUrl} transitionTypes={[zoomIn]}>
-              Maintain
+          {entry.maintainerGuideUrl && (
+            <Link href={entry.maintainerGuideUrl} transitionTypes={[zoomIn]}>
+              {trackName(maintainerGuide)}
             </Link>
           )}
           {entry.demoUrl && <Link href={entry.demoUrl}>Demo</Link>}

@@ -63,7 +63,7 @@
   "boundaries": [
     {
       "kind": "region",
-      "label": "Phone screen · /<slug>/use/dev/<page>, /<slug>/use/2024-lts/<page>",
+      "label": "Phone screen · /<slug>/user-guide/dev/<page>, /<slug>/user-guide/2024-lts/<page>",
       "wraps": [
         "h1",
         "banner",

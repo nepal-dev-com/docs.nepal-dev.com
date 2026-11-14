@@ -91,7 +91,8 @@ export default async function HomePage() {
 
           {tracks && (
             <section className="section wrap" aria-labelledby="sides-heading">
-              <TwoSides entry={tracks.entry} use={tracks.use} maintain={tracks.maintain} />
+              <TwoSides entry={tracks.entry} userGuidePreview={tracks.userGuidePreview}
+                maintainerGuidePreview={tracks.maintainerGuidePreview} />
             </section>
           )}
 

@@ -2,7 +2,7 @@
   "schema_version": 1,
   "diagram_type": "architecture",
   "meta": {
-    "title": "Screen 2 — Use page",
+    "title": "Screen 2 — User guide page",
     "subtitle": "Wireframe at phone width, drawn from its Mermaid version · site pages",
     "output": "site-pages-screen-2.html",
     "animation": "trace",
@@ -50,22 +50,36 @@
         160
       ],
       "size": [
-        303,
+        408,
         70
       ],
       "sublabel": "npm package"
     },
     {
-      "id": "track",
+      "id": "ug",
       "type": "backend",
-      "label": "☀ | ☾",
+      "label": "User guide",
+      "sublabel": "current, filled",
       "pos": [
-        369,
-        160
+        54,
+        242
       ],
       "size": [
-        93,
-        58
+        198,
+        70
+      ]
+    },
+    {
+      "id": "mg",
+      "type": "backend",
+      "label": "Maintainer guide",
+      "pos": [
+        264,
+        242
+      ],
+      "size": [
+        198,
+        70
       ]
     },
     {
@@ -74,7 +88,7 @@
       "label": "● v1.4",
       "pos": [
         54,
-        242
+        324
       ],
       "size": [
         408,
@@ -88,7 +102,7 @@
       "label": "◎ Get started",
       "pos": [
         54,
-        324
+        406
       ],
       "size": [
         408,
@@ -102,7 +116,7 @@
       "label": "◉ Install",
       "pos": [
         54,
-        406
+        488
       ],
       "size": [
         408,
@@ -115,7 +129,7 @@
       "label": "○ Commands",
       "pos": [
         54,
-        476
+        558
       ],
       "size": [
         408,
@@ -128,7 +142,7 @@
       "label": "◔ Add the package",
       "pos": [
         40,
-        560
+        642
       ],
       "size": [
         436,
@@ -142,7 +156,7 @@
       "label": "Install",
       "pos": [
         40,
-        642
+        724
       ],
       "size": [
         436,
@@ -155,7 +169,7 @@
       "label": "● Documents lodestar 1.4.2",
       "pos": [
         40,
-        712
+        794
       ],
       "size": [
         436,
@@ -168,7 +182,7 @@
       "label": "page content",
       "pos": [
         40,
-        782
+        864
       ],
       "size": [
         436,
@@ -180,11 +194,12 @@
   "boundaries": [
     {
       "kind": "region",
-      "label": "Phone screen · /<slug>/use/<line>/<page>",
+      "label": "Phone screen · /<slug>/user-guide/<line>/<page>",
       "wraps": [
         "hdr",
         "chip",
-        "track",
+        "ug",
+        "mg",
         "ver",
         "st",
         "l1",
@@ -201,7 +216,8 @@
       "label": "drawer",
       "wraps": [
         "chip",
-        "track",
+        "ug",
+        "mg",
         "ver",
         "st",
         "l1",

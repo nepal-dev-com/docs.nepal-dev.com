@@ -2,7 +2,7 @@
   "schema_version": 1,
   "diagram_type": "architecture",
   "meta": {
-    "title": "Screen 1 — Maintain page",
+    "title": "Screen 1 — Maintainer guide page",
     "subtitle": "Wireframe at phone width, drawn from its Mermaid version · sidebar scale ladder",
     "output": "sidebar-scale-ladder-screen-1.html",
     "animation": "trace",
@@ -265,7 +265,7 @@
   "boundaries": [
     {
       "kind": "region",
-      "label": "Phone screen · the sidebar on /docs/maintain/prd/diagrams",
+      "label": "Phone screen · the sidebar on /docs/maintainer-guide/prd/diagrams",
       "wraps": [
         "chip",
         "ov",

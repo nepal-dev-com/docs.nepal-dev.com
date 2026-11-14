@@ -40,36 +40,36 @@ describe('parseSiteUrl (ADR-0035 decision 1)', () => {
 });
 
 describe('searchRule (ADR-0035 decision 3)', () => {
-  const place = (extra: object) => ({ url: '/lodestar/use/v3.2/install', path: 'lodestar/use/v3/install.mdx', ...extra });
+  const place = (extra: object) => ({ url: '/lodestar/user-guide/v3.2/install', path: 'lodestar/user-guide/v3/install.mdx', ...extra });
 
   test('the home page, an overview and a page with no lines are their own canonical', () => {
     expect(searchRule({ url: '/', path: '' }, site)).toEqual({ index: true, canonical: '/', inSitemap: true });
     expect(searchRule({ url: '/docs', path: 'docs/index.mdx' }, site).canonical).toBe('/docs');
-    expect(searchRule({ url: '/acme/use/start', path: 'acme/use/start.mdx' }, site).inSitemap).toBe(true);
+    expect(searchRule({ url: '/acme/user-guide/start', path: 'acme/user-guide/start.mdx' }, site).inSitemap).toBe(true);
   });
 
-  test('the latest line and Maintain are indexed', () => {
-    expect(searchRule(place({ channel: 'latest' }), site)).toEqual({ index: true, canonical: '/lodestar/use/v3.2/install', inSitemap: true });
-    expect(searchRule({ url: '/docs/maintain/adr', path: 'docs/maintain/adr/index.mdx' }, site).index).toBe(true);
+  test('the latest line and the Maintainer guide are indexed', () => {
+    expect(searchRule(place({ channel: 'latest' }), site)).toEqual({ index: true, canonical: '/lodestar/user-guide/v3.2/install', inSitemap: true });
+    expect(searchRule({ url: '/docs/maintainer-guide/adr', path: 'docs/maintainer-guide/adr/index.mdx' }, site).index).toBe(true);
   });
 
   test('an older page points at the same page in latest, and leaves the sitemap', () => {
-    const rule = searchRule(place({ url: '/lodestar/use/2.x-lts/install', channel: 'legacy', latestCounterpart: '/lodestar/use/v3.2/install' }), site);
-    expect(rule).toEqual({ index: true, canonical: '/lodestar/use/v3.2/install', inSitemap: false });
+    const rule = searchRule(place({ url: '/lodestar/user-guide/2.x-lts/install', channel: 'legacy', latestCounterpart: '/lodestar/user-guide/v3.2/install' }), site);
+    expect(rule).toEqual({ index: true, canonical: '/lodestar/user-guide/v3.2/install', inSitemap: false });
   });
 
   test('an older page with no counterpart stays findable', () => {
-    const rule = searchRule(place({ url: '/lodestar/use/2.x-lts/old', channel: 'legacy' }), site);
-    expect(rule).toEqual({ index: true, canonical: '/lodestar/use/2.x-lts/old', inSitemap: true });
+    const rule = searchRule(place({ url: '/lodestar/user-guide/2.x-lts/old', channel: 'legacy' }), site);
+    expect(rule).toEqual({ index: true, canonical: '/lodestar/user-guide/2.x-lts/old', inSitemap: true });
   });
 
   test('dev and templates are noindex, with no canonical', () => {
-    expect(searchRule(place({ url: '/lodestar/use/dev/install', channel: 'dev' }), site)).toEqual({ index: false, inSitemap: false });
-    expect(searchRule({ url: '/docs/maintain/_templates/adr', path: 'docs/maintain/_templates/adr.mdx' }, site)).toEqual({ index: false, inSitemap: false });
+    expect(searchRule(place({ url: '/lodestar/user-guide/dev/install', channel: 'dev' }), site)).toEqual({ index: false, inSitemap: false });
+    expect(searchRule({ url: '/docs/maintainer-guide/_templates/adr', path: 'docs/maintainer-guide/_templates/adr.mdx' }, site)).toEqual({ index: false, inSitemap: false });
   });
 
   test('a folder only named like a template is an ordinary page', () => {
-    expect(searchRule({ url: '/x/maintain/my_templates/a', path: 'x/maintain/my_templates/a.mdx' }, site).index).toBe(true);
+    expect(searchRule({ url: '/x/maintainer-guide/my_templates/a', path: 'x/maintainer-guide/my_templates/a.mdx' }, site).index).toBe(true);
   });
 
   test('with no address nothing is indexed (decision 2)', () => {
@@ -104,12 +104,12 @@ describe('pageMetadata (ADR-0035 decision 9)', () => {
   const input = {
     title: 'Install — lodestar — Nepal Dev Verse',
     description: 'Add lodestar to a project.',
-    url: '/lodestar/use/v3.2/install',
-    rule: { index: true, canonical: '/lodestar/use/v3.2/install', inSitemap: true },
+    url: '/lodestar/user-guide/v3.2/install',
+    rule: { index: true, canonical: '/lodestar/user-guide/v3.2/install', inSitemap: true },
     type: 'article' as const,
-    imageUrl: '/og/lodestar/use/v3.2/install/image.png',
+    imageUrl: '/og/lodestar/user-guide/v3.2/install/image.png',
     imageAlt: 'Install',
-    markdownUrl: '/lodestar/use/v3.2/install.md',
+    markdownUrl: '/lodestar/user-guide/v3.2/install.md',
     modified: new Date('2026-11-01T00:00:00Z'),
   };
   const meta = pageMetadata(input);
@@ -141,7 +141,7 @@ describe('pageMetadata (ADR-0035 decision 9)', () => {
   });
 
   test('an older page shares the address of the page it points at', () => {
-    const older = pageMetadata({ ...input, url: '/lodestar/use/2.x-lts/install' });
+    const older = pageMetadata({ ...input, url: '/lodestar/user-guide/2.x-lts/install' });
     expect(older.openGraph?.url).toBe(input.url);
   });
 
@@ -175,16 +175,16 @@ describe('sitemapEntries (ADR-0035 decision 5)', () => {
   const when = new Date('2026-11-01T00:00:00Z');
   const pages = [
     { url: '/docs', rule: { index: true, canonical: '/docs', inSitemap: true }, modified: when },
-    { url: '/x/use/dev/a', rule: { index: false, inSitemap: false } },
-    { url: '/x/use/2.x/a', rule: { index: true, canonical: '/x/use/3.x/a', inSitemap: false } },
-    { url: '/x/use/3.x/a', rule: { index: true, canonical: '/x/use/3.x/a', inSitemap: true } },
+    { url: '/x/user-guide/dev/a', rule: { index: false, inSitemap: false } },
+    { url: '/x/user-guide/2.x/a', rule: { index: true, canonical: '/x/user-guide/3.x/a', inSitemap: false } },
+    { url: '/x/user-guide/3.x/a', rule: { index: true, canonical: '/x/user-guide/3.x/a', inSitemap: true } },
   ];
 
   test('lists the home page and the marked pages, absolute, with lastmod only when known', () => {
     expect(sitemapEntries(pages, site)).toEqual([
       { url: 'https://docs.nepal-dev.com/' },
       { url: 'https://docs.nepal-dev.com/docs', lastModified: when },
-      { url: 'https://docs.nepal-dev.com/x/use/3.x/a' },
+      { url: 'https://docs.nepal-dev.com/x/user-guide/3.x/a' },
     ]);
   });
 
@@ -208,24 +208,24 @@ describe('structured data (ADR-0035 decision 10)', () => {
     { kind: 'verse', name: 'Verse', url: '/#verse' },
     { kind: 'system', name: 'System', url: '/' },
     { kind: 'planet', name: 'lodestar', url: '/lodestar' },
-    { kind: 'side', name: 'Use', url: '/lodestar/use/v3.2', track: 'use' },
+    { kind: 'side', name: 'User guide', url: '/lodestar/user-guide/v3.2', track: 'user-guide' },
     { kind: 'orbit', name: 'Guides' },
     { kind: 'page', name: 'Start', current: true },
   ];
 
   test('breadcrumbs use plain names, not space words, and skip a level with no page', () => {
-    const crumbs = breadcrumbJsonLd(levels, '/lodestar/use/v3.2/guides/start', site);
+    const crumbs = breadcrumbJsonLd(levels, '/lodestar/user-guide/v3.2/guides/start', site);
     expect(crumbs.itemListElement).toEqual([
       { '@type': 'ListItem', position: 1, name: 'lodestar', item: 'https://docs.nepal-dev.com/lodestar' },
-      { '@type': 'ListItem', position: 2, name: 'Use', item: 'https://docs.nepal-dev.com/lodestar/use/v3.2' },
-      { '@type': 'ListItem', position: 3, name: 'Start', item: 'https://docs.nepal-dev.com/lodestar/use/v3.2/guides/start' },
+      { '@type': 'ListItem', position: 2, name: 'User guide', item: 'https://docs.nepal-dev.com/lodestar/user-guide/v3.2' },
+      { '@type': 'ListItem', position: 3, name: 'Start', item: 'https://docs.nepal-dev.com/lodestar/user-guide/v3.2/guides/start' },
     ]);
   });
 
   const page = {
     headline: 'Start',
     description: 'A description.',
-    url: '/lodestar/use/v3.2/guides/start',
+    url: '/lodestar/user-guide/v3.2/guides/start',
     imageUrl: '/og/x/image.png',
     levels,
     modified: new Date('2026-11-01T00:00:00Z'),
@@ -266,7 +266,7 @@ describe('share image helpers (ADR-0035 decision 11)', () => {
 
   test('the sky is seeded from the address, the same every time', () => {
     expect(skySeed('/docs')).toBe(skySeed('/docs'));
-    expect(skySeed('/docs')).not.toBe(skySeed('/docs/maintain'));
+    expect(skySeed('/docs')).not.toBe(skySeed('/docs/maintainer-guide'));
     expect(skySeed('/docs')).toBeGreaterThan(0);
   });
 

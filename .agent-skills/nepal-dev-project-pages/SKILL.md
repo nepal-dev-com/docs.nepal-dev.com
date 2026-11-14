@@ -1,6 +1,6 @@
 ---
 name: nepal-dev-project-pages
-description: "For a consuming repository writing pages in the Nepal Dev Verse docs submodule: the two sets of docs (Use for users, Maintain for maintainers), which pages each holds, ADRs in an adr folder, when to update which, what search engines and share cards get, and what every page must do (checked against the code, frontmatter title and description, relative links, MDX format). Read before writing or editing any page of a project or package."
+description: "For a consuming repository writing pages in the Nepal Dev Verse docs submodule: the two sets of docs (User guide for users, Maintainer guide for maintainers), which pages each holds, ADRs in an adr folder, when to update which, what search engines and share cards get, and what every page must do (checked against the code, frontmatter title and description, relative links, MDX format). Read before writing or editing any page of a project or package."
 ---
 
 # nepal-dev-project-pages
@@ -9,7 +9,7 @@ Part of this repository's working agreement (ADR-0045): as binding as `AGENTS.md
 
 ## First
 
-- Every package and project maintains both Use and Maintain, in the same change as the code.
+- Every package and project maintains both the User guide and the Maintainer guide, in the same change as the code.
 - Commands, signatures, options, defaults and versions are read from the code, never written from memory.
 - Every page is `.mdx` with `title` and `description`; the build fails without a description.
 - People in an ADR are GitHub usernames as profile links. Never guess one.
@@ -18,16 +18,16 @@ Part of this repository's working agreement (ADR-0045): as binding as `AGENTS.md
 ## Two sets of docs to maintain (`PROJECT_AGENTS.md` §4)
 
 **Every package and project maintains both.** They have different readers, so a page belongs in
-exactly one. The test: does the reader need your repository open? If not, it is Use. If so, it is
-Maintain.
+exactly one. The test: does the reader need your repository open? If not, it is the User guide. If so, it is
+Maintainer guide.
 
 The build lets a track be missing, and the switch between them then hides it. That is only for a
 track with nothing to say yet, such as a brand-new project. It is not a way to skip one.
 
-### 4.1 Use: docs for users
+### 4.1 User guide: docs for users
 
 **Who:** people installing, calling or operating what you built, who have not read its source.
-**Where:** `content/<project-slug>/use/`, inside the version line it describes (§5).
+**Where:** `content/<project-slug>/user-guide/`, inside the version line it describes (§5).
 
 | Page | What it holds | Suggested place |
 |---|---|---|
@@ -42,10 +42,10 @@ apply. No `demo.mdx` yet: demos wait for their own ADR.
 
 Everything here is checked against that version's code (§7).
 
-### 4.2 Maintain: docs for maintainers
+### 4.2 Maintainer guide: docs for maintainers
 
 **Who:** people changing the code, reviewing it, releasing it or taking it over.
-**Where:** `content/<project-slug>/maintain/`. It has no version lines and describes the default
+**Where:** `content/<project-slug>/maintainer-guide/`. It has no version lines and describes the default
 branch as it stands.
 
 | Page or folder | What it holds |
@@ -61,12 +61,12 @@ branch as it stands.
 The names are suggestions, like those in §4.1, except `adr/`, which the sidebar looks for.
 
 **Start from the templates** in
-[`content/docs/maintain/_templates/`](../../content/docs/maintain/_templates/index.mdx): copy one into
-your own `maintain/` folder and fill it in. Each Mermaid fence in a template is bare, and only
+[`content/docs/maintainer-guide/_templates/`](../../content/docs/maintainer-guide/_templates/index.mdx): copy one into
+your own `maintainer-guide/` folder and fill it in. Each Mermaid fence in a template is bare, and only
 that folder is allowed to do so: once copied, each one needs its `<Diagram>` and Archify view (§8).
 Each template's `description` is a placeholder, and the build can't tell: replace it with your own.
 
-**Two kinds of Maintain page:**
+**Two kinds of the Maintainer guide page:**
 
 - **Living documents** describe things as they stand now, and are edited in place. No revision
   tables, no "previously X, now Y". What is no longer true is deleted; git and the ADRs hold the
@@ -76,7 +76,7 @@ Each template's `description` is a placeholder, and the build can't tell: replac
 
 **ADRs go in a folder named `adr`.** The sidebar shows such a folder as a constellation, one moon
 per ADR phased by its status
-([ADR-0019](../../content/docs/maintain/adr/ADR-0019-adr-folders-show-as-a-constellation-in-the-sidebar.mdx)).
+([ADR-0019](../../content/docs/maintainer-guide/adr/ADR-0019-adr-folders-show-as-a-constellation-in-the-sidebar.mdx)).
 Title each `ADR-NNNN — …` and keep the template's `- **Status:** Approved` line (Approved,
 Proposed, Superseded or Rejected) near the top. The folder's `index.mdx` is the full list.
 
@@ -92,30 +92,30 @@ Update the docs **in the same change as the code**:
 
 | You changed… | Update |
 |---|---|
-| Public behaviour, an API, an option, a default or an install step | Use, in `use/dev/` (or `use/` on a project without lines) |
-| Internals, the build, the tests, the release process | Maintain |
-| A decision worth keeping | A new ADR in `maintain/adr/` |
+| Public behaviour, an API, an option, a default or an install step | User guide, in `user-guide/dev/` (or `user-guide/` on a project without lines) |
+| Internals, the build, the tests, the release process | Maintainer guide |
+| A decision worth keeping | A new ADR in `maintainer-guide/adr/` |
 | A flow that a diagram shows | The diagram's Mermaid **and** its Archify view (§8) |
 | Something released | §5.2 |
 
 ### 4.4 What search engines and share cards get
 
 Everything here is automatic. It comes from where the page sits and from its frontmatter, so you
-write no metadata and no tags ([ADR-0035](../../content/docs/maintain/adr/ADR-0035-every-page-is-ready-for-search-and-sharing.mdx)).
+write no metadata and no tags ([ADR-0035](../../content/docs/maintainer-guide/adr/ADR-0035-every-page-is-ready-for-search-and-sharing.mdx)).
 The one thing you write is the page's `description` (§7).
 
 | Your page | In search | Canonical link | In `sitemap.xml` |
 |---|---|---|---|
-| The overview, or a page in an unversioned `use/` | Yes | Itself | Yes |
+| The overview, or a page in an unversioned `user-guide/` | Yes | Itself | Yes |
 | A page in the `latest` line | Yes | Itself | Yes |
-| A page in `maintain/` | Yes | Itself | Yes |
+| A page in `maintainer-guide/` | Yes | Itself | Yes |
 | A page in a `legacy` line, with the same path in `latest` | Yes | **That page in `latest`** | No |
 | A page in a `legacy` line, with no such page in `latest` | Yes | Itself | Yes |
-| A page in `use/dev/` | No, `noindex, follow` | None | No |
+| A page in `user-guide/dev/` | No, `noindex, follow` | None | No |
 | A page in a folder named `_templates` | No, `noindex, follow` | None | No |
 
 So **a package with only `dev` is out of search until its first release**, apart from its overview and
-Maintain. Keep a page's path the same from one line to the next: that is how an older page finds its
+Maintainer guide. Keep a page's path the same from one line to the next: that is how an older page finds its
 counterpart in `latest`.
 
 From the same facts, each page also gets:

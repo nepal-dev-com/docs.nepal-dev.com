@@ -1,9 +1,10 @@
 import type { CSSProperties } from 'react';
 import Link from 'next/link';
-import { ChevronLeft, ChevronRight, Moon, Sun } from 'lucide-react';
+import { ChevronLeft, ChevronRight } from 'lucide-react';
 import type { CatalogEntry } from '@/lib/catalog';
 import { ringOf } from '@/lib/rings';
 import { parentLevel, type Level } from '@/lib/scale-strip';
+import { userGuide } from '@/lib/tracks';
 import { zoomOut } from '@/lib/zoom';
 import { MoonPhase, PlanetMark } from '@/components/planet';
 import { VerseMark } from '@/components/verse-mark';
@@ -21,7 +22,16 @@ function LevelMark({ level, entry }: { level: Level; entry?: CatalogEntry }) {
     case 'planet':
       return entry ? <PlanetMark ring={ringOf(entry)} kind={entry.kind} /> : null;
     case 'side':
-      return level.track === 'use' ? <Sun className="scale-mark" aria-hidden /> : <Moon className="scale-mark" aria-hidden />;
+      // A half-lit planet, not a sun or a moon: those belong to the theme switch (ADR-0048 decision 6).
+      return (
+        <svg className="scale-mark" viewBox="-8 -8 16 16" aria-hidden>
+          <circle r="5.2" fill="none" stroke="currentColor" strokeWidth="1.5" />
+          <path
+            fill="currentColor"
+            d={level.track === userGuide ? 'M0-5.2a5.2 5.2 0 0 0 0 10.4Z' : 'M0-5.2a5.2 5.2 0 0 1 0 10.4Z'}
+          />
+        </svg>
+      );
     case 'orbit':
       return (
         <svg className="scale-mark" viewBox="-8 -8 16 16" aria-hidden>

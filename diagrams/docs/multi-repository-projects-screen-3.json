@@ -2,7 +2,7 @@
   "schema_version": 1,
   "diagram_type": "architecture",
   "meta": {
-    "title": "Screen 3 — Use track",
+    "title": "Screen 3 — User guide",
     "subtitle": "Wireframe at phone width, drawn from its Mermaid version · multi repository projects",
     "output": "multi-repository-projects-screen-3.html",
     "animation": "trace",
@@ -28,22 +28,36 @@
         60
       ],
       "size": [
-        324,
+        436,
         70
       ],
       "sublabel": "Project"
     },
     {
-      "id": "sw",
-      "type": "external",
-      "label": "☀ | ☾",
+      "id": "ug",
+      "type": "backend",
+      "label": "User guide",
+      "sublabel": "current, filled",
       "pos": [
-        376,
-        60
+        40,
+        142
       ],
       "size": [
-        100,
-        58
+        212,
+        70
+      ]
+    },
+    {
+      "id": "mg",
+      "type": "backend",
+      "label": "Maintainer guide",
+      "pos": [
+        264,
+        142
+      ],
+      "size": [
+        212,
+        70
       ]
     },
     {
@@ -52,7 +66,7 @@
       "label": "full moon",
       "pos": [
         40,
-        142
+        224
       ],
       "size": [
         436,
@@ -63,10 +77,10 @@
     {
       "id": "top",
       "type": "backend",
-      "label": "◌ Overview of the Use track",
+      "label": "◌ Overview of the User guide",
       "pos": [
         40,
-        224
+        306
       ],
       "size": [
         436,
@@ -79,7 +93,7 @@
       "label": "◎ Frontend",
       "pos": [
         54,
-        324
+        406
       ],
       "size": [
         408,
@@ -93,7 +107,7 @@
       "label": "◉ Getting started (current)",
       "pos": [
         54,
-        406
+        488
       ],
       "size": [
         408,
@@ -106,7 +120,7 @@
       "label": "○ Booking widget",
       "pos": [
         54,
-        476
+        558
       ],
       "size": [
         408,
@@ -119,7 +133,7 @@
       "label": "○ Backend",
       "pos": [
         54,
-        590
+        672
       ],
       "size": [
         408,
@@ -133,7 +147,7 @@
       "label": "○ API",
       "pos": [
         54,
-        716
+        798
       ],
       "size": [
         408,
@@ -145,10 +159,11 @@
   "boundaries": [
     {
       "kind": "region",
-      "label": "Phone screen · the sidebar on /acme/use/v2/frontend/getting-started",
+      "label": "Phone screen · the sidebar on /acme/user-guide/v2/frontend/getting-started",
       "wraps": [
         "chip",
-        "sw",
+        "ug",
+        "mg",
         "moon",
         "top",
         "h1",

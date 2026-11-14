@@ -2,6 +2,7 @@ import { defineDocs } from 'fumadocs-mdx/macro';
 import { catalogMetaSchema } from './catalog-schema';
 import { devLine, lineInfo } from './catalog-plugin';
 import { knownPathProblems, knownPaths } from './known-paths';
+import { userGuide } from './tracks';
 
 // `async` still compiles a lazy chunk per page, which the proxy never loads; emptied, they carry no page text.
 function emptyBody() {
@@ -31,7 +32,7 @@ function buildRoutes() {
     if (parts.length === 2 && entry.catalog) {
       catalogued.add(parts[0]);
     }
-    if (parts.length !== 4 || parts[1] !== 'use') {
+    if (parts.length !== 4 || parts[1] !== userGuide) {
       continue;
     }
     const info = lineInfo(parts[2], entry);
@@ -78,15 +79,15 @@ export function isEntryPath(pathname: string): boolean {
 }
 
 /**
- * Where a request for a package's Use line should go instead, or undefined to leave it alone:
- * `use/latest/…` goes to the line marked latest (or `dev` before the first release), and a line
+ * Where a request for a package's User guide line should go instead, or undefined to leave it alone:
+ * `user-guide/latest/…` goes to the line marked latest (or `dev` before the first release), and a line
  * that no longer exists goes to the same path in that line (ADR-0013 decision 5, ADR-0015).
  */
 export function resolveLineRedirect(pathname: string): string | undefined {
   const markdown = pathname.endsWith('.md');
   const path = markdown ? pathname.slice(0, -3) : pathname;
   const [, slug, track, line, ...rest] = path.split('/');
-  if (track !== 'use' || !line) {
+  if (track !== userGuide || !line) {
     return undefined;
   }
   const forSlug = routes.lines.get(slug);
@@ -94,6 +95,6 @@ export function resolveLineRedirect(pathname: string): string | undefined {
   if (!forSlug || !target || (line !== 'latest' && forSlug.segments.has(line))) {
     return undefined;
   }
-  const url = ['', slug, 'use', target, ...rest].join('/');
+  const url = ['', slug, userGuide, target, ...rest].join('/');
   return markdown ? `${url}.md` : url;
 }

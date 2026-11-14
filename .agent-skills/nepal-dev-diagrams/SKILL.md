@@ -26,7 +26,7 @@ flow, lifecycle, ERD, class, tree and timeline diagrams. This is the owner's sta
 Use the project copy in `.claude/skills/archify`. Archify produces a standalone, interactive
 HTML file.
 
-- **Every diagram is Mermaid and Archify together** ([ADR-0022](../../content/docs/maintain/adr/ADR-0022-diagrams-show-archify-on-the-page-and-mermaid-in-markdown.mdx)):
+- **Every diagram is Mermaid and Archify together** ([ADR-0022](../../content/docs/maintainer-guide/adr/ADR-0022-diagrams-show-archify-on-the-page-and-mermaid-in-markdown.mdx)):
   flows, sequences, states, ERDs and screen wireframes (`block-beta`) are written as a Mermaid
   fence inside a `<Diagram>`, and each has its Archify view. The page shows only the Archify
   view; every Markdown surface (Copy Markdown, `/<page>.md`, `llms-full.txt`) carries only the
@@ -78,8 +78,8 @@ HTML file.
 
 ## Steps, screens and what the build refuses (`PROJECT_AGENTS.md` §8)
 
-**Every page that has a diagram embeds both**, in Use and in Maintain, with no exceptions
-([ADR-0022](../../content/docs/maintain/adr/ADR-0022-diagrams-show-archify-on-the-page-and-mermaid-in-markdown.mdx)).
+**Every page that has a diagram embeds both**, in the User guide and in the Maintainer guide, with no exceptions
+([ADR-0022](../../content/docs/maintainer-guide/adr/ADR-0022-diagrams-show-archify-on-the-page-and-mermaid-in-markdown.mdx)).
 Architecture, flows, sequences, states, data flows, ERDs, class diagrams, trees, timelines and
 screen wireframes are all diagrams.
 

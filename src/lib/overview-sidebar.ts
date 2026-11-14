@@ -1,25 +1,26 @@
 import type * as PageTree from 'fumadocs-core/page-tree';
+import { maintainerGuide, userGuide, type Track } from './tracks';
 
-export type Side = 'use' | 'maintain';
+export type Side = Track;
 
 /**
  * The planet row's current side: the track in the URL, or on the overview (no track) the default
- * track, Use when the entry has it (ADR-0025 decision 1).
+ * track, the User guide when the entry has it (ADR-0025 decision 1).
  */
 export function currentSide(
   track: string | undefined,
-  entry: { useUrl?: string; maintainUrl?: string },
+  entry: { userGuideUrl?: string; maintainerGuideUrl?: string },
 ): Side | undefined {
-  if (track === 'use' || track === 'maintain') {
+  if (track === userGuide || track === maintainerGuide) {
     return track;
   }
   if (track !== undefined) {
     return undefined;
   }
-  if (entry.useUrl) {
-    return 'use';
+  if (entry.userGuideUrl) {
+    return userGuide;
   }
-  return entry.maintainUrl ? 'maintain' : undefined;
+  return entry.maintainerGuideUrl ? maintainerGuide : undefined;
 }
 
 /**

@@ -88,7 +88,7 @@
         436,
         70
       ],
-      "sublabel": "Verse ▸ System ▸ ● lodestar ▸ ☀ Use · ◯ v0.1 ▸ ○ Guides ▸ Forms"
+      "sublabel": "Verse ▸ System ▸ ● lodestar ▸ ◐ User guide · ◯ v0.1 ▸ ○ Guides ▸ Forms"
     },
     {
       "id": "title",
@@ -120,7 +120,7 @@
   "boundaries": [
     {
       "kind": "region",
-      "label": "Phone screen · the top of /lodestar/use/v0.1/guides/forms (stage 2)",
+      "label": "Phone screen · the top of /lodestar/user-guide/v0.1/guides/forms (stage 2)",
       "wraps": [
         "mark",
         "search",
