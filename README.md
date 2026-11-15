@@ -5,8 +5,8 @@ open-source packages and libraries across ecosystems, and projects. Part of
 [nepal-dev.com](https://nepal-dev.com).
 
 **[docs.nepal-dev.com](https://docs.nepal-dev.com)** ·
-[How it works](content/docs/maintain/index.mdx) ·
-[Decisions](content/docs/maintain/adr/index.mdx) ·
+[How it works](content/docs/maintainer-guide/index.mdx) ·
+[Decisions](content/docs/maintainer-guide/adr/index.mdx) ·
 [Contributing](CONTRIBUTING.md)
 
 > **Status.** The site is built. Its own documentation, **Nepal Dev Verse Docs**, is the only entry so
@@ -31,18 +31,18 @@ open-source packages and libraries across ecosystems, and projects. Part of
 A documentation site where every package and project gets the same shape, at `/<slug>`:
 
 - an **overview**;
-- a **Use** track for the people using it, with one folder per documented version: `dev` for
+- a **User guide** track for the people using it, with one folder per documented version: `dev` for
   unreleased work, and released lines such as `v1.0` or `2024 LTS`;
-- a **Maintain** track for the people who look after it: architecture, decisions, how to release.
+- a **Maintainer guide** track for the people who look after it: architecture, decisions, how to release.
 
 Each entry is a folder, `content/<slug>/`, written in MDX. The build checks the shape, and
-`/<slug>/use/latest/…` always redirects to the current release. This site is one of the entries:
-project `docs`, whose Maintain track holds its own design documents and decisions at
-[`/docs/maintain`](content/docs/maintain/index.mdx).
+`/<slug>/user-guide/latest/…` always redirects to the current release. This site is one of the entries:
+project `docs`, whose Maintainer guide holds its own design documents and decisions at
+[`/docs/maintainer-guide`](content/docs/maintainer-guide/index.mdx).
 
 The whole site is drawn as one solar system: packages and projects are planets, version lines are
-moons, and Use and Maintain are a planet's day and night sides
-([ADR-0017](content/docs/maintain/adr/ADR-0017-the-whole-site-is-one-solar-system.mdx)).
+moons, and the User guide and the Maintainer guide are a planet's day and night sides
+([ADR-0017](content/docs/maintainer-guide/adr/ADR-0017-the-whole-site-is-one-solar-system.mdx)).
 
 ## Features
 
@@ -72,7 +72,7 @@ moons, and Use and Maintain are a planet's day and night sides
 | Package manager and tests | [Bun](https://bun.sh) |
 
 Exact versions are in [`package.json`](package.json). How the parts fit together is in the
-[system architecture](content/docs/maintain/architecture/system.mdx).
+[system architecture](content/docs/maintainer-guide/architecture/system.mdx).
 
 ## Quick start
 
@@ -92,7 +92,7 @@ Open [http://localhost:3000](http://localhost:3000). The site's own docs are at 
 `.env.local` can stay empty for local work, and search then finds nothing. `SITE_URL` and the three Algolia variables are needed
 only to publish, and `NEXT_PUBLIC_GA_MEASUREMENT_ID` belongs in production alone. Each variable is
 described in [`.env.example`](.env.example) and in the
-[secrets inventory](content/docs/maintain/security/secrets.mdx). `.env.local` is gitignored; never
+[secrets inventory](content/docs/maintainer-guide/security/secrets.mdx). `.env.local` is gitignored; never
 commit it.
 
 ## Scripts
@@ -112,22 +112,22 @@ commit it.
 
 Every pull request is checked by GitHub Actions: the tests, the type check, the build, a review of new
 dependencies, and CodeQL. It only checks, and holds no secret
-([ADR-0047](content/docs/maintain/adr/ADR-0047-github-checks-every-pull-request-and-dependabot-proposes-the-updates.mdx)).
+([ADR-0047](content/docs/maintainer-guide/adr/ADR-0047-github-checks-every-pull-request-and-dependabot-proposes-the-updates.mdx)).
 
 Every commit on `main` deploys straight to production on Vercel, the site and the search index
 together, with no preview. Other branches and forks get no deployment. The settings are in
 [`vercel.json`](vercel.json) and the
-[architecture's deployment section](content/docs/maintain/architecture/system.mdx#deployment)
-([ADR-0042](content/docs/maintain/adr/ADR-0042-only-main-deploys-straight-to-production-on-vercel.mdx)).
+[architecture's deployment section](content/docs/maintainer-guide/architecture/system.mdx#deployment)
+([ADR-0042](content/docs/maintainer-guide/adr/ADR-0042-only-main-deploys-straight-to-production-on-vercel.mdx)).
 
 ## Project structure
 
 ```
 .
 ├── content/             # every published page: one folder per package or project, at /<slug>
-│   ├── <slug>/          # meta.json (catalogue entry), index.mdx, use/ (versions), maintain/
+│   ├── <slug>/          # meta.json (catalogue entry), index.mdx, user-guide/ (versions), maintainer-guide/
 │   └── docs/            # this site as a project, at /docs
-│       └── maintain/    # its design documents, and adr/ for its decisions
+│       └── maintainer-guide/    # its design documents, and adr/ for its decisions
 ├── diagrams/            # Archify diagrams: source JSON and the published HTML
 ├── src/
 │   ├── app/             # routes: home, every page, llms.txt, share images, sitemap, search records
@@ -151,8 +151,8 @@ The full map, file by file, is in
 
 A package or project documents itself from its own repository. It includes this repository as a
 **git submodule** and writes into its own two folders, `content/<slug>/` and `diagrams/<slug>/`,
-keeping its Use and Maintain docs current in the same change as its code
-([ADR-0010](content/docs/maintain/adr/ADR-0010-projects-document-themselves-through-a-submodule.mdx)).
+keeping its User guide and its Maintainer guide docs current in the same change as its code
+([ADR-0010](content/docs/maintainer-guide/adr/ADR-0010-projects-document-themselves-through-a-submodule.mdx)).
 
 1. Agree a slug with the maintainer: open a
    [proposal](https://github.com/nepal-dev-com/docs.nepal-dev.com/issues/new/choose).
@@ -167,16 +167,16 @@ site, the search index and `llms.txt`.
 Contributions are welcome. Read [`CONTRIBUTING.md`](CONTRIBUTING.md) first; the short version:
 
 - **Every feature and functional change starts with an ADR**, and nothing is built until the owner
-  approves it ([ADR-0001](content/docs/maintain/adr/ADR-0001-adr-driven-development-workflow.mdx)).
+  approves it ([ADR-0001](content/docs/maintainer-guide/adr/ADR-0001-adr-driven-development-workflow.mdx)).
   Open a proposal before writing code. Bug fixes, typo fixes and pages within the approved
   conventions need no ADR.
 - **Tests and documentation ship in the same change** as the code.
 - **Anything undetermined is asked, not assumed**
-  ([ADR-0004](content/docs/maintain/adr/ADR-0004-ask-never-guess.mdx)).
+  ([ADR-0004](content/docs/maintainer-guide/adr/ADR-0004-ask-never-guess.mdx)).
 - [`AGENTS.md`](AGENTS.md) is the authoritative working agreement, for people and AI agents alike.
   Its depth is in the `nepal-dev-*` skills in [`.agent-skills/`](.agent-skills/INDEX.md), which an
   agent reads only when a task calls for them
-  ([ADR-0045](content/docs/maintain/adr/ADR-0045-agents-md-keeps-the-standing-rules-and-in-house-skills-hold-the-rest.mdx)).
+  ([ADR-0045](content/docs/maintainer-guide/adr/ADR-0045-agents-md-keeps-the-standing-rules-and-in-house-skills-hold-the-rest.mdx)).
 
 Everyone taking part follows the [Code of Conduct](CODE_OF_CONDUCT.md).
 
@@ -184,7 +184,7 @@ Everyone taking part follows the [Code of Conduct](CODE_OF_CONDUCT.md).
 
 The owner is nepal-dev.com, the community this site is part of. It is maintained by
 [Puncoz Nepal (@puncoz)](https://github.com/puncoz), who reviews and approves changes for the owner
-([ADR-0039](content/docs/maintain/adr/ADR-0039-nepal-dev-com-owns-the-site-and-puncoz-approves-for-it.mdx)).
+([ADR-0039](content/docs/maintainer-guide/adr/ADR-0039-nepal-dev-com-owns-the-site-and-puncoz-approves-for-it.mdx)).
 
 Everyone who has contributed is on the
 [contributors page](https://github.com/nepal-dev-com/docs.nepal-dev.com/graphs/contributors). Thank you.
@@ -196,7 +196,7 @@ Report a vulnerability, or private content that reached a public page, **private
 
 If a secret is ever committed, rotate it at once. Removing it from the working tree or from git
 history is not enough. The threat model, secrets inventory and audit checklist are in
-[`content/docs/maintain/security/`](content/docs/maintain/security/index.mdx).
+[`content/docs/maintainer-guide/security/`](content/docs/maintainer-guide/security/index.mdx).
 
 ## Licence
 
@@ -207,4 +207,4 @@ history is not enough. The threat model, secrets inventory and audit checklist a
   its own folder ([sources](.agent-skills/SOURCES.md)), and the nepal-dev.com name and logo.
 
 Copyright © 2026 nepal-dev.com and contributors
-([ADR-0046](content/docs/maintain/adr/ADR-0046-the-code-is-mit-the-docs-are-cc-by-and-the-repository-gets-its-community-files.mdx)).
+([ADR-0046](content/docs/maintainer-guide/adr/ADR-0046-the-code-is-mit-the-docs-are-cc-by-and-the-repository-gets-its-community-files.mdx)).

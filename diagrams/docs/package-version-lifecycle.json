@@ -18,7 +18,7 @@
       "id": "dev",
       "type": "start",
       "label": "Dev",
-      "sublabel": "use/dev/, work in progress",
+      "sublabel": "user-guide/dev/, work in progress",
       "tag": "opened"
     },
     {
@@ -77,7 +77,7 @@
       "from": "dev",
       "to": "removed",
       "label": "development stops",
-      "note": "use/dev/ is deleted",
+      "note": "user-guide/dev/ is deleted",
       "variant": "security"
     }
   ],
@@ -86,7 +86,7 @@
       "dot": "cyan",
       "title": "Entry and exit",
       "items": [
-        "A package opens use/dev/ for its unreleased work",
+        "A package opens user-guide/dev/ for its unreleased work",
         "Each release copies dev/ into a new named line",
         "Removed is the end state"
       ]

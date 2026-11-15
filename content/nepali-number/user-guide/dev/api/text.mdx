@@ -1,0 +1,195 @@
+---
+title: "Text"
+description: "Find, replace and spell out the numbers inside a sentence, and compare or sort numbers written in English or Nepali digits."
+---
+
+> Every output below was produced by running the built package.
+
+Numbers inside prose, and ordering numbers whatever script they are written in.
+
+**What counts as a number in text.** A run of digits in either script, mixed allowed. It may
+contain a comma only between two digits, and one decimal point only between two digits. A sign
+is never read: `"9841-123456"` is two numbers, not a subtraction.
+
+## Exports
+
+| Export | Signature | Returns |
+|---|---|---|
+| `findNumbers` | `(text: string) => NumberMatch[]` | Every number with its text, value, position and script |
+| `extractNumbers` | `(text: string) => number[]` | The values only |
+| `replaceNumbers` | `(text: string, replacer: (match: NumberMatch) => string) => string` | The text with each number replaced |
+| `spellOutNumbers` | `(text: string, options?: SpellOutOptions) => string` | The text with each number as words |
+| `compareNumbers` | `(a: NumericInput, b: NumericInput) => number` | `-1`, `0` or `1` |
+| `sortNumbers` | `<T extends NumericInput>(values: readonly T[], order?: "asc" \| "desc") => T[]` | A new sorted array |
+
+Types: [`NumberMatch`, `SpellOutOptions`, `NumericInput`](./types.mdx).
+
+---
+
+## `findNumbers(text)`
+
+```ts
+findNumbers(text: string): NumberMatch[]
+
+interface NumberMatch {
+  match: string
+  value: number
+  index: number
+  system: "english" | "nepali" | "mixed"
+}
+```
+
+**Returns.** One entry per number, in order. `index` is the UTF-16 offset of `match` in `text`,
+as `indexOf` would give. Text without numbers returns `[]`.
+
+```ts
+import { findNumbers } from "nepali-number"
+
+findNumbers("मसँग ३ वटा किताब र 1,200 रुपैयाँ छ")
+// → [
+//     { match: "३",     value: 3,    index: 5,  system: "nepali" },
+//     { match: "1,200", value: 1200, index: 19, system: "english" },
+//   ]
+
+findNumbers("Call 9841-123456 at 5pm")
+// → [
+//     { match: "9841",   value: 9841,   index: 5,  system: "english" },
+//     { match: "123456", value: 123456, index: 10, system: "english" },
+//     { match: "5",      value: 5,      index: 20, system: "english" },
+//   ]
+
+findNumbers("दर 12३.५ छ")
+// → [{ match: "12३.५", value: 123.5, index: 3, system: "mixed" }]
+
+findNumbers("no numbers here")    // → []
+findNumbers("")                   // → []
+```
+
+**Notes.** `value` is a JavaScript number, so it is not exact above
+9 007 199 254 740 991; `match` keeps the digits as written.
+
+---
+
+## `extractNumbers(text)`
+
+```ts
+extractNumbers(text: string): number[]
+```
+
+**Returns.** The `value` of each match from [`findNumbers`](#findnumberstext).
+
+```ts
+import { extractNumbers } from "nepali-number"
+
+extractNumbers("मसँग ३ वटा किताब र 1,200 रुपैयाँ छ")   // → [3, 1200]
+extractNumbers("Call 9841-123456 at 5pm")             // → [9841, 123456, 5]
+extractNumbers("तापक्रम -5 डिग्री")                      // → [5]      the sign is not read
+extractNumbers("abc")                                 // → []
+```
+
+---
+
+## `replaceNumbers(text, replacer)`
+
+```ts
+replaceNumbers(text: string, replacer: (match: NumberMatch) => string): string
+```
+
+**Returns.** `text` with each number replaced by what `replacer` returns for it. Everything
+else is left exactly as written. Text without numbers is returned unchanged.
+
+```ts
+import { replaceNumbers, formatNepaliNumber } from "nepali-number"
+
+replaceNumbers("Total 1234567 people", (m) => formatNepaliNumber(m.value))
+// → "Total १२,३४,५६७ people"
+
+replaceNumbers("३ वटा", (m) => `[${m.value}]`)   // → "[3] वटा"
+replaceNumbers("no numbers", () => "x")          // → "no numbers"
+```
+
+**Notes.** The return value is inserted as text and is not escaped. An error thrown by
+`replacer` is not caught.
+
+---
+
+## `spellOutNumbers(text, options?)`
+
+```ts
+spellOutNumbers(text: string, options?: SpellOutOptions): string
+
+interface SpellOutOptions {
+  words?: "nepali" | "english"   // default "nepali"
+}
+```
+
+**Returns.** `text` with each number written as words, by
+[`toNepaliWords`](./words.mdx#tonepaliwordsnumber) or
+[`toEnglishWords`](./words.mdx#toenglishwordsnumber-options).
+
+```ts
+import { spellOutNumbers } from "nepali-number"
+
+spellOutNumbers("मसँग ३ वटा किताब र 1,200 रुपैयाँ छ")
+// → "मसँग तीन वटा किताब र एक हजार दुई सय रुपैयाँ छ"
+
+spellOutNumbers("२.५ किलो")                          // → "दुई दशमलव पाँच किलो"
+spellOutNumbers("I have 21 books", { words: "english" })
+// → "I have twenty one books"
+
+spellOutNumbers("no numbers")                        // → "no numbers"
+```
+
+**Notes.** Years and phone numbers are numbers too: `"2082"` becomes
+`"दुई हजार बयासी"`. Use [`replaceNumbers`](#replacenumberstext-replacer) to choose which
+matches to spell out.
+
+---
+
+## `compareNumbers(a, b)`
+
+```ts
+compareNumbers(a: NumericInput, b: NumericInput): number
+```
+
+**Returns.** `-1` when `a` is smaller, `1` when it is larger, `0` when they are equal. `NaN`
+when either value is not a number.
+
+```ts
+import { compareNumbers } from "nepali-number"
+
+compareNumbers("१२३", 123)                              // → 0
+compareNumbers("१,२३४", 999)                            // → 1
+compareNumbers(-5, "३")                                 // → -1
+compareNumbers("१.५", "1.50")                           // → 0
+compareNumbers(9007199254740993n, "9007199254740992")   // → 1     exact above 2⁵³
+compareNumbers("abc", 1)                                // → NaN
+```
+
+**Notes.** The comparison is made on the decimal digits, not on JavaScript floats.
+
+---
+
+## `sortNumbers(values, order?)`
+
+```ts
+sortNumbers<T extends NumericInput>(values: readonly T[], order?: "asc" | "desc"): T[]
+```
+
+| Parameter | Type | Default | Notes |
+|---|---|---|---|
+| `values` | `readonly T[]` | — | Numbers, `bigint`s or strings in either script |
+| `order` | `"asc" \| "desc"` | `"asc"` | |
+
+**Returns.** A new array with the same elements, unconverted, ordered by value. The sort is
+stable. Values that are not numbers go last, in their original order. The argument is not
+changed.
+
+```ts
+import { sortNumbers } from "nepali-number"
+
+sortNumbers(["१०", 9, "1,000", "२.५"])            // → ["२.५", 9, "१०", "1,000"]
+sortNumbers(["१०", 9, "1,000", "२.५"], "desc")    // → ["1,000", "१०", 9, "२.५"]
+sortNumbers(["५", "abc", 1])                      // → [1, "५", "abc"]
+sortNumbers([])                                   // → []
+```

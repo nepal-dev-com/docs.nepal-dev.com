@@ -1,0 +1,56 @@
+---
+title: nepali-number
+description: "Convert, format and spell out numbers in Nepali (Devanagari) from JavaScript or TypeScript: digits, lakh and crore grouping, words, ordinals and Nepali Rupees."
+---
+
+`nepali-number` is a zero-dependency TypeScript library for working with numbers in Nepali
+(Devanagari) script. It ships ESM, CommonJS, UMD and IIFE builds with type declarations, so the
+same code runs in Node.js, Bun, Deno, bundlers and a plain `<script>` tag.
+
+```ts
+import { toNepali, formatNepaliNumber, toNepaliWords, toNepaliCurrency } from "nepali-number"
+
+toNepali(2081)                    // → "२०८१"
+formatNepaliNumber(1234567)       // → "१२,३४,५६७"
+toNepaliWords(1234567)            // → "बाह्र लाख चौंतीस हजार पाँच सय सतसट्ठी"
+toNepaliCurrency(1234567.89)      // → "रू १२,३४,५६७.८९"
+```
+
+## What it does
+
+- **Digits both ways**: `0-9` ⇄ `०-९`, in plain numbers or inside any text.
+- **Grouping**: Nepali `1,23,45,678` or international `123,456,789`, with precision, sign and
+  percent formatting.
+- **Words**: Nepali cardinals with decimals (`बाह्र दशमलव पाँच`), English words in Nepali or
+  international scales, ordinals (`पाँचौं`, `५औं`, `twenty first`, `21st`), short forms
+  (`१२ लाख`), and words back to numbers.
+- **Currency**: `रू १२,३४,५६७.८९` as a figure, rupees and paisa in Nepali or English words
+  (`बाह्र रुपैयाँ पचास पैसा`), cheque wording, and parsing amounts.
+- **Fractions and multipliers**: `डेढ`, `साढे तीन`, `दुई बटा पाँच`, `दोब्बर`.
+- **Traditional units**: रोपनी-आना-पैसा-दाम, बिघा-कट्ठा-धुर and तोला-लाल.
+- **Numbers in text**: find, replace and spell out the numbers in a sentence; compare and sort
+  numbers written in either script.
+- **Utilities**: normalise typed input, detect and validate digit systems, pad and round.
+- **Exact at any size**: every function reads English, Nepali or mixed digits, as a `number`, a
+  `bigint` or a string, without passing through floating point.
+- **Never throws** for its declared input types: input that is not a number returns `""` or
+  `NaN`.
+
+It exports 45 named, pure functions and has no runtime dependencies.
+
+## Install
+
+```bash
+npm install nepali-number
+```
+
+## Where to go next
+
+| You want to | Read |
+|---|---|
+| Install it and import it in your runtime | [Getting started](./user-guide/v2/getting-started.mdx) |
+| Solve a common task | [Recipes](./user-guide/v2/guides/recipes.mdx) |
+| Look up a function, its options and its outputs | [API reference](./user-guide/v2/api/index.mdx) |
+| Know the edge cases before relying on them | [Limitations](./user-guide/v2/api/limitations.mdx) |
+| Move a codebase from v1 | [Migrating from v1 to v2](./user-guide/v2/guides/migration-v1-to-v2.mdx) |
+| Change, review or release the package | [Maintainer documentation](./maintainer-guide/index.mdx) |

@@ -1,0 +1,236 @@
+---
+title: "ADR-0015 — Currency: sign, cheque wording, English words, parsing"
+description: "Rupee amounts put the minus sign before the symbol, round paisa exactly, gain cheque wording and English words, and can be parsed back into a number."
+---
+
+- **Status:** Approved
+- **Date:** 2026-11-14
+- **Deciders:** [@puncoz](https://github.com/puncoz)
+- **Approved by:** [@puncoz](https://github.com/puncoz)
+- **Approved on:** 2026-11-14
+- **Supersedes:** —
+- **Superseded by:** —
+- **Semver impact:** major — absorbed by the unreleased 2.0.0 (owner decision, 2026-11-14)
+- **Design documents:** [`user-guide/dev/api/currency.mdx`](../../user-guide/dev/api/currency.mdx),
+  `user-guide/dev/api/types.mdx`, `user-guide/dev/api/limitations.mdx`,
+  `user-guide/dev/guides/migration-v1-to-v2.mdx`
+
+## Context
+
+This ADR builds on
+[ADR-0012](./ADR-0012-read-every-number-once-exactly.mdx) (the `NumericInput` type, exact
+decimal reading, the one invalid-input rule, the rounding rule), on
+[ADR-0013](./ADR-0013-fix-and-extend-formatting-and-utils.mdx) (`formatNepaliNumber` and its
+`grouping` option) and on
+[ADR-0014](./ADR-0014-words-decimals-big-numbers-ordinals-and-parsing.mdx) (`toEnglishWords`
+and `EnglishWordsOptions`). It applies them to the `currency` domain.
+
+What the two exports do today, run against the built package:
+
+- **Commas in a string are misread.** `toNepaliCurrency("1,234")` → `"रू १.००"`.
+- **The minus sign sits inside the amount.** `toNepaliCurrency(-1234.5)` → `"रू -१,२३४.५०"`.
+- **Paisa is rounded in binary floating point.** `toNepaliCurrency(1.005)` → `"रू १.००"` and
+  `toNepaliCurrencyWords(1.005)` → `"एक रुपैयाँ"`.
+- **Invalid input reads as zero rupees.** `toNepaliCurrency("abc")` → `"रू ०.००"` and
+  `toNepaliCurrencyWords("abc")` → `"शून्य रुपैयाँ"`. On an invoice that is a wrong amount,
+  not a missing one.
+- **A `bigint` throws.** `toNepaliCurrency(12345678901234567890n)` →
+  `TypeError: Cannot convert a BigInt value to a number`.
+- **There is no cheque wording** (`… मात्र`), **no English amount in words**, and **no parser
+  for a formatted amount**. `removeFormatting` reads `"रू १२,३४,५६७.८९"`, but it also reads
+  `"$5"` as `5`.
+- Neither export has TSDoc.
+
+## Decision
+
+Written on the recommended option of every row in *Owner decisions* below; each is assumed
+until the owner picks.
+
+### Changed exports
+
+```ts
+toNepaliCurrency(amount: NumericInput, options?: CurrencyOptions): string
+toNepaliCurrencyWords(amount: NumericInput, options?: CurrencyWordsOptions): string
+```
+
+**`CurrencyOptions`**
+
+| Option | Type | Default | Effect |
+|---|---|---|---|
+| `useNepaliDigits` | `boolean` | `true` | `false` keeps English digits |
+| `showPaisa` | `boolean` | `true` | `true` always shows `precision` decimals; `false` rounds to whole rupees |
+| `currencySymbol` | `string` | `"रू"` | Separated from the number by one space |
+| `precision` | `number` | `2` | Decimal places when `showPaisa` is `true` |
+| `symbolPosition` | `"before" \| "after"` | `"before"` | **New.** `"after"` writes `"१,२३४.०० रू"` |
+| `grouping` | `"nepali" \| "international"` | `"nepali"` | **New.** Passed to `formatNepaliNumber` |
+
+- The amount is read by the core reader, so commas, either script and `bigint` work.
+- A negative amount carries its minus sign in front of the whole string: `"-रू १,२३४.५०"`,
+  and `"-१,२३४.५० रू"` with `symbolPosition: "after"`.
+- Rounding follows the core rule: `1.005` → `"रू १.०१"`.
+- Invalid input returns `""`.
+- The options object is still handed on to `formatNepaliNumber`, as it is today, so an
+  untyped `addCommas: false` keeps turning grouping off.
+
+**`CurrencyWordsOptions`**: `only?: boolean`, default `false`. `true` appends ` मात्र`, the
+closing word of an amount on a cheque or a receipt.
+
+- Paisa is the fraction rounded to two places by the core rule, carrying into rupees:
+  `1.005` → `"एक रुपैयाँ एक पैसा"`.
+- Invalid input returns `""`. Zero stays `"शून्य रुपैयाँ"`.
+
+### New exports
+
+```ts
+toEnglishCurrencyWords(amount: NumericInput, options?: EnglishCurrencyWordsOptions): string
+parseNepaliCurrency(text: string): number
+```
+
+- **`toEnglishCurrencyWords`**: rupees as `<words> rupee` for exactly one and `<words> rupees`
+  otherwise, then `<words> paisa`; either part is left out when it is zero; zero is
+  `"zero rupees"`; a negative is prefixed with `negative`. `EnglishCurrencyWordsOptions` is
+  `EnglishWordsOptions` (`system`, `hyphenate`, `and`) plus `only?: boolean`, default `false`,
+  which appends ` only`.
+- **`parseNepaliCurrency`**: an optional sign, at most one recognised symbol before the
+  number (`रू`, `रु`, `रु.`, `Rs`, `Rs.`, `NPR`), the number in the core grammar, and an
+  optional recognised symbol or `/-` after it. Anything else returns `NaN`.
+
+### Language data added to `src/constants.ts`
+
+`रुपैयाँ` and `पैसा` (today hardcoded in `src/currency/currency.ts`, against invariant 6), `रू`
+as the default symbol, `मात्र`; English `rupee`, `rupees`, `paisa`, `only`; the recognised
+input symbols `रू`, `रु`, `रु.`, `Rs`, `Rs.`, `NPR` and the trailing `/-`.
+
+### Before and after
+
+| Input | Today | After |
+|---|---|---|
+| `toNepaliCurrency("1,234")` | `"रू १.००"` | `"रू १,२३४.००"` |
+| `toNepaliCurrency(-1234.5)` | `"रू -१,२३४.५०"` | `"-रू १,२३४.५०"` |
+| `toNepaliCurrency(-50)` | `"रू -५०.००"` | `"-रू ५०.००"` |
+| `toNepaliCurrency(1.005)` | `"रू १.००"` | `"रू १.०१"` |
+| `toNepaliCurrency("abc")`, `toNepaliCurrency("")` | `"रू ०.००"` | `""` |
+| `toNepaliCurrency(12345678901234567890n)` | throws `TypeError` | `"रू १,२३,४५,६७,८९,०१,२३,४५,६७,८९०.००"` |
+| `toNepaliCurrencyWords(1.005)` | `"एक रुपैयाँ"` | `"एक रुपैयाँ एक पैसा"` |
+| `toNepaliCurrencyWords("abc")`, `toNepaliCurrencyWords("")` | `"शून्य रुपैयाँ"` | `""` |
+
+Every other output documented in `user-guide/dev/api/currency.mdx` today is unchanged,
+including `toNepaliCurrency(0)` → `"रू ०.००"` and `toNepaliCurrencyWords(0)` → `"शून्य रुपैयाँ"`.
+
+## Options considered
+
+| Option | Pros | Cons | Verdict |
+|---|---|---|---|
+| A — Fix the two exports in place, add options, add two exports | One name per job; the fixes land where people already call | Output changes for negatives, `1.005`-style values and invalid input | Chosen |
+| B — Leave the two untouched; add `formatRupees`, `rupeesInWords` | No output change | The misreading `"1,234"` → `"रू १.००"` stays the default | Rejected |
+| C — A general currency API with a currency code (`NPR`, `INR`, `USD`) | Wider use | Needs unit names and plural rules per currency; outside "Nepali only" | Rejected |
+| D — Make `removeFormatting` the currency parser | No new export | It accepts any text around the digits, so `"$5"` reads as `5` | Rejected: a strict parser is added beside it |
+
+### Owner decisions
+
+| Decision | Options (with the actual output strings) | Recommended | Consequence |
+|---|---|---|---|
+| Where the minus sign goes | Before the symbol: `"-रू १,२३४.५०"` · After the symbol, as today: `"रू -१,२३४.५०"` · Accounting: `"(रू १,२३४.५०)"` | Before the symbol | Changes every negative amount; a later option could add the other forms |
+| Minus sign with `symbolPosition: "after"` | `"-१,२३४.५० रू"` | — (follows from the row above) | — |
+| Closing word on a cheque | `मात्र`: `"दुई सय पचास रुपैयाँ मात्र"` · `मात्र ।` with a danda: `"दुई सय पचास रुपैयाँ मात्र ।"` | `मात्र`, no danda | New entry in `src/constants.ts` |
+| How `only` is switched on | Option `only`, default `false` · Always appended | Option, default `false` | Existing outputs stay as they are |
+| Leading word on a cheque (`रुपैयाँ दुई सय पचास मात्र`) | Not offered: unit stays after the number · Add `unitFirst` option | Not offered | Can be added later without breaking anything |
+| English unit words | `rupee` / `rupees` / `paisa`: `"one rupee"`, `"two rupees fifty paisa"` · `rupees` always: `"one rupees"` · Plural `paise`: `"fifty paise"` | `rupee` / `rupees` / `paisa` | New English strings; `paisa` is the Nepali usage, `paise` the Indian one |
+| Joining rupees and paisa in English | A space: `"twelve rupees fifty paisa"` · `and`: `"twelve rupees and fifty paisa"` | A space | Mirrors the Nepali output, which has no conjunction |
+| English closing word | `only`: `"two hundred fifty rupees only"` | `only` | New English string |
+| Zero in English | `"zero rupees"` · `""` | `"zero rupees"` | Mirrors `"शून्य रुपैयाँ"` |
+| Recognised input symbols | `रू`, `रु`, `रु.`, `Rs`, `Rs.`, `NPR`, trailing `/-` · The same plus `₹` and `INR` · Only `रू` | The first list | `"$5"` and `"₹५"` are `NaN`; the list can grow in a minor release |
+| Symbol matching | Case-sensitive (`"rs 5"` → `NaN`) · Case-insensitive (`"rs 5"` → `5`) | Case-insensitive for the Latin symbols | Lower-case `rs.` and `npr` are common in typed input |
+| Trailing zeros in paisa | Always two digits with `showPaisa`: `"रू १,२३४.००"` · Trimmed: `"रू १,२३४"` | Always two digits (as today) | No change |
+| Paisa rounding | Half away from zero on the written digits (ADR-0012 D2): `1.005` → `"एक रुपैयाँ एक पैसा"` · As today: `"एक रुपैयाँ"` | Half away from zero | Decided once in ADR-0012; listed here because money is where it shows |
+| Invalid input | `""` (ADR-0012 D1) · As today: `"रू ०.००"`, `"शून्य रुपैयाँ"` | `""` | An invalid amount no longer prints as zero rupees |
+
+## Consequences
+
+**Positive**
+
+- An amount typed with commas, in either script, or as a `bigint` is formatted correctly.
+- Money rounds the way it is written, not the way binary floating point stores it.
+- Cheques, receipts and bilingual invoices are covered without string concatenation in
+  consumer code.
+- The Devanagari that `currency.ts` hardcodes today moves to `src/constants.ts`.
+
+**Negative / accepted trade-offs**
+
+- The minified build grows: two exports, the symbol list and the English unit words. The
+  number is measured at implementation (invariant 8).
+- `parseNepaliCurrency` returns a JavaScript `number`: an amount above 2⁵³ is not
+  exact, and decimals follow binary floating point once parsed. Documented.
+- The untyped pass-through of `FormatOptions` fields is kept as it is, and stays undocumented
+  as a type.
+
+**For consumers**
+
+- Negative amounts change shape: `"रू -५०.००"` becomes `"-रू ५०.००"`. Snapshots that contain a
+  negative amount must be updated.
+- Code that compared the result with `"रू ०.००"` or `"शून्य रुपैयाँ"` to detect bad input must
+  compare with `""`, or validate first with `isValidNumber` (ADR-0013).
+- Amounts ending in a 5 at the third decimal can gain one paisa.
+- Everything else documented today is unchanged.
+
+## Package invariants
+
+- **1, 2, 3** — no dependency, no host global, no state: kept.
+- **4 — no throwing.** The `bigint` `TypeError` goes away; invalid content returns `""` or
+  `NaN`.
+- **5 — output strings are the contract.** The changes are in the before/after table and are
+  absorbed by the unreleased 2.0.0.
+- **6 — language data has one home.** This ADR removes an existing departure: `रुपैयाँ`,
+  `पैसा`, `ऋण` and `रू` leave `currency.ts` for `src/constants.ts`, with the new strings.
+- **7 — Unicode-aware.** Symbols are matched as whole strings from the constants list; no `\d`
+  and no `.length` arithmetic on Devanagari.
+- **8 — small.** Grows; measured at implementation.
+- **Layering** is unchanged: `currency` imports `conversion`, `formatting` and `words`.
+
+## Security considerations
+
+- **New input parsing.** `parseNepaliCurrency` reads untrusted strings. It strips at most one
+  leading and one trailing symbol by direct comparison against a fixed list, then hands the
+  rest to the core reader (ADR-0012), which is a linear scanner. No regular expression with a
+  quantifier over unbounded input. Tested with a 100 000-character hostile string (digits,
+  repeated symbols, repeated `/-`).
+- **A wrong amount is worse than no amount.** Returning `""` and `NaN` for invalid input, where
+  today's code prints zero rupees, removes a way for bad input to become a plausible figure
+  on a document.
+- Empty, whitespace-only, huge, `NaN`, `Infinity` and non-digit input have a defined, tested
+  and documented result.
+- No dependency, no CI or publishing change, no logging.
+
+## Implementation notes
+
+- [ ] `src/constants.ts`: the unit words, `मात्र`, the default symbol, the recognised input
+      symbols, the English unit words.
+- [ ] `src/currency/types.ts`: `CurrencyOptions` (two new fields), `CurrencyWordsOptions`,
+      `EnglishCurrencyWordsOptions`; `export type * from "./types"` in
+      `src/currency/index.ts`.
+- [ ] `src/currency/currency.ts`: rework the two exports on the ADR-0012 reader; add the two
+      new exports; TSDoc on all four.
+- [ ] Tests — the happy path **and** the obvious failure paths (ADR-0007): English and Nepali
+      digits, empty, zero, negative, decimal, ≥ 1 crore, `bigint`, invalid; each option; the
+      paisa carry (`0.999`, `1.999`, `100.999`); every recognised symbol in
+      `parseNepaliCurrency`, an unknown one, two symbols; the hostile-input test above.
+- [ ] `bun run type-check`, `bun run test` and `bun run build` pass.
+- [ ] Built CJS loaded with `node`; outputs match `user-guide/dev/api/currency.mdx`.
+
+## Docs to update on implementation
+
+- [ ] `user-guide/dev/api/currency.mdx` — check every output against the build and restore
+      the "produced by running the built package" line.
+- [ ] `user-guide/dev/api/index.mdx`, `user-guide/dev/api/types.mdx` — the new exports and types.
+- [ ] `user-guide/dev/api/limitations.mdx` — delete the currency parts of
+      *`formatNepaliNumber` stops at the first comma* and *Floating-point rounding*; add the
+      precision of `parseNepaliCurrency`.
+- [ ] `user-guide/dev/guides/migration-v1-to-v2.mdx` — the changed outputs.
+- [ ] `user-guide/dev/guides/recipes.mdx` — a cheque amount in both languages.
+- [ ] `README.md` — API summary and examples.
+- [ ] `docs/agent-skills/nepali-number-stack-and-map/SKILL.md` — export count, test count.
+- [ ] `maintainer-guide/security/threat-model.mdx` — `parseNepaliCurrency`.
+- [ ] `maintainer-guide/adr/index.mdx` — index row + status.
+- [ ] Proposed commit message:
+      `feat(currency)!: sign before the symbol, exact paisa, cheque wording, English words, parsing`
+      with a `BREAKING CHANGE:` footer listing the before/after table.

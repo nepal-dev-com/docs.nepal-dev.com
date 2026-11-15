@@ -1,0 +1,28 @@
+---
+title: "Architecture"
+description: "How nepali-number is put together: the source layout, which domain may import which, and how the source becomes the files on npm."
+---
+
+How the package is put together: source layout, the direction of dependencies between
+domains, and how the source becomes the files on npm.
+
+> **Living snapshots.** Edit in place so each file describes the package as it is right now. No
+> revision tables, no "previously X, now Y" — delete what is no longer true
+> ([ADR-0002](../adr/ADR-0002-living-design-documentation.mdx)).
+
+## Conventions
+
+- `system.mdx` is the primary document: modules, layering, rules for new code.
+- `build-and-distribution.mdx` covers tsdown, output formats, `package.json` entry points and
+  how each consumer environment resolves them.
+- A change that adds a domain, adds a cross-domain import, or changes the build or `exports`
+  map updates these in the same change, diagrams included: the Mermaid and its Archify view.
+
+**Template:** [`docs/_templates/architecture.md`](https://github.com/nepal-dev-com/nepali-number-js/blob/main/docs/_templates/architecture.md) in the repository
+
+## Documents
+
+| Document | Status | ADR |
+|---|---|---|
+| [System](./system.mdx) | Current | [ADR-0009](../adr/ADR-0009-package-invariants.mdx) |
+| [Build and distribution](./build-and-distribution.mdx) | Current | [ADR-0009](../adr/ADR-0009-package-invariants.mdx) |

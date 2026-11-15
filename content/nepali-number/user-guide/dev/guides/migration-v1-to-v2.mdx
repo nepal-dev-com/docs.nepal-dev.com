@@ -1,0 +1,139 @@
+---
+title: "Migrating from v1 to v2"
+description: "Replace each nepali-number v1 function with its v2 equivalent, with the renamed calls and changed outputs side by side."
+---
+
+> v2 outputs below were produced by running the v2 build; v1 outputs are quoted from the
+> v1.0.3 README.
+
+v2 is a rewrite. Every v1 function was renamed or replaced, the `locale` string arguments are
+gone, and many new functions were added. There is no compatibility layer.
+
+## What changed
+
+| | v1 (1.0.3) | v2 |
+|---|---|---|
+| Exports | 6 functions | 45 functions in 8 domains |
+| Digit choice | A `locale` argument: `"en"` (default) or `"ne"` | `useNepaliDigits` option, **default `true`** |
+| Formatting engine | `Intl.NumberFormat` | Own implementation, no `Intl` |
+| International grouping (`123,456,789`) | `englishNumberFormat` | `grouping: "international"` option |
+| Input | Numbers and strings | `number`, `bigint` or string, in either script, read exactly |
+| Invalid locale / type | Throws `TypeError` | Nothing throws for declared input types |
+| Builds | CJS + ESM | ESM, CJS, UMD, IIFE + `.d.ts` / `.d.cts` |
+
+## Function by function
+
+### `englishToNepaliNumber` → `toNepali`
+
+```ts
+// v1
+englishToNepaliNumber("12,34,56,789.01")   // "१२,३४,५६,७८९.०१"
+
+// v2
+toNepali("12,34,56,789.01")                // → "१२,३४,५६,७८९.०१"
+```
+
+### `nepaliToEnglishNumber` → `toEnglish`
+
+```ts
+// v1
+nepaliToEnglishNumber("१२,३४,५६,७८९.०१")   // "12,34,56,789.01"
+
+// v2
+toEnglish("१२,३४,५६,७८९.०१")               // → "12,34,56,789.01"
+```
+
+### `nepaliNumberFormat` → `formatNepaliNumber`
+
+v1 defaulted to **English** digits; v2 defaults to **Nepali** digits.
+
+```ts
+// v1
+nepaliNumberFormat("123456789")            // "12,34,56,789"
+nepaliNumberFormat("123456789", "ne")      // "१२,३४,५६,७८९"
+
+// v2
+formatNepaliNumber("123456789", { useNepaliDigits: false })   // → "12,34,56,789"
+formatNepaliNumber("123456789")                               // → "१२,३४,५६,७८९"
+```
+
+### `nepaliAmountFormat` → `formatNepaliNumber` with `precision`, or `toNepaliCurrency`
+
+```ts
+// v1
+nepaliAmountFormat("123456789.0154")          // "12,34,56,789.02"
+nepaliAmountFormat("123456789.0154", 3, "ne") // "१२,३४,५६,७८९.०१५"
+
+// v2
+formatNepaliNumber("123456789.0154", { useNepaliDigits: false })  // → "12,34,56,789.02"
+formatNepaliNumber("123456789.0154", { precision: 3 })            // → "१२,३४,५६,७८९.०१५"
+toNepaliCurrency(123456789.0154)                                  // → "रू १२,३४,५६,७८९.०२"
+```
+
+`formatNepaliNumber` drops an all-zero decimal part by default (`1000` → `"१,०००"`); pass
+`trimZero: false` to keep it.
+
+### `englishNumberFormat` / `englishAmountFormat` → `formatNepaliNumber` with `grouping`
+
+Pass `grouping: "international"`, with `useNepaliDigits: false` for English digits.
+
+```ts
+formatNepaliNumber("123456789", { useNepaliDigits: false, grouping: "international" })
+// → "123,456,789"
+
+formatNepaliNumber("123456789.0154", { useNepaliDigits: false, grouping: "international" })
+// → "123,456,789.02"
+
+formatNepaliNumber(123456789, { grouping: "international" })
+// → "१२३,४५६,७८९"
+```
+
+## v2 behaviour to know
+
+These are the rules v2 follows. Check any code that depended on something else.
+
+- **Invalid input returns `NaN` or `""`, never zero.** A function that returns a number returns
+  `NaN`, one that returns a string returns `""`.
+
+  ```ts
+  parseNepaliNumber("abc")    // → NaN
+  formatNepaliNumber("abc")   // → ""
+  toNepaliWords("abc")        // → ""
+  ```
+
+- **`parseNepaliNumber` reads the whole string or nothing.** Trailing text makes it `NaN`; to
+  pull the digits out of any text use `removeFormatting`.
+
+  ```ts
+  parseNepaliNumber("12abc")   // → NaN
+  removeFormatting("12abc")    // → 12
+  ```
+
+- **Rounding is half away from zero, on the digits as written**, not on the binary float.
+
+  ```ts
+  formatNepaliNumber(1.005)   // → "१.०१"
+  roundNepali(2.5, 0)         // → "३"
+  roundNepali(-2.5, 0)        // → "-३"
+  ```
+
+- **`detectNumberSystem` returns `"none"`** for text without digits:
+  `detectNumberSystem("abcd")` → `"none"`.
+- **A negative amount carries its sign before the symbol**: `toNepaliCurrency(-1234.5)` →
+  `"-रू १,२३४.५०"`.
+- **`padZeros` counts the sign in the length**: `padZeros(-5, 4)` → `"-००५"`.
+- **`FormatOptions` has no `currency` or `currencySymbol`.** Use `toNepaliCurrency` and its
+  `currencySymbol` option.
+- **`isNepaliDigit` and `isEnglishDigit` test exactly one character**: `isNepaliDigit("५६")` →
+  `false`, `isEnglishDigit("5a")` → `false`.
+
+## Checklist
+
+- [ ] Replace each import using the sections above.
+- [ ] Wherever v1 relied on the default `"en"` locale, pass `{ useNepaliDigits: false }`.
+- [ ] Wherever v1 used `englishNumberFormat` or `englishAmountFormat`, pass
+      `grouping: "international"`.
+- [ ] Remove `try`/`catch` around v1 calls that guarded the `TypeError` for an invalid locale,
+      and check for `NaN` or `""` instead.
+- [ ] Re-check snapshot tests: trimmed `.00`, and Nepali digits by default.
+- [ ] Read [limitations](../api/limitations.mdx).

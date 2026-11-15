@@ -28,12 +28,12 @@ describe('the home share image (ADR-0035 decision 11)', () => {
 });
 
 describe('a page share image (ADR-0035 decision 11)', () => {
-  const page = { url: '/lodestar/use/dev/install', title: 'Install', description: 'Add lodestar to a project.' };
-  const entry = { label: 'lodestar', ring: 'npm', kind: 'package', track: 'Use', line: { name: 'dev', channel: 'dev' } } as const;
+  const page = { url: '/lodestar/user-guide/dev/install', title: 'Install', description: 'Add lodestar to a project.' };
+  const entry = { label: 'lodestar', ring: 'npm', kind: 'package', track: 'User guide', line: { name: 'dev', channel: 'dev' } } as const;
 
   test('says the entry, the track and the line above the title', () => {
     const markup = renderToStaticMarkup(<PageShareImage {...page} entry={entry} domain="docs.example.test" />);
-    for (const text of ['lodestar', '· Use', 'dev', 'Install', 'Add lodestar to a project.', 'docs.example.test']) {
+    for (const text of ['lodestar', '· User guide', 'dev', 'Install', 'Add lodestar to a project.', 'docs.example.test']) {
       expect(markup).toContain(text);
     }
   });
@@ -41,7 +41,7 @@ describe('a page share image (ADR-0035 decision 11)', () => {
   test('shows no address when the site has none, and no entry row outside an entry', () => {
     const markup = renderToStaticMarkup(<PageShareImage {...page} />);
     expect(markup).not.toContain('example.test');
-    expect(markup).not.toContain('· Use');
+    expect(markup).not.toContain('· User guide');
   });
 
   test('never puts a star behind the text', () => {

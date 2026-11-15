@@ -1,0 +1,11 @@
+{
+  "title": "Maintainer guide",
+  "description": "Decisions, architecture, release process and security documents for nepali-number",
+  "pages": [
+    "index",
+    "adr",
+    "architecture",
+    "release",
+    "security"
+  ]
+}

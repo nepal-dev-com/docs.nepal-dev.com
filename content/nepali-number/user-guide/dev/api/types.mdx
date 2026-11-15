@@ -1,0 +1,137 @@
+---
+title: "Types"
+description: "The input, option and result types nepali-number exports, such as NumericInput, FormatOptions and CurrencyOptions, with every field and default."
+---
+
+> Every type below is exported from `dist/nepali-number.d.ts`.
+
+Every type is exported from the package root:
+
+```ts
+import type { NumericInput, FormatOptions, CurrencyOptions } from "nepali-number"
+```
+
+Every option is optional; the default is shown beside it.
+
+## `NumericInput`
+
+What every function that reads a number accepts
+([ADR-0012](../../../maintainer-guide/adr/ADR-0012-read-every-number-once-exactly.mdx)).
+
+```ts
+type NumericInput = number | bigint | string
+```
+
+A string may use English digits, Nepali digits or both, with grouping commas, spaces, one
+decimal point and a leading `+`, `-` or `−`. See
+[conversion](./conversion.mdx).
+
+## Formatting
+
+Used by [formatting](./formatting.mdx) and [utils](./utils.mdx).
+
+```ts
+interface FormatOptions {
+  useNepaliDigits?: boolean                  // default true
+  addCommas?: boolean                        // default true
+  precision?: number                         // default 2
+  trimZero?: boolean                         // default true
+  grouping?: "nepali" | "international"      // default "nepali"
+  sign?: "auto" | "always"                   // default "auto"
+}
+
+interface PercentOptions {
+  useNepaliDigits?: boolean                  // default true
+  precision?: number                         // default 2
+  trimZero?: boolean                         // default true
+  addCommas?: boolean                        // default true
+  isRatio?: boolean                          // default false
+  symbol?: string                            // default "%"
+}
+
+interface PadOptions {
+  useNepaliDigits?: boolean                  // default true
+}
+
+type NumberSystem = "english" | "nepali" | "mixed" | "none"
+```
+
+## Words
+
+Used by [words](./words.mdx).
+
+```ts
+interface EnglishWordsOptions {
+  system?: "nepali" | "international"        // default "nepali"
+  hyphenate?: boolean                        // default false
+  and?: boolean                              // default false
+}
+
+interface OrdinalNumberOptions {
+  useNepaliDigits?: boolean                  // default true for Nepali, false for English
+}
+
+interface DecimalWordOptions {
+  precision?: number                         // default 2
+  useNepaliDigits?: boolean                  // default true
+}
+```
+
+## Currency
+
+Used by [currency](./currency.mdx).
+
+```ts
+interface CurrencyOptions {
+  useNepaliDigits?: boolean                  // default true
+  showPaisa?: boolean                        // default true
+  currencySymbol?: string                    // default "रू"
+  precision?: number                         // default 2
+  symbolPosition?: "before" | "after"        // default "before"
+  grouping?: "nepali" | "international"      // default "nepali"
+}
+
+interface CurrencyWordsOptions {
+  only?: boolean                             // default false
+}
+
+interface EnglishCurrencyWordsOptions extends EnglishWordsOptions {
+  only?: boolean                             // default false
+}
+```
+
+## Units
+
+Used by [units](./units.mdx).
+
+```ts
+type LandUnit =
+  | "ropani" | "aana" | "paisa" | "dam"
+  | "bigha" | "kattha" | "dhur"
+  | "sqft" | "sqm"
+
+type WeightUnit = "tola" | "lal" | "gram" | "kilogram"
+
+interface UnitFormatOptions {
+  from?: LandUnit | WeightUnit               // default "sqft" for land, "gram" for weight
+  style?: "notation" | "words"               // default "notation"
+  useNepaliDigits?: boolean                  // default true
+}
+```
+
+## Text
+
+Used by [text](./text.mdx).
+
+```ts
+interface NumberMatch {
+  match: string
+  value: number
+  index: number
+  system: "english" | "nepali" | "mixed"
+}
+
+interface SpellOutOptions {
+  words?: "nepali" | "english"               // default "nepali"
+}
+```

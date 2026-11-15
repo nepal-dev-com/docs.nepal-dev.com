@@ -11,7 +11,7 @@
 ## Checklist
 
 - [ ] The ADR is **Approved**, or this change needs none (above).
-- [ ] If a person can see the change, its app flow is in `content/docs/maintain/app-flow/`.
+- [ ] If a person can see the change, its app flow is in `content/docs/maintainer-guide/app-flow/`.
 - [ ] Nothing private, secret or internal is in the pages, diagrams, examples or tests.
 - [ ] Tests cover the happy path and the obvious failures.
 - [ ] The design documents, `README.md`, `AGENTS.md` and the ADR index match the change.

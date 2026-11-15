@@ -2,22 +2,24 @@ import { describe, expect, test } from 'bun:test';
 import type * as PageTree from 'fumadocs-core/page-tree';
 import { currentSide, folderUrls, lineLink } from './overview-sidebar';
 
-const both = { useUrl: '/lodestar/use/v0.1/install', maintainUrl: '/lodestar/maintain/releasing' };
+const both = { userGuideUrl: '/lodestar/user-guide/v0.1/install', maintainerGuideUrl: '/lodestar/maintainer-guide/releasing' };
 
 describe('currentSide (ADR-0025)', () => {
   test('the track in the URL', () => {
-    expect(currentSide('use', both)).toBe('use');
-    expect(currentSide('maintain', both)).toBe('maintain');
+    expect(currentSide('user-guide', both)).toBe('user-guide');
+    expect(currentSide('maintainer-guide', both)).toBe('maintainer-guide');
   });
 
-  test('on the overview, Use when the entry has it, else Maintain', () => {
-    expect(currentSide(undefined, both)).toBe('use');
-    expect(currentSide(undefined, { maintainUrl: '/docs/maintain' })).toBe('maintain');
+  test('on the overview, the User guide when the entry has it, else the Maintainer guide', () => {
+    expect(currentSide(undefined, both)).toBe('user-guide');
+    expect(currentSide(undefined, { maintainerGuideUrl: '/docs/maintainer-guide' })).toBe('maintainer-guide');
   });
 
   test('an entry with no track, or an unknown segment, has no current side', () => {
     expect(currentSide(undefined, {})).toBeUndefined();
     expect(currentSide('elsewhere', both)).toBeUndefined();
+    expect(currentSide('use', both)).toBeUndefined();
+    expect(currentSide('maintain', both)).toBeUndefined();
   });
 });
 
@@ -25,13 +27,13 @@ describe('lineLink (ADR-0025)', () => {
   const overviews = new Set(['/lodestar', '/docs']);
 
   test('the first page after the overview', () => {
-    expect(lineLink(['/lodestar', '/lodestar/use/dev/install'], overviews, '/lodestar')).toBe(
-      '/lodestar/use/dev/install',
+    expect(lineLink(['/lodestar', '/lodestar/user-guide/dev/install'], overviews, '/lodestar')).toBe(
+      '/lodestar/user-guide/dev/install',
     );
   });
 
   test("a line's index comes first when it has one", () => {
-    expect(lineLink(['/lodestar/use/v0.1', '/lodestar'], overviews, '/lodestar')).toBe('/lodestar/use/v0.1');
+    expect(lineLink(['/lodestar/user-guide/v0.1', '/lodestar'], overviews, '/lodestar')).toBe('/lodestar/user-guide/v0.1');
   });
 
   test('the fallback when the line holds only the overview', () => {
@@ -46,19 +48,19 @@ describe('folderUrls', () => {
     const line: PageTree.Folder = {
       type: 'folder',
       name: 'v0.1',
-      index: page('/lodestar/use/v0.1'),
+      index: page('/lodestar/user-guide/v0.1'),
       children: [
         page('/lodestar'),
-        { type: 'folder', name: 'Guides', children: [page('/lodestar/use/v0.1/guides/theming')] },
+        { type: 'folder', name: 'Guides', children: [page('/lodestar/user-guide/v0.1/guides/theming')] },
         page('https://example.com', true),
-        page('/lodestar/use/v0.1/install'),
+        page('/lodestar/user-guide/v0.1/install'),
       ],
     };
     expect(folderUrls(line)).toEqual([
-      '/lodestar/use/v0.1',
+      '/lodestar/user-guide/v0.1',
       '/lodestar',
-      '/lodestar/use/v0.1/guides/theming',
-      '/lodestar/use/v0.1/install',
+      '/lodestar/user-guide/v0.1/guides/theming',
+      '/lodestar/user-guide/v0.1/install',
     ]);
   });
 
@@ -66,8 +68,8 @@ describe('folderUrls', () => {
     const line: PageTree.Folder = {
       type: 'folder',
       name: 'dev',
-      children: [page('/lodestar'), page('/lodestar/use/dev/install')],
+      children: [page('/lodestar'), page('/lodestar/user-guide/dev/install')],
     };
-    expect(lineLink(folderUrls(line), new Set(['/lodestar']), '/lodestar')).toBe('/lodestar/use/dev/install');
+    expect(lineLink(folderUrls(line), new Set(['/lodestar']), '/lodestar')).toBe('/lodestar/user-guide/dev/install');
   });
 });

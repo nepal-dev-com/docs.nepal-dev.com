@@ -49,4 +49,4 @@ There are no released versions of the site itself.
 ## More
 
 The threat model, data classification, secrets inventory and audit checklist are in
-[`content/docs/maintain/security/`](content/docs/maintain/security/index.mdx).
+[`content/docs/maintainer-guide/security/`](content/docs/maintainer-guide/security/index.mdx).

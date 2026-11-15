@@ -1,0 +1,171 @@
+{
+  "schema_version": 2,
+  "diagram_type": "workflow",
+  "meta": {
+    "title": "Module layering",
+    "subtitle": "Each arrow is a direct import. The barrel re-exports every domain, and every domain reads numbers through conversion (ADR-0009, ADR-0012)",
+    "quality_profile": "showcase",
+    "output": "module-layering.html"
+  },
+  "lanes": [
+    {
+      "id": "entry",
+      "label": "Public entry"
+    },
+    {
+      "id": "leaves",
+      "label": "Leaf domains"
+    },
+    {
+      "id": "core",
+      "label": "Core domains"
+    },
+    {
+      "id": "data",
+      "label": "Language data"
+    }
+  ],
+  "mainPath": [
+    "barrel",
+    "currency",
+    "words",
+    "formatting",
+    "conversion",
+    "constants"
+  ],
+  "nodes": [
+    {
+      "id": "barrel",
+      "lane": "entry",
+      "col": 0,
+      "type": "frontend",
+      "label": "nepali-number.ts",
+      "sublabel": "public barrel · build entry"
+    },
+    {
+      "id": "currency",
+      "lane": "leaves",
+      "col": 1,
+      "type": "backend",
+      "label": "currency/"
+    },
+    {
+      "id": "fractions",
+      "lane": "leaves",
+      "col": 2,
+      "type": "backend",
+      "label": "fractions/"
+    },
+    {
+      "id": "text",
+      "lane": "leaves",
+      "col": 3,
+      "type": "backend",
+      "label": "text/"
+    },
+    {
+      "id": "units",
+      "lane": "leaves",
+      "col": 4,
+      "type": "backend",
+      "label": "units/"
+    },
+    {
+      "id": "words",
+      "lane": "core",
+      "col": 2,
+      "type": "backend",
+      "label": "words/"
+    },
+    {
+      "id": "formatting",
+      "lane": "core",
+      "col": 3,
+      "type": "backend",
+      "label": "formatting/"
+    },
+    {
+      "id": "utils",
+      "lane": "core",
+      "col": 4,
+      "type": "backend",
+      "label": "utils/"
+    },
+    {
+      "id": "conversion",
+      "lane": "core",
+      "col": 5,
+      "type": "backend",
+      "label": "conversion/",
+      "sublabel": "exact decimal reader"
+    },
+    {
+      "id": "constants",
+      "lane": "data",
+      "col": 5,
+      "type": "database",
+      "label": "constants.ts",
+      "sublabel": "digits · words · scales · units"
+    }
+  ],
+  "edges": [
+    {
+      "id": "barrel-currency",
+      "from": "barrel",
+      "to": "currency",
+      "variant": "emphasis"
+    },
+    {
+      "id": "currency-words",
+      "from": "currency",
+      "to": "words",
+      "variant": "emphasis"
+    },
+    {
+      "id": "words-formatting",
+      "from": "words",
+      "to": "formatting",
+      "variant": "emphasis"
+    },
+    {
+      "id": "formatting-conversion",
+      "from": "formatting",
+      "to": "conversion",
+      "variant": "emphasis"
+    },
+    {
+      "id": "conversion-constants",
+      "from": "conversion",
+      "to": "constants",
+      "variant": "emphasis"
+    },
+    {
+      "id": "fractions-words",
+      "from": "fractions",
+      "to": "words",
+      "variant": "default",
+      "role": "branch"
+    },
+    {
+      "id": "text-words",
+      "from": "text",
+      "to": "words",
+      "variant": "default",
+      "role": "branch"
+    },
+    {
+      "id": "units-conversion",
+      "from": "units",
+      "to": "conversion",
+      "variant": "default",
+      "role": "branch"
+    },
+    {
+      "id": "utils-conversion",
+      "from": "utils",
+      "to": "conversion",
+      "variant": "default",
+      "role": "branch"
+    }
+  ]
+}

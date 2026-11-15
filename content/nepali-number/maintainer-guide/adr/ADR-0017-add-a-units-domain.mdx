@@ -1,0 +1,282 @@
+---
+title: "ADR-0017 — Add a units domain: traditional land and weight units"
+description: "nepali-number gains a units domain that converts and formats Nepal's land units (रोपनी-आना-पैसा-दाम, बिघा-कट्ठा-धुर) and gold weights (तोला, लाल)."
+---
+
+- **Status:** Approved
+- **Date:** 2026-11-14
+- **Deciders:** [@puncoz](https://github.com/puncoz)
+- **Approved by:** [@puncoz](https://github.com/puncoz)
+- **Approved on:** 2026-11-14
+- **Supersedes:** —
+- **Superseded by:** —
+- **Semver impact:** minor — ships in 2.0.0 (six new exports and three new types, no existing output changes)
+- **Design documents:** [`user-guide/dev/api/units.mdx`](../../user-guide/dev/api/units.mdx),
+  `maintainer-guide/architecture/system.mdx` (updated at implementation)
+
+## Context
+
+Land in Nepal is recorded and sold in `रोपनी-आना-पैसा-दाम` in the hills and
+`बिघा-कट्ठा-धुर` in the Terai, and written as hyphen-separated parts (`१-२-३-१`). Gold and
+silver are priced per `तोला`, divided into `लाल`. An application that shows a land record or a
+jewellery price needs both the arithmetic (the parts are base 16, 4, 4 or base 20, 20, not
+decimal) and the Nepali-digit formatting. The package has neither; the nearest it gets today,
+run against the built `dist/nepali-number.cjs`:
+
+| Call | Today |
+|---|---|
+| `formatNepaliNumber(5476)` | `"५,४७६"` |
+| `toNepali("1-2-3-1")` | `"१-२-३-१"` |
+
+So a consumer can already convert the digits of a land record, and must do everything else
+themselves.
+
+This ADR depends on [ADR-0012](./ADR-0012-read-every-number-once-exactly.mdx): the one
+invalid-input rule (`NaN` for numbers, `""` for strings), and the reader that
+`parseLandArea` uses for each part of a record.
+
+**Scope.** Units of measure are not numbers in a script, and they stretch what a "number
+library" is. The owner chose to include them on 2026-11-14. The alternatives are weighed in
+*Options considered*.
+
+**Every conversion factor and every Devanagari label in this ADR is the recommendation of the
+drafting agent. The factors are the values commonly published in Nepal as the agent recalls
+them; none was verified against an official source (the Survey Department, Nepal Bureau of
+Standards and Metrology, or a bullion association). Each needs the owner's confirmation before
+this ADR is approved** (`AGENTS.md` §4); they are listed under *Owner decisions*. A wrong factor
+here misstates the size of someone's land.
+
+## Decision
+
+A new domain, **`src/units/`**, with six exports and three types. The text below is written on
+the recommended option of every owner decision, assumed until the owner picks.
+
+### The domain
+
+- Folder `src/units/`, holding `units.ts`, `units.test.ts`, `types.ts` and `index.ts`
+  (`export * from "./units"` and `export type * from "./types"`).
+- `src/nepali-number.ts` adds `export * from "@/units"`.
+- It may import `@/constants`, `@/conversion` and `@/formatting`. **Nothing imports it.** It is
+  a leaf beside the existing chain
+  `constants ← conversion ← formatting ← utils ← words ← currency`.
+- The unit labels and the conversion factors live in `src/constants.ts` (invariant 6).
+
+### Factors
+
+| Unit | Equals | Square feet |
+|---|---|---|
+| 1 रोपनी (`ropani`) | 16 आना | 5476 |
+| 1 आना (`aana`) | 4 पैसा | 342.25 |
+| 1 पैसा (`paisa`) | 4 दाम | 85.5625 |
+| 1 दाम (`dam`) | — | 21.390625 |
+| 1 बिघा (`bigha`) | 20 कट्ठा | 72 900 |
+| 1 कट्ठा (`kattha`) | 20 धुर | 3645 |
+| 1 धुर (`dhur`) | — | 182.25 |
+| 1 square metre (`sqm`) | — | 1 / 0.09290304 |
+
+| Unit | Equals | Grams |
+|---|---|---|
+| 1 तोला (`tola`) | 100 लाल | 11.6638 |
+| 1 लाल (`lal`) | — | 0.116638 |
+| 1 kilogram | 1000 gram | 1000 |
+
+### Types
+
+```ts
+type LandUnit = "ropani" | "aana" | "paisa" | "dam" | "bigha" | "kattha" | "dhur" | "sqft" | "sqm"
+type WeightUnit = "tola" | "lal" | "gram" | "kilogram"
+
+interface UnitFormatOptions {
+  from?: LandUnit | WeightUnit        // "sqft" for land, "gram" for weight
+  style?: "notation" | "words"        // "notation"
+  useNepaliDigits?: boolean           // true
+}
+```
+
+### Exports
+
+| Export | Signature |
+|---|---|
+| `convertLandArea` | `(value: number, from: LandUnit, to: LandUnit) => number` |
+| `formatRopani` | `(value: number, options?: UnitFormatOptions) => string` |
+| `formatBigha` | `(value: number, options?: UnitFormatOptions) => string` |
+| `parseLandArea` | `(text: string, system: "ropani" \| "bigha") => number` |
+| `convertWeight` | `(value: number, from: WeightUnit, to: WeightUnit) => number` |
+| `formatTola` | `(value: number, options?: UnitFormatOptions) => string` |
+
+**`convertLandArea` and `convertWeight`** convert through square feet and grams. Results are
+JavaScript floating-point numbers and are not rounded. An unknown unit or a non-finite value
+returns `NaN`. Negative values convert (`-1` ropani is `-5476` sq ft).
+
+| Call | Result |
+|---|---|
+| `convertLandArea(1, "ropani", "sqft")` | `5476` |
+| `convertLandArea(1, "ropani", "aana")` | `16` |
+| `convertLandArea(1, "bigha", "kattha")` | `20` |
+| `convertLandArea(1, "bigha", "sqft")` | `72900` |
+| `convertLandArea(1, "ropani", "sqm")` | `508.73704704` (to float precision) |
+| `convertWeight(1, "tola", "gram")` | `11.6638` |
+| `convertWeight(1, "tola", "lal")` | `100` |
+| `convertWeight(1, "kilogram", "gram")` | `1000` |
+
+**`formatRopani`, `formatBigha` and `formatTola`** split a value into the system's parts. Every
+part but the last is a whole number; the last (दाम, धुर, लाल) is rounded to two places, half
+away from zero (ADR-0012), with trailing zeros dropped. When rounding lifts the last part to a
+full unit above it (4 दाम, 20 धुर, 100 लाल), it carries upward, so no part ever shows its own
+base. There is no digit grouping in any part.
+
+| Call | `style: "notation"` (default) | `style: "words"` |
+|---|---|---|
+| `formatRopani(5476)` | `"१-०-०-०"` | `"१ रोपनी"` |
+| `formatRopani(6438.578125)` | `"१-२-३-१"` | `"१ रोपनी २ आना ३ पैसा १ दाम"` |
+| `formatRopani(6000)` | `"१-१-२-०.५"` | `"१ रोपनी १ आना २ पैसा ०.५ दाम"` |
+| `formatRopani(1, { from: "ropani" })` | `"१-०-०-०"` | `"१ रोपनी"` |
+| `formatRopani(0)` | `"०-०-०-०"` | `"० रोपनी"` |
+| `formatBigha(72900)` | `"१-०-०"` | `"१ बिघा"` |
+| `formatBigha(1.5, { from: "bigha" })` | `"१-१०-०"` | `"१ बिघा १० कट्ठा"` |
+| `formatTola(29.1595)` | `"२-५०"` | `"२ तोला ५० लाल"` |
+| `formatTola(1, { from: "tola" })` | `"१-०"` | `"१ तोला"` |
+
+- `notation` always shows every part. `words` omits zero parts; when every part is zero it
+  shows the largest unit (`"० रोपनी"`, `"० बिघा"`, `"० तोला"`).
+- `useNepaliDigits: false` gives `"1-2-3-1"`; the unit labels in `words` stay Devanagari.
+- `from` must be a land unit for `formatRopani` and `formatBigha`, and a weight unit for
+  `formatTola`. A wrong or unknown unit, a negative value or a non-finite value returns `""`.
+
+**`parseLandArea(text, system)`** reads a record in notation and returns **square feet**. The
+text is hyphen-separated parts, exactly four for `"ropani"` and three for `"bigha"`, each
+read by ADR-0012's reader (either script, decimals allowed, no sign). A part is not checked
+against its base: `"0-20-0-0"` is 20 आना.
+
+| Call | Result |
+|---|---|
+| `parseLandArea("१-२-३-१", "ropani")` | `6438.578125` |
+| `parseLandArea("1-10-0", "bigha")` | `109350` |
+| `parseLandArea("1-2-3", "ropani")` | `NaN` (three parts) |
+| `parseLandArea("abc", "ropani")` | `NaN` |
+
+## Options considered
+
+| Option | Pros | Cons | Verdict |
+|---|---|---|---|
+| A — A `units` domain in this package, exported from the root | One install; reuses the reader and the digit conversion; the owner's choice on 2026-11-14 | Stretches "number library"; conversion factors become contract; the UMD and IIFE builds carry it for everyone | Chosen |
+| B — A separate package (for example `nepali-units`) depending on this one | Keeps this package to numbers; its own version line for factor corrections | A second package to publish and secure; it would take `nepali-number` as a dependency | Rejected by the owner's scope decision |
+| C — A sub-path export (`nepali-number/units`) | Opt-in for every build format | Changes the published shape (`exports` map, a second build entry), which is its own ADR; the API index says there is no sub-path import | Rejected for this round; can follow in its own ADR |
+| D — Formatting only, no conversion factors | No factor to get wrong | The parts cannot be derived without the factors between them; only sq ft and sq m could be dropped | Rejected |
+| E — Leave it to consumers | Nothing to maintain | The base-16/4/4 split and its rounding carry are easy to get wrong | Rejected |
+
+### Owner decisions
+
+The recommended column is what this ADR and the API page are written on. **None of these was
+checked against an official source by the drafting agent.**
+
+| Decision | Options (actual output) | Recommended | Consequence |
+|---|---|---|---|
+| Square feet per रोपनी | `convertLandArea(1, "ropani", "sqft")` → `5476` · another figure the owner supplies | `5476` | Fixes आना 342.25, पैसा 85.5625, दाम 21.390625 |
+| Square feet per बिघा | `convertLandArea(1, "bigha", "sqft")` → `72900` · another figure the owner supplies | `72900` | Fixes कट्ठा 3645, धुर 182.25. Local variants of the bigha exist and are not covered |
+| Square metres | `convertLandArea(1, "ropani", "sqm")` → `508.73704704` (from the exact 0.09290304 m² per sq ft) · `508.72` (a published rounded figure as the base) | derive from square feet | The first keeps sq ft and sq m consistent with each other |
+| Grams per तोला | `convertWeight(1, "tola", "gram")` → `11.6638` · `11.664` · `11.66` | `11.6638` | `convertWeight(10, "tola", "gram")` → `116.638` or `116.64`; every price per tola follows |
+| लाल per तोला | `convertWeight(1, "tola", "lal")` → `100` · `96` (12 माशा × 8 रत्ती) | `100` | Sets the base `formatTola` splits on |
+| Land unit labels | `"१ रोपनी २ आना ३ पैसा १ दाम"` · with `रोपनि` / `आाना` variants the owner prefers | `रोपनी`, `आना`, `पैसा`, `दाम` | Spelling in every `words` output |
+| Terai unit labels | `"१ बिघा १० कट्ठा"` · `"१ बिगाहा १० कठ्ठा"` | `बिघा`, `कट्ठा`, `धुर` | Spelling in every `words` output |
+| Weight unit labels | `"२ तोला ५० लाल"` · `"२ तोला ५० लाली"` | `तोला`, `लाल` | Spelling in every `words` output |
+| Notation separator | `"१-२-३-१"` · `"१/२/३/१"` | `-` | `parseLandArea` accepts only the chosen one |
+| Rounding of the last part | `formatRopani(6000)` → `"१-१-२-०.५"` (2 places) · `"१-१-२-०"` (whole) · `"१-१-२-०.४९६७"` (4 places) | 2 places, zeros dropped | More places is more exact and longer |
+| Zero in words | `formatRopani(0, { style: "words" })` → `"० रोपनी"` · `""` | `"० रोपनी"` | |
+| Negative area or weight in a formatter | `formatRopani(-5476)` → `""` · `"-१-०-०-०"` | `""` | A minus sign beside hyphen separators is hard to read |
+| Parts beyond their base when parsing | `parseLandArea("0-20-0-0", "ropani")` → `6845` · `NaN` | `6845` (accept) | Lenient reads hand-written records; strict catches typing errors |
+| More units | none · add `माशा`/`रत्ती`, `धार्नी`/`पाउ`/`सेर`, `माना`/`पाथी`/`मुरी` | none in this round | Each added unit is another factor to confirm; volume units vary by grain |
+
+## Consequences
+
+**Positive**
+
+- Land records and bullion weights can be converted and shown in Nepali digits from one
+  reviewed table of factors.
+- No existing export changes.
+
+**Negative / accepted trade-offs**
+
+- The package's scope widens beyond numbers. Requests for more units are likely, and each is an
+  ADR.
+- **Factors are contract.** Correcting one after release changes outputs and is a major
+  version (ADR-0008).
+- Conversions are floating point: `convertLandArea(1, "ropani", "sqm")` is
+  `508.73704704` only to float precision, and a result may carry a last-digit error. The
+  formatters round, the converters do not.
+- These exports take `number`, not `NumericInput`: an area or weight is a measurement, not an
+  exact integer, and digit strings are read by `parseLandArea`.
+- The minified build grows. The size is measured at implementation and recorded here
+  (invariant 8); the domain tree-shakes away in the ESM build, and is always present in the
+  UMD and IIFE builds.
+- Regional variants of these units are not covered; one figure is fixed for each.
+
+**For consumers**
+
+- Nothing existing changes. Six new named exports and three types from the package root, and
+  the functions on the global `nepaliNumber` in the browser builds.
+
+## Package invariants
+
+- **1, 2, 3** — no dependency, no host global, pure functions; the factors are constants.
+- **4** — converters and `parseLandArea` return `NaN`, formatters return `""`, for anything they
+  cannot handle, including an unknown unit string reaching them from JavaScript. None throws.
+- **5** — no existing output changes. The new strings and factors become contract on release.
+- **6** — unit labels and factors live in `src/constants.ts`; `units.ts` hardcodes no Devanagari.
+- **7** — `parseLandArea` splits on the ASCII hyphen and hands each part to ADR-0012's reader;
+  it uses no `\d`, no `.length` on Devanagari text for meaning.
+- **8** — named exports only; the build grows, measured at implementation.
+- **Layering** — a new leaf domain that imports downward only (`constants`, `conversion`,
+  `formatting`) and is imported by nothing. No cycle.
+
+## Security considerations
+
+- **Input parsing:** `parseLandArea` is new input handling. It splits on `-` with a plain
+  string split (no regular expression), rejects any part count but the expected one, and reads
+  each part with ADR-0012's linear reader. Empty, whitespace-only, `NaN`-like and non-digit
+  input return `NaN`. A test runs it on a 100 000-character string, and on 100 000 hyphens.
+- **Numeric extremes:** `Infinity`, `NaN` and values near `Number.MAX_VALUE` return `NaN` or
+  `""`; the part split uses division and `Math.floor` on finite values only, so it cannot
+  loop.
+- **Dependencies, CI, publishing:** unchanged. No dependency, no workflow change, no change to
+  `package.json`.
+- **Residual risk:** a wrong factor is a correctness risk for consumers, not a security one. It
+  is the reason every factor is an owner decision.
+
+## Implementation notes
+
+- [ ] ADR-0012 is implemented first.
+- [ ] `src/constants.ts` — land and weight factors and unit labels, exactly as the owner
+      confirmed them.
+- [ ] `src/units/types.ts` — `LandUnit`, `WeightUnit`, `UnitFormatOptions`.
+- [ ] `src/units/units.ts` — the six exports, each with TSDoc and an explicit return type.
+- [ ] `src/units/index.ts`, and `export * from "@/units"` in `src/nepali-number.ts`.
+- [ ] Tests — every row of the tables above; each unit to and from its base; round trips
+      (`parseLandArea(formatRopani(x))`); the rounding carry (a value just under a full दाम,
+      धुर and लाल boundary); zero; negative; decimal; ≥ 1 crore square feet; English digits
+      in output; Nepali and English digits into `parseLandArea`; unknown unit; wrong `from`
+      kind; wrong part count; `NaN`, `Infinity`; a 100 000-character string.
+- [ ] `bun run type-check`, `bun run test` and `bun run build` pass.
+- [ ] Built CJS loaded with `node`; outputs match `user-guide/dev/api/units.mdx`, including the
+      float results shown there.
+- [ ] Minified size before and after recorded in this ADR's implementation record.
+
+## Docs to update on implementation
+
+- [ ] `user-guide/dev/api/units.mdx` — outputs checked against the build; the *Proposed* note
+      replaced with the built-package line
+- [ ] `user-guide/dev/api/index.mdx`, `user-guide/dev/api/meta.json`, `user-guide/dev/api/types.mdx`
+      — the new page, exports and types
+- [ ] `user-guide/dev/api/limitations.mdx` — float results from the converters; one fixed
+      figure per unit, no regional variants
+- [ ] `user-guide/dev/guides/recipes.mdx` — a land-record and a gold-price recipe
+- [ ] `user-guide/dev/guides/migration-v1-to-v2.mdx` — the new exports in 2.0.0
+- [ ] `maintainer-guide/architecture/system.mdx` and its diagram (Mermaid and Archify) — the
+      `units` domain and its imports
+- [ ] `maintainer-guide/security/threat-model.mdx` — `parseLandArea` measured on hostile input
+- [ ] `README.md` — what the package does, API summary; `package.json` `description` and
+      `keywords` if the owner wants units named there
+- [ ] `AGENTS.md` §1, §10 and the `nepali-number-stack-and-map` skill — what the package is, the
+      domain in the map, the export and test counts
+- [ ] `maintainer-guide/adr/index.mdx` — status
+- [ ] Proposed commit message: `feat(units): add traditional land and weight units`

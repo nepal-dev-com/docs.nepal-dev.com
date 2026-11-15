@@ -1,0 +1,130 @@
+---
+title: "Fractions"
+description: "Write halves and quarters the way Nepali says them (आधा, डेढ, साढे तीन), read a fraction as दुई बटा पाँच, and name multipliers such as दोब्बर."
+---
+
+> Every output below was produced by running the built package.
+
+Spoken Nepali fractions, fractions read as numerator over denominator, and multipliers.
+
+All three accept English, Nepali or mixed digits, as a `number`, a `bigint` or a string
+([`NumericInput`](./types.mdx)), and return `""` for input they cannot read.
+
+## Exports
+
+| Export | Signature | Returns |
+|---|---|---|
+| `toNepaliFraction` | `(value: NumericInput) => string` | The spoken form of a quarter step, otherwise plain words |
+| `toNepaliFractionWords` | `(numerator: NumericInput, denominator: NumericInput) => string` | Numerator, `बटा`, denominator |
+| `toNepaliMultiplier` | `(times: NumericInput) => string` | `दोब्बर`, `तेब्बर`, `चौबर`, otherwise words and `गुणा` |
+
+---
+
+## `toNepaliFraction(value)`
+
+```ts
+toNepaliFraction(value: NumericInput): string
+```
+
+**Returns.** The spoken form when the value is a whole number of quarters. An integer returns
+its [Nepali words](./words.mdx#tonepaliwordsnumber); any other value returns decimal words.
+Negative values are prefixed with `ऋण`. Invalid input returns `""`.
+
+```ts
+import { toNepaliFraction } from "nepali-number"
+
+toNepaliFraction(0.25)        // → "पाउ"
+toNepaliFraction(0.5)         // → "आधा"
+toNepaliFraction(0.75)        // → "तीन पाउ"
+toNepaliFraction(1.25)        // → "सवा"
+toNepaliFraction(1.5)         // → "डेढ"
+toNepaliFraction(1.75)        // → "पौने दुई"
+toNepaliFraction(2.25)        // → "सवा दुई"
+toNepaliFraction(2.5)         // → "अढाई"
+toNepaliFraction(2.75)        // → "पौने तीन"
+toNepaliFraction(3.5)         // → "साढे तीन"
+toNepaliFraction("३.५")       // → "साढे तीन"       Nepali digits
+toNepaliFraction("1.50")      // → "डेढ"            trailing zeros ignored
+toNepaliFraction(100.5)       // → "साढे एक सय"
+toNepaliFraction(10000000.5)  // → "साढे एक करोड"   ≥ 1 crore
+toNepaliFraction(5)           // → "पाँच"           integer
+toNepaliFraction(0)           // → "शून्य"          zero
+toNepaliFraction(1.3)         // → "एक दशमलव तीन"   not a quarter step
+toNepaliFraction(-1.5)        // → "ऋण डेढ"         negative
+toNepaliFraction("abc")       // → ""               invalid input
+```
+
+**Notes.** The general rule for a whole part *n*:
+
+| Value | Form | From |
+|---|---|---|
+| *n* + ¼ | `सवा <n>` | *n* ≥ 2 (`1.25` is `सवा`, `0.25` is `पाउ`) |
+| *n* + ½ | `साढे <n>` | *n* ≥ 3 (`0.5` आधा, `1.5` डेढ, `2.5` अढाई) |
+| *n* + ¾ | `पौने <n+1>` | *n* ≥ 1 (`0.75` is `तीन पाउ`) |
+
+Only quarter steps have a spoken form; a third or a fifth is read as a decimal here, or as a
+fraction with [`toNepaliFractionWords`](#tonepalifractionwordsnumerator-denominator). The
+quarter test is made on the decimal digits as written, so it is exact.
+
+---
+
+## `toNepaliFractionWords(numerator, denominator)`
+
+```ts
+toNepaliFractionWords(numerator: NumericInput, denominator: NumericInput): string
+```
+
+**Returns.** The numerator in words, `बटा`, then the denominator in words. Both must be
+integers and the denominator must be greater than zero; otherwise `""`.
+
+```ts
+import { toNepaliFractionWords } from "nepali-number"
+
+toNepaliFractionWords(2, 5)        // → "दुई बटा पाँच"
+toNepaliFractionWords(1, 2)        // → "एक बटा दुई"
+toNepaliFractionWords(3, 4)        // → "तीन बटा चार"
+toNepaliFractionWords("२", "५")    // → "दुई बटा पाँच"       Nepali digits
+toNepaliFractionWords(7, 3)        // → "सात बटा तीन"        improper
+toNepaliFractionWords(0, 5)        // → "शून्य बटा पाँच"     zero numerator
+toNepaliFractionWords(-2, 5)       // → "ऋण दुई बटा पाँच"    negative
+toNepaliFractionWords(1, 10000000) // → "एक बटा एक करोड"     ≥ 1 crore
+toNepaliFractionWords(1.5, 2)      // → ""                   non-integer
+toNepaliFractionWords(2, 0)        // → ""                   zero denominator
+toNepaliFractionWords(2, -5)       // → ""                   negative denominator
+toNepaliFractionWords("abc", 5)    // → ""                   invalid input
+```
+
+**Notes.** The fraction is never simplified and never switched to a spoken form: `(1, 2)` is
+`"एक बटा दुई"`, not `"आधा"`. For the spoken form use
+[`toNepaliFraction(0.5)`](#tonepalifractionvalue).
+
+---
+
+## `toNepaliMultiplier(times)`
+
+```ts
+toNepaliMultiplier(times: NumericInput): string
+```
+
+**Returns.** `दोब्बर`, `तेब्बर` and `चौबर` for 2, 3 and 4; for any other positive value, its
+words followed by `गुणा`. Zero, a negative value or invalid input returns `""`.
+
+```ts
+import { toNepaliMultiplier } from "nepali-number"
+
+toNepaliMultiplier(2)          // → "दोब्बर"
+toNepaliMultiplier(3)          // → "तेब्बर"
+toNepaliMultiplier(4)          // → "चौबर"
+toNepaliMultiplier(5)          // → "पाँच गुणा"
+toNepaliMultiplier("१०")       // → "दश गुणा"               Nepali digits
+toNepaliMultiplier(1)          // → "एक गुणा"
+toNepaliMultiplier(100)        // → "एक सय गुणा"
+toNepaliMultiplier(10000000)   // → "एक करोड गुणा"          ≥ 1 crore
+toNepaliMultiplier(2.5)        // → "दुई दशमलव पाँच गुणा"   decimal
+toNepaliMultiplier(0)          // → ""                      zero
+toNepaliMultiplier(-2)         // → ""                      negative
+toNepaliMultiplier("abc")      // → ""                      invalid input
+```
+
+**Notes.** A decimal multiplier is read as decimal words, not as a spoken fraction: `2.5` is
+`"दुई दशमलव पाँच गुणा"`, not `"अढाई गुणा"`.

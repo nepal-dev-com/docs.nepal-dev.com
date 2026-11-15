@@ -1,0 +1,200 @@
+---
+title: "Currency"
+description: "Format Nepali Rupee amounts as figures, write them in Nepali or English words for cheques and invoices, and parse a formatted amount back."
+---
+
+> Every output below was produced by running the built package.
+
+Nepali Rupee (रू) amounts: as formatted figures, as Nepali words (रुपैयाँ and पैसा), as English
+words (rupees and paisa), and back from a formatted string to a number.
+
+Every function that reads an amount takes a
+[`NumericInput`](./types.mdx) (`number | bigint | string`): English, Nepali or mixed digits,
+with or without commas. Invalid input returns `""`.
+
+## Exports
+
+| Export | Signature | Returns |
+|---|---|---|
+| `toNepaliCurrency` | `(amount: NumericInput, options?: CurrencyOptions) => string` | `"रू १२,३४,५६७.८९"` |
+| `toNepaliCurrencyWords` | `(amount: NumericInput, options?: CurrencyWordsOptions) => string` | `"… रुपैयाँ … पैसा"` |
+| `toEnglishCurrencyWords` | `(amount: NumericInput, options?: EnglishCurrencyWordsOptions) => string` | `"… rupees … paisa"` |
+| `parseNepaliCurrency` | `(text: string) => number` | The amount in a formatted string |
+
+---
+
+## `toNepaliCurrency(amount, options?)`
+
+Formats an amount with a currency symbol, lakh/crore grouping and — by default — always two
+paisa digits.
+
+```ts
+toNepaliCurrency(amount: NumericInput, options?: CurrencyOptions): string
+```
+
+| Option | Type | Default | Effect |
+|---|---|---|---|
+| `useNepaliDigits` | `boolean` | `true` | `false` keeps English digits |
+| `showPaisa` | `boolean` | `true` | `true` always shows `precision` decimals (`.00` included); `false` rounds to whole rupees |
+| `currencySymbol` | `string` | `"रू"` | Separated from the number by one space |
+| `precision` | `number` | `2` | Decimal places when `showPaisa` is `true` |
+| `symbolPosition` | `"before" \| "after"` | `"before"` | `"after"` puts the symbol behind the number |
+| `grouping` | `"nepali" \| "international"` | `"nepali"` | `"international"` groups in threes |
+
+The options object is also passed to
+[`formatNepaliNumber`](./formatting.mdx#formatnepalinumbernumber-options), so an untyped
+`addCommas: false` turns grouping off; it is not part of `CurrencyOptions`.
+
+**Returns.** `"<symbol> <formatted>"`, or `"<formatted> <symbol>"` with
+`symbolPosition: "after"`. A negative amount carries its minus sign in front of the whole
+string. Invalid input returns `""`.
+
+```ts
+import { toNepaliCurrency } from "nepali-number"
+
+toNepaliCurrency(1234567.89)                     // → "रू १२,३४,५६७.८९"
+toNepaliCurrency(1234567.5)                      // → "रू १२,३४,५६७.५०"
+toNepaliCurrency(1234)                           // → "रू १,२३४.००"
+toNepaliCurrency("१२३४५६७८")                     // → "रू १,२३,४५,६७८.००"
+toNepaliCurrency("१२३४.५")                       // → "रू १,२३४.५०"
+toNepaliCurrency("1,234")                        // → "रू १,२३४.००"
+toNepaliCurrency(1.005)                          // → "रू १.०१"
+toNepaliCurrency(0)                              // → "रू ०.००"
+toNepaliCurrency(-50)                            // → "-रू ५०.००"
+toNepaliCurrency(-1234.5)                        // → "-रू १,२३४.५०"
+toNepaliCurrency(12345678901234567890n)          // → "रू १,२३,४५,६७,८९,०१,२३,४५,६७,८९०.००"
+toNepaliCurrency("abc")                          // → ""
+
+toNepaliCurrency(1234567.89, { showPaisa: false })      // → "रू १२,३४,५६८"
+toNepaliCurrency(1234.567, { precision: 3 })            // → "रू १,२३४.५६७"
+toNepaliCurrency(1234, { useNepaliDigits: false, currencySymbol: "Rs." })
+                                                        // → "Rs. 1,234.00"
+toNepaliCurrency(1234, { symbolPosition: "after" })     // → "१,२३४.०० रू"
+toNepaliCurrency(-1234.5, { symbolPosition: "after" })  // → "-१,२३४.५० रू"
+toNepaliCurrency(1234567.89, { grouping: "international" })
+                                                        // → "रू १,२३४,५६७.८९"
+```
+
+**Notes.** Rounding is done on the decimal digits as written, half away from zero, so `1.005`
+is `"रू १.०१"`. A `number` above `Number.MAX_SAFE_INTEGER` has already lost its last digits
+before it reaches the function; pass a `bigint` or a digit string for those.
+
+---
+
+## `toNepaliCurrencyWords(amount, options?)`
+
+Writes an amount in words: rupees as `<words> रुपैयाँ`, then paisa (rounded to the nearest
+whole paisa) as `<words> पैसा`. Either part is left out when it is zero.
+
+```ts
+toNepaliCurrencyWords(amount: NumericInput, options?: CurrencyWordsOptions): string
+```
+
+| Option | Type | Default | Effect |
+|---|---|---|---|
+| `only` | `boolean` | `false` | `true` appends ` मात्र`, as written on a cheque or a receipt |
+
+**Returns.** The amount in words. Zero returns `"शून्य रुपैयाँ"`. Negative amounts are prefixed
+with `ऋण`. Invalid input returns `""`.
+
+```ts
+import { toNepaliCurrencyWords } from "nepali-number"
+
+toNepaliCurrencyWords(250)             // → "दुई सय पचास रुपैयाँ"
+toNepaliCurrencyWords(12.5)            // → "बाह्र रुपैयाँ पचास पैसा"
+toNepaliCurrencyWords("१,२५०.५०")      // → "एक हजार दुई सय पचास रुपैयाँ पचास पैसा"
+toNepaliCurrencyWords(1234567.89)      // → "बाह्र लाख चौंतीस हजार पाँच सय सतसट्ठी रुपैयाँ उनान्नब्बे पैसा"
+toNepaliCurrencyWords(12345678)        // → "एक करोड तेईस लाख पैंतालीस हजार छ सय अठहत्तर रुपैयाँ"
+toNepaliCurrencyWords(0.5)             // → "पचास पैसा"
+toNepaliCurrencyWords(1.005)           // → "एक रुपैयाँ एक पैसा"
+toNepaliCurrencyWords(100.999)         // → "एक सय एक रुपैयाँ"     paisa rounded up into rupees
+toNepaliCurrencyWords(-5)              // → "ऋण पाँच रुपैयाँ"
+toNepaliCurrencyWords(-10)             // → "ऋण दश रुपैयाँ"
+toNepaliCurrencyWords(0)               // → "शून्य रुपैयाँ"
+toNepaliCurrencyWords("abc")           // → ""
+
+toNepaliCurrencyWords(250, { only: true })    // → "दुई सय पचास रुपैयाँ मात्र"
+toNepaliCurrencyWords(12.5, { only: true })   // → "बाह्र रुपैयाँ पचास पैसा मात्र"
+```
+
+**Notes.** Paisa is the fraction rounded to two places on the digits as written, half away
+from zero, carrying into rupees when it reaches one hundred.
+
+---
+
+## `toEnglishCurrencyWords(amount, options?)`
+
+Writes an amount in English words: `<words> rupee` for exactly one rupee and `<words> rupees`
+otherwise, then `<words> paisa`. Either part is left out when it is zero.
+
+```ts
+toEnglishCurrencyWords(amount: NumericInput, options?: EnglishCurrencyWordsOptions): string
+```
+
+| Option | Type | Default | Effect |
+|---|---|---|---|
+| `only` | `boolean` | `false` | `true` appends ` only` |
+| `system` | `"nepali" \| "international"` | `"nepali"` | Scales used for the words, as in [`toEnglishWords`](./words.mdx#toenglishwordsnumber-options) |
+| `hyphenate` | `boolean` | `false` | `true` joins tens and ones with a hyphen |
+| `and` | `boolean` | `false` | `true` puts `and` after `hundred` when something follows |
+
+**Returns.** Lower-case English words. Zero returns `"zero rupees"`. Negative amounts are
+prefixed with `negative`. Invalid input returns `""`.
+
+```ts
+import { toEnglishCurrencyWords } from "nepali-number"
+
+toEnglishCurrencyWords(250)            // → "two hundred fifty rupees"
+toEnglishCurrencyWords(1)              // → "one rupee"
+toEnglishCurrencyWords(12.5)           // → "twelve rupees fifty paisa"
+toEnglishCurrencyWords("१,२५०.५०")     // → "one thousand two hundred fifty rupees fifty paisa"
+toEnglishCurrencyWords(12345678)       // → "one crore twenty three lakh forty five thousand six hundred seventy eight rupees"
+toEnglishCurrencyWords(0.5)            // → "fifty paisa"
+toEnglishCurrencyWords(1.005)          // → "one rupee one paisa"
+toEnglishCurrencyWords(-5)             // → "negative five rupees"
+toEnglishCurrencyWords(0)              // → "zero rupees"
+toEnglishCurrencyWords("abc")          // → ""
+
+toEnglishCurrencyWords(250, { only: true })   // → "two hundred fifty rupees only"
+toEnglishCurrencyWords(1234567, { system: "international" })
+// → "one million two hundred thirty four thousand five hundred sixty seven rupees"
+```
+
+**Notes.** Paisa is rounded and carried exactly as in
+[`toNepaliCurrencyWords`](#tonepalicurrencywordsamount-options). Capitalise in your own code
+if needed.
+
+---
+
+## `parseNepaliCurrency(text)`
+
+Reads a formatted rupee amount back into a number.
+
+```ts
+parseNepaliCurrency(text: string): number
+```
+
+**Returns.** The amount. The text may hold an optional sign, one recognised symbol before the
+number (`रू`, `रु`, `रु.`, `Rs`, `Rs.`, `NPR`; the Latin ones in any letter case), the number
+in English, Nepali or mixed digits with or without commas, and a recognised symbol or `/-`
+after it. Anything else returns `NaN`.
+
+```ts
+import { parseNepaliCurrency } from "nepali-number"
+
+parseNepaliCurrency("रू १२,३४,५६७.८९")     // → 1234567.89
+parseNepaliCurrency("रु. ५००")             // → 500
+parseNepaliCurrency("Rs. 1,234/-")         // → 1234
+parseNepaliCurrency("NPR 500")             // → 500
+parseNepaliCurrency("१,२३४.०० रू")         // → 1234
+parseNepaliCurrency("-रू ५००")             // → -500
+parseNepaliCurrency("500")                 // → 500
+parseNepaliCurrency("रू ०.००")             // → 0
+parseNepaliCurrency("$5")                  // → NaN
+parseNepaliCurrency("abc")                 // → NaN
+parseNepaliCurrency("")                    // → NaN
+```
+
+**Notes.** The result is a JavaScript `number`: decimals follow binary floating point and a
+value above `Number.MAX_SAFE_INTEGER` is not exact. To pull digits out of arbitrary text use
+[`removeFormatting`](./formatting.mdx#removeformattingformattedstring) instead.

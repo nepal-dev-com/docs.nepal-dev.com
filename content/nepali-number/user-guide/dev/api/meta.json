@@ -1,0 +1,16 @@
+{
+  "title": "API reference",
+  "pages": [
+    "index",
+    "conversion",
+    "formatting",
+    "words",
+    "currency",
+    "fractions",
+    "units",
+    "text",
+    "utils",
+    "types",
+    "limitations"
+  ]
+}

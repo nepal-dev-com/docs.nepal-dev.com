@@ -1,0 +1,146 @@
+---
+title: "ADR-0010 — Documentation lives in Nepal Dev Verse, in a Use track and a Maintain track"
+description: "nepali-number's documentation moves from the repository's docs folder to the Nepal Dev Verse site, through a git submodule, split into user and maintainer docs."
+---
+
+- **Status:** Approved
+- **Date:** 2026-11-14
+- **Deciders:** [@puncoz](https://github.com/puncoz)
+- **Approved by:** [@puncoz](https://github.com/puncoz)
+- **Approved on:** 2026-11-14
+- **Supersedes:** [ADR-0002](./ADR-0002-living-design-documentation.mdx) (in part: decisions 2,
+  5 and 7)
+- **Superseded by:** —
+- **Semver impact:** none (documentation and tooling only; the published tarball is unchanged)
+- **Design documents:** [`../index.mdx`](../index.mdx), `AGENTS.md` §5, §8, §10 and its
+  *Documentation (git submodule)* section, the submodule's `PROJECT_AGENTS.md`
+
+## Context
+
+[ADR-0002](./ADR-0002-living-design-documentation.mdx) put the documentation in the
+repository's `docs/` folder as Markdown, in typed directories, read on GitHub.
+
+The owner now publishes documentation for packages and projects on one site, Nepal Dev Verse
+(`docs.nepal-dev.com`). A package documents itself there from its own repository: it mounts the
+site's repository as a git submodule and writes into its own two folders. The site separates
+two readers, people **using** a package and people **maintaining** it, and versions the first.
+
+The repository's `docs/` mixed both readers in one tree and had no notion of a version line:
+the API reference described `main`, while npm's `latest` was a different major.
+
+## Decision
+
+1. **The documentation lives in the Nepal Dev Verse repository**, mounted as a git submodule at
+   `docs/docs.nepal-dev.com/`, under the slug **`nepali-number`**: pages in
+   `content/nepali-number/`, diagrams in `diagrams/nepali-number/`. Nothing else in the
+   submodule is edited from this repository.
+2. **Two tracks.** *Use* holds what a consumer needs without the repository open: getting
+   started, guides and the API reference with its limitations. *Maintain* holds the rest:
+   decisions, architecture, release process and security.
+3. **Use is versioned; Maintain is not.** `use/dev/` describes unreleased work on `main`.
+   `use/v2/` is the 2.x line, marked `latest`. Both state version `2.0.0`, read from
+   `package.json`. Maintain and the overview describe `main` as it stands.
+4. **Where each document went:**
+
+   | Was | Is, under `content/nepali-number/` |
+   |---|---|
+   | `docs/README.md` | `maintain/index.mdx` |
+   | `docs/guides/getting-started.md` | `use/dev/getting-started.mdx`, `use/v2/getting-started.mdx` |
+   | `docs/guides/` | `use/dev/guides/`, `use/v2/guides/` |
+   | `docs/api/` | `use/dev/api/`, `use/v2/api/` |
+   | `docs/adr/` | `maintain/adr/` |
+   | `docs/architecture/` | `maintain/architecture/` |
+   | `docs/release/` | `maintain/release/` |
+   | `docs/security/` | `maintain/security/` |
+   | a directory's `README.md` | that folder's `index.mdx` |
+
+   Where ADR-0001 to ADR-0009 name a path under `docs/`, it is read through this table. A
+   change a consumer can observe (ADR-0008) writes its reference in `use/dev/api/`.
+5. **`docs/_templates/` stays in the repository.** A new document is started from a template
+   there and written as a page in the submodule.
+6. **The submodule's rules apply inside it.** Its `PROJECT_AGENTS.md` and the skills it names
+   set the format: every page is `.mdx` with a `title` and a `description`; links between pages
+   are relative; a link to a repository file is its GitHub address; every diagram is a Mermaid
+   fence inside a `Diagram` component together with its Archify view. This replaces ADR-0002's
+   "Diagrams are Mermaid in fenced blocks".
+7. **The living-snapshot rule of ADR-0002 stands**, with one addition from the site: a released
+   line keeps describing its version, so new behaviour is written in `use/dev/` and only
+   mistakes are corrected in a released line.
+8. **Agents edit; the owner commits.** No commit, push or branch switch inside the submodule,
+   and the submodule pointer is never moved by an agent, as in the rest of this repository.
+9. **`README.md` stays the summary npm shows**, and links to the site through
+   `/nepali-number/use/latest/`, which follows whichever line is `latest`.
+10. **Type-check and tests are scoped to this package.** `tsconfig.json` includes only `src`
+    and `tsdown.config.ts`, and `bunfig.toml` sets the test root to `src`, so `tsc` and
+    `bun test` do not pick up the site's own TypeScript and tests.
+11. **The catalogue entry**: `kind: package`, `ecosystem: npm`, `featured: true`, with the
+    repository address from `package.json`.
+
+**Assumptions recorded here.**
+
+- The repository address is the one in `package.json`,
+  `github.com/puncoz-official/nepali-number-js`, although the local `origin` remote is
+  `github.com/puncoz/nepali-number-js`.
+- `use/dev/` states `2.0.0` because that is what `package.json` holds on `main`; no next
+  version has been decided.
+- `use/v2/` is marked `latest` by the owner's choice while npm's `latest` tag is still 1.0.3;
+  the getting-started page says so.
+
+## Options considered
+
+| Option | Pros | Cons | Verdict |
+|---|---|---|---|
+| A — Move the documentation into Nepal Dev Verse through a submodule, in two tracks | One published home with search and version lines; user and maintainer docs are separated; the same shape as the owner's other packages | The documentation is in a second repository; a docs change is two commits, made by the owner | Chosen |
+| B — Keep `docs/` in the repository and copy it to the site | The repository reads the same on GitHub | Two copies that drift, which is what ADR-0002 exists to stop | Rejected |
+| C — Mount the submodule at `docs` itself | The path the site's guide suggests | `docs/_templates/` would have to leave the repository | Rejected by the owner: mounted at `docs/docs.nepal-dev.com/` |
+
+## Consequences
+
+**Positive**
+
+- Consumers read the documentation of the version they installed, with the unreleased line
+  marked as such.
+- Maintainer documentation is published and searchable beside the user documentation.
+
+**Negative / accepted trade-offs**
+
+- A fresh clone needs `git submodule update --init` to see the documentation.
+- A documentation change is committed in the submodule and then in this repository, by the
+  owner. Accepted: it is the site's convention.
+- Relative links from the README into `docs/` no longer exist; they point at the site.
+
+**For consumers**
+
+- None in the package. The README's documentation links lead to the site.
+
+## Package invariants
+
+None affected. The submodule is outside `src/` and outside the tarball (`files` is `["dist"]`).
+
+## Security considerations
+
+- **Everything in the submodule's two folders is published**, the Maintain track included: the
+  threat model, the open findings in it and the secrets inventory. All of it was already public
+  in this repository; nothing private or internal may be added.
+- **Published pages are licensed** under CC BY 4.0, and code examples in them under MIT, by the
+  site's terms.
+- **The submodule is not a dependency.** Nothing in it is installed, built or run by this
+  package's scripts or CI; the workflows check out without submodules. It never reaches the
+  tarball.
+- **The submodule address is an SSH address**, so cloning it needs a GitHub SSH key.
+
+## Implementation notes
+
+- [x] Submodule added at `docs/docs.nepal-dev.com/`.
+- [x] Pages written under `content/nepali-number/`, diagrams under `diagrams/nepali-number/`.
+- [x] `docs/` in the repository holds only `_templates/` and the submodule.
+- [x] `tsconfig.json` and `bunfig.toml` scoped to this package.
+- Tests: no library code changes. `bun run type-check`, `bun run test` and `bun run build`
+  pass with the submodule present.
+
+## Docs to update on implementation
+
+- [x] `AGENTS.md`: the documentation section, the paths in §1, §2, §4 to §12, and the
+      repository map.
+- [x] `README.md`: documentation links.
+- [x] [`index.mdx`](./index.mdx): the index row and the next free number.

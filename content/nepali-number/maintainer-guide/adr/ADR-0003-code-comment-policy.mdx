@@ -1,0 +1,87 @@
+---
+title: "ADR-0003 — Comments explain why; every export has TSDoc; every branch takes a block"
+description: "Comments in nepali-number say why and never what, every export carries TSDoc, and every control-flow branch is braced."
+---
+
+- **Status:** Approved
+- **Date:** 2026-10-30
+- **Deciders:** [@puncoz](https://github.com/puncoz)
+- **Approved by:** [@puncoz](https://github.com/puncoz)
+- **Approved on:** 2026-11-14
+- **Supersedes:** —
+- **Superseded by:** —
+- **Semver impact:** none (TSDoc changes ship in `.d.ts` but alter no behaviour)
+- **Design documents:** `AGENTS.md` §7
+
+## Context
+
+AI-written code tends to over-comment: restating the code, adding banners and section headers.
+Those comments rot as the code changes, and they hide the few that matter — which in this
+domain are many: why ordinals 1–4 are irregular, why `\d` cannot be used on Nepali input, why a
+value is floored rather than rounded, a floating-point edge.
+
+At the same time this is a library. Its TSDoc is emitted into `dist/nepali-number.d.ts` and is
+what consumers read in their editor on hover. Today `conversion` and `formatting` have TSDoc;
+most of `words`, `currency` and `utils` do not.
+
+Separately, an unbraced `if` body reads as guarded when a second line is added under it, and
+the diff looks right. The existing code braces every branch; nothing enforces it, because no
+linter is installed.
+
+## Decision
+
+1. **Comments explain *why*; the code explains *what*.** Default to no comment. Write one only
+   for reasoning, trade-offs, edge cases or external constraints that cannot be recovered from
+   the code. Prefer a reference to an ADR over prose. One or two lines, directly above what they
+   explain. No banners, no `=====` headers.
+2. **Every export carries TSDoc**: summary, `@param` for each parameter, `@returns` including
+   the safe default for invalid input, and at least one `@example` with real output. Missing
+   TSDoc is added when an export is next touched.
+3. **Configuration files may describe what a key does** (`tsconfig.json`, `tsdown.config.ts`,
+   `bunfig.toml`, CI workflows), still briefly, still linking the governing ADR.
+4. **Tooling-consumed comments stay**: TSDoc, `@ts-expect-error` reasons, pragmas.
+5. **Every control-flow branch takes a block**: `if`, `else`, `for`, `while`, `do` bodies are
+   braced even for one statement. Enforced in review until a linter is adopted; the ADR that
+   adopts one turns on `curly: ["error", "all"]`.
+6. **Existing comments are not rewritten for their own sake**; they are brought in line when
+   the code around them changes.
+
+## Options considered
+
+| Option | Pros | Cons | Verdict |
+|---|---|---|---|
+| A — Why-only comments + mandatory TSDoc on exports + braces | Comments stay meaningful; consumers get editor docs | Requires discipline; braces unenforced until a linter arrives | Chosen |
+| B — Comment liberally | Feels explanatory | Comments rot and drown the important ones | Rejected |
+| C — Adopt ESLint now to enforce braces | Mechanical enforcement | A new dev dependency and config; deserves its own ADR | Deferred |
+
+## Consequences
+
+**Positive**
+
+- The comments that exist are worth reading; consumers get documentation on hover.
+
+**Negative / accepted trade-offs**
+
+- The brace rule relies on review until a linter exists.
+
+**For consumers**
+
+- Better editor documentation as exports are touched.
+
+## Package invariants
+
+None directly.
+
+## Security considerations
+
+None — this change adds no dependency, no regular expression and no CI or publishing change.
+Comments must still never contain secrets (ADR-0005).
+
+## Implementation notes
+
+- [ ] `AGENTS.md` §7 states the policy.
+- Tests: not applicable (process only).
+
+## Docs to update on implementation
+
+- [ ] `docs/adr/README.md` — status.

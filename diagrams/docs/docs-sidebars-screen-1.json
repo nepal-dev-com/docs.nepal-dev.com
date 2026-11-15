@@ -28,21 +28,35 @@
         60
       ],
       "size": [
-        324,
+        436,
         58
       ]
     },
     {
-      "id": "sw",
-      "type": "external",
-      "label": "☀ | ☾",
+      "id": "ug",
+      "type": "backend",
+      "label": "User guide",
+      "sublabel": "current, filled",
       "pos": [
-        376,
-        60
+        40,
+        130
       ],
       "size": [
-        100,
-        58
+        212,
+        70
+      ]
+    },
+    {
+      "id": "mg",
+      "type": "backend",
+      "label": "Maintainer guide",
+      "pos": [
+        264,
+        130
+      ],
+      "size": [
+        212,
+        70
       ]
     },
     {
@@ -51,7 +65,7 @@
       "label": "full moon",
       "pos": [
         40,
-        130
+        212
       ],
       "size": [
         436,
@@ -65,7 +79,7 @@
       "label": "• Overview (landmark)",
       "pos": [
         40,
-        212
+        294
       ],
       "size": [
         436,
@@ -78,7 +92,7 @@
       "label": "◎ Get started",
       "pos": [
         54,
-        312
+        394
       ],
       "size": [
         408,
@@ -92,7 +106,7 @@
       "label": "◉ Install (probe, tinted)",
       "pos": [
         54,
-        394
+        476
       ],
       "size": [
         408,
@@ -105,7 +119,7 @@
       "label": "∘ Commands",
       "pos": [
         54,
-        464
+        546
       ],
       "size": [
         408,
@@ -118,7 +132,7 @@
       "label": "○ Reference",
       "pos": [
         40,
-        548
+        630
       ],
       "size": [
         436,
@@ -132,7 +146,7 @@
       "label": "○ Guides",
       "pos": [
         40,
-        630
+        712
       ],
       "size": [
         436,
@@ -144,10 +158,11 @@
   "boundaries": [
     {
       "kind": "region",
-      "label": "Phone screen · the left sidebar, /lodestar/use/v0.1/install",
+      "label": "Phone screen · the left sidebar, /lodestar/user-guide/v0.1/install",
       "wraps": [
         "chip",
-        "sw",
+        "ug",
+        "mg",
         "moon",
         "top",
         "h1",

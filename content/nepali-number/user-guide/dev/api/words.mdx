@@ -1,0 +1,362 @@
+---
+title: "Words"
+description: "Write numbers as Nepali or English words and ordinals, shorten them to lakh or crore, and read number words back into a number."
+---
+
+> Every output below was produced by running the built package.
+
+Numbers as Nepali words, English words, ordinals in words and in digits, short scale
+abbreviations such as `"१२ लाख"`, and the way back from words to a number.
+
+Every function that reads a number takes a
+[`NumericInput`](./types.mdx) (`number | bigint | string`): English, Nepali or mixed digits,
+with or without commas, read exactly at any length. Invalid input returns `""`.
+
+## Exports
+
+| Export | Signature | Returns |
+|---|---|---|
+| `toNepaliWords` | `(number: NumericInput) => string` | Cardinal in Nepali words |
+| `toEnglishWords` | `(number: NumericInput, options?: EnglishWordsOptions) => string` | Cardinal in lower-case English words |
+| `toNepaliOrdinal` | `(number: NumericInput) => string` | Ordinal in Nepali words |
+| `toEnglishOrdinal` | `(number: NumericInput, options?: EnglishWordsOptions) => string` | Ordinal in lower-case English words |
+| `toNepaliOrdinalNumber` | `(number: NumericInput, options?: OrdinalNumberOptions) => string` | Digits with a Nepali ordinal suffix |
+| `toEnglishOrdinalNumber` | `(number: NumericInput, options?: OrdinalNumberOptions) => string` | Digits with `st`, `nd`, `rd` or `th` |
+| `toDecimalWord` | `(number: NumericInput, options?: DecimalWordOptions) => string` | Abbreviated value with the largest scale |
+| `parseNepaliWords` | `(words: string) => number` | The number written in Nepali words |
+| `parseEnglishWords` | `(words: string) => number` | The number written in English words |
+
+---
+
+## `toNepaliWords(number)`
+
+```ts
+toNepaliWords(number: NumericInput): string
+```
+
+**Returns.** Nepali words. Every number 0–99 has its own word; larger numbers are built from
+the scales सय, हजार, लाख, करोड, अर्ब … महाशंख, and above महाशंख the count itself is written
+out. A fraction is read digit by digit after `दशमलव`, with trailing zeros dropped. Negative
+numbers are prefixed with `ऋण`. Invalid input returns `""`.
+
+```ts
+import { toNepaliWords } from "nepali-number"
+
+toNepaliWords(123)            // → "एक सय तेईस"
+toNepaliWords(99)             // → "उनान्सय"
+toNepaliWords("१२३४५")        // → "बाह्र हजार तीन सय पैंतालीस"
+toNepaliWords("1,23,456")     // → "एक लाख तेईस हजार चार सय छपन्न"
+toNepaliWords(1234567)        // → "बाह्र लाख चौंतीस हजार पाँच सय सतसट्ठी"
+toNepaliWords(12345678)       // → "एक करोड तेईस लाख पैंतालीस हजार छ सय अठहत्तर"
+toNepaliWords(1000000000)     // → "एक अर्ब"
+toNepaliWords(-45)            // → "ऋण पैंतालीस"
+toNepaliWords(0)              // → "शून्य"
+
+toNepaliWords(12.5)           // → "बाह्र दशमलव पाँच"
+toNepaliWords(3.14)           // → "तीन दशमलव एक चार"
+toNepaliWords(0.05)           // → "शून्य दशमलव शून्य पाँच"
+toNepaliWords("12.50")        // → "बाह्र दशमलव पाँच"
+toNepaliWords("12.0")         // → "बाह्र"
+
+toNepaliWords(10n ** 19n)     // → "एक महाशंख"
+toNepaliWords(10n ** 21n)     // → "एक सय महाशंख"
+toNepaliWords(12345678901234567890n)
+// → "एक महाशंख तेईस शंख पैंतालीस पद्म सतसट्ठी नील उनान्नब्बे खर्ब एक अर्ब तेईस करोड पैंतालीस लाख सतसट्ठी हजार आठ सय नब्बे"
+
+toNepaliWords("abc")          // → ""
+toNepaliWords("")             // → ""
+```
+
+**Notes.** A `number` above `Number.MAX_SAFE_INTEGER` has already lost its last digits before
+it reaches the function; pass a `bigint` or a digit string for those. For money use
+[`toNepaliCurrencyWords`](./currency.mdx#tonepalicurrencywordsamount-options), which writes
+rupees and paisa.
+
+---
+
+## `toEnglishWords(number, options?)`
+
+```ts
+toEnglishWords(number: NumericInput, options?: EnglishWordsOptions): string
+```
+
+| Option | Type | Default | Effect |
+|---|---|---|---|
+| `system` | `"nepali" \| "international"` | `"nepali"` | `"nepali"` uses lakh, crore, arab … maha-shankh; `"international"` uses thousand, million, billion … decillion |
+| `hyphenate` | `boolean` | `false` | `true` joins tens and ones with a hyphen |
+| `and` | `boolean` | `false` | `true` puts `and` after `hundred` when something follows |
+
+**Returns.** Lower-case English words. A fraction is read digit by digit after `point`, with
+trailing zeros dropped. Negative numbers are prefixed with `negative`. Invalid input returns
+`""`.
+
+```ts
+import { toEnglishWords } from "nepali-number"
+
+toEnglishWords(123)           // → "one hundred twenty three"
+toEnglishWords("१२३")         // → "one hundred twenty three"
+toEnglishWords(15)            // → "fifteen"
+toEnglishWords(40)            // → "forty"
+toEnglishWords(1234567)       // → "twelve lakh thirty four thousand five hundred sixty seven"
+toEnglishWords(12345678)      // → "one crore twenty three lakh forty five thousand six hundred seventy eight"
+toEnglishWords(1000000000)    // → "one arab"
+toEnglishWords(-5)            // → "negative five"
+toEnglishWords(0)             // → "zero"
+toEnglishWords(12.5)          // → "twelve point five"
+
+toEnglishWords(1234567, { system: "international" })
+// → "one million two hundred thirty four thousand five hundred sixty seven"
+toEnglishWords(23, { hyphenate: true })   // → "twenty-three"
+toEnglishWords(123, { and: true })        // → "one hundred and twenty three"
+
+toEnglishWords("abc")         // → ""
+```
+
+**Notes.** Capitalise in your own code if needed. Above the largest scale of a system the
+count itself is written out (`1e21` → `"one hundred maha-shankh"`).
+
+---
+
+## `toNepaliOrdinal(number)`
+
+```ts
+toNepaliOrdinal(number: NumericInput): string
+```
+
+**Returns.** The Nepali ordinal. 1–4 are irregular (पहिलो, दोस्रो, तेस्रो, चौथो); from 5 on the
+ordinal suffix `-औं` is used. For numbers ≥ 100 only the last part takes the ordinal form;
+an exact scale multiple uses the scale's ordinal (`सयौं`, `हजारौं`, `करोडौं`). Negative
+numbers are prefixed with `ऋण`. A non-integer or invalid input returns `""`.
+
+```ts
+import { toNepaliOrdinal } from "nepali-number"
+
+toNepaliOrdinal(1)            // → "पहिलो"
+toNepaliOrdinal(2)            // → "दोस्रो"
+toNepaliOrdinal(3)            // → "तेस्रो"
+toNepaliOrdinal(4)            // → "चौथो"
+toNepaliOrdinal(5)            // → "पाँचौं"
+toNepaliOrdinal("१०")         // → "दशौं"
+toNepaliOrdinal(21)           // → "एक्काईसौं"
+toNepaliOrdinal(100)          // → "एक सयौं"
+toNepaliOrdinal(101)          // → "एक सय एकौं"
+toNepaliOrdinal(1000)         // → "एक हजारौं"
+toNepaliOrdinal(10000000)     // → "एक करोडौं"
+toNepaliOrdinal(12345678)     // → "एक करोड तेईस लाख पैंतालीस हजार छ सय अठहत्तरौं"
+toNepaliOrdinal(0)            // → "शून्यौं"
+toNepaliOrdinal(-1)           // → "ऋण एकौं"
+toNepaliOrdinal(12.5)         // → ""
+toNepaliOrdinal("abc")        // → ""
+```
+
+**Notes.** Negative ordinals use the regular `-औं` form, not the 1–4 exceptions
+(`-2` → `"ऋण दुइऔं"`).
+
+---
+
+## `toEnglishOrdinal(number, options?)`
+
+```ts
+toEnglishOrdinal(number: NumericInput, options?: EnglishWordsOptions): string
+```
+
+Options are those of [`toEnglishWords`](#toenglishwordsnumber-options).
+
+**Returns.** The cardinal from `toEnglishWords` with its last word made ordinal. A non-integer
+or invalid input returns `""`.
+
+```ts
+import { toEnglishOrdinal } from "nepali-number"
+
+toEnglishOrdinal(1)           // → "first"
+toEnglishOrdinal(2)           // → "second"
+toEnglishOrdinal(3)           // → "third"
+toEnglishOrdinal(5)           // → "fifth"
+toEnglishOrdinal(8)           // → "eighth"
+toEnglishOrdinal(9)           // → "ninth"
+toEnglishOrdinal(12)          // → "twelfth"
+toEnglishOrdinal(20)          // → "twentieth"
+toEnglishOrdinal("२१")        // → "twenty first"
+toEnglishOrdinal(100)         // → "one hundredth"
+toEnglishOrdinal(101)         // → "one hundred first"
+toEnglishOrdinal(1234567)     // → "twelve lakh thirty four thousand five hundred sixty seventh"
+toEnglishOrdinal(10000000)    // → "one croreth"
+toEnglishOrdinal(21, { hyphenate: true })   // → "twenty-first"
+toEnglishOrdinal(0)           // → "zeroth"
+toEnglishOrdinal(-1)          // → "negative first"
+toEnglishOrdinal(12.5)        // → ""
+toEnglishOrdinal("abc")       // → ""
+```
+
+---
+
+## `toNepaliOrdinalNumber(number, options?)`
+
+```ts
+toNepaliOrdinalNumber(number: NumericInput, options?: OrdinalNumberOptions): string
+```
+
+| Option | Type | Default | Effect |
+|---|---|---|---|
+| `useNepaliDigits` | `boolean` | `true` | `false` keeps English digits |
+
+**Returns.** The digits with a Nepali ordinal suffix: `लो`, `रो`, `रो`, `थो` for 1–4 and `औं`
+otherwise. No grouping commas. A non-integer, a negative or invalid input returns `""`.
+
+```ts
+import { toNepaliOrdinalNumber } from "nepali-number"
+
+toNepaliOrdinalNumber(1)          // → "१लो"
+toNepaliOrdinalNumber(2)          // → "२रो"
+toNepaliOrdinalNumber(3)          // → "३रो"
+toNepaliOrdinalNumber(4)          // → "४थो"
+toNepaliOrdinalNumber(5)          // → "५औं"
+toNepaliOrdinalNumber("२१")       // → "२१औं"
+toNepaliOrdinalNumber(100)        // → "१००औं"
+toNepaliOrdinalNumber(12345678)   // → "१२३४५६७८औं"
+toNepaliOrdinalNumber(5, { useNepaliDigits: false })   // → "5औं"
+toNepaliOrdinalNumber(0)          // → "०औं"
+toNepaliOrdinalNumber(-5)         // → ""
+toNepaliOrdinalNumber(12.5)       // → ""
+toNepaliOrdinalNumber("abc")      // → ""
+```
+
+---
+
+## `toEnglishOrdinalNumber(number, options?)`
+
+```ts
+toEnglishOrdinalNumber(number: NumericInput, options?: OrdinalNumberOptions): string
+```
+
+| Option | Type | Default | Effect |
+|---|---|---|---|
+| `useNepaliDigits` | `boolean` | `false` | `true` writes the digits in Nepali |
+
+**Returns.** The digits with `st`, `nd`, `rd` or `th`, chosen by the last two digits. No
+grouping commas. A non-integer, a negative or invalid input returns `""`.
+
+```ts
+import { toEnglishOrdinalNumber } from "nepali-number"
+
+toEnglishOrdinalNumber(1)         // → "1st"
+toEnglishOrdinalNumber(2)         // → "2nd"
+toEnglishOrdinalNumber(3)         // → "3rd"
+toEnglishOrdinalNumber(4)         // → "4th"
+toEnglishOrdinalNumber(11)        // → "11th"
+toEnglishOrdinalNumber(12)        // → "12th"
+toEnglishOrdinalNumber(13)        // → "13th"
+toEnglishOrdinalNumber("२१")      // → "21st"
+toEnglishOrdinalNumber(102)       // → "102nd"
+toEnglishOrdinalNumber(112)       // → "112th"
+toEnglishOrdinalNumber(12345678)  // → "12345678th"
+toEnglishOrdinalNumber(0)         // → "0th"
+toEnglishOrdinalNumber(-5)        // → ""
+toEnglishOrdinalNumber(12.5)      // → ""
+toEnglishOrdinalNumber("abc")     // → ""
+```
+
+---
+
+## `toDecimalWord(number, options?)`
+
+Abbreviates a number with its largest scale — the way amounts are spoken and written in
+headlines (`"१२ लाख"`, `"२.५० करोड"`).
+
+```ts
+toDecimalWord(number: NumericInput, options?: DecimalWordOptions): string
+```
+
+| Option | Type | Default | Effect |
+|---|---|---|---|
+| `precision` | `number` | `2` | Decimal places when the value is not an exact multiple of its scale. Anything but an integer from 0 to 100 reads as `2` |
+| `useNepaliDigits` | `boolean` | `true` | `false` keeps English digits; the scale label stays Nepali |
+
+**Returns.** An exact multiple of the scale has no decimals; anything else is rounded to
+`precision` decimals (trailing zeros kept). Numbers whose magnitude is below 100 are returned
+as [`formatNepaliNumber`](./formatting.mdx#formatnepalinumbernumber-options) would format
+them. A negative number keeps its sign in front. Invalid input returns `""`.
+
+```ts
+import { toDecimalWord } from "nepali-number"
+
+toDecimalWord(1200000)        // → "१२ लाख"
+toDecimalWord("१२,००,०००")    // → "१२ लाख"
+toDecimalWord(1250000)        // → "१२.५० लाख"
+toDecimalWord(25000000)       // → "२.५० करोड"
+toDecimalWord(12345678)       // → "१.२३ करोड"
+toDecimalWord(1000000000)     // → "१ अर्ब"
+toDecimalWord(100000)         // → "१ लाख"
+toDecimalWord(1234)           // → "१.२३ हजार"
+toDecimalWord(150)            // → "१.५० सय"
+toDecimalWord(99)             // → "९९"
+toDecimalWord(99.5)           // → "९९.५०"
+toDecimalWord(0)              // → "०"
+toDecimalWord(-1200000)       // → "-१२ लाख"
+toDecimalWord(-1250000)       // → "-१२.५० लाख"
+
+toDecimalWord(1250000, { precision: 1 })              // → "१२.५ लाख"
+toDecimalWord(1200000, { useNepaliDigits: false })    // → "12 लाख"
+
+toDecimalWord("abc")          // → ""
+```
+
+---
+
+## `parseNepaliWords(words)`
+
+```ts
+parseNepaliWords(words: string): number
+```
+
+**Returns.** The number that the Nepali words write: an optional `ऋण`, scale groups from large
+to small, and an optional `दशमलव` followed by digit words. It reads what
+[`toNepaliWords`](#tonepaliwordsnumber) writes. Anything else returns `NaN`.
+
+```ts
+import { parseNepaliWords } from "nepali-number"
+
+parseNepaliWords("एक सय तेईस")                // → 123
+parseNepaliWords("एक लाख पच्चीस हजार")        // → 125000
+parseNepaliWords("एक करोड तेईस लाख पैंतालीस हजार छ सय अठहत्तर")   // → 12345678
+parseNepaliWords("शून्य")                     // → 0
+parseNepaliWords("ऋण पैंतालीस")               // → -45
+parseNepaliWords("बाह्र दशमलव पाँच")          // → 12.5
+parseNepaliWords("  एक   सय  ")               // → 100
+parseNepaliWords("abc")                       // → NaN
+parseNepaliWords("")                          // → NaN
+```
+
+**Notes.** Only the spellings this package writes are read. The result is a JavaScript
+`number`, so a value above `Number.MAX_SAFE_INTEGER` is not exact.
+
+---
+
+## `parseEnglishWords(words)`
+
+```ts
+parseEnglishWords(words: string): number
+```
+
+**Returns.** The number that the English words write. Case-insensitive; accepts hyphens,
+`and`, and the scales of both systems (lakh, crore … and million, billion …). Anything else
+returns `NaN`.
+
+```ts
+import { parseEnglishWords } from "nepali-number"
+
+parseEnglishWords("one hundred twenty three")         // → 123
+parseEnglishWords("one lakh twenty five thousand")    // → 125000
+parseEnglishWords("One Crore")                        // → 10000000
+parseEnglishWords("one million")                      // → 1000000
+parseEnglishWords("twenty-three")                     // → 23
+parseEnglishWords("one hundred and five")             // → 105
+parseEnglishWords("zero")                             // → 0
+parseEnglishWords("negative five")                    // → -5
+parseEnglishWords("twelve point five")                // → 12.5
+parseEnglishWords("abc")                              // → NaN
+parseEnglishWords("")                                 // → NaN
+```
+
+**Notes.** The result is a JavaScript `number`, so a value above `Number.MAX_SAFE_INTEGER` is
+not exact.

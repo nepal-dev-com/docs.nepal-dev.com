@@ -1,0 +1,23 @@
+{
+  "title": "Maintainer guide",
+  "description": "Decisions, design documents and security documents for this site",
+  "pages": [
+    "index",
+    "---Decisions---",
+    "adr",
+    "---Design---",
+    "architecture",
+    "app-flow",
+    "prd",
+    "api",
+    "dfd",
+    "sequence",
+    "state",
+    "erd",
+    "---Security---",
+    "rbac",
+    "security",
+    "---Templates---",
+    "_templates"
+  ]
+}

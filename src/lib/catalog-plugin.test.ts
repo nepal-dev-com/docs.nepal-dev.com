@@ -60,11 +60,11 @@ describe('checkCatalogue', () => {
       check(
         {
           'lodestar/meta.json': pkg,
-          'lodestar/use/meta.json': { title: 'Use' },
-          'lodestar/use/dev/meta.json': { version: '2.0.0-dev', channel: 'dev' },
-          'lodestar/use/v1/meta.json': { version: '1.4.0', channel: 'latest', name: 'v1.4' },
+          'lodestar/user-guide/meta.json': { title: 'User guide' },
+          'lodestar/user-guide/dev/meta.json': { version: '2.0.0-dev', channel: 'dev' },
+          'lodestar/user-guide/v1/meta.json': { version: '1.4.0', channel: 'latest', name: 'v1.4' },
         },
-        ['lodestar/index.mdx', 'lodestar/use/v1/index.mdx'],
+        ['lodestar/index.mdx', 'lodestar/user-guide/v1/index.mdx'],
       ),
     ).toEqual([]);
   });
@@ -86,22 +86,22 @@ describe('checkCatalogue', () => {
   test('a line without version or channel, or dev in the wrong folder', () => {
     const problems = check({
       'lodestar/meta.json': pkg,
-      'lodestar/use/v1/meta.json': { name: 'v1' },
-      'lodestar/use/v2/meta.json': { version: '2.0.0-dev', channel: 'dev' },
-      'lodestar/use/dev/meta.json': { version: '3.0.0', channel: 'latest' },
+      'lodestar/user-guide/v1/meta.json': { name: 'v1' },
+      'lodestar/user-guide/v2/meta.json': { version: '2.0.0-dev', channel: 'dev' },
+      'lodestar/user-guide/dev/meta.json': { version: '3.0.0', channel: 'latest' },
     });
-    expect(problems).toContain('content/lodestar/use/v1/meta.json: a version line needs `version`');
-    expect(problems).toContain('content/lodestar/use/v1/meta.json: a version line needs `channel`');
-    expect(problems).toContain('content/lodestar/use/v2/meta.json: only `use/dev/` has `channel: "dev"`');
-    expect(problems.some((p) => p.includes('use/dev/meta.json') && p.includes('work-in-progress'))).toBe(true);
+    expect(problems).toContain('content/lodestar/user-guide/v1/meta.json: a version line needs `version`');
+    expect(problems).toContain('content/lodestar/user-guide/v1/meta.json: a version line needs `channel`');
+    expect(problems).toContain('content/lodestar/user-guide/v2/meta.json: only `user-guide/dev/` has `channel: "dev"`');
+    expect(problems.some((p) => p.includes('user-guide/dev/meta.json') && p.includes('work-in-progress'))).toBe(true);
   });
 
   test('unusable or clashing segments', () => {
     const problems = check({
       'lodestar/meta.json': pkg,
-      'lodestar/use/a/meta.json': { version: '1.0.0', channel: 'latest', name: 'latest' },
-      'lodestar/use/b/meta.json': { version: '0.9.0', channel: 'legacy', name: 'V 1' },
-      'lodestar/use/c/meta.json': { version: '0.8.0', channel: 'legacy', name: 'v 1' },
+      'lodestar/user-guide/a/meta.json': { version: '1.0.0', channel: 'latest', name: 'latest' },
+      'lodestar/user-guide/b/meta.json': { version: '0.9.0', channel: 'legacy', name: 'V 1' },
+      'lodestar/user-guide/c/meta.json': { version: '0.8.0', channel: 'legacy', name: 'v 1' },
     });
     expect(problems.some((p) => p.includes('"latest"') && p.includes("can't be used"))).toBe(true);
     expect(problems.some((p) => p.includes('both give the URL segment "v-1"'))).toBe(true);
@@ -112,17 +112,17 @@ describe('checkCatalogue', () => {
       check(
         {
           'lodestar/meta.json': pkg,
-          'lodestar/use/a/meta.json': { version: '2.0.0', channel: 'latest' },
-          'lodestar/use/b/meta.json': { version: '1.0.0', channel: 'latest' },
+          'lodestar/user-guide/a/meta.json': { version: '2.0.0', channel: 'latest' },
+          'lodestar/user-guide/b/meta.json': { version: '1.0.0', channel: 'latest' },
         },
-        ['lodestar/use/intro.mdx'],
+        ['lodestar/user-guide/intro.mdx'],
       ),
     ).toEqual([
-      "content/lodestar/use/intro.mdx: a versioned package's `use/` holds only version lines",
+      "content/lodestar/user-guide/intro.mdx: a versioned package's `user-guide/` holds only version lines",
       'content/lodestar: more than one line has `channel: "latest"`',
     ]);
     expect(
-      check({ 'lodestar/meta.json': pkg, 'lodestar/use/a/meta.json': { version: '1.0.0', channel: 'legacy' } }),
+      check({ 'lodestar/meta.json': pkg, 'lodestar/user-guide/a/meta.json': { version: '1.0.0', channel: 'legacy' } }),
     ).toEqual(['content/lodestar: released lines exist but none has `channel: "latest"`']);
   });
 });
@@ -142,21 +142,21 @@ describe('projects (ADR-0024)', () => {
       check(
         {
           'acme/meta.json': project(repos),
-          'acme/use/dev/meta.json': { version: '2.1.0-dev.1', channel: 'dev' },
-          'acme/use/v2/meta.json': { version: '2.0.0', channel: 'latest' },
+          'acme/user-guide/dev/meta.json': { version: '2.1.0-dev.1', channel: 'dev' },
+          'acme/user-guide/v2/meta.json': { version: '2.0.0', channel: 'latest' },
         },
-        ['acme/index.mdx', 'acme/use/dev/frontend/index.mdx', 'acme/use/v2/backend/index.mdx'],
+        ['acme/index.mdx', 'acme/user-guide/dev/frontend/index.mdx', 'acme/user-guide/v2/backend/index.mdx'],
       ),
     ).toEqual([]);
   });
 
   test('an older line in a project fails; a package keeps its older lines', () => {
     const lines = {
-      'acme/use/v2/meta.json': { version: '2.0.0', channel: 'latest' as const },
-      'acme/use/v1/meta.json': { version: '1.0.0', channel: 'legacy' as const },
+      'acme/user-guide/v2/meta.json': { version: '2.0.0', channel: 'latest' as const },
+      'acme/user-guide/v1/meta.json': { version: '1.0.0', channel: 'legacy' as const },
     };
     expect(check({ 'acme/meta.json': project(), ...lines })).toEqual([
-      'content/acme/use/v1/meta.json: a project keeps only `dev` and one released line; older lines are for packages (ADR-0024)',
+      'content/acme/user-guide/v1/meta.json: a project keeps only `dev` and one released line; older lines are for packages (ADR-0024)',
     ]);
     expect(check({ 'acme/meta.json': pkg, ...lines })).toEqual([]);
   });
@@ -165,7 +165,7 @@ describe('projects (ADR-0024)', () => {
     expect(
       check({
         'acme/meta.json': project([repos[0], { id: 'v2', name: 'V2', primary: false }]),
-        'acme/use/v2/meta.json': { version: '2.0.0', channel: 'latest' },
+        'acme/user-guide/v2/meta.json': { version: '2.0.0', channel: 'latest' },
       }),
     ).toEqual(['content/acme/meta.json: the repository id "v2" is also a line\'s URL segment (ADR-0024)']);
   });
@@ -178,38 +178,38 @@ describe('repositoryName', () => {
   ];
   const metas: Record<string, CatalogMeta> = {
     'acme/meta.json': { title: 'acme', catalog: { kind: 'project', visibility: 'public', featured: false, repositories } },
-    'acme/use/dev/meta.json': { version: '2.1.0-dev.1', channel: 'dev' },
-    'acme/maintain/api/meta.json': { title: 'The API' },
+    'acme/user-guide/dev/meta.json': { version: '2.1.0-dev.1', channel: 'dev' },
+    'acme/maintainer-guide/api/meta.json': { title: 'The API' },
   };
   const read = (path: string) => metas[path];
 
   test("a repository folder takes the repository's name", () => {
-    expect(repositoryName('acme/use/frontend', read)).toBe('Frontend');
-    expect(repositoryName('acme/maintain/frontend', read)).toBe('Frontend');
-    expect(repositoryName('acme/use/dev/frontend', read)).toBe('Frontend');
+    expect(repositoryName('acme/user-guide/frontend', read)).toBe('Frontend');
+    expect(repositoryName('acme/maintainer-guide/frontend', read)).toBe('Frontend');
+    expect(repositoryName('acme/user-guide/dev/frontend', read)).toBe('Frontend');
   });
 
   test('unless its meta.json sets a title, or it is not a repository folder', () => {
-    expect(repositoryName('acme/maintain/api', read)).toBeUndefined();
-    expect(repositoryName('acme/maintain/guides', read)).toBeUndefined();
-    expect(repositoryName('acme/use/v9/frontend', read)).toBeUndefined();
-    expect(repositoryName('acme/maintain/frontend/deep', read)).toBeUndefined();
+    expect(repositoryName('acme/maintainer-guide/api', read)).toBeUndefined();
+    expect(repositoryName('acme/maintainer-guide/guides', read)).toBeUndefined();
+    expect(repositoryName('acme/user-guide/v9/frontend', read)).toBeUndefined();
+    expect(repositoryName('acme/maintainer-guide/frontend/deep', read)).toBeUndefined();
   });
 });
 
 describe('checkDescriptions (ADR-0035 decision 8)', () => {
   const pages: Record<string, string | undefined> = {
     'x/index.mdx': 'Says what it is.',
-    'x/use/a.mdx': undefined,
-    'x/use/b.mdx': '   ',
+    'x/user-guide/a.mdx': undefined,
+    'x/user-guide/b.mdx': '   ',
     'x/meta.json': undefined,
   };
   const problems = checkDescriptions(Object.keys(pages), (path) => pages[path]);
 
   test('names every page without one, including a blank one', () => {
     expect(problems).toEqual([
-      'content/x/use/a.mdx: needs a frontmatter `description`',
-      'content/x/use/b.mdx: needs a frontmatter `description`',
+      'content/x/user-guide/a.mdx: needs a frontmatter `description`',
+      'content/x/user-guide/b.mdx: needs a frontmatter `description`',
     ]);
   });
 

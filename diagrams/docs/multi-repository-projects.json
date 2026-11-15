@@ -53,7 +53,7 @@
       "lane": "tracks",
       "col": 2,
       "type": "frontend",
-      "label": "Use track",
+      "label": "User guide",
       "sublabel": "a station per repository"
     },
     {
@@ -61,7 +61,7 @@
       "lane": "tracks",
       "col": 3,
       "type": "frontend",
-      "label": "Maintain track",
+      "label": "Maintainer guide",
       "sublabel": "shared + repository stations"
     },
     {
@@ -92,14 +92,14 @@
       "id": "use_e",
       "from": "overview",
       "to": "use",
-      "label": "Use",
+      "label": "User guide",
       "variant": "emphasis"
     },
     {
       "id": "maint_e",
       "from": "overview",
       "to": "maintain",
-      "label": "Maintain",
+      "label": "Maintainer guide",
       "variant": "default",
       "role": "branch"
     },

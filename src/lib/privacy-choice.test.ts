@@ -179,7 +179,7 @@ describe('expiredCookies (ADR-0041 decision 6)', () => {
 
 describe('withoutQuery (ADR-0041 decision 2)', () => {
   test('drops the query string and keeps the path and fragment', () => {
-    expect(withoutQuery('https://docs.nepal-dev.com/atlas/use?q=install&utm=x#verse')).toBe('https://docs.nepal-dev.com/atlas/use#verse');
+    expect(withoutQuery('https://docs.nepal-dev.com/atlas/user-guide?q=install&utm=x#verse')).toBe('https://docs.nepal-dev.com/atlas/user-guide#verse');
     expect(withoutQuery('https://docs.nepal-dev.com/')).toBe('https://docs.nepal-dev.com/');
   });
 

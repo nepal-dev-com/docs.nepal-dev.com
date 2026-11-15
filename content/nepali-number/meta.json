@@ -1,0 +1,12 @@
+{
+  "title": "nepali-number",
+  "description": "Convert, format and spell out numbers in Nepali (Devanagari): digits, lakh and crore grouping, words, ordinals and Nepali Rupees.",
+  "catalog": {
+    "kind": "package",
+    "ecosystem": "npm",
+    "visibility": "public",
+    "repository": "https://github.com/nepal-dev-com/nepali-number-js",
+    "registry": "https://www.npmjs.com/package/nepali-number",
+    "featured": true
+  }
+}

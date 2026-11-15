@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import type { CatalogEntry, TrackPreview } from '@/lib/catalog';
 import { ringOf } from '@/lib/rings';
+import { maintainerGuide, trackName, userGuide } from '@/lib/tracks';
 import { ringColor } from '@/components/planet';
 
 function Side({
@@ -48,10 +49,18 @@ function Side({
 }
 
 /**
- * Use as a planet's day side and Maintain as its night side, with real pages of one entry
- * (ADR-0017 decision 5).
+ * The User guide as a planet's day side and the Maintainer guide as its night side, with real pages of
+ * one entry (ADR-0017 decision 5).
  */
-export function TwoSides({ entry, use, maintain }: { entry: CatalogEntry; use: TrackPreview; maintain: TrackPreview }) {
+export function TwoSides({
+  entry,
+  userGuidePreview,
+  maintainerGuidePreview,
+}: {
+  entry: CatalogEntry;
+  userGuidePreview: TrackPreview;
+  maintainerGuidePreview: TrackPreview;
+}) {
   return (
     <>
       <div className="section-head">
@@ -62,7 +71,12 @@ export function TwoSides({ entry, use, maintain }: { entry: CatalogEntry; use: T
         </p>
       </div>
       <div className="sides">
-        <Side side="day" title="Use" text="Install, guides and the API, one set of pages per version." preview={use} />
+        <Side
+          side="day"
+          title={trackName(userGuide)}
+          text="Install, guides and the API, one set of pages per version."
+          preview={userGuidePreview}
+        />
         <div className="terminator" aria-hidden>
           <svg viewBox="-50 -50 100 100">
             <circle r="34" fill="var(--home-night)" stroke="var(--home-line-2)" />
@@ -72,9 +86,9 @@ export function TwoSides({ entry, use, maintain }: { entry: CatalogEntry; use: T
         </div>
         <Side
           side="night"
-          title="Maintain"
+          title={trackName(maintainerGuide)}
           text="Architecture, releasing and the decisions behind the code. Not versioned."
-          preview={maintain}
+          preview={maintainerGuidePreview}
         />
       </div>
     </>

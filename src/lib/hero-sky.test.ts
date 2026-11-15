@@ -17,7 +17,7 @@ import {
 } from './hero-sky';
 
 const line = (channel: 'latest' | 'legacy' | 'dev', version: string) =>
-  ({ folder: version, name: version, segment: version, version, channel, url: `/x/use/${version}` }) as CatalogEntry['lines'][number];
+  ({ folder: version, name: version, segment: version, version, channel, url: `/x/user-guide/${version}` }) as CatalogEntry['lines'][number];
 
 const entry = (slug: string, kind: 'package' | 'project', ecosystem?: CatalogEntry['ecosystem'], lines: CatalogEntry['lines'] = []) =>
   ({ slug, title: slug, kind, ecosystem, featured: false, url: `/${slug}`, lines }) as CatalogEntry;

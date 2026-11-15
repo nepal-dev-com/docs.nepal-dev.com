@@ -18,7 +18,7 @@ This file governs how work is done in this repository, by humans and by AI agent
 Read this file **before** touching anything. If a change alters how work is done here,
 updating this file is part of that change.
 
-**How it is laid out** ([ADR-0045](content/docs/maintain/adr/ADR-0045-agents-md-keeps-the-standing-rules-and-in-house-skills-hold-the-rest.mdx)). This file holds the rules every task needs. The depth
+**How it is laid out** ([ADR-0045](content/docs/maintainer-guide/adr/ADR-0045-agents-md-keeps-the-standing-rules-and-in-house-skills-hold-the-rest.mdx)). This file holds the rules every task needs. The depth
 is in this project's own skills, `.agent-skills/nepal-dev-<topic>/SKILL.md`. They are part of this
 working agreement and as binding as this file. **Before starting a task, check it against the table
 in §11 and read every skill it names, in full.** Where a section below says **Depth:**, the skill it
@@ -48,20 +48,20 @@ file, *the owner* reviews, approves and decides through `puncoz` (ADR-0039). It 
 
 It is a [Fumadocs](https://fumadocs.dev) site on Next.js. Every page a reader sees is a file in
 `content/`, and every package or project is a folder there, `content/<slug>/`, published at
-`/<slug>` ([ADR-0015](content/docs/maintain/adr/ADR-0015-every-entry-lives-at-the-root-in-one-shape-and-one-look.mdx)).
+`/<slug>` ([ADR-0015](content/docs/maintainer-guide/adr/ADR-0015-every-entry-lives-at-the-root-in-one-shape-and-one-look.mdx)).
 This site is one project among them: **Nepal Dev Verse Docs**, slug `docs`, at `content/docs/`. Its own
-decisions and design documents are its Maintain track, `content/docs/maintain/`, published at
-`/docs/maintain` (§8).
+decisions and design documents are its Maintainer guide, `content/docs/maintainer-guide/`, published at
+`/docs/maintainer-guide` (§8).
 
 - **Consumed as a git submodule.** The owner's project and package repositories include this
   repository as a submodule and write their own pages into it, each in its own folders
-  `content/<project-slug>/` and `diagrams/<project-slug>/`, keeping both its Use and its Maintain
+  `content/<project-slug>/` and `diagrams/<project-slug>/`, keeping both its User guide and its Maintainer guide
   docs current. Their guide is [`PROJECT_AGENTS.md`](PROJECT_AGENTS.md)
-  ([ADR-0010](content/docs/maintain/adr/ADR-0010-projects-document-themselves-through-a-submodule.mdx)).
+  ([ADR-0010](content/docs/maintainer-guide/adr/ADR-0010-projects-document-themselves-through-a-submodule.mdx)).
   If you are working here from a consuming repository, read that first.
 - The overview and getting started are in [`README.md`](README.md). The map of this site's
   maintainer documentation is
-  [`content/docs/maintain/index.mdx`](content/docs/maintain/index.mdx).
+  [`content/docs/maintainer-guide/index.mdx`](content/docs/maintainer-guide/index.mdx).
 
 **Depth:** `.agent-skills/nepal-dev-site-picture/SKILL.md` holds the site as it stands today: the
 current state, one shape for every entry, the solar system, the home page, Cache Components,
@@ -72,7 +72,7 @@ changing anything under `src/`.
 
 **Every feature and functional change starts with an ADR, and no implementation begins
 before the repository owner approves it.** The full decision is
-[ADR-0001](content/docs/maintain/adr/ADR-0001-adr-driven-development-workflow.mdx).
+[ADR-0001](content/docs/maintainer-guide/adr/ADR-0001-adr-driven-development-workflow.mdx).
 
 ### Workflow
 
@@ -139,7 +139,7 @@ Unclear which side the change falls on? It needs an ADR.
   `README.md`, the design documents and the ADR index reflect it (§8).
 - **Keep tests in the same change.** A change is not complete without tests for its happy path
   and its obvious failure paths — small changes included
-  ([ADR-0007](content/docs/maintain/adr/ADR-0007-tests-are-part-of-every-change.mdx)). A bug fix starts with a
+  ([ADR-0007](content/docs/maintainer-guide/adr/ADR-0007-tests-are-part-of-every-change.mdx)). A bug fix starts with a
   test that fails for the bug's reason.
 - **Leave the managed Next.js block alone.** `next dev` rewrites the content between
   `<!-- BEGIN:nextjs-agent-rules -->` and `<!-- END:nextjs-agent-rules -->`. Never edit
@@ -156,7 +156,7 @@ Unclear which side the change falls on? It needs an ADR.
 
 ## 4. Never guess — ask
 
-[ADR-0004](content/docs/maintain/adr/ADR-0004-ask-never-guess.mdx). Picking something plausible and moving on
+[ADR-0004](content/docs/maintainer-guide/adr/ADR-0004-ask-never-guess.mdx). Picking something plausible and moving on
 is the failure mode this rule exists to stop: the assumption looks finished, gives no signal
 it was made, and is found late. In documentation a plausible wrong guess — an install command,
 a function signature, a default value, a supported version — is published as fact and copied
@@ -247,7 +247,7 @@ needs an ADR that says so.
 
 ## 7. Code style — comments
 
-[ADR-0003](content/docs/maintain/adr/ADR-0003-code-comment-policy.mdx). **Comments explain *why*. The code
+[ADR-0003](content/docs/maintainer-guide/adr/ADR-0003-code-comment-policy.mdx). **Comments explain *why*. The code
 explains *what*. If the code is self-explanatory, write no comment at all.**
 
 A comment is warranted only when the reasoning, trade-off, edge case or constraint cannot be
@@ -281,8 +281,8 @@ pages.push(page)
 
 ## 8. Documentation duties
 
-[ADR-0002](content/docs/maintain/adr/ADR-0002-living-design-documentation.mdx). The map of what lives where is
-[`content/docs/maintain/index.mdx`](content/docs/maintain/index.mdx); each directory's `index.mdx` holds its own conventions.
+[ADR-0002](content/docs/maintainer-guide/adr/ADR-0002-living-design-documentation.mdx). The map of what lives where is
+[`content/docs/maintainer-guide/index.mdx`](content/docs/maintainer-guide/index.mdx); each directory's `index.mdx` holds its own conventions.
 
 - **Everything under `content/` is published** (§6.1, §9).
 - **Docs and tests are part of the same change** (§3). An implementation is not complete while a
@@ -313,14 +313,14 @@ nothing else — git and the ADRs hold the history.
 
 ## 9. Security and privacy
 
-[ADR-0005](content/docs/maintain/adr/ADR-0005-security-as-a-standing-practice.mdx). This site will hold
+[ADR-0005](content/docs/maintainer-guide/adr/ADR-0005-security-as-a-standing-practice.mdx). This site will hold
 documentation for **private projects** next to public packages. A flaw here is not a broken
 page. It is a private project's architecture, internal API or client name published on the
 open web, indexed by a search engine and copied into an LLM's training data — where it cannot
 be taken back.
 
 Security is a property of **every change**, not a pre-deploy event. Full documents live in
-[`content/docs/maintain/security/`](content/docs/maintain/security/index.mdx).
+[`content/docs/maintainer-guide/security/`](content/docs/maintainer-guide/security/index.mdx).
 
 ### Never guess at a security decision
 
@@ -358,7 +358,7 @@ owner, not into the maintainer documentation**, until they are fixed: those page
 ├── .github/               # issue forms, PR template, CODEOWNERS; workflows/ (checks only) and dependabot.yml (ADR-0047)
 ├── LICENSE, LICENSE-CONTENT   # MIT for code; CC BY 4.0 for content/ and diagrams/ (ADR-0046)
 ├── content/               # PUBLISHED: every page readers see; one folder per entry, at /<slug>
-│   └── docs/maintain/     # this site's own decisions (adr/) and design documents
+│   └── docs/maintainer-guide/     # this site's own decisions (adr/) and design documents
 ├── diagrams/              # Archify diagrams, one pair each; the HTML is PUBLISHED
 ├── src/                   # app/ (routes), components/, lib/; tests beside the code
 ├── scripts/               # sync-content.ts (publishes the search index), require-full-history.sh
@@ -367,7 +367,7 @@ owner, not into the maintainer documentation**, until they are fixed: those page
 
 **Depth:** `.agent-skills/nepal-dev-stack-and-map/SKILL.md` holds the full map, file by file.
 
-The system as built is described in [`content/docs/maintain/architecture/system.mdx`](content/docs/maintain/architecture/system.mdx).
+The system as built is described in [`content/docs/maintainer-guide/architecture/system.mdx`](content/docs/maintainer-guide/architecture/system.mdx).
 
 ## 11. Quick checklist
 
@@ -387,12 +387,12 @@ covers.** The rows are binding (ADR-0045). The skills are in `.agent-skills/<nam
 A typo or copy fix that touches none of these needs none of them. After a long conversation is
 summarised, read the skill again before relying on it.
 
-- [ ] Read `AGENTS.md`, [`content/docs/maintain/index.mdx`](content/docs/maintain/index.mdx) and the relevant ADRs.
+- [ ] Read `AGENTS.md`, [`content/docs/maintainer-guide/index.mdx`](content/docs/maintainer-guide/index.mdx) and the relevant ADRs.
 - [ ] Read every `nepal-dev-*` skill the table above names for this task, in full.
 - [ ] Which vendored or installed skills fit this task? Look them up in `.agent-skills/INDEX.md`,
       load only the one or two it names, and name them — process skills first (§12).
 - [ ] Does this need an ADR? If yes — write it, `Status: Proposed`, index it, and stop.
-- [ ] Does it change the UI? Then write `content/docs/maintain/app-flow/<feature>.mdx` with it.
+- [ ] Does it change the UI? Then write `content/docs/maintainer-guide/app-flow/<feature>.mdx` with it.
 - [ ] Any undetermined product, content or privacy decision? Ask with options and a
       recommendation (§4).
 - [ ] Which design documents does §8 require? Write them with the ADR.
@@ -404,7 +404,7 @@ summarised, read the skill again before relying on it.
 - [ ] Comments only where they explain *why* (§7).
 - [ ] Security: run the per-change rows that apply (§9). Any doubt → ask, never assume.
 - [ ] Living design documents updated in place to match the code.
-- [ ] `AGENTS.md`, `README.md`, `content/docs/maintain/adr/index.mdx` updated as needed.
+- [ ] `AGENTS.md`, `README.md`, `content/docs/maintainer-guide/adr/index.mdx` updated as needed.
 - [ ] Tests written or updated — happy path **and** the obvious failures (ADR-0007).
 - [ ] `bun run test`, `bun run types:check` and `bunx next build` pass; `bun run lint` is run and its
       known failure reported while it stands (§5).
@@ -412,7 +412,7 @@ summarised, read the skill again before relying on it.
 
 ## 12. Skills
 
-[ADR-0006](content/docs/maintain/adr/ADR-0006-agent-skills-are-advisory.mdx). Contributors here — human and AI —
+[ADR-0006](content/docs/maintainer-guide/adr/ADR-0006-agent-skills-are-advisory.mdx). Contributors here — human and AI —
 have a library of installed **skills**: packaged workflows for brainstorming, debugging,
 technical writing, API design, UI work and more. **Use them.** Left alone, they go unused, and
 the same task gets a rigorous treatment one day and an ad-hoc one the next.
@@ -422,7 +422,7 @@ They are recommendations about *method*. This file is *authority*.
 ### 12.1 Order of precedence
 
 ```
-1. AGENTS.md and content/docs/maintain/   binding   — ADRs, design documents, this working agreement,
+1. AGENTS.md and content/docs/maintainer-guide/   binding   — ADRs, design documents, this working agreement,
                                                      and its own nepal-dev-* skills (ADR-0045)
 2. Other skills          advisory  — vendored and installed; invoke freely; follow unless (1) says otherwise
 3. Default behaviour     last      — only where neither of the above covers the situation
@@ -435,7 +435,7 @@ They are recommendations about *method*. This file is *authority*.
 | Writing application code before an approved ADR | §2 · ADR-0001 |
 | `git commit`, `git push`, rebase, or switching branches | §3 |
 | Adding a dependency, or changing build / lint / test tooling | §2 · §5 |
-| A documentation layout other than `content/docs/maintain/` and `content/docs/maintain/_templates/`, including a skill's own spec or plan folder | §8 · ADR-0002 |
+| A documentation layout other than `content/docs/maintainer-guide/` and `content/docs/maintainer-guide/_templates/`, including a skill's own spec or plan folder | §8 · ADR-0002 |
 | Using a skill that is not in `.agent-skills/`, or running a skill's scripts or CLI commands | §12.2 · ADR-0009 |
 | Explanatory *what*-comments, banners, or `=====` section headers | §7 · ADR-0003 |
 | Deciding a security, privacy or public-vs-private question on the owner's behalf | §4 · §9 · ADR-0004 · ADR-0005 |
@@ -449,8 +449,8 @@ violation is invisible in the diff, because the diff looks like good work.
 
 ### 12.2 Which skill, when — trusted skills only
 
-[ADR-0009](content/docs/maintain/adr/ADR-0009-trusted-agent-skills-are-vendored.mdx),
-[ADR-0045](content/docs/maintain/adr/ADR-0045-agents-md-keeps-the-standing-rules-and-in-house-skills-hold-the-rest.mdx). Every skill is in [`.agent-skills/`](.agent-skills/INDEX.md), outside
+[ADR-0009](content/docs/maintainer-guide/adr/ADR-0009-trusted-agent-skills-are-vendored.mdx),
+[ADR-0045](content/docs/maintainer-guide/adr/ADR-0045-agents-md-keeps-the-standing-rules-and-in-house-skills-hold-the-rest.mdx). Every skill is in [`.agent-skills/`](.agent-skills/INDEX.md), outside
 `content/`, so none is published. `.claude/skills/` links to each, so Claude Code lists them.
 There are three kinds:
 

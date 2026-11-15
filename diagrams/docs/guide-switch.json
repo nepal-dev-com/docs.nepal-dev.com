@@ -1,0 +1,31 @@
+{
+  "schema_version": 2,
+  "diagram_type": "workflow",
+  "meta": {
+    "title": "App flow: the guide switch",
+    "subtitle": "Two named segments under the planet chip move a reader between an entry's User guide and Maintainer guide",
+    "quality_profile": "showcase",
+    "output": "guide-switch.html"
+  },
+  "lanes": [
+    { "id": "reader", "label": "Reader" },
+    { "id": "entry", "label": "Entry" },
+    { "id": "guides", "label": "Guides" }
+  ],
+  "mainPath": ["reader_node", "overview", "user", "maintainer"],
+  "nodes": [
+    { "id": "reader_node", "lane": "reader", "col": 0, "type": "external", "label": "Reader" },
+    { "id": "overview", "lane": "entry", "col": 1, "type": "frontend", "label": "Overview", "sublabel": "User guide marked current" },
+    { "id": "user", "lane": "guides", "col": 2, "type": "backend", "label": "User guide page", "sublabel": "latest line" },
+    { "id": "maintainer", "lane": "guides", "col": 3, "type": "backend", "label": "Maintainer guide page", "sublabel": "its first page" }
+  ],
+  "edges": [
+    { "id": "open", "from": "reader_node", "to": "overview", "label": "opens an entry", "variant": "emphasis" },
+    { "id": "to_user", "from": "overview", "to": "user", "label": "User guide", "variant": "emphasis" },
+    { "id": "to_maintainer", "from": "user", "to": "maintainer", "label": "Maintainer guide", "variant": "emphasis" },
+    { "id": "back_user", "from": "maintainer", "to": "user", "label": "User guide", "variant": "dashed", "role": "return" },
+    { "id": "direct", "from": "overview", "to": "maintainer", "label": "Maintainer guide", "variant": "default", "role": "branch" },
+    { "id": "chip_u", "from": "user", "to": "overview", "label": "planet chip", "variant": "dashed", "role": "return" },
+    { "id": "chip_m", "from": "maintainer", "to": "overview", "label": "planet chip", "variant": "dashed", "role": "return" }
+  ]
+}

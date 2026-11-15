@@ -1,0 +1,151 @@
+{
+  "schema_version": 2,
+  "diagram_type": "workflow",
+  "meta": {
+    "title": "Release flow",
+    "subtitle": "From the working tree through CI to the release workflow and npm",
+    "quality_profile": "showcase",
+    "output": "release-flow.html"
+  },
+  "lanes": [
+    {
+      "id": "owner",
+      "label": "Owner"
+    },
+    {
+      "id": "checks",
+      "label": "CI"
+    },
+    {
+      "id": "release",
+      "label": "Release"
+    }
+  ],
+  "mainPath": [
+    "tree",
+    "branch",
+    "main",
+    "ci-branch",
+    "release",
+    "npm"
+  ],
+  "nodes": [
+    {
+      "id": "tree",
+      "lane": "owner",
+      "col": 0,
+      "type": "external",
+      "label": "Working tree",
+      "sublabel": "agent or owner"
+    },
+    {
+      "id": "branch",
+      "lane": "owner",
+      "col": 1,
+      "type": "frontend",
+      "label": "Branch / PR",
+      "sublabel": ""
+    },
+    {
+      "id": "main",
+      "lane": "owner",
+      "col": 2,
+      "type": "frontend",
+      "label": "main · beta · alpha",
+      "sublabel": ""
+    },
+    {
+      "id": "ci",
+      "lane": "checks",
+      "col": 2,
+      "type": "backend",
+      "label": "CI workflow",
+      "sublabel": "type-check · test · build, Node 20 / 22 / 24"
+    },
+    {
+      "id": "package",
+      "lane": "checks",
+      "col": 3,
+      "type": "backend",
+      "label": "test-package job",
+      "sublabel": "npm pack · install · require"
+    },
+    {
+      "id": "ci-branch",
+      "lane": "release",
+      "col": 3,
+      "type": "backend",
+      "label": "CI on the branch",
+      "sublabel": ""
+    },
+    {
+      "id": "release",
+      "lane": "release",
+      "col": 4,
+      "type": "cloud",
+      "label": "Release workflow",
+      "sublabel": "bun run release"
+    },
+    {
+      "id": "npm",
+      "lane": "release",
+      "col": 5,
+      "type": "external",
+      "label": "npm + GitHub release + tag",
+      "sublabel": ""
+    }
+  ],
+  "edges": [
+    {
+      "id": "commit",
+      "from": "tree",
+      "to": "branch",
+      "label": "owner commits, Conventional Commit",
+      "variant": "emphasis"
+    },
+    {
+      "id": "push",
+      "from": "branch",
+      "to": "ci",
+      "label": "push or PR",
+      "variant": "default",
+      "role": "branch"
+    },
+    {
+      "id": "pack",
+      "from": "ci",
+      "to": "package",
+      "label": "",
+      "variant": "default",
+      "role": "branch"
+    },
+    {
+      "id": "merge",
+      "from": "branch",
+      "to": "main",
+      "label": "merge",
+      "variant": "emphasis"
+    },
+    {
+      "id": "run",
+      "from": "main",
+      "to": "ci-branch",
+      "label": "",
+      "variant": "emphasis"
+    },
+    {
+      "id": "success",
+      "from": "ci-branch",
+      "to": "release",
+      "label": "success",
+      "variant": "emphasis"
+    },
+    {
+      "id": "publish",
+      "from": "release",
+      "to": "npm",
+      "label": "",
+      "variant": "emphasis"
+    }
+  ]
+}

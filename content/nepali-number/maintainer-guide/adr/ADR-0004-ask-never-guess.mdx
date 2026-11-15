@@ -1,0 +1,85 @@
+---
+title: "ADR-0004 — Resolve ambiguity by asking, never by guessing"
+description: "What can be verified is checked against the code; a Nepali spelling, a rounding rule or an API name is put to the owner with options."
+---
+
+- **Status:** Approved
+- **Date:** 2026-10-30
+- **Deciders:** [@puncoz](https://github.com/puncoz)
+- **Approved by:** [@puncoz](https://github.com/puncoz)
+- **Approved on:** 2026-11-14
+- **Supersedes:** —
+- **Superseded by:** —
+- **Semver impact:** none (process only)
+- **Design documents:** `AGENTS.md` §4
+
+## Context
+
+The cheapest failure for an agent is to pick something plausible and move on. The assumption
+looks finished, gives no signal it was made, and is found late — in a published package, by
+consumers.
+
+Much of this package is **language data and conventions** that cannot be derived from code or
+looked up reliably by an agent: Nepali number words have regional and standard spellings
+(`दश` / `दस`, `एक्काईस` / `एक्काइस`), ordinals have irregular forms, scales above अर्ब have
+competing names, and there are choices about how a negative amount or a rounded paisa should
+read. An agent asked to "fix" one of these will produce something that looks right to anyone
+who cannot read Nepali.
+
+## Decision
+
+1. **Classify the question first.**
+   - *Verifiable* (what the code returns, TypeScript, tsdown or Bun behaviour, what the build
+     emits, what a config sets): **check it** — run it, read the source or `node_modules/`.
+     Don't assert from memory and don't ask the owner.
+   - *Undetermined* (Nepali spelling or grammar, word forms, rounding and sign conventions,
+     output format, API naming, semver classification, supported runtimes, scope): **ask**.
+2. **Every question carries** the decision in one line and why it can't be settled from the
+   code; two to four concrete options with their consequences — for language questions, the
+   exact output string each option produces; a recommendation listed first and marked; and what
+   each option builds, costs and forecloses, including whether it breaks consumers. Use a
+   selectable options tool where available.
+3. **No silent assumptions.** Work that proceeds on an assumption states it in the response and
+   in the ADR or document it shapes.
+4. **Ask at ADR time**, in *Options considered*. Mid-implementation: finish what doesn't depend
+   on the answer, then ask.
+
+## Options considered
+
+| Option | Pros | Cons | Verdict |
+|---|---|---|---|
+| A — Ask with options + recommendation; check what is checkable | Owner answers by picking; language decisions recorded; no noise for verifiable facts | Some interruptions | Chosen |
+| B — Agent decides and documents | Fewer interruptions | Wrong Nepali looks like right Nepali to most reviewers | Rejected |
+| C — Ask everything open-ended | Maximum control | Slow; the owner has to write the specification | Rejected |
+
+## Consequences
+
+**Positive**
+
+- Language and API decisions stay with the owner and are written down.
+
+**Negative / accepted trade-offs**
+
+- More questions at ADR time. Accepted: that is the cheapest moment for them.
+
+**For consumers**
+
+- Output strings change only when someone who can judge them has decided.
+
+## Package invariants
+
+Protects §6.5 (output strings are the contract) and §6.6 (language data has one home).
+
+## Security considerations
+
+Dependency, CI-token and publishing questions are always *undetermined* and always asked
+(ADR-0005).
+
+## Implementation notes
+
+- [ ] `AGENTS.md` §4 states the rule.
+- Tests: not applicable (process only).
+
+## Docs to update on implementation
+
+- [ ] `docs/adr/README.md` — status.

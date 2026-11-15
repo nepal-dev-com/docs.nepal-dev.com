@@ -22,7 +22,7 @@
     },
     {
       "id": "use",
-      "label": "Use"
+      "label": "User guide"
     },
     {
       "id": "lines",
@@ -30,7 +30,7 @@
     },
     {
       "id": "maintain",
-      "label": "Maintain"
+      "label": "Maintainer guide"
     },
     {
       "id": "site",
@@ -81,22 +81,22 @@
       "col": 2,
       "type": "backend",
       "label": "Alias",
-      "sublabel": "/lodestar/use · use/latest/…"
+      "sublabel": "/lodestar/user-guide · user-guide/latest/…"
     },
     {
       "id": "use_latest",
       "lane": "use",
       "col": 3,
       "type": "frontend",
-      "label": "Use · latest line",
-      "sublabel": "/lodestar/use/v1.4/install"
+      "label": "User guide · latest line",
+      "sublabel": "/lodestar/user-guide/v1.4/install"
     },
     {
       "id": "master_line",
       "lane": "lines",
       "col": 4,
       "type": "frontend",
-      "label": "Use · dev",
+      "label": "User guide · dev",
       "sublabel": "banner: In development"
     },
     {
@@ -104,7 +104,7 @@
       "lane": "lines",
       "col": 5,
       "type": "frontend",
-      "label": "Use · older line",
+      "label": "User guide · older line",
       "sublabel": "2024 LTS · Older version"
     },
     {
@@ -112,8 +112,8 @@
       "lane": "maintain",
       "col": 4,
       "type": "frontend",
-      "label": "Maintain page",
-      "sublabel": "/lodestar/maintain/releasing"
+      "label": "Maintainer guide page",
+      "sublabel": "/lodestar/maintainer-guide/releasing"
     },
     {
       "id": "site_node",
@@ -128,8 +128,8 @@
       "lane": "site",
       "col": 3,
       "type": "frontend",
-      "label": "Site Maintain",
-      "sublabel": "/docs/maintain/adr/…"
+      "label": "Site Maintainer guide",
+      "sublabel": "/docs/maintainer-guide/adr/…"
     }
   ],
   "edges": [
@@ -163,7 +163,7 @@
       "id": "hero-use",
       "from": "overview",
       "to": "use_latest",
-      "label": "hero: Use",
+      "label": "hero: User guide",
       "variant": "emphasis"
     },
     {
@@ -200,7 +200,7 @@
       "id": "site-maint",
       "from": "site_node",
       "to": "site_maintain",
-      "label": "Maintain"
+      "label": "Maintainer guide"
     }
   ]
 }

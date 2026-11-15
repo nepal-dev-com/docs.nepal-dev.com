@@ -39,29 +39,29 @@ const tree: PageTree.Root = {
       'lodestar',
       [
         folder(
-          'lodestar/use',
-          'Use',
+          'lodestar/user-guide',
+          'User guide',
           [
             folder(
-              'lodestar/use/v0.1',
+              'lodestar/user-guide/v0.1',
               'v0.1',
               [
-                overview('lodestar/use/v0.1'),
-                page('lodestar/use/v0.1/install.mdx', '/lodestar/use/v0.1/install', 'Install'),
+                overview('lodestar/user-guide/v0.1'),
+                page('lodestar/user-guide/v0.1/install.mdx', '/lodestar/user-guide/v0.1/install', 'Install'),
                 folder(
-                  'lodestar/use/v0.1/guides',
+                  'lodestar/user-guide/v0.1/guides',
                   'Guides',
                   [
-                    page('lodestar/use/v0.1/guides/theming.mdx', '/lodestar/use/v0.1/guides/theming', 'Theming'),
-                    folder('lodestar/use/v0.1/guides/recipes', 'Recipes', [
+                    page('lodestar/user-guide/v0.1/guides/theming.mdx', '/lodestar/user-guide/v0.1/guides/theming', 'Theming'),
+                    folder('lodestar/user-guide/v0.1/guides/recipes', 'Recipes', [
                       page(
-                        'lodestar/use/v0.1/guides/recipes/forms.mdx',
-                        '/lodestar/use/v0.1/guides/recipes/forms',
+                        'lodestar/user-guide/v0.1/guides/recipes/forms.mdx',
+                        '/lodestar/user-guide/v0.1/guides/recipes/forms',
                         'Forms',
                       ),
                     ]),
                   ],
-                  { index: page('lodestar/use/v0.1/guides/index.mdx', '/lodestar/use/v0.1/guides', 'Guides') },
+                  { index: page('lodestar/user-guide/v0.1/guides/index.mdx', '/lodestar/user-guide/v0.1/guides', 'Guides') },
                 ),
               ],
               { root: 'line' },
@@ -70,13 +70,13 @@ const tree: PageTree.Root = {
           { root: 'track' },
         ),
         folder(
-          'lodestar/maintain',
-          'Maintain',
+          'lodestar/maintainer-guide',
+          'Maintainer guide',
           [
-            overview('lodestar/maintain'),
-            page('lodestar/maintain/index.mdx', '/lodestar/maintain', 'Maintainer guide'),
-            folder('lodestar/maintain/release', 'Release', [
-              page('lodestar/maintain/release/checklist.mdx', '/lodestar/maintain/release/checklist', 'Checklist'),
+            overview('lodestar/maintainer-guide'),
+            page('lodestar/maintainer-guide/index.mdx', '/lodestar/maintainer-guide', 'Maintainer guide'),
+            folder('lodestar/maintainer-guide/release', 'Release', [
+              page('lodestar/maintainer-guide/release/checklist.mdx', '/lodestar/maintainer-guide/release/checklist', 'Checklist'),
             ]),
           ],
           { root: 'track' },
@@ -94,16 +94,16 @@ const entry = {
   ecosystem: 'npm',
   featured: false,
   url: '/lodestar',
-  useUrl: '/lodestar/use/v0.1/install',
-  maintainUrl: '/lodestar/maintain',
-  lines: [{ folder: 'v0.1', name: 'v0.1', segment: 'v0.1', version: '0.1.4', channel: 'latest', url: '/lodestar/use/v0.1/install' }],
+  userGuideUrl: '/lodestar/user-guide/v0.1/install',
+  maintainerGuideUrl: '/lodestar/maintainer-guide',
+  lines: [{ folder: 'v0.1', name: 'v0.1', segment: 'v0.1', version: '0.1.4', channel: 'latest', url: '/lodestar/user-guide/v0.1/install' }],
 } as CatalogEntry;
 
 const top = (levels: Level[]) => levels.slice(0, 3).map((level) => [level.kind, level.name, level.url]);
 
 describe('scaleLevels (ADR-0029 decision 4)', () => {
   test('every strip starts at the Verse, then the system, then the planet', () => {
-    const levels = scaleLevels({ tree, url: '/lodestar/use/v0.1/install', title: 'Install', entry });
+    const levels = scaleLevels({ tree, url: '/lodestar/user-guide/v0.1/install', title: 'Install', entry });
     expect(top(levels)).toEqual([
       ['verse', 'Verse', '/#verse'],
       ['system', 'System', '/'],
@@ -118,26 +118,26 @@ describe('scaleLevels (ADR-0029 decision 4)', () => {
     expect(levels[2].url).toBeUndefined();
   });
 
-  test('a Use page names its side and moon, then each orbit, then the page', () => {
-    const levels = scaleLevels({ tree, url: '/lodestar/use/v0.1/guides/recipes/forms', title: 'Forms', entry });
+  test('a User guide page names its side and moon, then each orbit, then the page', () => {
+    const levels = scaleLevels({ tree, url: '/lodestar/user-guide/v0.1/guides/recipes/forms', title: 'Forms', entry });
     expect(levels.slice(3)).toEqual([
-      { kind: 'side', name: 'Use', track: 'use', line: { name: 'v0.1', channel: 'latest' }, url: '/lodestar/use/v0.1/install' },
-      { kind: 'orbit', name: 'Guides', url: '/lodestar/use/v0.1/guides' },
+      { kind: 'side', name: 'User guide', track: 'user-guide', line: { name: 'v0.1', channel: 'latest' }, url: '/lodestar/user-guide/v0.1/install' },
+      { kind: 'orbit', name: 'Guides', url: '/lodestar/user-guide/v0.1/guides' },
       { kind: 'orbit', name: 'Recipes' },
       { kind: 'page', name: 'Forms', current: true },
     ]);
   });
 
   test("a folder's own index makes that orbit the current level", () => {
-    const levels = scaleLevels({ tree, url: '/lodestar/use/v0.1/guides', title: 'Guides', entry });
+    const levels = scaleLevels({ tree, url: '/lodestar/user-guide/v0.1/guides', title: 'Guides', entry });
     expect(levels.at(-1)).toEqual({ kind: 'orbit', name: 'Guides', current: true });
     expect(levels).toHaveLength(5);
   });
 
-  test('a Maintain page names its side with no version line; a folder without an index is plain', () => {
-    const levels = scaleLevels({ tree, url: '/lodestar/maintain/release/checklist', title: 'Checklist', entry });
+  test('a Maintainer guide page names its side with no version line; a folder without an index is plain', () => {
+    const levels = scaleLevels({ tree, url: '/lodestar/maintainer-guide/release/checklist', title: 'Checklist', entry });
     expect(levels.slice(3)).toEqual([
-      { kind: 'side', name: 'Maintain', track: 'maintain', url: '/lodestar/maintain' },
+      { kind: 'side', name: 'Maintainer guide', track: 'maintainer-guide', url: '/lodestar/maintainer-guide' },
       { kind: 'orbit', name: 'Release' },
       { kind: 'page', name: 'Checklist', current: true },
     ]);
@@ -153,14 +153,14 @@ describe('scaleLevels (ADR-0029 decision 4)', () => {
   });
 
   test('a page the tree does not hold still ends on the page after its planet', () => {
-    const levels = scaleLevels({ tree, url: '/lodestar/use/v0.1/missing', title: 'Missing', entry });
+    const levels = scaleLevels({ tree, url: '/lodestar/user-guide/v0.1/missing', title: 'Missing', entry });
     expect(levels.map((level) => level.kind)).toEqual(['verse', 'system', 'planet', 'page']);
   });
 });
 
 describe('the phone strip and the zoom', () => {
   test('the parent level is the nearest level above the page that has a link', () => {
-    const levels = scaleLevels({ tree, url: '/lodestar/use/v0.1/guides/recipes/forms', title: 'Forms', entry });
+    const levels = scaleLevels({ tree, url: '/lodestar/user-guide/v0.1/guides/recipes/forms', title: 'Forms', entry });
     expect(parentLevel(levels)).toMatchObject({ kind: 'orbit', name: 'Guides' });
   });
 

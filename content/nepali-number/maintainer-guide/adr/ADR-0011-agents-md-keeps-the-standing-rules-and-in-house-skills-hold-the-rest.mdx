@@ -1,0 +1,224 @@
+---
+title: "ADR-0011 — AGENTS.md keeps the standing rules, and in-house skills hold the rest"
+description: "AGENTS.md keeps the rules every task needs. Procedures, tables and maps move, unchanged, into nepali-number's own skills in docs/agent-skills, loaded only when a task calls for them."
+---
+
+- **Status:** Approved
+- **Date:** 2026-11-14
+- **Deciders:** [@puncoz](https://github.com/puncoz)
+- **Approved by:** [@puncoz](https://github.com/puncoz)
+- **Approved on:** 2026-11-14
+- **Supersedes:** [ADR-0006](./ADR-0006-agent-skills-are-advisory.mdx) in part: decision 2 (the
+  package's own skills rank with `AGENTS.md`) and decision 6 (the repository now holds skills it
+  wrote itself; third-party skills are still not vendored)
+- **Superseded by:** —
+- **Semver impact:** none (process only; nothing in `dist/` changes)
+- **Design documents:** `AGENTS.md`, `docs/agent-skills/`, [`../index.mdx`](../index.mdx)
+
+## Context
+
+- `AGENTS.md` is 34,619 bytes in 536 lines, about 9,000 tokens. `CLAUDE.md` imports it, so the
+  whole file is in context for every session and every request, whatever the task. A typo fix
+  carries the CI row of the stack table; a test carries the release audit.
+- By section: §5 *Stack and package rules* 5.2 KB, §8 *Documentation duties* 5.2 KB, §2 *The ADR
+  gate* 3.7 KB, §12 *Skills* 3.4 KB, §9 *Security* 2.7 KB, §10 *Repository map* 2.5 KB, §4 2.3 KB,
+  §1 2.1 KB, §7 2.0 KB, §3 1.8 KB, §6 1.8 KB, §11 1.4 KB.
+- What the documentation says (read on 2026-11-14):
+  - Claude Code's memory guide: target under 200 lines per file; longer files use more context
+    and are followed less well. Instructions are context, not enforced configuration.
+  - The same guide: a file imported with `@` loads together with the file that imports it, so
+    splitting `AGENTS.md` into imported parts saves nothing.
+  - Claude Code's skills guide: only a skill's name and description are in every session; the
+    body loads when the skill is used. A description is cut at 1,536 characters.
+  - The same guide: project skills are found in `.claude/skills/<name>/SKILL.md`, and an entry
+    there "can be a symlink to a directory elsewhere on disk".
+  - The same guide: keep `SKILL.md` under 500 lines. After a conversation is compacted, the first
+    5,000 tokens of each invoked skill are re-attached, within 25,000 tokens for all of them.
+  - The same guide: a skill with `paths` loads when a matching file is touched. The documentation
+    site found that such a skill is left out of the skill list until then (its ADR-0045).
+- What others measured, from second-hand summaries that were not checked against the originals:
+  Vercel's evaluations report agents not invoking an available skill in 56% of cases, where the
+  same content in `AGENTS.md` was always applied. A skill has to be chosen; `AGENTS.md` is always
+  there.
+- The documentation site, mounted here as a submodule, made this split on 2026-11-14 in its own
+  ADR-0045: standing rules in `AGENTS.md`, depth in `nepal-dev-<topic>` skills, section numbers
+  kept, text moved word for word, a binding table that names the skill for each kind of task.
+- Its skills load in Claude Code as soon as a file in the submodule is read. Four of them are
+  named `nepal-dev-adr-workflow`, `nepal-dev-docs-duties`, `nepal-dev-security-check` and
+  `nepal-dev-stack-and-map`, and hold that site's rules, not this package's.
+- The owner's direction for this ADR: `AGENTS.md` holds the bare minimum; the rest goes into
+  skills of this repository, referenced only when needed; no intention or instruction is lost;
+  the skills live in `docs/agent-skills/` and are named `nepali-number-<topic>`.
+
+## Decision
+
+1. **The package's own skills live in `docs/agent-skills/`**, one folder each:
+   `docs/agent-skills/nepali-number-<topic>/SKILL.md`. The folder name and the frontmatter `name`
+   are the same.
+2. **The `nepali-number-` prefix is this repository's alone.** No skill taken from anywhere else
+   may use it. It keeps these skills apart from the documentation site's `nepal-dev-*` skills and
+   from anything installed.
+3. **`AGENTS.md` keeps what every task needs; the depth moves to skills.** A rule stays in the
+   file when it applies whatever the task, or when breaking it cannot be undone. It stays as the
+   rule itself, in full. Procedures, tables, maps and reference move.
+4. **Sections keep their numbers and headings.** Each keeps its standing rules and names the skill
+   that holds its depth, so every `AGENTS.md §N` reference in the ADRs, the templates and the
+   documentation still lands on the rule or one pointer away from it.
+5. **What stays in `AGENTS.md`:**
+   - §1: what the package is, in a few lines, and where the documentation is.
+   - §2: the gate, the five workflow steps in one line each, and the *Does my change need an
+     ADR?* table.
+   - §3: every execution rule.
+   - §4: all of it.
+   - §5: the commands table, the commit-prefix table, and "read the installed tool, not recall".
+   - §6: the eight invariants, in full.
+   - §7: comments explain why, every branch takes a block, every export carries TSDoc.
+   - §8: the submodule paragraph, docs and tests in the same change, living documents are
+     snapshots, every example output is real.
+   - §9: "never guess at a security decision" and the principles that hold regardless of tooling.
+   - §10: the map at one line per top-level entry.
+   - §11: the table in decision 7, then the checklist.
+   - §12: precedence, the *No skill authorises…* table, "skills stop at the gate", "name the
+     skill; report what you dropped".
+6. **The depth moves as it is written today.** No rule is reworded, weakened or dropped.
+
+   | Skill | Holds | From `AGENTS.md` |
+   |---|---|---|
+   | `nepali-number-adr-workflow` | The five workflow steps in full; the public API reference an ADR ships | §2 |
+   | `nepali-number-stack-and-map` | The current state, the stack table, the full repository map | §1, §5, §10 |
+   | `nepali-number-writing-code` | Import, typing and domain-direction rules; *Adding a new export*; the code-style detail and example | §5, §7 |
+   | `nepali-number-docs-duties` | The tracks, the two kinds of document, *Write before building*, *Always check these* | §8 |
+   | `nepali-number-security-check` | The per-change table and the full audits | §9 |
+
+7. **A skill is reached in two ways, so that one missing does not lose the rule.**
+   - **The table, for every agent.** `AGENTS.md` §11 opens with it. An agent checks the task
+     against every row and reads each skill a row names, in full, before the work it covers. The
+     rows are binding.
+
+     | Before you… | Read |
+     |---|---|
+     | propose, write, revise or approve an ADR, or change anything a consumer can observe | `nepali-number-adr-workflow` |
+     | look for where something lives, or touch `package.json`, config, the build, CI or the release workflow | `nepali-number-stack-and-map` |
+     | write or change anything under `src/`, tests included | `nepali-number-writing-code` |
+     | add or edit a page in the submodule or `README.md`, or finish any implementation | `nepali-number-docs-duties` |
+     | touch a dependency, a regular expression, input parsing, `package.json`, a workflow or logging | `nepali-number-security-check` |
+
+   - **The description, where the agent lists skills.** Each `SKILL.md` has `name` and
+     `description` frontmatter. The description starts with the triggers, in the words a request
+     would use.
+
+   No skill sets `paths`: it would hide the description until a matching file is touched, and
+   five descriptions cost little.
+8. **The package's own skills are part of the working agreement, not advice.** They rank with
+   `AGENTS.md`, above every other skill. §12.1's first line says so.
+9. **Each skill puts its hardest rules first** and stays under 500 lines, so what survives a
+   compacted conversation is the part that matters. `AGENTS.md` says: after a long conversation
+   is summarised, read the skill again before relying on it.
+10. **Agents reach the skills through links.** `.claude/skills/nepali-number-<topic>` and
+    `.agents/skills/nepali-number-<topic>` are relative symlinks to the folder in
+    `docs/agent-skills/`, one per skill, committed. An agent whose tool reads neither folder, or
+    on a machine where links cannot be made, reads the `SKILL.md` the table names.
+11. **A test guards the split**, `src/agent-docs.test.ts` (ADR-0007): `AGENTS.md` keeps sections
+    1 to 12; every skill the table names exists; every folder in `docs/agent-skills/` has a
+    `SKILL.md` whose `name` matches the folder and whose description is not empty; each has both
+    links, resolving to it; each is named by the table.
+
+**Assumptions**
+
+- `.agents/skills/` is read by OpenAI's Codex, as the documentation site checked. Other tools were
+  not checked; decision 10's last sentence covers them.
+- A test that reads repository files may sit in `src/`, where `bunfig.toml` roots the tests. It is
+  a test, not library code, so invariant 2 (no `fs` in `src/`) is read as not applying to it, and
+  the build's only entry, `src/nepali-number.ts`, never imports it. **For the owner to confirm**;
+  the alternative is no test and a check by hand at each change to `AGENTS.md`.
+
+## Options considered
+
+| Option | Pros | Cons | Verdict |
+|---|---|---|---|
+| A — Standing rules in `AGENTS.md`; depth in five `nepali-number-*` skills in `docs/agent-skills/`; a binding table and descriptions; links for Claude Code and `.agents/skills/` | About a third less text in every request; two ways to reach a skill; same pattern as the documentation site; the owner's direction | A moved rule is applied only if its skill is read; links fail on Windows without symlink support | Chosen |
+| B — As A, cut deeper: §4's question format, §6's detail and §12's table move too, leaving about 12 KB | About two thirds less text | The rules that stop a guess, an invariant breach or a skill crossing the gate would depend on a skill being chosen | Rejected: these apply to every task |
+| C — As A, skills in a root `.agent-skills/` | Same layout as the documentation site | A new root folder | Rejected by the owner: `docs/agent-skills/` |
+| D — As A, real folders in `.claude/skills/`, no links | No symlinks | The source sits in a folder named for one tool | Rejected by the owner's direction |
+| E — Names `nepal-dev-<topic>`, as the documentation site | One convention across repositories | Four names would exist twice with different rules once the submodule's skills load | Rejected by the owner: `nepali-number-<topic>` |
+| F — Path-scoped rules in `.claude/rules/` | Load by themselves on matching files | Claude Code only; fire on files, not on tasks | Rejected |
+| G — Split the file into parts imported with `@` | Easier to edit | Saves nothing: imports load with the file | Rejected |
+| H — Hooks that block `git commit` and `npm publish` | The only control that is enforced, not read | A settings change with its own risks; Claude Code only | Not in this ADR; worth its own |
+| I — Leave it as it is | Nothing to do | Every request carries about 9,000 tokens | Rejected |
+
+## Consequences
+
+**Positive**
+
+- `AGENTS.md` goes from about 34.6 KB to an estimated 20 to 23 KB, about 9,000 tokens to under
+  6,000 on every request. A typical task adds one or two skills of 2 to 5 KB each. The estimate is
+  measured and reported in implementation.
+- The rules that apply to every task are no longer surrounded by ones that do not.
+
+**Negative / accepted trade-offs**
+
+- A rule in a skill is applied only if the skill is read. The table, the descriptions and the
+  test are the control; they are not a guarantee.
+- The same response is not guaranteed for any change to a prompt. What is kept is the same rules,
+  word for word, and the same process.
+- Five descriptions are added to every Claude Code session, about 100 tokens each.
+- On Windows a clone gets a text file in place of a link unless `core.symlinks` is on. The table
+  covers it.
+- More files to keep in step: a change to how work is done now edits `AGENTS.md`, a skill, or
+  both.
+
+**For consumers**
+
+- None. `files` is `["dist"]`, so nothing in `docs/`, `.claude/` or `.agents/` is published.
+
+## Package invariants
+
+None changed. §6 stays in `AGENTS.md` in full. The test in decision 11 reads files from a test in
+`src/`; see *Assumptions*.
+
+## Security considerations
+
+No dependency, regular expression, CI or publishing change. Three process risks:
+
+- **A security rule that is not read is not applied.** The rules that block harm stay in
+  `AGENTS.md` on every request: never commit, never publish, no dependency without an ADR, the
+  owner decides security questions, and the principles in §9. Only the per-change table and the
+  audit procedure move.
+- **A link is a path an agent follows.** Every link is relative, points to
+  `docs/agent-skills/nepali-number-*` inside this repository, and is checked by the test.
+- **Supply chain.** The skills are written here and reviewed by the owner like any document. The
+  prefix rule keeps a downloaded skill from passing as one. Nothing is added to the tarball.
+
+## Implementation notes
+
+- [x] First: make one skill and its links, and confirm Claude Code lists it and loads it by
+      description. Result (Claude Code CLI, macOS): a fresh session lists all five linked skills.
+- [x] Create the five skills, moving the text as it stands, hardest rules first.
+- [x] Rewrite `AGENTS.md` to decisions 3 to 5, sections kept, the table in §11.
+- [x] Check the move line by line: every line of the old `AGENTS.md` is in the new file or in one
+      skill. Result: twelve lines differ, all meant: the status note, four headings that changed
+      level in a skill, and seven lines reworded to name the skills.
+- [x] Links in `.claude/skills/` and `.agents/skills/`.
+- [x] `src/agent-docs.test.ts` — decision 11: the happy path, and failures for a missing section,
+      a table row without a file, a folder without a matching `name`, a missing or broken link,
+      and a skill the table does not name.
+- [x] `npm pack --dry-run` lists only `dist/`, `package.json`, `README.md` and `LICENSE`.
+- [x] Check behaviour with fresh agents. Result: three fresh agents dry-ran a new export, a new
+      dev dependency with "then commit", and a change to an export's regex against the new files.
+      Each applied the gate, the no-commit rule and the ask-with-options rule, and read the ADR
+      skill. One read all five skills; two read some and named the rest as still to read. They
+      were not run against the old file, and a typo fix and a documentation page were not tried,
+      so this is a check, not a comparison.
+- [x] Measured: `AGENTS.md` 26,413 bytes in 429 lines, from 34,619 in 536, above the 20 to 23 KB
+      estimated. The skills: `adr-workflow` 3.7 KB, `docs-duties` 4.4 KB, `security-check` 2.6 KB,
+      `stack-and-map` 6.5 KB, `writing-code` 5.5 KB.
+- [x] `bun run type-check`, `bun run test` and `bun run build` pass.
+
+## Docs to update on implementation
+
+- [x] `AGENTS.md` — as above; §10 and §12 name `docs/agent-skills/`
+- [x] [`../index.mdx`](../index.mdx) — where the working agreement and its skills live
+- [x] [`./ADR-0006-agent-skills-are-advisory.mdx`](./ADR-0006-agent-skills-are-advisory.mdx) —
+      `Superseded by` in part, on approval
+- [x] [`./index.mdx`](./index.mdx) — index row and status
+- [ ] Proposed commit message: `docs(repo): move AGENTS.md depth into nepali-number skills`

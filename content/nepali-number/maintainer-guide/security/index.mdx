@@ -1,0 +1,50 @@
+---
+title: "Security"
+description: "How nepali-number keeps the applications that install it safe, the rules that matter most, and how to report a vulnerability."
+---
+
+How `nepali-number` keeps the applications that install it safe. Security is a property of
+**every change**, not a pre-release event — see
+[ADR-0005](../adr/ADR-0005-security-as-a-standing-practice.mdx).
+
+> **Living snapshots.** Edit in place so each file describes the package as it is right now. No
+> revision tables, no "previously X, now Y" — delete what is no longer true
+> ([ADR-0002](../adr/ADR-0002-living-design-documentation.mdx)).
+
+## Documents
+
+| File | Answers |
+|---|---|
+| [Threat model](./threat-model.mdx) | What could make this package harmful to its consumers, and what stops it |
+| [Secrets](./secrets.mdx) | Every secret the repository's automation uses: what it is, where it lives, what it can do |
+| [Release security checklist](./checklist.mdx) | The audit that runs before each release |
+| `<change-slug>.mdx` | A change's own analysis, when it warrants one |
+
+**Template:** [`docs/_templates/security.md`](https://github.com/nepal-dev-com/nepali-number-js/blob/main/docs/_templates/security.md) in the repository
+
+## The rules that matter most
+
+**1. Never guess at a security decision.** Adding a dependency, a token's scope, how the
+package is published — the owner decides, and it is recorded
+([ADR-0004](../adr/ADR-0004-ask-never-guess.mdx)).
+
+**2. Zero runtime dependencies.** The package's main supply-chain control. Every consumer
+trusts exactly this repository's code and nothing else
+([ADR-0009](../adr/ADR-0009-package-invariants.mdx)).
+
+**3. Nothing runs on install, nothing does I/O.** No lifecycle scripts for consumers; no
+network, filesystem, environment or global access in `src/`.
+
+**4. Input is hostile.** Functions are called with whatever a person typed. New regular
+expressions must be linear-time and tested with a long hostile string; recursion stays bounded
+by the number's magnitude; invalid input returns a safe default. Two existing patterns are
+quadratic — see the [threat model](./threat-model.mdx#measured-on-hostile-input).
+
+## Reporting a vulnerability
+
+Never in a public issue, discussion or pull request. Report through GitHub's private
+vulnerability reporting, the repository's *Security* tab, then
+[*Report a vulnerability*](https://github.com/nepal-dev-com/nepali-number-js/security/advisories/new).
+If that page is not available, email info@puncoz.com. The full policy is
+[`SECURITY.md`](https://github.com/nepal-dev-com/nepali-number-js/blob/main/SECURITY.md) in the
+repository ([ADR-0019](../adr/ADR-0019-add-github-community-files-dependabot-and-codeql.mdx)).

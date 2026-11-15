@@ -2,6 +2,7 @@ import type * as PageTree from 'fumadocs-core/page-tree';
 import { assertKnownPaths } from './catalog-routes';
 import { searchRule, siteUrl, type SearchRule } from './seo';
 import { getMeta, source } from './source';
+import { maintainerGuide, trackName, userGuide, type Track } from './tracks';
 import {
   compareLines,
   isOverviewItem,
@@ -9,7 +10,6 @@ import {
   pageVersion,
   type LineInfo,
   type PageVersion,
-  type TrackName,
 } from './catalog-plugin';
 import { ecosystems, type Ecosystem, type Repository } from './catalog-schema';
 
@@ -29,8 +29,8 @@ export interface CatalogEntry {
   registry?: string;
   featured: boolean;
   url: string;
-  useUrl?: string;
-  maintainUrl?: string;
+  userGuideUrl?: string;
+  maintainerGuideUrl?: string;
   demoUrl?: string;
   lines: CatalogLine[];
   latest?: CatalogLine;
@@ -96,28 +96,28 @@ function readEntry(folder: PageTree.Folder): CatalogEntry | undefined {
     return undefined;
   }
 
-  const use = childFolder(folder, 'use');
-  const maintain = childFolder(folder, 'maintain');
+  const userFolder = childFolder(folder, userGuide);
+  const maintainerFolder = childFolder(folder, maintainerGuide);
 
-  const lines: CatalogLine[] = (use?.children ?? [])
+  const lines: CatalogLine[] = (userFolder?.children ?? [])
     .flatMap((child) => {
       if (child.type !== 'folder') {
         return [];
       }
       const folder = folderName(child);
-      const info = folder ? lineInfo(folder, getMeta(`${slug}/use/${folder}/meta.json`)) : undefined;
+      const info = folder ? lineInfo(folder, getMeta(`${slug}/${userGuide}/${folder}/meta.json`)) : undefined;
       const lineUrl = firstUrl(child);
       if (!info || !lineUrl) {
         return [];
       }
       return [{ ...info, url: lineUrl }];
     })
-    .sort((a, b) => compareLines(a, b, getMeta(`${slug}/use/meta.json`)?.pages));
+    .sort((a, b) => compareLines(a, b, getMeta(`${slug}/${userGuide}/meta.json`)?.pages));
 
   const latest = lines.find((line) => line.channel === 'latest');
   const dev = lines.find((line) => line.channel === 'dev');
   const current = latest ?? dev;
-  const demoUrl = current ? source.getPage([slug, 'use', current.segment, 'demo'])?.url : undefined;
+  const demoUrl = current ? source.getPage([slug, userGuide, current.segment, 'demo'])?.url : undefined;
 
   return {
     slug,
@@ -130,8 +130,8 @@ function readEntry(folder: PageTree.Folder): CatalogEntry | undefined {
     registry: catalog.registry,
     featured: catalog.featured,
     url,
-    useUrl: current?.url ?? (use ? firstUrl(use) : undefined),
-    maintainUrl: maintain ? firstUrl(maintain) : undefined,
+    userGuideUrl: current?.url ?? (userFolder ? firstUrl(userFolder) : undefined),
+    maintainerGuideUrl: maintainerFolder ? firstUrl(maintainerFolder) : undefined,
     demoUrl,
     lines,
     latest,
@@ -163,8 +163,8 @@ export function getCatalog(): CatalogEntry[] {
 /** ADR-0034 decision 5: a page the proxy did not know would be a real page gone. */
 export function checkKnownPaths(): void {
   const landings = getCatalog().flatMap((entry) => [
-    ...(entry.useUrl ? [`/${entry.slug}/use`] : []),
-    ...entry.lines.map((line) => `/${entry.slug}/use/${line.segment}`),
+    ...(entry.userGuideUrl ? [`/${entry.slug}/${userGuide}`] : []),
+    ...entry.lines.map((line) => `/${entry.slug}/${userGuide}/${line.segment}`),
   ]);
   assertKnownPaths([...source.getPages().map((page) => page.url), ...landings]);
 }
@@ -175,7 +175,7 @@ export function getEntry(slug: string | undefined): CatalogEntry | undefined {
 
 export interface PageContext {
   entry: CatalogEntry;
-  track?: TrackName;
+  track?: Track;
   version?: PageVersion;
 }
 
@@ -184,7 +184,7 @@ export function getPageContext(page: Page): PageContext | undefined {
   if (!entry) {
     return undefined;
   }
-  const track = page.slugs[1] === 'use' || page.slugs[1] === 'maintain' ? page.slugs[1] : undefined;
+  const track = page.slugs[1] === userGuide || page.slugs[1] === maintainerGuide ? page.slugs[1] : undefined;
   return { entry, track, version: pageVersion(page.path, getMeta) };
 }
 
@@ -244,32 +244,32 @@ function previewOf(folder: PageTree.Folder | undefined, label: string): TrackPre
  * A real page from each track of one package, for the home page's "Two sides of every planet".
  */
 export function getTracksPreview():
-  | { entry: CatalogEntry; use: TrackPreview; maintain: TrackPreview }
+  | { entry: CatalogEntry; userGuidePreview: TrackPreview; maintainerGuidePreview: TrackPreview }
   | undefined {
   const tree = source.getPageTree();
   for (const entry of getCatalog()) {
     const root = tree.children.find(
       (node): node is PageTree.Folder => node.type === 'folder' && node.$ref?.folder === entry.slug,
     );
-    const use = root && childFolder(root, 'use');
+    const guide = root && childFolder(root, userGuide);
     const current = entry.latest ?? entry.dev;
-    const useFolder = use && current ? childFolder(use, current.folder) : use;
-    const label = current ? `${current.name} · ${current.version}` : 'Use';
-    const usePreview = previewOf(useFolder, label);
-    const maintainPreview = previewOf(root && childFolder(root, 'maintain'), 'default branch');
-    if (usePreview && maintainPreview) {
-      return { entry, use: usePreview, maintain: maintainPreview };
+    const guideFolder = guide && current ? childFolder(guide, current.folder) : guide;
+    const label = current ? `${current.name} · ${current.version}` : trackName(userGuide);
+    const userGuidePreview = previewOf(guideFolder, label);
+    const maintainerGuidePreview = previewOf(root && childFolder(root, maintainerGuide), 'default branch');
+    if (userGuidePreview && maintainerGuidePreview) {
+      return { entry, userGuidePreview, maintainerGuidePreview };
     }
   }
   return undefined;
 }
 
 /**
- * The page the home page's "Read it anywhere" uses as its example: a package's first Use page when
+ * The page the home page's "Read it anywhere" uses as its example: a package's first User guide page when
  * there is one, otherwise this site's own overview.
  */
 export function getExamplePage(): Page | undefined {
-  const entry = getCatalog().find((item) => item.useUrl);
+  const entry = getCatalog().find((item) => item.userGuideUrl);
   const slugs = (url: string) => url.split('/').filter(Boolean);
-  return (entry?.useUrl && source.getPage(slugs(entry.useUrl))) || source.getPage(['docs']) || source.getPages()[0];
+  return (entry?.userGuideUrl && source.getPage(slugs(entry.userGuideUrl))) || source.getPage(['docs']) || source.getPages()[0];
 }

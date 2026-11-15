@@ -22,7 +22,7 @@
     {
       "id": "h",
       "type": "database",
-      "label": "# Internals (/example-cli/use/v1.0/internals)",
+      "label": "# Internals (/example-cli/user-guide/v1.0/internals)",
       "pos": [
         40,
         60

@@ -1,0 +1,190 @@
+---
+title: "Conversion"
+description: "Convert digits between 0-9 and Devanagari, and parse numbers written in either script into JavaScript numbers, with toNepali, toEnglish, parseNepaliNumber and convert."
+---
+
+> Every output below was produced by running the built package.
+
+Digit-for-digit conversion between `0-9` and `०-९`, and parsing numbers written in either
+script into JavaScript numbers. These are the building blocks the other domains use.
+
+## Exports
+
+| Export | Signature | Returns |
+|---|---|---|
+| `toNepali` | `(input: NumericInput) => string` | The input with every `0-9` replaced by `०-९` |
+| `toEnglish` | `(input: NumericInput) => string` | The input with every `०-९` replaced by `0-9` |
+| `parseNepaliNumber` | `(input: NumericInput) => number` | A JavaScript number, `NaN` when the input is not a number |
+| `convert` | `(text: string, toNepaliNumber?: boolean) => string` | `toNepali` or `toEnglish`, chosen by the flag |
+
+`NumericInput` is `number | bigint | string` ([types](./types.mdx)).
+
+---
+
+## How a number is read
+
+Every export in the package that reads a number, in this domain and in the others, reads it the
+same way, once, into exact decimal digits. Nothing passes through binary floating point on the
+way in.
+
+| Input | Read as |
+|---|---|
+| `string` | The **whole** string, after trimming, must be a number: an optional sign (`+`, `-` or `−` U+2212), then English and/or Nepali digits, with at most one `.`. Commas and spaces between the integer digits are ignored. `".5"` and `"5."` are numbers. |
+| `number` | Its exact shortest decimal form. Exponent form is expanded (`1e21` is 1 followed by 21 zeros). `-0` is `0`. `NaN`, `Infinity` and `-Infinity` are invalid. |
+| `bigint` | Exactly, at any size. |
+
+Invalid input is anything else: `""`, `"."`, `"abc"`, `"12abc"`, `"1.2.3"`, `"1e3"`, a string
+with a currency symbol (`"रू ५००"`), and `null` or `undefined` passed from JavaScript.
+
+**Invalid input never throws.** A function that returns a number returns `NaN`, one that returns
+a string returns `""`, one that returns a boolean returns `false`, and one that returns an array
+returns `[]`.
+
+**Rounding**, wherever a function rounds, is half away from zero on the decimal digits as
+written: `1.005` at two places is `1.01`, and `-1.005` is `-1.01`. A result that rounds to zero
+carries no minus sign.
+
+---
+
+## `toNepali(input)`
+
+Replaces each English digit with its Nepali digit. Every other character (letters, signs,
+commas, decimal points, Devanagari text) is kept as it is.
+
+```ts
+toNepali(input: NumericInput): string
+```
+
+| Parameter | Type | Default | Notes |
+|---|---|---|---|
+| `input` | `number \| bigint \| string` | — | A `number` is written out in full, never in exponent form |
+
+**Returns.** A string of the same shape. `toNepali` converts characters and does not read a
+number, so it never rejects text. `null` and `undefined` return `""`.
+
+```ts
+import { toNepali } from "nepali-number"
+
+toNepali(123)                // → "१२३"
+toNepali(1234567.89)         // → "१२३४५६७.८९"
+toNepali(-12.5)              // → "-१२.५"
+toNepali(0)                  // → "०"
+toNepali(123n)               // → "१२३"
+toNepali(1e21)               // → "१०००००००००००००००००००००"
+toNepali("Price 1,234.50")   // → "Price १,२३४.५०"
+toNepali("Room 12B")         // → "Room १२B"
+toNepali("12३")              // → "१२३"      mixed digits
+toNepali("१२३")              // → "१२३"      already Nepali
+toNepali("")                 // → ""
+```
+
+**Notes.** `NaN` and `Infinity` have no digits and come back as `"NaN"` and `"Infinity"`.
+
+---
+
+## `toEnglish(input)`
+
+Replaces each Nepali digit with its English digit, keeping everything else.
+
+```ts
+toEnglish(input: NumericInput): string
+```
+
+| Parameter | Type | Default | Notes |
+|---|---|---|---|
+| `input` | `number \| bigint \| string` | — | A `number` is written out in full, never in exponent form |
+
+**Returns.** A string of the same shape. Never rejects text. `null` and `undefined` return `""`.
+
+```ts
+import { toEnglish } from "nepali-number"
+
+toEnglish("१२३")               // → "123"
+toEnglish("-१२.५")             // → "-12.5"
+toEnglish("मूल्य १,२३४.५०")     // → "मूल्य 1,234.50"
+toEnglish("12३")               // → "123"
+toEnglish(123)                 // → "123"
+toEnglish(123n)                // → "123"
+toEnglish("")                  // → ""
+```
+
+---
+
+## `parseNepaliNumber(input)`
+
+Parses a number written in Nepali, English or mixed digits into a JavaScript `number`,
+following [how a number is read](#how-a-number-is-read).
+
+```ts
+parseNepaliNumber(input: NumericInput): number
+```
+
+| Parameter | Type | Default | Notes |
+|---|---|---|---|
+| `input` | `number \| bigint \| string` | — | The whole string must be a number; commas and spaces between digits are ignored |
+
+**Returns.** The parsed number, or **`NaN`** when the input is not a number. Test the result with
+`Number.isNaN`.
+
+```ts
+import { parseNepaliNumber } from "nepali-number"
+
+parseNepaliNumber("१२३")             // → 123
+parseNepaliNumber("१२,३४५.६७")       // → 12345.67
+parseNepaliNumber("१,२३,४५,६७८")     // → 12345678
+parseNepaliNumber("-१,२३४.५")        // → -1234.5
+parseNepaliNumber("−५")              // → -5       U+2212 minus
+parseNepaliNumber("+५")              // → 5
+parseNepaliNumber(" १२ ")            // → 12
+parseNepaliNumber("12३")             // → 123
+parseNepaliNumber(".5")              // → 0.5
+parseNepaliNumber("०")               // → 0
+parseNepaliNumber(123n)              // → 123
+parseNepaliNumber("")                // → NaN
+parseNepaliNumber("abc")             // → NaN
+parseNepaliNumber("12abc")           // → NaN
+parseNepaliNumber("1.2.3")           // → NaN
+parseNepaliNumber("1e3")             // → NaN
+parseNepaliNumber("रू ५००")           // → NaN
+```
+
+**Notes.**
+
+- The result is a JavaScript `number`, so an integer above `Number.MAX_SAFE_INTEGER`
+  (9 007 199 254 740 991) is not exact: `parseNepaliNumber("12345678901234567890")` →
+  `12345678901234567000`. The functions that format or spell a number do not go through this
+  result and stay exact ([limitations](./limitations.mdx)).
+- For a string with a currency symbol use
+  [`parseNepaliCurrency`](./currency.mdx), or
+  [`removeFormatting`](./formatting.mdx#removeformattingformattedstring) to pull the digits out of
+  any text.
+- To check a string without parsing it, use
+  [`isValidNumber`](./utils.mdx#isvalidnumberinput).
+
+---
+
+## `convert(text, toNepaliNumber?)`
+
+Converts the digits inside free text in either direction. A convenience over `toNepali` and
+`toEnglish` when the direction is a runtime value.
+
+```ts
+convert(text: string, toNepaliNumber?: boolean): string
+```
+
+| Parameter | Type | Default | Notes |
+|---|---|---|---|
+| `text` | `string` | — | Any text |
+| `toNepaliNumber` | `boolean` | `true` | `true` gives Nepali digits, `false` gives English digits |
+
+**Returns.** The text with its digits converted. `null` and `undefined` return `""`.
+
+```ts
+import { convert } from "nepali-number"
+
+convert("Age 25")                           // → "Age २५"
+convert("Call 9841-123456 at 5pm")          // → "Call ९८४१-१२३४५६ at ५pm"
+convert("उमेर २५", false)                    // → "उमेर 25"
+convert("१२३", false)                       // → "123"
+convert("")                                 // → ""
+```

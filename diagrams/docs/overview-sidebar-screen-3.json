@@ -2,7 +2,7 @@
   "schema_version": 1,
   "diagram_type": "architecture",
   "meta": {
-    "title": "Screen 3 — Maintain-only overview",
+    "title": "Screen 3 — Maintainer guide-only overview",
     "subtitle": "Wireframe at phone width, drawn from its Mermaid version · overview sidebar",
     "output": "overview-sidebar-screen-3.html",
     "animation": "trace",

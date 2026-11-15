@@ -1,0 +1,220 @@
+---
+title: "Utils"
+description: "Clean, detect, validate, pad and round Nepali and English digit strings with normalize, detectNumberSystem, validateNepaliNumber, padZeros and roundNepali."
+---
+
+> Every output below was produced by running the built package.
+
+Cleaning, detecting, validating, padding and rounding.
+
+## Exports
+
+| Export | Signature | Returns |
+|---|---|---|
+| `normalize` | `(input: string) => string` | Input with whitespace removed and repeated `,` / `.` collapsed |
+| `detectNumberSystem` | `(input: string) => NumberSystem \| number` | `"english"`, `"nepali"`, `"mixed"`, or `NaN` |
+| `validateNepaliNumber` | `(input: string) => boolean` | Whether input is an unsigned Nepali-digit number |
+| `isNepaliDigit` | `(char: string) => boolean` | Whether `char` is a Nepali digit |
+| `isEnglishDigit` | `(char: string) => boolean` | Whether `char` is an English digit |
+| `isMixedNumber` | `(input: string) => boolean` | Whether input has both digit systems |
+| `padZeros` | `(number: number \| string, length: number) => string` | Left-padded with `०` |
+| `roundNepali` | `(number: number \| string, decimals?: number) => string` | Rounded, fixed decimals, Nepali digits |
+
+---
+
+## `normalize(input)`
+
+Cleans up typed input: trims, removes **all** whitespace, and collapses runs of commas or
+decimal points into one. It does not convert digits and does not validate.
+
+```ts
+normalize(input: string): string
+```
+
+```ts
+import { normalize } from "nepali-number"
+
+normalize("  १२३  ४५६  ")     // → "१२३४५६"
+normalize("१२३,,४५६")         // → "१२३,४५६"
+normalize("१२३..४५६")         // → "१२३.४५६"
+normalize("1 ,, 234 .. 5")    // → "1,234.5"
+normalize("  abc  ")          // → "abc"
+normalize("")                 // → ""
+```
+
+---
+
+## `detectNumberSystem(input)`
+
+Reports which digit systems appear anywhere in the input.
+
+```ts
+detectNumberSystem(input: string): NumberSystem | number
+```
+
+**Returns.** `"mixed"` when both appear, `"nepali"` or `"english"` when one does, and **`NaN`**
+when the input has no digits. `NaN` never equals itself — test it with `Number.isNaN`.
+
+```ts
+import { detectNumberSystem } from "nepali-number"
+
+detectNumberSystem("1234")      // → "english"
+detectNumberSystem("१२३४")      // → "nepali"
+detectNumberSystem("12३४")      // → "mixed"
+detectNumberSystem("Room 5")    // → "english"
+detectNumberSystem("abcd")      // → NaN
+detectNumberSystem("")          // → NaN
+
+Number.isNaN(detectNumberSystem("abcd"))   // → true
+```
+
+**Notes.** The source declares the return type as `NumberSystem | typeof NaN`; `typeof NaN` is
+`number`, so TypeScript sees `NumberSystem | number`. Narrow with `typeof result === "string"`.
+
+---
+
+## `validateNepaliNumber(input)`
+
+Checks whether a string is an **unsigned** number written in **Nepali digits**, with at most one
+decimal point. Commas and whitespace anywhere are ignored.
+
+```ts
+validateNepaliNumber(input: string): boolean
+```
+
+```ts
+import { validateNepaliNumber } from "nepali-number"
+
+validateNepaliNumber("१२३")          // → true
+validateNepaliNumber("१२३.४५")       // → true
+validateNepaliNumber("१२,३४५")       // → true
+validateNepaliNumber("१२ ३४")        // → true     whitespace ignored
+validateNepaliNumber(".५")           // → true
+validateNepaliNumber("१२.")          // → true
+validateNepaliNumber("१२३.४५.६")     // → false    two decimal points
+validateNepaliNumber("१२३abc")       // → false
+validateNepaliNumber("-१२३")         // → false    no sign allowed
+validateNepaliNumber("123")          // → false    English digits
+validateNepaliNumber(".")            // → false
+validateNepaliNumber("")             // → false
+```
+
+**Notes.** Cap the length of user input before validating — very long strings are slow
+([limitations](./limitations.mdx#very-long-input-is-slow-in-two-functions)).
+
+---
+
+## `isNepaliDigit(char)`
+
+```ts
+isNepaliDigit(char: string): boolean
+```
+
+```ts
+import { isNepaliDigit } from "nepali-number"
+
+isNepaliDigit("५")    // → true
+isNepaliDigit("5")    // → false
+isNepaliDigit("a")    // → false
+isNepaliDigit("")     // → false
+```
+
+**Notes.** Pass exactly one character. Longer strings are tested as a substring of `"०१२३४५६७८९"`,
+so `"५६"` → `true` ([limitations](./limitations.mdx#digit-checks-expect-a-single-character)).
+
+---
+
+## `isEnglishDigit(char)`
+
+```ts
+isEnglishDigit(char: string): boolean
+```
+
+```ts
+import { isEnglishDigit } from "nepali-number"
+
+isEnglishDigit("5")    // → true
+isEnglishDigit("५")    // → false
+isEnglishDigit("a")    // → false
+isEnglishDigit("")     // → false
+isEnglishDigit("56")   // → false
+```
+
+**Notes.** Pass exactly one character. Uses `parseInt`, so a string that *starts* with one digit
+passes: `"5a"` → `true`, `" 5"` → `true`
+([limitations](./limitations.mdx#digit-checks-expect-a-single-character)).
+
+---
+
+## `isMixedNumber(input)`
+
+```ts
+isMixedNumber(input: string): boolean
+```
+
+```ts
+import { isMixedNumber } from "nepali-number"
+
+isMixedNumber("12३४")    // → true
+isMixedNumber("1234")    // → false
+isMixedNumber("१२३४")    // → false
+isMixedNumber("")        // → false
+```
+
+---
+
+## `padZeros(number, length)`
+
+Left-pads with Nepali zeros (`०`) to `length` characters and converts to Nepali digits.
+
+```ts
+padZeros(number: number | string, length: number): string
+```
+
+| Parameter | Type | Default | Notes |
+|---|---|---|---|
+| `number` | `number \| string` | — | Padded as text; signs and decimal points count as characters |
+| `length` | `number` | — | Target length; input already this long or longer is not truncated |
+
+```ts
+import { padZeros } from "nepali-number"
+
+padZeros(42, 5)        // → "०००४२"
+padZeros("१२", 4)      // → "००१२"
+padZeros(0, 3)         // → "०००"
+padZeros(1.5, 5)       // → "००१.५"
+padZeros(12345, 3)     // → "१२३४५"
+padZeros(-5, 4)        // → "००-५"
+```
+
+**Notes.** The sign is padded as if it were a digit (`-5` → `"००-५"`)
+([limitations](./limitations.mdx#padzeros-pads-in-front-of-the-sign)).
+
+---
+
+## `roundNepali(number, decimals?)`
+
+Rounds to a fixed number of decimals and returns Nepali digits, **without** grouping commas.
+
+```ts
+roundNepali(number: number | string, decimals?: number): string
+```
+
+| Parameter | Type | Default | Notes |
+|---|---|---|---|
+| `number` | `number \| string` | — | Formatted input is accepted (read with `removeFormatting`) |
+| `decimals` | `number` | `2` | Always shown, trailing zeros kept |
+
+```ts
+import { roundNepali } from "nepali-number"
+
+roundNepali(3.14159)            // → "३.१४"
+roundNepali(3.14159, 3)         // → "३.१४२"
+roundNepali("१२.३४६", 1)        // → "१२.३"
+roundNepali("१,२३४.५६७")        // → "१२३४.५७"
+roundNepali(12345678.9)         // → "१२३४५६७८.९०"
+roundNepali(2.5, 0)             // → "३"
+roundNepali(-2.555)             // → "-२.५६"
+roundNepali(0)                  // → "०.००"
+roundNepali("abc")              // → "०.००"
+```

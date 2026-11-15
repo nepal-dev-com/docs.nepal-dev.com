@@ -1,4 +1,5 @@
 import { source } from '@/lib/source';
+import { userGuide } from '@/lib/tracks';
 import {
   DocsBody,
   DocsDescription,
@@ -30,17 +31,17 @@ import { ZoomPage } from '@/components/zoom-page';
 export const instant = false;
 
 /**
- * `/<slug>/use` and a line's own address have no page of their own: they open the first page
+ * `/<slug>/user-guide` and a line's own address have no page of their own: they open the first page
  * (ADR-0015 decision 1).
  */
 function landingFor(slugs: string[]): string | undefined {
   const [slug, track, segment, ...rest] = slugs;
   const entry = getEntry(slug);
-  if (!entry || track !== 'use' || rest.length > 0) {
+  if (!entry || track !== userGuide || rest.length > 0) {
     return undefined;
   }
   if (!segment) {
-    return entry.useUrl;
+    return entry.userGuideUrl;
   }
   return entry.lines.find((line) => line.segment === segment)?.url;
 }

@@ -1,6 +1,6 @@
 ---
 name: nepal-dev-adr-workflow
-description: "Proposing, writing, revising, approving or superseding an ADR, or writing an app flow for a UI change, in the Nepal Dev Verse docs repository. The five workflow steps, how people are named, and what an app flow must show. Read before creating or editing anything in content/docs/maintain/adr/ or app-flow/."
+description: "Proposing, writing, revising, approving or superseding an ADR, or writing an app flow for a UI change, in the Nepal Dev Verse docs repository. The five workflow steps, how people are named, and what an app flow must show. Read before creating or editing anything in content/docs/maintainer-guide/adr/ or app-flow/."
 ---
 
 # nepal-dev-adr-workflow
@@ -19,13 +19,13 @@ Part of this repository's working agreement (ADR-0045): as binding as `AGENTS.md
 
 ### Workflow
 
-1. **Propose.** Copy [`content/docs/maintain/_templates/adr.mdx`](../../content/docs/maintain/_templates/adr.mdx) to
-   `content/docs/maintain/adr/ADR-NNNN-kebab-title.mdx` using the *next free number* from
-   [`content/docs/maintain/adr/index.mdx`](../../content/docs/maintain/adr/index.mdx). Set **`Status: Proposed`** and add the index
+1. **Propose.** Copy [`content/docs/maintainer-guide/_templates/adr.mdx`](../../content/docs/maintainer-guide/_templates/adr.mdx) to
+   `content/docs/maintainer-guide/adr/ADR-NNNN-kebab-title.mdx` using the *next free number* from
+   [`content/docs/maintainer-guide/adr/index.mdx`](../../content/docs/maintainer-guide/adr/index.mdx). Set **`Status: Proposed`** and add the index
    row straight away, so ADRs in flight cannot collide on a number.
    **If the change reaches the UI, write its app flow in the same change**
-   ([ADR-0008](../../content/docs/maintain/adr/ADR-0008-a-ui-change-ships-an-app-flow.mdx)):
-   `content/docs/maintain/app-flow/<feature-slug>.mdx`. See *App flow* below.
+   ([ADR-0008](../../content/docs/maintainer-guide/adr/ADR-0008-a-ui-change-ships-an-app-flow.mdx)):
+   `content/docs/maintainer-guide/app-flow/<feature-slug>.mdx`. See *App flow* below.
 2. **Stop.** Do not write application code. Tell the owner the ADR, and its app flow if it has
    one, are ready for review.
 3. **Revise** in place while the owner has feedback — status stays `Proposed`.
@@ -42,9 +42,9 @@ Part of this repository's working agreement (ADR-0045): as binding as `AGENTS.md
 
 ### App flow — required with every ADR that changes the UI
 
-[ADR-0008](../../content/docs/maintain/adr/ADR-0008-a-ui-change-ships-an-app-flow.mdx). An ADR that adds or changes
+[ADR-0008](../../content/docs/maintainer-guide/adr/ADR-0008-a-ui-change-ships-an-app-flow.mdx). An ADR that adds or changes
 anything a person sees — a page type, route, nav item, sidebar, search, dialog, or a page's
-layout, controls or states — ships `content/docs/maintain/app-flow/<feature-slug>.mdx`, and the two are reviewed
+layout, controls or states — ships `content/docs/maintainer-guide/app-flow/<feature-slug>.mdx`, and the two are reviewed
 together. It shows:
 
 - **entry points**: where a person reaches the feature from, and who does not see it;
@@ -57,4 +57,4 @@ together. It shows:
 
 Not needed for a bug fix, for content within the approved conventions, or for an ADR that
 changes nothing visible. Unsure whether a person would notice? Write it. Template:
-[`content/docs/maintain/_templates/app-flow.mdx`](../../content/docs/maintain/_templates/app-flow.mdx).
+[`content/docs/maintainer-guide/_templates/app-flow.mdx`](../../content/docs/maintainer-guide/_templates/app-flow.mdx).

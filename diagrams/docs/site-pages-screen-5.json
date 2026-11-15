@@ -2,7 +2,7 @@
   "schema_version": 1,
   "diagram_type": "architecture",
   "meta": {
-    "title": "Screen 5 — Maintain page",
+    "title": "Screen 5 — Maintainer guide page",
     "subtitle": "Wireframe at phone width, drawn from its Mermaid version · site pages",
     "output": "site-pages-screen-5.html",
     "animation": "trace",
@@ -50,16 +50,30 @@
       "sublabel": "npm package"
     },
     {
-      "id": "track",
+      "id": "ug",
       "type": "backend",
-      "label": "☀ Use | ☾ Maintain",
+      "label": "User guide",
       "pos": [
         40,
         212
       ],
       "size": [
-        436,
-        58
+        212,
+        70
+      ]
+    },
+    {
+      "id": "mg",
+      "type": "backend",
+      "label": "Maintainer guide",
+      "sublabel": "current, filled",
+      "pos": [
+        264,
+        212
+      ],
+      "size": [
+        212,
+        70
       ]
     },
     {
@@ -68,7 +82,7 @@
       "label": "Releasing",
       "pos": [
         40,
-        282
+        294
       ],
       "size": [
         436,
@@ -81,7 +95,7 @@
       "label": "How a release is cut from the default branch",
       "pos": [
         40,
-        352
+        364
       ],
       "size": [
         436,
@@ -92,11 +106,12 @@
   "boundaries": [
     {
       "kind": "region",
-      "label": "Phone screen · /<slug>/maintain/<page>",
+      "label": "Phone screen · /<slug>/maintainer-guide/<page>",
       "wraps": [
         "hdr",
         "chip",
-        "track",
+        "ug",
+        "mg",
         "h1",
         "body"
       ],

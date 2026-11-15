@@ -1,0 +1,119 @@
+{
+  "schema_version": 2,
+  "diagram_type": "workflow",
+  "meta": {
+    "title": "How decisions and documents relate",
+    "subtitle": "From an issue to an approved ADR, its implementation and the documents kept in step (ADR-0001, ADR-0010)",
+    "quality_profile": "showcase",
+    "output": "documentation-flow.html"
+  },
+  "lanes": [
+    {
+      "id": "owner",
+      "label": "Owner"
+    },
+    {
+      "id": "docs",
+      "label": "Documentation"
+    },
+    {
+      "id": "repo",
+      "label": "Repository"
+    }
+  ],
+  "mainPath": [
+    "need",
+    "adr",
+    "impl",
+    "publish"
+  ],
+  "nodes": [
+    {
+      "id": "need",
+      "lane": "owner",
+      "col": 0,
+      "type": "external",
+      "label": "Issue, idea",
+      "sublabel": "or bug report"
+    },
+    {
+      "id": "adr",
+      "lane": "docs",
+      "col": 1,
+      "type": "cloud",
+      "label": "maintainer-guide/adr/",
+      "sublabel": "Proposed ADR"
+    },
+    {
+      "id": "ref",
+      "lane": "docs",
+      "col": 2,
+      "type": "database",
+      "label": "user-guide/dev/api/",
+      "sublabel": "reference + example outputs"
+    },
+    {
+      "id": "living",
+      "lane": "docs",
+      "col": 3,
+      "type": "database",
+      "label": "The two guides",
+      "sublabel": "and README.md"
+    },
+    {
+      "id": "impl",
+      "lane": "repo",
+      "col": 2,
+      "type": "backend",
+      "label": "Implementation",
+      "sublabel": "src/ + tests"
+    },
+    {
+      "id": "publish",
+      "lane": "repo",
+      "col": 3,
+      "type": "frontend",
+      "label": "CI → release → npm",
+      "sublabel": ""
+    }
+  ],
+  "edges": [
+    {
+      "id": "propose",
+      "from": "need",
+      "to": "adr",
+      "label": "",
+      "variant": "emphasis"
+    },
+    {
+      "id": "with",
+      "from": "adr",
+      "to": "ref",
+      "label": "written with",
+      "variant": "dashed",
+      "role": "branch"
+    },
+    {
+      "id": "approve",
+      "from": "adr",
+      "to": "impl",
+      "label": "owner approves",
+      "variant": "emphasis"
+    },
+    {
+      "id": "sync",
+      "from": "impl",
+      "to": "living",
+      "label": "kept in sync",
+      "variant": "default",
+      "role": "branch"
+    },
+    {
+      "id": "merge",
+      "from": "impl",
+      "to": "publish",
+      "label": "owner merges to main",
+      "variant": "emphasis"
+    }
+  ]
+}

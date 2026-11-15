@@ -26,20 +26,20 @@ A package, which always has version lines:
 content/<project-slug>/
 ├── meta.json              # title, description and the `catalog` entry (§3.1)
 ├── index.mdx              # the overview, at /<project-slug>
-├── use/                   # USER DOCS (§4.1), one folder per version (§5)
-│   ├── meta.json          # {"title": "Use"}; optional "pages" orders the older lines
-│   ├── dev/               # unreleased work on the default branch, at /<project-slug>/use/dev
+├── user-guide/                   # USER DOCS (§4.1), one folder per version (§5)
+│   ├── meta.json          # {"title": "User guide"}; optional "pages" orders the older lines
+│   ├── dev/               # unreleased work on the default branch, at /<project-slug>/user-guide/dev
 │   │   ├── meta.json      # {"title": "dev", "version": "4.0.0-dev", "channel": "dev"}
 │   │   ├── index.mdx
 │   │   └── ...
 │   ├── v3/                # a released line; the folder name is yours
-│   │   ├── meta.json      # {"name": "v3.2", "version": "3.2.0", "channel": "latest"} → /<project-slug>/use/v3.2
+│   │   ├── meta.json      # {"name": "v3.2", "version": "3.2.0", "channel": "latest"} → /<project-slug>/user-guide/v3.2
 │   │   └── ...
 │   └── lts-2/             # an older line
-│       ├── meta.json      # {"name": "2.x LTS", "version": "2.9.1", "channel": "legacy"} → /<project-slug>/use/2.x-lts
+│       ├── meta.json      # {"name": "2.x LTS", "version": "2.9.1", "channel": "legacy"} → /<project-slug>/user-guide/2.x-lts
 │       └── ...
-└── maintain/              # MAINTAINER DOCS (§4.2), not versioned: the default branch
-    ├── meta.json          # {"title": "Maintain"}; optional "pages" orders the sidebar
+└── maintainer-guide/              # MAINTAINER DOCS (§4.2), not versioned: the default branch
+    ├── meta.json          # {"title": "Maintainer guide"}; optional "pages" orders the sidebar
     ├── adr/               # your ADRs, if you keep them: index.mdx + ADR-NNNN-*.mdx
     └── ...                # architecture, local setup, tests, releasing, contributing
 
@@ -48,7 +48,7 @@ diagrams/<project-slug>/
 └── request-flow.html      # the checked Archify view, published at /diagrams/<project-slug>/request-flow.html
 ```
 
-A project without releases has the same shape, with its pages directly in `use/`. With releases
+A project without releases has the same shape, with its pages directly in `user-guide/`. With releases
 it uses `dev/` and one released line (§5). A project of several repositories adds a folder per
 repository (§6).
 
@@ -57,10 +57,10 @@ repository (§6).
 | File | Address |
 |---|---|
 | `content/<slug>/index.mdx` | `/<slug>` |
-| `content/<slug>/use/<line>/<page>.mdx` | `/<slug>/use/<line's URL segment>/<page>` |
-| `content/<slug>/use/<page>.mdx` (a project without lines) | `/<slug>/use/<page>` |
-| `content/<slug>/maintain/<page>.mdx` | `/<slug>/maintain/<page>` |
-| `content/<slug>/maintain/adr/index.mdx` | `/<slug>/maintain/adr` |
+| `content/<slug>/user-guide/<line>/<page>.mdx` | `/<slug>/user-guide/<line's URL segment>/<page>` |
+| `content/<slug>/user-guide/<page>.mdx` (a project without lines) | `/<slug>/user-guide/<page>` |
+| `content/<slug>/maintainer-guide/<page>.mdx` | `/<slug>/maintainer-guide/<page>` |
+| `content/<slug>/maintainer-guide/adr/index.mdx` | `/<slug>/maintainer-guide/adr` |
 | `diagrams/<slug>/<diagram>.html` | `/diagrams/<slug>/<diagram>.html` |
 
 **Rules for the folders:**
@@ -104,14 +104,14 @@ The root `meta.json` carries the entry that the home page, search and `llms.txt`
 ### 3.2 The overview and the sidebar
 
 - **`index.mdx` is the overview, and every track's sidebar starts with it.** The sidebar lists it
-  as *Overview*, first in each Use line (or in `use/` when it has no lines) and in `maintain/`,
-  and the overview itself shows the sidebar of your Use track, or of Maintain when there is no Use
-  ([ADR-0025](../../content/docs/maintain/adr/ADR-0025-the-overview-has-the-same-sidebar-as-its-tracks.mdx)).
+  as *Overview*, first in each User guide line (or in `user-guide/` when it has no lines) and in `maintainer-guide/`,
+  and the overview itself shows the sidebar of your User guide, or of the Maintainer guide when there is no User guide
+  ([ADR-0025](../../content/docs/maintainer-guide/adr/ADR-0025-the-overview-has-the-same-sidebar-as-its-tracks.mdx)).
   Don't add a page of your own to lead back to it.
 - **Order pages with `pages`** in a folder's `meta.json`, listing page and folder names.
 - **Group a long track with separators.** A `"---Label---"` entry in `pages` draws a small label
   over the folders after it
-  ([ADR-0027](../../content/docs/maintain/adr/ADR-0027-the-sidebar-is-a-scale-ladder-with-one-lifted-orbit.mdx)).
+  ([ADR-0027](../../content/docs/maintainer-guide/adr/ADR-0027-the-sidebar-is-a-scale-ladder-with-one-lifted-orbit.mdx)).
   Use it when a track has more than five or so folders, and put top-level pages before the first
   one.
 
@@ -119,7 +119,7 @@ The root `meta.json` carries the entry that the home page, search and `llms.txt`
 
 A project made of several repositories, such as a frontend, a backend and an API, is still one
 folder, one overview and one planet
-([ADR-0024](../../content/docs/maintain/adr/ADR-0024-a-project-can-span-several-repositories.mdx)).
+([ADR-0024](../../content/docs/maintainer-guide/adr/ADR-0024-a-project-can-span-several-repositories.mdx)).
 Each repository includes this submodule and writes its own folders. Both sets of docs (§4) apply to
 each repository.
 
@@ -141,8 +141,8 @@ each repository.
   optional `https` URL. Exactly one repository has `primary: true`.
 - **A private repository** is listed without `url`, or not at all: listing it publishes its name
   and location. Ask the owner.
-- **Folders.** Each repository's pages go in `use/<id>/` and `maintain/<id>/`; either may be
-  missing. With lines, the folders sit inside each line: `use/dev/<id>/`, `use/<line>/<id>/`.
+- **Folders.** Each repository's pages go in `user-guide/<id>/` and `maintainer-guide/<id>/`; either may be
+  missing. With lines, the folders sit inside each line: `user-guide/dev/<id>/`, `user-guide/<line>/<id>/`.
   Pages about the whole project (an architecture across the repositories) sit beside them. A
   repository folder shows as a sidebar station titled with the repository's `name`, unless its
   `meta.json` sets a `title`.
@@ -151,11 +151,11 @@ each repository.
   content/acme/
   ├── meta.json        # catalog.repositories: frontend (primary), backend, api
   ├── index.mdx
-  ├── use/
+  ├── user-guide/
   │   ├── frontend/
   │   ├── backend/
   │   └── api/
-  └── maintain/
+  └── maintainer-guide/
       ├── architecture.mdx
       ├── frontend/
       ├── backend/
@@ -163,7 +163,7 @@ each repository.
   ```
 
 - **Who edits what.** The **primary** repository edits the root `meta.json`, `index.mdx`,
-  `use/meta.json`, `maintain/meta.json`, each line's `meta.json`, every page outside a
+  `user-guide/meta.json`, `maintainer-guide/meta.json`, each line's `meta.json`, every page outside a
   repository folder, and does releases. **Every other repository** edits only its own folders
   and its diagrams, named `diagrams/<project-slug>/<id>-<slug>.json` and `.html`. Need a change
   outside your folders? Ask the primary repository's maintainers or the owner. The build cannot

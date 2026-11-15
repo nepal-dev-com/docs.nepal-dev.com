@@ -37,8 +37,8 @@ export default function Layout({ children }: LayoutProps<'/'>) {
     ring: ringOf(entry),
     kind: entry.kind,
     kindLabel: kindName[ringOf(entry)],
-    useUrl: entry.useUrl,
-    maintainUrl: entry.maintainUrl,
+    userGuideUrl: entry.userGuideUrl,
+    maintainerGuideUrl: entry.maintainerGuideUrl,
   }));
 
   return (

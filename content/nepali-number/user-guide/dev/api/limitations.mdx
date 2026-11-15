@@ -1,0 +1,122 @@
+---
+title: "Limitations"
+description: "Behaviour in nepali-number that surprises people, such as float precision, numbers in prose and traditional unit factors, with a workaround for each."
+---
+
+> Every output below was produced by running the built package.
+
+Behaviour that surprises people, with a workaround for each. Changing any of these changes
+output, so each fix is an ADR with a semver decision
+([ADR-0008](../../../maintainer-guide/adr/ADR-0008-public-api-changes-ship-their-reference.mdx)).
+
+## Summary
+
+| # | Limitation | Affects | Workaround |
+|---|---|---|---|
+| 1 | [Functions that return a `number` lose precision on very large values](#functions-that-return-a-number-lose-precision-on-very-large-values) | `parseNepaliNumber`, `removeFormatting`, `parseNepaliWords`, `parseEnglishWords`, `parseNepaliCurrency`, `findNumbers` | Keep the digits as a string or a `bigint` |
+| 2 | [A `number` argument has already been rounded by JavaScript](#a-number-argument-has-already-been-rounded-by-javascript) | Everything that reads a `number` | Pass a string or a `bigint` |
+| 3 | [Invalid input returns an empty result, not zero](#invalid-input-returns-an-empty-result-not-zero) | Everything that reads a number | Check with `isValidNumber`, or use `\|\|` for a fallback |
+| 4 | [Character converters do not validate](#character-converters-do-not-validate) | `toNepali`, `toEnglish`, `convert` | `isValidNumber` first |
+| 5 | [Ordinals need whole numbers](#ordinals-need-whole-numbers) | `toNepaliOrdinal`, `toEnglishOrdinal`, `toNepaliOrdinalNumber`, `toEnglishOrdinalNumber` | `Math.trunc` first |
+| 6 | [A sign is never read inside prose](#a-sign-is-never-read-inside-prose) | `findNumbers`, `extractNumbers`, `replaceNumbers`, `spellOutNumbers` | Check the character before `index` |
+| 7 | [Unit conversions are floating point](#unit-conversions-are-floating-point) | `convertLandArea`, `convertWeight` and the unit formatters | Round for display |
+| 8 | [`validateNepaliNumber` rejects English digits](#validatenepalinumber-rejects-english-digits) | `validateNepaliNumber` | `isValidNumber` |
+
+---
+
+## Functions that return a `number` lose precision on very large values
+
+Reading and formatting are exact at any size: digits are handled as decimal strings. A function
+whose **return type** is `number` still has to fit the result into a JavaScript number, which
+holds integers exactly only up to 9 007 199 254 740 991.
+
+```ts
+toNepaliWords("9007199254740993")       // exact: the words end in "…त्रियानब्बे"
+parseNepaliNumber("9007199254740993")   // → 9007199254740992
+```
+
+**Workaround.** Keep large values as strings or `bigint`s and pass them straight to the
+formatting and word functions.
+
+## A `number` argument has already been rounded by JavaScript
+
+The package reads the shortest decimal that JavaScript prints for a `number`. Arithmetic done
+before the call has already lost digits.
+
+```ts
+formatNepaliNumber(0.1 + 0.2, { precision: 20 })    // → "०.३०००००००००००००००४०००"
+formatNepaliNumber("0.3", { precision: 20 })        // → "०.३०००००००००००००००००००"
+```
+
+**Workaround.** Keep money as integer paisa, or pass decimal strings.
+
+## Invalid input returns an empty result, not zero
+
+Input that is not a number returns `NaN` from functions that return a number, `""` from
+functions that return a string, and `false` from checks. Zero is returned only for zero.
+
+```ts
+parseNepaliNumber("abc")        // → NaN
+formatNepaliNumber("12abc")     // → ""
+toNepaliWords("")               // → ""
+```
+
+**Workaround.** `formatNepaliNumber(value) || "०"` where a zero fallback is wanted.
+
+## Character converters do not validate
+
+`toNepali`, `toEnglish` and `convert` map digits character by character and leave everything
+else alone, so they accept any text.
+
+```ts
+toNepali("12abc")               // → "१२abc"
+```
+
+**Workaround.** `isValidNumber(input)` first when the input must be a number.
+
+## Ordinals need whole numbers
+
+There is no ordinal of `12.5`.
+
+```ts
+toNepaliOrdinal(12.5)           // → ""
+toEnglishOrdinal(12.5)          // → ""
+```
+
+**Workaround.** `toNepaliOrdinal(Math.trunc(n))`.
+
+## A sign is never read inside prose
+
+In a sentence a hyphen is more often a separator than a minus, so the text functions read
+`"-5"` as `5`.
+
+```ts
+extractNumbers("तापक्रम -5 डिग्री")     // → [5]
+extractNumbers("9841-123456")         // → [9841, 123456]
+```
+
+**Workaround.** Use [`findNumbers`](./text.mdx#findnumberstext) and look at
+`text[match.index - 1]`.
+
+## Unit conversions are floating point
+
+Traditional units convert through fixed factors that are not round in metric, so results carry
+binary floating-point digits.
+
+```ts
+convertLandArea(1, "ropani", "sqm")     // → 508.73704704
+```
+
+**Workaround.** Round for display with
+[`roundNepali`](./utils.mdx) or `formatNepaliNumber`.
+
+## `validateNepaliNumber` rejects English digits
+
+It checks that a number is written in Nepali digits.
+
+```ts
+validateNepaliNumber("123")     // → false
+isValidNumber("123")            // → true
+```
+
+**Workaround.** Use `isValidNumber` to accept either script.

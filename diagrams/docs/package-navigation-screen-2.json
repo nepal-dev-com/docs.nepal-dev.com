@@ -2,7 +2,7 @@
   "schema_version": 1,
   "diagram_type": "architecture",
   "meta": {
-    "title": "Screen 2 — Use page",
+    "title": "Screen 2 — User guide page",
     "subtitle": "Wireframe at phone width, drawn from its Mermaid version · package navigation",
     "output": "package-navigation-screen-2.html",
     "animation": "trace",
@@ -94,7 +94,7 @@
     {
       "id": "track",
       "type": "backend",
-      "label": "Use | Maintain",
+      "label": "User guide | Maintainer guide",
       "pos": [
         54,
         312
@@ -173,7 +173,7 @@
   "boundaries": [
     {
       "kind": "region",
-      "label": "Phone screen · /<slug>/use/<line>/<page>",
+      "label": "Phone screen · /<slug>/user-guide/<line>/<page>",
       "wraps": [
         "title",
         "search",

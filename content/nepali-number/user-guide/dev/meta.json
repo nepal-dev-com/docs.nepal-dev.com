@@ -1,0 +1,10 @@
+{
+  "title": "dev",
+  "version": "2.0.0",
+  "channel": "dev",
+  "pages": [
+    "getting-started",
+    "guides",
+    "api"
+  ]
+}

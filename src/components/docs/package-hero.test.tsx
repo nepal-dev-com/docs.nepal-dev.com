@@ -12,7 +12,7 @@ const acme: CatalogEntry = {
   kind: 'project',
   featured: false,
   url: '/acme',
-  useUrl: '/acme/use',
+  userGuideUrl: '/acme/user-guide',
   lines: [],
   repositories: [
     { id: 'frontend', name: 'Frontend', url: 'https://github.com/example/acme-web', primary: true },

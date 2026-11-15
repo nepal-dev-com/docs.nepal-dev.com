@@ -10,8 +10,8 @@ const levels: Level[] = [
   { kind: 'verse', name: 'Verse', url: '/#verse' },
   { kind: 'system', name: 'System', url: '/' },
   { kind: 'planet', name: 'lodestar', url: '/lodestar' },
-  { kind: 'side', name: 'Use', track: 'use', line: { name: 'v0.1', channel: 'latest' }, url: '/lodestar/use/v0.1/install' },
-  { kind: 'orbit', name: 'Guides', url: '/lodestar/use/v0.1/guides' },
+  { kind: 'side', name: 'User guide', track: 'user-guide', line: { name: 'v0.1', channel: 'latest' }, url: '/lodestar/user-guide/v0.1/install' },
+  { kind: 'orbit', name: 'Guides', url: '/lodestar/user-guide/v0.1/guides' },
   { kind: 'orbit', name: 'Recipes' },
   { kind: 'page', name: 'Forms', current: true },
 ];
@@ -24,7 +24,7 @@ test('the strip is a navigation landmark named Scale', () => {
 
 test('each level above the page links to its place; the page is plain text marked current', () => {
   const html = renderToStaticMarkup(<ScaleStrip levels={levels} entry={entry} />);
-  for (const href of ['/#verse', '/', '/lodestar', '/lodestar/use/v0.1/install', '/lodestar/use/v0.1/guides']) {
+  for (const href of ['/#verse', '/', '/lodestar', '/lodestar/user-guide/v0.1/install', '/lodestar/user-guide/v0.1/guides']) {
     expect(html).toContain(`href="${href}"`);
   }
   expect(html).toContain('aria-current="page"');

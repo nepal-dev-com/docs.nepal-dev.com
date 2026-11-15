@@ -1,0 +1,177 @@
+---
+title: "ADR-0018 — Add a text domain: numbers inside prose, comparing and sorting"
+description: "nepali-number gains a text domain that finds, replaces and spells out numbers inside sentences, and compares and sorts numbers written in either script."
+---
+
+- **Status:** Approved
+- **Date:** 2026-11-14
+- **Deciders:** [@puncoz](https://github.com/puncoz)
+- **Approved by:** [@puncoz](https://github.com/puncoz)
+- **Approved on:** 2026-11-14
+- **Supersedes:** —
+- **Superseded by:** —
+- **Semver impact:** minor — ships in the unreleased 2.0.0 (owner decision, 2026-11-14). Every export is new; no existing output changes.
+- **Design documents:** [`user-guide/dev/api/text.mdx`](../../user-guide/dev/api/text.mdx),
+  `maintainer-guide/architecture/system.mdx`
+
+## Context
+
+The package converts digits inside mixed text (`convert`) but cannot tell where a number starts
+and ends, so anything that needs the *value* of a number in a sentence is left to the consumer.
+Run against the built package:
+
+```ts
+convert("Call 9841-123456 at 5pm")     // → "Call ९८४१-१२३४५६ at ५pm"
+parseNepaliNumber("मसँग ३ वटा किताब छ")   // → 0
+```
+
+Two tasks come up as soon as numbers reach a real page or a table:
+
+- **Numbers in prose**: list them, read their values, replace each with a formatted or
+  spelled-out form (`"३ वटा"` → `"तीन वटा"`).
+- **Ordering**: `"१०"` sorts before `"९"` as a string, and `"1,000"` is not a JavaScript
+  number. Sorting a column that mixes scripts and grouping needs a comparison that reads both.
+
+The owner asked for text utilities on 2026-11-14. This ADR depends on
+[ADR-0012](./ADR-0012-read-every-number-once-exactly.mdx) (`NumericInput`, exact decimal reading,
+the invalid-input rule) and on
+[ADR-0014](./ADR-0014-words-decimals-big-numbers-ordinals-and-parsing.mdx) (decimal words).
+
+## Decision
+
+A new domain, **`src/text/`** (`text.ts`, `text.test.ts`, `types.ts`, `index.ts`), re-exported
+from `src/nepali-number.ts`. It imports from `words` and the layers below it. Nothing imports
+it.
+
+**What counts as a number in text.** A run of digits in either script, mixed allowed, which may
+contain a comma only between two digits and one decimal point only between two digits. **No sign
+is read**: in prose a hyphen is more often a separator (`9841-123456`, `2082-83`) than a minus.
+Text is scanned once, left to right, without a backtracking regular expression.
+
+| Export | Signature | Returns |
+|---|---|---|
+| `findNumbers` | `(text: string) => NumberMatch[]` | Every number, with its text, value, position and script |
+| `extractNumbers` | `(text: string) => number[]` | The values only |
+| `replaceNumbers` | `(text: string, replacer: (match: NumberMatch) => string) => string` | The text with each number replaced |
+| `spellOutNumbers` | `(text: string, options?: SpellOutOptions) => string` | The text with each number written as words |
+| `compareNumbers` | `(a: NumericInput, b: NumericInput) => number` | `-1`, `0`, `1`, or `NaN` when either is invalid |
+| `sortNumbers` | `<T extends NumericInput>(values: readonly T[], order?: "asc" \| "desc") => T[]` | A new sorted array, invalid values last |
+
+```ts
+interface NumberMatch {
+  match: string                             // the number as written
+  value: number                             // its value
+  index: number                             // UTF-16 offset in the text
+  system: "english" | "nepali" | "mixed"
+}
+
+interface SpellOutOptions {
+  words?: "nepali" | "english"              // default "nepali"
+}
+```
+
+`compareNumbers` and `sortNumbers` compare the exact decimal digits from ADR-0012, not
+JavaScript floats, so integers above 2⁵³ order correctly. `sortNumbers` is stable, never mutates
+its argument, and returns the elements it was given, unconverted.
+
+Example outputs are in [`text.mdx`](../../user-guide/dev/api/text.mdx).
+
+## Options considered
+
+| Option | Pros | Cons | Verdict |
+|---|---|---|---|
+| A — A `text` domain with a single scanner shared by all four prose functions | One definition of "a number in text"; linear time; tree-shakeable | A new domain and six exports | Chosen |
+| B — Add an option to `convert` | No new export | `convert` maps characters; giving it values, positions and callbacks changes what it is | Rejected |
+| C — Put the functions in `utils` | No new domain | `utils` sits below `words`; `spellOutNumbers` would import upward and break the layering (ADR-0009) | Rejected |
+| D — Leave it to consumers | Smaller package | Every consumer rewrites the same scanner, usually with `\d`, which misses Nepali digits | Rejected |
+| E — Also ship `formatNumbersInText` | One call to group every number in a sentence | Years and phone numbers get commas (`2082` → `२,०८२`); `replaceNumbers` with `formatNepaliNumber` does it where the caller knows it is safe | Rejected |
+
+### Owner decisions
+
+The ADR is written on the recommended option in each row, assumed until the owner picks.
+
+| Decision | Options | Recommended | Consequence |
+|---|---|---|---|
+| Sign in prose | (a) never read: `"तापक्रम -5"` → match `"5"`, value `5` · (b) read a `-` that follows a space or the start: value `-5`, but `"2082 -83"` → `-83` | (a) | (a) never invents a negative; a caller who knows the context checks the character before `index` |
+| Name of the words option | (a) `words: "nepali" \| "english"` · (b) `language: "nepali" \| "english"` | (a) | "language" suggests more languages; the owner decided Nepali only |
+| Invalid values in `sortNumbers` | (a) kept, placed last in their original order · (b) dropped | (a) | (a) keeps the array length, so rows are not lost silently |
+| Spelled-out decimals | (a) `"२.५ किलो"` → `"दुई दशमलव पाँच किलो"` · (b) leave decimals as digits | (a) | Follows ADR-0014's decimal reading |
+
+## Consequences
+
+**Positive**
+
+- Mixed-script columns sort correctly, and prose can be rewritten without the consumer writing
+  a Unicode-aware scanner.
+- One scanner, so "a number in text" means the same in every function.
+
+**Negative / accepted trade-offs**
+
+- Six more exports and a third new domain. The minified build grows; the size is measured at
+  implementation and recorded in `maintainer-guide/architecture/build-and-distribution.mdx`
+  (invariant 8).
+- No sign in prose, so a temperature of `-5` is found as `5`.
+- `index` counts UTF-16 units, like `String.prototype.indexOf`, not characters.
+- `NumberMatch.value` is a JavaScript number: above 2⁵³ it is not exact. `match` keeps the
+  digits.
+
+**For consumers**
+
+- Nothing existing changes. `convert` keeps mapping digits character by character.
+
+## Package invariants
+
+- **1, 2** — no dependency, no host global.
+- **3** — pure: `replaceNumbers` calls the consumer's callback and nothing else; `sortNumbers`
+  returns a new array.
+- **4** — no throwing: text without numbers returns `[]` or the text unchanged; invalid input to
+  `compareNumbers` returns `NaN`. A `replacer` that throws is the caller's error and is
+  documented as such.
+- **6** — no Devanagari in the domain; words come from `words`.
+- **7** — the scanner tests explicit ranges (`0-9`, `०-९`), never `\d`.
+- **8** — named exports, no side effects.
+- **Layering** — `text` is a leaf above `words`. No upward import, no cycle.
+
+## Security considerations
+
+`text` reads arbitrary strings, so it is the package's largest input surface.
+
+- **No backtracking regular expression.** The scanner is a single pass over the string; time is
+  proportional to its length. A test runs each prose function on a 100 000-character hostile
+  string (digits and commas only, then alternating digit and dot) and asserts it finishes within
+  a bound.
+- **`replaceNumbers` runs a caller-supplied function.** It is called with a plain object and its
+  return value is inserted as text. The package does not escape it: output written into HTML is
+  escaped by the caller, as with every other export.
+- No dependency, no I/O, no CI or publishing change.
+
+## Implementation notes
+
+- [ ] `src/text/text.ts`, `types.ts`, `index.ts` (`export * from "./text"`,
+      `export type * from "./types"`); `export * from "@/text"` in `src/nepali-number.ts`.
+- [ ] One internal scanner used by `findNumbers`, `extractNumbers`, `replaceNumbers`,
+      `spellOutNumbers`.
+- [ ] `compareNumbers` on the ADR-0012 decimal form; `sortNumbers` built on it.
+- [ ] TSDoc on every export.
+- [ ] Tests — the happy path **and** the obvious failure paths (ADR-0007): English, Nepali and
+      mixed digits, no numbers, empty string, grouped and decimal numbers, a hyphenated phone
+      number, values above 2⁵³ in `compareNumbers`, invalid values in `sortNumbers`, the
+      100 000-character strings.
+- [ ] `bun run type-check`, `bun run test` and `bun run build` pass.
+- [ ] Built CJS loaded with `node`; outputs match `user-guide/dev/api/text.mdx`.
+
+## Docs to update on implementation
+
+- [ ] `user-guide/dev/api/text.mdx` — outputs checked against the build; the "Proposed" note
+      replaced by the standard line.
+- [ ] `user-guide/dev/api/index.mdx`, `types.mdx` — exports and types.
+- [ ] `user-guide/dev/guides/recipes.mdx` — sorting a table column; spelling out numbers in a
+      sentence.
+- [ ] `maintainer-guide/architecture/system.mdx` and its diagram (Mermaid and Archify) — the
+      `text` domain.
+- [ ] `maintainer-guide/security/threat-model.mdx` — the scanner and its measured time.
+- [ ] `README.md` — API summary.
+- [ ] `AGENTS.md` §10 and the `nepali-number-stack-and-map` skill — the new folder, export and
+      test counts.
+- [ ] `maintainer-guide/adr/index.mdx` — status.
+- [ ] Proposed commit message: `feat(text): find, replace, spell out, compare and sort numbers`

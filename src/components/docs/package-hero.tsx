@@ -6,6 +6,7 @@ import { kindName, ringOf } from '@/lib/rings';
 import { PlanetMark, PlanetSystem } from '@/components/planet';
 import { PlanetMorph } from '@/components/zoom-page';
 import { zoomIn } from '@/lib/zoom';
+import { maintainerGuide, trackName, userGuide } from '@/lib/tracks';
 
 /**
  * The planet header above a package or project overview: what it is, its facts and links, and
@@ -57,15 +58,15 @@ export function PackageHero({ entry }: { entry: CatalogEntry }) {
           </dl>
         )}
         <nav className="pkg-links" aria-label={`${entry.title} links`}>
-          {entry.useUrl && (
-            <Link href={entry.useUrl} data-primary="" transitionTypes={[zoomIn]}>
-              Use
+          {entry.userGuideUrl && (
+            <Link href={entry.userGuideUrl} data-primary="" transitionTypes={[zoomIn]}>
+              {trackName(userGuide)}
               <ArrowRight aria-hidden />
             </Link>
           )}
-          {entry.maintainUrl && (
-            <Link href={entry.maintainUrl} transitionTypes={[zoomIn]}>
-              Maintain
+          {entry.maintainerGuideUrl && (
+            <Link href={entry.maintainerGuideUrl} transitionTypes={[zoomIn]}>
+              {trackName(maintainerGuide)}
             </Link>
           )}
           {entry.registry && (

@@ -1,0 +1,183 @@
+---
+title: "Formatting"
+description: "Format numbers with lakh and crore or international grouping, fixed precision, percent and Nepali digits using formatNepaliNumber, addNepaliCommas, formatPercent and removeFormatting."
+---
+
+> Every output below was produced by running the built package.
+
+Display formatting with Nepali (lakh/crore) or international grouping, fixed precision, percent
+and Nepali digits.
+
+Numbers are read as described in
+[how a number is read](./conversion.mdx#how-a-number-is-read): a `number`, a `bigint`, or a
+string in English, Nepali or mixed digits, with or without commas.
+
+## Exports
+
+| Export | Signature | Returns |
+|---|---|---|
+| `formatNepaliNumber` | `(number: NumericInput, options?: FormatOptions) => string` | Grouped, rounded, Nepali-digit string |
+| `addNepaliCommas` | `(number: NumericInput, grouping?: "nepali" \| "international") => string` | The same digits with grouping commas inserted |
+| `formatPercent` | `(value: NumericInput, options?: PercentOptions) => string` | A formatted percentage |
+| `removeFormatting` | `(formattedString: string \| number) => number` | The raw number behind a formatted string |
+
+---
+
+## `formatNepaliNumber(number, options?)`
+
+The all-in-one display formatter: rounds to `precision`, drops an all-zero decimal part, groups
+with commas, and converts to Nepali digits.
+
+```ts
+formatNepaliNumber(number: NumericInput, options?: FormatOptions): string
+```
+
+| Option | Type | Default | Effect |
+|---|---|---|---|
+| `useNepaliDigits` | `boolean` | `true` | `false` keeps English digits |
+| `addCommas` | `boolean` | `true` | `false` skips grouping |
+| `grouping` | `"nepali" \| "international"` | `"nepali"` | `"nepali"` groups the last three digits, then pairs. `"international"` groups in threes |
+| `precision` | `number` | `2` | Decimal places. A value that is not an integer from 0 to 100 is read as `2` |
+| `trimZero` | `boolean` | `true` | Drops the decimal part when it is all zeros (`.00`). A partly-zero part such as `.50` is kept |
+| `sign` | `"auto" \| "always"` | `"auto"` | `"always"` puts `+` in front of a positive number |
+
+**Returns.** The formatted string, exact at any size. Invalid input returns `""`.
+
+```ts
+import { formatNepaliNumber } from "nepali-number"
+
+formatNepaliNumber(1234567)                             // → "१२,३४,५६७"
+formatNepaliNumber(1234.5)                              // → "१,२३४.५०"
+formatNepaliNumber(1234.567)                            // → "१,२३४.५७"
+formatNepaliNumber(1.005)                               // → "१.०१"
+formatNepaliNumber(1234)                                // → "१,२३४"      .00 trimmed
+formatNepaliNumber("१२३४५६७")                           // → "१२,३४,५६७"
+formatNepaliNumber("1,234")                             // → "१,२३४"
+formatNepaliNumber(0)                                   // → "०"
+formatNepaliNumber(-1234.5)                             // → "-१,२३४.५०"
+formatNepaliNumber(-0.001)                              // → "०"          rounds to zero, no sign
+formatNepaliNumber(12345678901234567890n)               // → "१,२३,४५,६७,८९,०१,२३,४५,६७,८९०"
+formatNepaliNumber("abc")                               // → ""
+formatNepaliNumber("")                                  // → ""
+
+formatNepaliNumber(1234567, { useNepaliDigits: false }) // → "12,34,567"
+formatNepaliNumber(1234567, { addCommas: false })       // → "१२३४५६७"
+formatNepaliNumber(1234567, { grouping: "international" }) // → "१,२३४,५६७"
+formatNepaliNumber(1234.5, { precision: 0 })            // → "१,२३५"
+formatNepaliNumber(1234, { precision: 3, trimZero: false }) // → "१,२३४.०००"
+formatNepaliNumber(0, { trimZero: false })              // → "०.००"
+formatNepaliNumber(1234, { sign: "always" })            // → "+१,२३४"
+```
+
+**Notes.**
+
+- Rounding is half away from zero on the decimal digits as written
+  ([how a number is read](./conversion.mdx#how-a-number-is-read)), so `1.005` is `"१.०१"` and
+  `2.5` at `precision: 0` is `"३"`.
+- For money use [`toNepaliCurrency`](./currency.mdx), and for a percentage
+  [`formatPercent`](#formatpercentvalue-options).
+
+---
+
+## `addNepaliCommas(number, grouping?)`
+
+Inserts grouping commas and changes nothing else: no rounding, and the digits stay in the script
+they were written in.
+
+```ts
+addNepaliCommas(number: NumericInput, grouping?: "nepali" | "international"): string
+```
+
+| Parameter | Type | Default | Notes |
+|---|---|---|---|
+| `number` | `number \| bigint \| string` | — | English, Nepali or mixed digits. Existing commas are replaced |
+| `grouping` | `"nepali" \| "international"` | `"nepali"` | The last three digits then pairs, or threes |
+
+**Returns.** The grouped string, with a leading `-` and the decimal part kept as written. Invalid
+input returns `""`.
+
+```ts
+import { addNepaliCommas } from "nepali-number"
+
+addNepaliCommas(1234567)                     // → "12,34,567"
+addNepaliCommas("१२३४५६७")                   // → "१२,३४,५६७"
+addNepaliCommas("-1234567.891")              // → "-12,34,567.891"
+addNepaliCommas("1,234,567")                 // → "12,34,567"     regrouped
+addNepaliCommas(1234.5)                      // → "1,234.5"       decimals untouched
+addNepaliCommas(100000)                      // → "1,00,000"
+addNepaliCommas(123)                         // → "123"
+addNepaliCommas(0)                           // → "0"
+addNepaliCommas(1234567, "international")    // → "1,234,567"
+addNepaliCommas("abc")                       // → ""
+addNepaliCommas("")                          // → ""
+```
+
+**Notes.** Runs in time proportional to the input length.
+
+---
+
+## `formatPercent(value, options?)`
+
+Formats a percentage. The value is a percentage already (`12.5` means 12.5%) unless `isRatio` is
+set, in which case it is multiplied by 100 first.
+
+```ts
+formatPercent(value: NumericInput, options?: PercentOptions): string
+```
+
+| Option | Type | Default | Effect |
+|---|---|---|---|
+| `useNepaliDigits` | `boolean` | `true` | `false` keeps English digits |
+| `precision` | `number` | `2` | Decimal places, as in `formatNepaliNumber` |
+| `trimZero` | `boolean` | `true` | Drops an all-zero decimal part |
+| `addCommas` | `boolean` | `true` | Nepali grouping |
+| `isRatio` | `boolean` | `false` | `true` reads `0.125` as 12.5% |
+| `symbol` | `string` | `"%"` | Appended directly after the number |
+
+**Returns.** The formatted number followed by `symbol`. Invalid input returns `""`.
+
+```ts
+import { formatPercent } from "nepali-number"
+
+formatPercent(12.5)                       // → "१२.५०%"
+formatPercent(50)                         // → "५०%"
+formatPercent("१२.५")                     // → "१२.५०%"
+formatPercent(0)                          // → "०%"
+formatPercent(-3)                         // → "-३%"
+formatPercent(0.125, { isRatio: true })   // → "१२.५०%"
+formatPercent("abc")                      // → ""
+```
+
+---
+
+## `removeFormatting(formattedString)`
+
+Pulls the number out of formatted text: converts Nepali digits, drops every character that is
+not a digit, `.` or `-` (commas, spaces, currency symbols, letters), and returns a `number`. It
+is deliberately lenient. To require that the whole string is a number, use
+[`parseNepaliNumber`](./conversion.mdx#parsenepalinumberinput).
+
+```ts
+removeFormatting(formattedString: string | number): number
+```
+
+| Parameter | Type | Default | Notes |
+|---|---|---|---|
+| `formattedString` | `string \| number` | — | Any formatted amount |
+
+**Returns.** A `number`. Input with no digits, or whose remaining characters do not form a
+number, returns **`NaN`**.
+
+```ts
+import { removeFormatting } from "nepali-number"
+
+removeFormatting("रू १२,३४,५६७.८९")   // → 1234567.89
+removeFormatting("१,२३४")             // → 1234
+removeFormatting("-१२.५")             // → -12.5
+removeFormatting("50%")               // → 50
+removeFormatting("12abc34")           // → 1234
+removeFormatting(1234)                // → 1234
+removeFormatting("")                  // → NaN
+removeFormatting("abc")               // → NaN
+removeFormatting("1.2.3")             // → NaN
+```

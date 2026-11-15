@@ -735,8 +735,8 @@
       "name": "Planet card",
       "kind": "card",
       "refersTo": "planet-card",
-      "description": "One per package or project: a sky drawing the planet with a labelled moon per version line, then the name, kind, description, fact sheet and Use / Maintain links.",
-      "html": "<article class=\"ds-planet\"><div class=\"ds-sky\"><svg viewBox=\"0 0 330 168\" aria-hidden=\"true\"><ellipse cx=\"165\" cy=\"90.7\" rx=\"44\" ry=\"15\" transform=\"rotate(-12 165 90.7)\" fill=\"none\" stroke=\"var(--home-line-2)\"/><circle cx=\"165\" cy=\"90.7\" r=\"17\" fill=\"var(--home-npm)\"/><circle cx=\"199\" cy=\"72\" r=\"4.2\" fill=\"var(--home-accent)\"/><text x=\"208\" y=\"75.6\" font-size=\"10.5\" font-family=\"JetBrains Mono, monospace\" fill=\"var(--home-muted)\">v0.1</text></svg></div><div class=\"ds-facts\"><h3>lodestar</h3><p>npm package</p><dl><dt>Latest</dt><dd>0.1.4</dd></dl><a class=\"ds-go\" href=\"#\">Use</a></div></article>",
+      "description": "One per package or project: a sky drawing the planet with a labelled moon per version line, then the name, kind, description, fact sheet and the User guide / Maintainer guide links.",
+      "html": "<article class=\"ds-planet\"><div class=\"ds-sky\"><svg viewBox=\"0 0 330 168\" aria-hidden=\"true\"><ellipse cx=\"165\" cy=\"90.7\" rx=\"44\" ry=\"15\" transform=\"rotate(-12 165 90.7)\" fill=\"none\" stroke=\"var(--home-line-2)\"/><circle cx=\"165\" cy=\"90.7\" r=\"17\" fill=\"var(--home-npm)\"/><circle cx=\"199\" cy=\"72\" r=\"4.2\" fill=\"var(--home-accent)\"/><text x=\"208\" y=\"75.6\" font-size=\"10.5\" font-family=\"JetBrains Mono, monospace\" fill=\"var(--home-muted)\">v0.1</text></svg></div><div class=\"ds-facts\"><h3>lodestar</h3><p>npm package</p><dl><dt>Latest</dt><dd>0.1.4</dd></dl><a class=\"ds-go\" href=\"#\">User guide</a></div></article>",
       "css": ".ds-planet{display:grid;max-width:340px;background:var(--home-panel);border:1px solid var(--home-line);border-radius:14px;overflow:hidden}.ds-sky{height:168px;background:var(--home-bg-2);border-bottom:1px solid var(--home-line)}.ds-sky svg{width:100%;height:100%}.ds-facts{display:flex;flex-direction:column;gap:8px;padding:20px 22px 22px}.ds-facts h3{margin:0;font:500 20px var(--home-font-data);color:var(--home-ink)}.ds-facts p{margin:0;font-size:13px;color:var(--home-muted)}.ds-facts dl{display:grid;grid-template-columns:auto 1fr;gap:4px 16px;margin:0;font-size:13px}.ds-facts dt{color:var(--home-faint)}.ds-facts dd{margin:0;font:12.5px var(--home-font-data);color:var(--home-ink)}.ds-go{align-self:flex-start;padding:6px 11px;font-size:13.5px;color:var(--home-accent-ink);background:var(--home-accent);border-radius:8px;text-decoration:none}"
     },
     {
@@ -744,7 +744,7 @@
       "kind": "card",
       "refersTo": "private-card",
       "description": "A private project beyond the belt: a night planet on a dashed orbit, the name with a lock, a description and who it is for, in a dashed card.",
-      "html": "<article class=\"ds-priv\"><svg viewBox=\"-28 -28 56 56\" aria-hidden=\"true\"><ellipse rx=\"25\" ry=\"8\" transform=\"rotate(-18)\" fill=\"none\" stroke=\"var(--home-line-2)\" stroke-dasharray=\"2 3\"/><circle r=\"13\" fill=\"var(--home-night)\" stroke=\"var(--home-line-2)\"/></svg><div><h3>harbor-ops</h3><p>Operations dashboard for a shipping client.</p><small>client · Use, Maintain</small></div></article>",
+      "html": "<article class=\"ds-priv\"><svg viewBox=\"-28 -28 56 56\" aria-hidden=\"true\"><ellipse rx=\"25\" ry=\"8\" transform=\"rotate(-18)\" fill=\"none\" stroke=\"var(--home-line-2)\" stroke-dasharray=\"2 3\"/><circle r=\"13\" fill=\"var(--home-night)\" stroke=\"var(--home-line-2)\"/></svg><div><h3>harbor-ops</h3><p>Operations dashboard for a shipping client.</p><small>client · User guide, Maintainer guide</small></div></article>",
       "css": ".ds-priv{display:grid;grid-template-columns:56px 1fr;gap:14px;max-width:320px;padding:18px;background:var(--home-bg-2);border:1px dashed var(--home-line-2);border-radius:14px}.ds-priv svg{width:56px;height:56px}.ds-priv h3{margin:0;font:500 16px var(--home-font-data);color:var(--home-ink)}.ds-priv p{margin:2px 0 0;font-size:14px;color:var(--home-muted)}.ds-priv small{display:block;margin-top:8px;font:12px var(--home-font-data);color:var(--home-faint)}"
     },
     {
@@ -758,7 +758,7 @@
   ],
   "narrative": {
     "northStar": "One Solar System",
-    "overview": "The site is one small solar system, calm graphite space with one moving part. The star is the community, nepal-dev.com. Each ecosystem is an orbit; a package is a solid planet in its ecosystem's colour, its night side shaded away from the star; a project is a ringed planet. Each documented version line is a moon: full for the latest release, a crescent for an older one, a dashed new moon for `dev`. A planet's day side is Use, its night side Maintain. The home page's hero is the system itself, turning slowly beside the headline and the large search button; every later surface (cards, the planet header, the sidebar, the notices, the footer, the 404) reuses the same marks without explaining them again.\n\nThe surface is cool, technical and quiet: near-black graphite (dark is the default theme) or cool paper in light, hairline borders, one teal accent, a warm star, and colour reserved for the ecosystems. Density is moderate: generous section gaps, tight facts inside a card. Depth is soft and rare; only things that float (the search button, windows, the tooltip) lift off the ground.",
+    "overview": "The site is one small solar system, calm graphite space with one moving part. The star is the community, nepal-dev.com. Each ecosystem is an orbit; a package is a solid planet in its ecosystem's colour, its night side shaded away from the star; a project is a ringed planet. Each documented version line is a moon: full for the latest release, a crescent for an older one, a dashed new moon for `dev`. A planet's day side is User guide, its night side Maintainer guide. The home page's hero is the system itself, turning slowly beside the headline and the large search button; every later surface (cards, the planet header, the sidebar, the notices, the footer, the 404) reuses the same marks without explaining them again.\n\nThe surface is cool, technical and quiet: near-black graphite (dark is the default theme) or cool paper in light, hairline borders, one teal accent, a warm star, and colour reserved for the ecosystems. Density is moderate: generous section gaps, tight facts inside a card. Depth is soft and rare; only things that float (the search button, windows, the tooltip) lift off the ground.",
     "keyCharacteristics": [
       "Graphite neutrals with a single signal-teal accent and a warm star; ecosystem hues mark shapes, never text.",
       "Three faces with fixed jobs: Bricolage Grotesque for display, Onest for reading and controls, JetBrains Mono for data only.",
@@ -794,7 +794,7 @@
       },
       {
         "name": "The Places, Not Controls Rule",
-        "body": "Space words name places, never controls (ADR-0029). Search, Overview, Use, Maintain, On this page, version names, Back to top and the search button's text keep their plain names. The solar system speaks only where the site describes itself: empty states, hints, the scale strip's Verse and System, the Verse view, the 404 and the footer, and always beside a plain sentence that says what is true.",
+        "body": "Space words name places, never controls (ADR-0029). Search, Overview, User guide, Maintainer guide, On this page, version names, Back to top and the search button's text keep their plain names. The solar system speaks only where the site describes itself: empty states, hints, the scale strip's Verse and System, the Verse view, the 404 and the footer, and always beside a plain sentence that says what is true.",
         "section": "typography"
       },
       {
@@ -822,7 +822,7 @@
       "Do take every colour from the `--home-*` tokens, in both themes, including canvas strokes, SVG marks, selection, caret, scrollbar and focus.",
       "Do keep text on Frost Ink, Steel Muted or Steel Faint; check new pairs against Graphite Ground and Graphite Panel at 4.5:1 or more.",
       "Do draw planets, moons, suns, locks and phases from `src/components/planet.tsx` or as inline SVG; give each a text equivalent.",
-      "Do use the marks with their one meaning on every page: ring for project, full moon for latest, crescent for older, dashed new moon for `dev`, sun for Use, moon for Maintain.",
+      "Do use the marks with their one meaning on every page: ring for project, full moon for latest, crescent for older, dashed new moon for `dev`, the half-lit planet for a guide in the scale strip. A sun or a moon is a control only in the theme switch (ADR-0048).",
       "Do use JetBrains Mono for package names, versions, URLs, commands, code and counts, with tabular numerals.",
       "Do ship a reduced-motion state and a no-script state with every new animation."
     ],

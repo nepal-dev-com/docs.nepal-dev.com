@@ -1,0 +1,116 @@
+---
+title: "Build and distribution"
+description: "How tsdown builds nepali-number into ESM, CommonJS, UMD and IIFE files, and which file each kind of consumer resolves."
+---
+
+- **Status:** Current
+- **Last updated:** 2026-11-14
+- **Related ADRs:** [ADR-0009](../adr/ADR-0009-package-invariants.mdx)
+
+> Snapshot of the package as it stands today. Edit in place; never record what changed.
+
+## Context
+
+One TypeScript entry is built by **tsdown 0.15.12** (rolldown) into four JavaScript formats and
+two declaration files. `package.json` points each kind of consumer at the right one.
+
+## Build
+
+`bun run build` runs `tsdown --clean --dts` with [`tsdown.config.ts`](https://github.com/nepal-dev-com/nepali-number-js/blob/main/tsdown.config.ts):
+
+| Setting | Value | Why it matters |
+|---|---|---|
+| `entry` | `./src/nepali-number.ts` | Single public surface |
+| `format` | `esm`, `cjs`, `iife`, `umd` | Bundlers, Node `require`, `<script>` with and without AMD/CommonJS |
+| `outputOptions.name` | `nepaliNumber` | Global for IIFE and UMD |
+| `dts` | `true` | Emits `.d.ts` (ESM) and `.d.cts` (CJS) |
+| `minify` | `true` | All four formats are minified |
+| `platform` | `node` | Output uses no Node APIs (§6.2), so it still runs in browsers |
+| `shims` | `true` | Adds ESM/CJS interop shims only where the source needs them; this source needs none |
+| `clean` | `true` | `dist/` is emptied before each build |
+
+## Output
+
+Sizes from the current build:
+
+| File | Format | Size | gzip |
+|---|---|---|---|
+| `dist/nepali-number.js` | ESM | 22.06 kB | 7.53 kB |
+| `dist/nepali-number.cjs` | CommonJS | 22.50 kB | 7.66 kB |
+| `dist/nepali-number.umd.js` | UMD, global `nepaliNumber` | 22.20 kB | 7.59 kB |
+| `dist/nepali-number.iife.js` | IIFE, global `nepaliNumber` | 22.03 kB | 7.50 kB |
+| `dist/nepali-number.d.ts` | Types for ESM | 21.69 kB | |
+| `dist/nepali-number.d.cts` | Types for CommonJS | 21.69 kB | |
+
+The tarball (`npm pack --dry-run`) holds 9 files, 34.9 kB packed: the six above plus
+`package.json`, `README.md` and `LICENSE`. `files: ["dist"]` keeps everything else out.
+
+Every format carries all eight domains. A bundler that tree-shakes the ESM file keeps only the
+functions a consumer imports, with the word tables they use.
+
+## Entry points
+
+```json
+{
+  "type": "module",
+  "main": "./dist/nepali-number.cjs",
+  "module": "./dist/nepali-number.js",
+  "browser": "./dist/nepali-number.umd.js",
+  "unpkg": "./dist/nepali-number.iife.js",
+  "types": "./dist/nepali-number.d.ts",
+  "exports": {
+    ".": {
+      "import": { "types": "./dist/nepali-number.d.ts", "default": "./dist/nepali-number.js" },
+      "require": { "types": "./dist/nepali-number.d.cts", "default": "./dist/nepali-number.cjs" },
+      "default": "./dist/nepali-number.umd.js"
+    },
+    "./package.json": "./package.json"
+  }
+}
+```
+
+## How each consumer resolves
+
+<Diagram src="/diagrams/nepali-number/consumer-resolution.html" title="How each consumer resolves the package">
+
+```mermaid
+flowchart LR
+  C["Consumer"]
+  C --> I["import<br/>Node, Bun, Deno, Vite, webpack 5, esbuild"] --> IF["exports.import<br/>nepali-number.js + .d.ts"]
+  C --> R["require<br/>Node, Bun, Jest"] --> RF["exports.require<br/>nepali-number.cjs + .d.cts"]
+  C --> L["no exports support<br/>legacy tooling"]
+  L --> LM["main"] --> LMF["nepali-number.cjs"]
+  L --> LO["module"] --> LOF["nepali-number.js"]
+  L --> LB["browser"] --> LBF["nepali-number.umd.js"]
+  C --> S["&lt;script&gt; from unpkg"] --> SF["unpkg field<br/>nepali-number.iife.js"]
+  C --> O["other exports conditions"] --> OF["nepali-number.umd.js"]
+```
+
+</Diagram>
+
+Only the root (`"."`) and `./package.json` are exported. Deep imports such as
+`nepali-number/dist/nepali-number.js` are blocked by Node and modern bundlers; CDN URLs are not
+affected because they read files directly.
+
+Verified against the current build: ESM `import` and CJS `require` in Node 24, `import` in Bun
+1.4.4, the ESM file in Deno 2.9, and the IIFE and UMD files exposing a global `nepaliNumber`
+object. Each one exposes the same 45 functions.
+
+## Type-checking
+
+`bun run type-check` runs `tsc --noEmit` over `src` and `tsdown.config.ts`, with [`tsconfig.json`](https://github.com/nepal-dev-com/nepali-number-js/blob/main/tsconfig.json):
+`strict`, `noUncheckedIndexedAccess`, `noUnusedLocals`, `noUnusedParameters`,
+`noPropertyAccessFromIndexSignature`, `noImplicitOverride`, `noFallthroughCasesInSwitch`,
+`isolatedDeclarations`, `verbatimModuleSyntax`. `tsc` never emits; tsdown does.
+
+## Key decisions in force
+
+- [ADR-0009](../adr/ADR-0009-package-invariants.mdx) — zero runtime dependencies,
+  environment-agnostic output, named exports only.
+
+## Constraints
+
+- Changing `exports`, the formats, the global name or the declaration layout is a major
+  version (ADR-0008).
+- No `prepare`, `preinstall`, `install` or `postinstall` scripts: nothing runs on a consumer's
+  machine.

@@ -1,0 +1,159 @@
+---
+title: "Words"
+description: "Write numbers as Nepali words, English words with Nepali scales, Nepali ordinals and short lakh or crore abbreviations."
+---
+
+> Every output below was produced by running the built package.
+
+Numbers as Nepali words, English words (with Nepali scales), Nepali ordinals, and short
+scale abbreviations such as `"१२ लाख"`.
+
+All four accept English, Nepali or mixed digits, as a number or a string, with or without
+commas — input is read with [`parseNepaliNumber`](./conversion.mdx#parsenepalinumbernepalinumber).
+
+## Exports
+
+| Export | Signature | Returns |
+|---|---|---|
+| `toNepaliWords` | `(number: number \| string) => string` | Cardinal in Nepali words |
+| `toEnglishWords` | `(number: number \| string) => string` | Cardinal in lower-case English words, Nepali scales |
+| `toNepaliOrdinal` | `(number: number \| string) => string` | Ordinal in Nepali words |
+| `toDecimalWord` | `(number: number \| string) => string` | Abbreviated value with the largest scale, in Nepali digits |
+
+---
+
+## `toNepaliWords(number)`
+
+```ts
+toNepaliWords(number: number | string): string
+```
+
+**Returns.** Nepali words for an integer. Every number 0–99 has its own word; larger numbers
+are built from the scales सय, हजार, लाख, करोड, अर्ब … महाशंख. Negative numbers are prefixed
+with `ऋण`. Unparseable input reads as zero (`"शून्य"`). **Non-integers return `""`.**
+
+```ts
+import { toNepaliWords } from "nepali-number"
+
+toNepaliWords(123)            // → "एक सय तेईस"
+toNepaliWords(99)             // → "उनान्सय"
+toNepaliWords("१२३४५")        // → "बाह्र हजार तीन सय पैंतालीस"
+toNepaliWords("1,23,456")     // → "एक लाख तेईस हजार चार सय छपन्न"
+toNepaliWords(1234567)        // → "बाह्र लाख चौंतीस हजार पाँच सय सतसट्ठी"
+toNepaliWords(12345678)       // → "एक करोड तेईस लाख पैंतालीस हजार छ सय अठहत्तर"
+toNepaliWords(1000000000)     // → "एक अर्ब"
+toNepaliWords(-45)            // → "ऋण पैंतालीस"
+toNepaliWords(0)              // → "शून्य"
+toNepaliWords("abc")          // → "शून्य"
+toNepaliWords(12.5)           // → ""
+```
+
+**Notes.** For amounts with a decimal part use
+[`toNepaliCurrencyWords`](./currency.mdx#tonepalicurrencywordsamount) (rupees and paisa), or
+truncate first ([limitations](./limitations.mdx#words-and-ordinals-need-integers)).
+
+---
+
+## `toEnglishWords(number)`
+
+```ts
+toEnglishWords(number: number | string): string
+```
+
+**Returns.** Lower-case English words using the **Nepali scales** (lakh, crore, arab …), not
+million/billion. Negative numbers are prefixed with `negative`. Unparseable input reads as
+`"zero"`. **Non-integers return `""`.**
+
+```ts
+import { toEnglishWords } from "nepali-number"
+
+toEnglishWords(123)           // → "one hundred twenty three"
+toEnglishWords("१२३")         // → "one hundred twenty three"
+toEnglishWords(15)            // → "fifteen"
+toEnglishWords(40)            // → "forty"
+toEnglishWords(1234567)       // → "twelve lakh thirty four thousand five hundred sixty seven"
+toEnglishWords(12345678)      // → "one crore twenty three lakh forty five thousand six hundred seventy eight"
+toEnglishWords(1000000000)    // → "one arab"
+toEnglishWords(-5)            // → "negative five"
+toEnglishWords(0)             // → "zero"
+toEnglishWords("abc")         // → "zero"
+toEnglishWords(12.5)          // → ""
+```
+
+**Notes.** No hyphens (`"twenty three"`, not `"twenty-three"`) and no "and". Capitalise in your
+own code if needed.
+
+---
+
+## `toNepaliOrdinal(number)`
+
+```ts
+toNepaliOrdinal(number: number | string): string
+```
+
+**Returns.** The Nepali ordinal. 1–4 are irregular (पहिलो, दोस्रो, तेस्रो, चौथो); from 5 on the
+ordinal suffix `-औं` is used. For numbers ≥ 100 only the last part takes the ordinal form;
+an exact scale multiple uses the scale's ordinal (`सयौं`, `हजारौं`, `करोडौं`). Negative
+numbers are prefixed with `ऋण`. Unparseable input reads as zero (`"शून्यौं"`).
+**Non-integers return `""`.**
+
+```ts
+import { toNepaliOrdinal } from "nepali-number"
+
+toNepaliOrdinal(1)            // → "पहिलो"
+toNepaliOrdinal(2)            // → "दोस्रो"
+toNepaliOrdinal(3)            // → "तेस्रो"
+toNepaliOrdinal(4)            // → "चौथो"
+toNepaliOrdinal(5)            // → "पाँचौं"
+toNepaliOrdinal("१०")         // → "दशौं"
+toNepaliOrdinal(21)           // → "एक्काईसौं"
+toNepaliOrdinal(100)          // → "एक सयौं"
+toNepaliOrdinal(101)          // → "एक सय एकौं"
+toNepaliOrdinal(1000)         // → "एक हजारौं"
+toNepaliOrdinal(10000000)     // → "एक करोडौं"
+toNepaliOrdinal(12345678)     // → "एक करोड तेईस लाख पैंतालीस हजार छ सय अठहत्तरौं"
+toNepaliOrdinal(0)            // → "शून्यौं"
+toNepaliOrdinal(-1)           // → "ऋण एकौं"
+toNepaliOrdinal(12.5)         // → ""
+```
+
+**Notes.** Negative ordinals use the regular `-औं` form, not the 1–4 exceptions
+(`-2` → `"ऋण दुइऔं"`).
+
+---
+
+## `toDecimalWord(number)`
+
+Abbreviates a number with its largest scale — the way amounts are spoken and written in
+headlines (`"१२ लाख"`, `"२.५० करोड"`).
+
+```ts
+toDecimalWord(number: number | string): string
+```
+
+**Returns.** Always Nepali digits. An exact multiple of the scale has no decimals; anything
+else is rounded to **two** decimals (trailing zero kept). Numbers below 100 are returned as
+[`formatNepaliNumber`](./formatting.mdx#formatnepalinumbernumber-options) would format them.
+Unparseable input returns `"०"`.
+
+```ts
+import { toDecimalWord } from "nepali-number"
+
+toDecimalWord(1200000)        // → "१२ लाख"
+toDecimalWord("१२,००,०००")    // → "१२ लाख"
+toDecimalWord(1250000)        // → "१२.५० लाख"
+toDecimalWord(25000000)       // → "२.५० करोड"
+toDecimalWord(12345678)       // → "१.२३ करोड"
+toDecimalWord(1000000000)     // → "१ अर्ब"
+toDecimalWord(100000)         // → "१ लाख"
+toDecimalWord(1234)           // → "१.२३ हजार"
+toDecimalWord(150)            // → "१.५० सय"
+toDecimalWord(99)             // → "९९"
+toDecimalWord(99.5)           // → "९९.५०"
+toDecimalWord(0)              // → "०"
+toDecimalWord("abc")          // → "०"
+toDecimalWord(-1200000)       // → "-१२,००,०००"
+```
+
+**Notes.** Negative numbers are not abbreviated — they fall through to plain formatting
+([limitations](./limitations.mdx#todecimalword-does-not-abbreviate-negatives)).

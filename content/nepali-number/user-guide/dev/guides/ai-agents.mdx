@@ -1,0 +1,155 @@
+---
+title: "Using an AI coding agent"
+description: "Prompts to paste into Claude Code, Cursor, Copilot or another coding agent so it installs nepali-number and uses the right functions, and where an agent reads the docs."
+---
+
+> Every output below was produced by running the built package.
+
+Paste one of these prompts into your coding agent — Claude Code, Cursor, Copilot, Codex or any
+other — and it installs the package, reads the reference and writes the code. Each prompt is
+plain text: copy it whole, then change the last line to your own task.
+
+The prompts tell the agent to read the documentation before it writes anything. That matters
+more than it looks: an agent working from memory tends to call functions from version 1, or
+ones that never existed.
+
+## Set up the package
+
+```text
+Add the npm package "nepali-number" to this project and use it for Nepali (Devanagari) numbers.
+
+1. Install it with the package manager this project already uses (check the lockfile).
+2. Read the version in node_modules/nepali-number/package.json. These instructions are for
+   version 2. If it is 1.x, stop and tell me: version 1 has a different API.
+3. Before writing code, read the API reference as Markdown:
+   https://docs.nepal-dev.com/nepali-number/user-guide/latest/api.md
+   It lists every function. The details of each are on one page per group, at
+   https://docs.nepal-dev.com/nepali-number/user-guide/latest/api/<group>.md
+   where <group> is conversion, formatting, words, currency, fractions, units, text, utils,
+   types or limitations. Read the groups my task needs. The same signatures, with an example
+   each, are in node_modules/nepali-number/dist/nepali-number.d.ts.
+4. Follow these rules:
+   - Import named functions from "nepali-number". There is no default export and no sub-path
+     import.
+   - Use only functions the reference or the .d.ts file lists. Never guess a name.
+   - Do not write your own digit maps, comma grouping or number-to-words code.
+   - Invalid input never throws. It returns NaN, "", false or []. Handle that case, and do not
+     assume it is zero.
+   - Keep numbers above 9007199254740991 as strings or bigint, not as JavaScript numbers.
+5. Run one short example in this project and show me its real output. Then list the files you
+   changed.
+
+My task: show prices in Nepali digits with the rupee symbol on the cart page.
+```
+
+## Replace hand-written number code
+
+For a project that already converts or formats Nepali numbers with its own helpers.
+
+```text
+This project handles Nepali (Devanagari) numbers by hand in places. Replace that code with the
+npm package "nepali-number", version 2.
+
+1. Read the API reference first:
+   https://docs.nepal-dev.com/nepali-number/user-guide/latest/api.md
+   and the edge cases:
+   https://docs.nepal-dev.com/nepali-number/user-guide/latest/api/limitations.md
+2. Find every place that does one of these: maps digits between 0-9 and ०-९, groups digits
+   with lakh and crore commas, writes a number as Nepali or English words, formats or parses
+   a rupee amount.
+3. Give me a table: file and line, what the code does today, and the nepali-number function
+   that replaces it.
+4. For each place, say whether the output changes: rounding, spacing, the sign, or what
+   invalid input returns. The package rounds half away from zero and returns "" or NaN for
+   invalid input, never zero.
+5. Wait for my go-ahead. Then make the changes and run the tests.
+```
+
+## Move from version 1 to version 2
+
+```text
+This project uses "nepali-number" 1.x. Move it to version 2.
+
+1. Read the migration guide:
+   https://docs.nepal-dev.com/nepali-number/user-guide/latest/guides/migration-v1-to-v2.md
+2. Replace every version 1 call with its version 2 function, following the guide's
+   function-by-function list.
+3. Version 1 returned English digits unless a call passed the locale "ne". Version 2 returns
+   Nepali digits by default. For every call, keep the output this project shows today, and
+   tell me where you could not.
+4. Run the type-check and the tests, and list the files you changed.
+```
+
+## Standing rules for your project
+
+To have every future session use the package correctly, paste this into the file your agent
+reads at the start of each session: `AGENTS.md`, `CLAUDE.md`, `.cursor/rules`, or
+`.github/copilot-instructions.md`.
+
+```markdown
+## Nepali numbers
+
+Use the `nepali-number` package, version 2, for anything about Nepali (Devanagari) numbers.
+Never hand-write digit maps, lakh/crore grouping or number words.
+
+- Import named functions from `"nepali-number"`. No default export, no sub-path imports.
+- Reference: https://docs.nepal-dev.com/nepali-number/user-guide/latest/api.md, or the TSDoc in
+  `node_modules/nepali-number/dist/nepali-number.d.ts`. Use only the names listed there.
+- A function that reads a number takes `number | bigint | string`, in English, Nepali or
+  mixed digits.
+- Invalid input never throws: it returns `NaN`, `""`, `false` or `[]`. Never treat that as zero.
+- Above 9007199254740991, pass a string or a `bigint`.
+
+| Need | Function | Example |
+|---|---|---|
+| English digits to Nepali | `toNepali` | `123` → `"१२३"` |
+| Nepali digits to English | `toEnglish` | `"१२३"` → `"123"` |
+| Read typed input as a number | `parseNepaliNumber` | `"१२,३४५.६७"` → `12345.67` |
+| Check typed input | `isValidNumber` | `"-1,234.5"` → `true` |
+| Lakh and crore commas | `formatNepaliNumber` | `1234567` → `"१२,३४,५६७"` |
+| A percentage | `formatPercent` | `12.5` → `"१२.५०%"` |
+| A rupee amount | `toNepaliCurrency` | `1234567.89` → `"रू १२,३४,५६७.८९"` |
+| An amount in words | `toNepaliCurrencyWords` | `250` → `"दुई सय पचास रुपैयाँ"` |
+| A number in Nepali words | `toNepaliWords` | `123` → `"एक सय तेईस"` |
+| A number in English words | `toEnglishWords` | `123` → `"one hundred twenty three"` |
+| An ordinal | `toNepaliOrdinal` | `5` → `"पाँचौं"` |
+| A short form | `toDecimalWord` | `1200000` → `"१२ लाख"` |
+| A spoken fraction | `toNepaliFraction` | `1.5` → `"डेढ"` |
+| Land area | `formatRopani` | `6438.578125` → `"१-२-३-१"` |
+| Numbers inside a sentence | `extractNumbers` | `"३ वटा र 1,200"` → `[3, 1200]` |
+| Sort across both scripts | `sortNumbers` | `["१०", 9]` → `[9, "१०"]` |
+```
+
+The table is a starting point, not the whole API: the [reference](../api/index.mdx) lists all
+45 functions.
+
+## What an agent can read
+
+| Source | Address | Holds |
+|---|---|---|
+| Any page as Markdown | The page's address with `.md` added, such as `https://docs.nepal-dev.com/nepali-number/user-guide/latest/api/words.md` | That page, without the site around it |
+| The site index | `https://docs.nepal-dev.com/llms.txt` | Every page on the site, with its address and a one-line summary |
+| The whole site in one file | `https://docs.nepal-dev.com/llms-full.txt` | Every page of every project. Large: prefer single pages |
+| The type declarations | `node_modules/nepali-number/dist/nepali-number.d.ts` | Every signature and option, with a description and an example. Works offline and always matches the installed version |
+
+A request that sends `Accept: text/markdown` gets the Markdown copy without the `.md` suffix.
+
+Links inside a Markdown copy are written as file paths, such as `./conversion.mdx`, not as
+addresses. Give an agent the full address of each page it should read, as the prompts above do.
+
+`latest` in an address follows the newest released version. To pin an agent to the version you
+installed, point it at the type declarations.
+
+## Check the agent's work
+
+- **The installed version.** `npm view nepali-number version` shows what the registry serves.
+  Version 1 has six functions with other names
+  ([migration guide](./migration-v1-to-v2.mdx)).
+- **Function names.** Every name the agent imports should be in the
+  [reference](../api/index.mdx). The type-check catches an invented one in TypeScript; in
+  plain JavaScript it fails only when the line runs.
+- **Invalid input.** Look for code that prints a formatted value without handling `""` — the
+  package never substitutes zero
+  ([limitations](../api/limitations.mdx#invalid-input-returns-an-empty-result-not-zero)).
+- **Hand-written leftovers.** A digit map or a comma-grouping regular expression next to an
+  import of this package means the agent did not finish.

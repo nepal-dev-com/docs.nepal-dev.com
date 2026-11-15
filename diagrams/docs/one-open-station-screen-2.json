@@ -28,21 +28,35 @@
         60
       ],
       "size": [
-        324,
+        436,
         58
       ]
     },
     {
-      "id": "sw",
-      "type": "external",
-      "label": "☀ | ☾",
+      "id": "ug",
+      "type": "backend",
+      "label": "User guide",
+      "sublabel": "current, filled",
       "pos": [
-        376,
-        60
+        40,
+        130
       ],
       "size": [
-        100,
-        58
+        212,
+        70
+      ]
+    },
+    {
+      "id": "mg",
+      "type": "backend",
+      "label": "Maintainer guide",
+      "pos": [
+        264,
+        130
+      ],
+      "size": [
+        212,
+        70
       ]
     },
     {
@@ -51,7 +65,7 @@
       "label": "full moon",
       "pos": [
         40,
-        130
+        212
       ],
       "size": [
         436,
@@ -65,7 +79,7 @@
       "label": "◎ Get started",
       "pos": [
         40,
-        212
+        294
       ],
       "size": [
         436,
@@ -79,7 +93,7 @@
       "label": "○ Reference",
       "pos": [
         40,
-        294
+        376
       ],
       "size": [
         436,
@@ -93,7 +107,7 @@
       "label": "◎ Guides",
       "pos": [
         54,
-        406
+        488
       ],
       "size": [
         408,
@@ -107,7 +121,7 @@
       "label": "∘ Theming",
       "pos": [
         54,
-        488
+        570
       ],
       "size": [
         408,
@@ -120,7 +134,7 @@
       "label": "∘ Keyboard shortcuts",
       "pos": [
         54,
-        558
+        640
       ],
       "size": [
         408,
@@ -133,7 +147,7 @@
       "label": "◦ Recipes",
       "pos": [
         54,
-        628
+        710
       ],
       "size": [
         408,
@@ -148,7 +162,8 @@
       "label": "Phone screen · the reader opens Guides on the same page",
       "wraps": [
         "chip",
-        "sw",
+        "ug",
+        "mg",
         "moon",
         "h1",
         "h2",

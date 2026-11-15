@@ -1,0 +1,171 @@
+---
+title: "ADR-0048 — The two tracks are the User guide and the Maintainer guide"
+description: "Use and Maintain become User guide and Maintainer guide in names, URLs, folders and code, and the sidebar's sun and moon become two named segments."
+---
+
+- **Status:** Approved
+- **Date:** 2026-11-14
+- **Deciders:** [@puncoz](https://github.com/puncoz)
+- **Approved by:** [@puncoz](https://github.com/puncoz)
+- **Approved on:** 2026-11-14
+- **Supersedes:** [ADR-0013](./ADR-0013-packages-and-projects-share-one-catalogue-shape.mdx) decision 2 (in part: the
+  tracks' names and folders), [ADR-0018](./ADR-0018-docs-pages-get-orbit-stations-a-trajectory-and-the-full-horizon.mdx)
+  decision 1 (the day/night switch and its place in the planet row),
+  [ADR-0037](./ADR-0037-the-horizon-is-the-himalaya.mdx) decision 13 (the flag's sun and moon in the sidebar), and the
+  names *Use* and *Maintain*, with the paths `use/` and `maintain/`, wherever an earlier ADR writes them
+- **Superseded by:** —
+- **Design documents:** [`../app-flow/guide-switch.mdx`](../app-flow/guide-switch.mdx),
+  [`../app-flow/docs-sidebars.mdx`](../app-flow/docs-sidebars.mdx), `DESIGN.md`,
+  [`../architecture/system.mdx`](../architecture/system.mdx)
+
+## Context
+
+- Every entry has two tracks, `use/` and `maintain/`, shown as *Use* and *Maintain* (ADR-0013 decision 2).
+- In the sidebar the switch between them is two icon-only buttons, a sun and a moon, with the tooltips "Use, the day
+  side" and "Maintain, the night side" (`src/components/docs/track-switch.tsx`; ADR-0018 decision 1, ADR-0037
+  decision 13). The owner reported on 2026-11-14 that it reads as a light and dark theme switch. The real theme
+  switch is in the header of the same page.
+- The owner also reported that *Use* and *Maintain* are unclear as names throughout the site. Neither says who the
+  pages are for.
+- The site is new. It holds two entries: this site's own, `docs`, and `nepali-number`, committed on 2026-11-14.
+  The owner chose to rename everything now, addresses and folders included, and to carry
+  no technical debt for the old names.
+- The search index is replaced whole on each publish (`replaceAllObjects` in Fumadocs' Algolia `sync`), so no record
+  of an old address survives the next deploy.
+
+## Decision
+
+1. **The two tracks are the User guide and the Maintainer guide.** These names replace *Use* and *Maintain*
+   everywhere a reader sees them: the sidebar, the scale strip, the planet header, the home page's cards and its
+   *Two sides* section, the invented private projects, share images, page titles, `llms.txt` and search fields.
+   In running text they are written "User guide" and "Maintainer guide".
+
+2. **Folders and URLs take the same words.** Every entry has `content/<slug>/user-guide/` and
+   `content/<slug>/maintainer-guide/`, published at `/<slug>/user-guide/…` and `/<slug>/maintainer-guide/…`.
+   Version lines, `dev`, `latest` and a project's per-repository folders keep their shape inside them
+   (`user-guide/<line>/`, `user-guide/<id>/`, `maintainer-guide/<id>/`). This site's own decisions and design
+   documents move to `content/docs/maintainer-guide/`, at `/docs/maintainer-guide`.
+
+3. **The code uses the same words.** The track keys are `'user-guide'` and `'maintainer-guide'`. One module,
+   `src/lib/tracks.ts`, holds each track's segment and name; every other file reads it, and no file writes the
+   strings again. Identifiers follow: `userGuideUrl`, `maintainerGuideUrl`.
+
+4. **Old addresses are not redirected.** `/<slug>/use/…` and `/<slug>/maintain/…` get the out-of-orbit 404, like
+   any unknown path (ADR-0034). The sitemap and the search index carry only the new addresses.
+
+5. **The sidebar switch is two named segments.** The planet chip takes the first row of the sidebar alone. Under
+   it, a full-width control holds two equal segments, *User guide* and *Maintainer guide*, each a link with its
+   name always visible. The current guide's segment is filled and carries `aria-current="page"`. There is no icon
+   and no tooltip. The `nav` is labelled "Guide". An entry with one guide shows no switch. On the overview the
+   default guide is marked current, as today (ADR-0025). The sun and moon icons leave `track-switch.tsx`.
+
+6. **Only the header's theme switch shows a sun or a moon as a control.** The moon picker's phases stay: they
+   name version lines, beside each line's name.
+
+7. **The home page keeps its picture of two sides.** *Two sides of every planet* still draws a day side and a
+   night side, now titled *User guide* and *Maintainer guide*. It describes the site and is not a control. The
+   owner confirmed this on 2026-11-14.
+
+8. **Approved ADRs keep their text.** They move with the folder and still say *Use*, *Maintain*, `use/` and
+   `maintain/`, read as the names of their time. Only a link that the move breaks is repointed. The header line
+   *Superseded by* of ADR-0013, ADR-0018 and ADR-0037 names this ADR.
+
+9. **The working agreement follows in the same change.** `AGENTS.md`, `PROJECT_AGENTS.md`, `README.md`,
+   `CONTRIBUTING.md`, `.github/`, `DESIGN.md`, `PRODUCT.md`, every `nepal-dev-*` skill, the templates and every
+   living design document use the new names and paths. Wireframes that draw the sun and moon switch are redrawn,
+   in Mermaid and in Archify.
+
+## Options considered
+
+| Option | Pros | Cons | Verdict |
+|---|---|---|---|
+| Names: A — User guide / Maintainer guide | Parallel; each says who it is for; reads alone in a breadcrumb or a card | The longest pair | Chosen (owner) |
+| Names: B — User guide / For maintainers | The owner's first wording | Not parallel; odd as a place name in the scale strip | Rejected |
+| Names: C — Guide / Internals | Short | Says less about the reader; *Guide* is vague beside guide pages | Rejected |
+| Names: D — Using / Contributing | Close to today's | *Contributing* suggests a CONTRIBUTING page; private projects have maintainers | Rejected |
+| Switch: A — two named segments, text only | Nothing looks like a theme switch; names always visible; works without hover | Takes a row of its own | Chosen (owner) |
+| Switch: B — text with new icons (book, wrench) | A second cue | New marks outside the solar-system set | Rejected |
+| Switch: C — keep the sun and moon, add text | Smallest change; keeps the tie to the flag | A sun beside a moon still reads as a theme switch | Rejected |
+| Scope: A — visible names only | No link breaks; consuming repositories move nothing | Folders and URLs keep the unclear names; a label table to keep in step | Rejected |
+| Scope: B — names and URLs, folders stay | Clear addresses | A mapping from folder to URL, with code and tests | Rejected |
+| Scope: C — names, URLs, folders and code | One name everywhere; nothing to map | Every entry's content moves; every consuming repository follows | Chosen (owner) |
+| Segments: A — `user-guide` / `maintainer-guide` | The same words as the names | Longer URLs | Chosen (owner) |
+| Segments: B — `guide` / `maintainers` | Shorter | Segment and name differ | Rejected |
+| Segments: C — `users` / `maintainers` | Short, parallel | Segment and name differ; reads less naturally | Rejected |
+| Old URLs: A — 404 | No redirect code to carry | A shared or indexed link to `/docs/maintain/…` breaks | Chosen (owner) |
+| Old URLs: B — permanent redirects in the proxy | Nothing shared breaks | Code and tests kept for two names nobody writes again | Rejected |
+| Approved ADRs: A — text stays, broken links repointed | Decisions stay as approved | They show the old names | Chosen (owner) |
+| Approved ADRs: B — a second one-time rewording, as in ADR-0038 | One vocabulary on every page | Rewrites approved decisions again; ADR-0038 named its rewording the single exception | Rejected |
+
+## Consequences
+
+**Positive**
+
+- A reader can tell which guide is for them from its name alone, in the sidebar, an address or a search result.
+- The sidebar has no control that looks like the theme switch.
+- One name in the folder, the URL, the label and the code.
+
+**Negative / accepted trade-offs**
+
+- Every published address under a `use/` or `maintain/` segment changes and the old ones return 404. Published is permanent
+  (§9): copies of the old pages elsewhere keep the old addresses.
+- Every consuming repository renames its two folders in `content/<slug>/` and updates any link it holds to this
+  site. `content/nepali-number/` is renamed in this change; the `nepali-number-js` repository's own files are the
+  owner's to update.
+- The planet row grows from one row to two, so the sidebar's first page sits about 44px lower.
+- The sidebar no longer repeats the flag's sun and moon.
+- Approved ADRs and the living documents use different names for the same thing.
+- The change is wide. A search on 2026-11-14 for the old names and paths matched about 70 of the 115 pages under
+  `content/docs/`, about 30 source and test files, all 9 `nepal-dev-*` skills and about 45 diagram sources.
+
+## Content invariants
+
+- **Private stays private (1):** not touched. No private content is added, and no surface changes what it publishes.
+- **Every page is readable as Markdown (5):** kept. The Markdown route and `llms.txt` follow the folders, so
+  they serve the new addresses; their labels use the new names.
+- Invariants 2, 3 and 4 are not touched.
+
+## Security considerations
+
+No new data, endpoint, secret or third party. The proxy's known paths are rebuilt from the renamed folders, so
+the old addresses fall through to the 404 rule already there (ADR-0034); no new rule is added. `CODEOWNERS` and
+any path filter in `.github/` are checked so that review still covers the moved folders. The search index is
+replaced whole on the next publish, so it holds no record pointing at an old address. Residual risk accepted:
+links to the old addresses break.
+
+## Implementation notes
+
+- [ ] `src/lib/tracks.ts`, pure and tested: the two tracks, each with its segment and name; a lookup by segment.
+- [ ] Rename the keys and identifiers in `src/lib/catalog-schema.ts`, `catalog-plugin.ts`, `catalog.ts`,
+      `catalog-routes.ts`, `known-paths.ts`, `overview-sidebar.ts`, `scale-strip.ts`, `search-scope.ts`,
+      `remark-diagrams.ts`, `publish-env.ts`, `src/app/og/[...slug]/route.tsx`, the docs layout and page, and
+      their tests.
+- [ ] `src/components/docs/track-switch.tsx`: the two named segments; the sun and moon removed. `site.css`: the
+      chip on its own row, the segmented control, the tooltip styles removed.
+- [ ] Names on screen: `scale-strip.tsx`, `package-hero.tsx`, `home/planet-cards.tsx`, `home/two-sides.tsx`,
+      `home/private-projects.ts`, `src/app/(home)/page.tsx`.
+- [ ] Move `content/docs/use/` (if present) and `content/docs/maintain/` to `user-guide/` and
+      `maintainer-guide/`; the same for `content/nepali-number/`. Fix every link the move breaks.
+- [ ] Redraw the wireframes and flows that show the old switch or the old names, Mermaid and Archify together
+      (`diagrams/docs/`, `diagrams/nepali-number/`).
+- [ ] Tests — the happy path **and** the obvious failure paths (ADR-0007): a track resolved from its segment, an
+      unknown segment refused, `/<slug>/use/…` and `/<slug>/maintain/…` answered with the 404, the switch's
+      current segment on a guide page and on the overview, no switch for a one-guide entry, the scale strip's and
+      the share image's names. `track-switch.tsx` is a client component and is not unit-tested (ADR-0021); its
+      rules are tested in `overview-sidebar.ts` and `tracks.ts`, and the control is checked in the built site.
+- [ ] `bun run test`, `bun run types:check` and `bunx next build` pass; `bun run lint` is run and its known
+      failure reported.
+
+## Docs to update on implementation
+
+- [ ] `content/docs/maintainer-guide/app-flow/guide-switch.mdx` — status Current
+- [ ] `content/docs/maintainer-guide/app-flow/` — `docs-sidebars.mdx`, `one-open-station.mdx`,
+      `overview-sidebar.mdx`, `package-navigation.mdx`, `sidebar-scale-ladder.mdx`, `site-pages.mdx`,
+      `solar-system.mdx`, `home-page.mdx` and any other that names or draws the tracks
+- [ ] `content/docs/maintainer-guide/architecture/system.mdx` and the other living design documents — names and paths
+- [ ] `content/docs/maintainer-guide/_templates/` — paths
+- [ ] `DESIGN.md` (*The Places, Not Controls Rule*, the planet row), `PRODUCT.md`
+- [ ] `AGENTS.md`, `PROJECT_AGENTS.md`, `README.md`, `CONTRIBUTING.md`, `.github/`
+- [ ] `.agent-skills/nepal-dev-*/SKILL.md`, `.agent-skills/INDEX.md`
+- [ ] ADR-0013, ADR-0018 and ADR-0037 — the *Superseded by* line
+- [ ] `content/docs/maintainer-guide/adr/index.mdx` — index row + status

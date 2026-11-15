@@ -38,7 +38,7 @@
     {
       "id": "day",
       "type": "backend",
-      "label": "☀ Use v0.1",
+      "label": "☀ User guide v0.1",
       "pos": [
         40,
         130
@@ -52,7 +52,7 @@
     {
       "id": "night",
       "type": "backend",
-      "label": "☾ Maintain — Releasing",
+      "label": "☾ Maintainer guide — Releasing",
       "pos": [
         264,
         130

@@ -1,0 +1,252 @@
+---
+title: "Utils"
+description: "Clean, detect, validate, pad and round Nepali and English digit strings with normalize, detectNumberSystem, isValidNumber, validateNepaliNumber, padZeros and roundNepali."
+---
+
+> Every output below was produced by running the built package.
+
+Cleaning, detecting, validating, padding and rounding.
+
+## Exports
+
+| Export | Signature | Returns |
+|---|---|---|
+| `normalize` | `(input: string) => string` | Input with whitespace removed and repeated `,` / `.` collapsed |
+| `detectNumberSystem` | `(input: string) => NumberSystem` | `"english"`, `"nepali"`, `"mixed"` or `"none"` |
+| `isValidNumber` | `(input: string) => boolean` | Whether input is a number in either script |
+| `validateNepaliNumber` | `(input: string) => boolean` | Whether input is a number written in Nepali digits |
+| `isNepaliDigit` | `(char: string) => boolean` | Whether `char` is one Nepali digit |
+| `isEnglishDigit` | `(char: string) => boolean` | Whether `char` is one English digit |
+| `isMixedNumber` | `(input: string) => boolean` | Whether input has both digit systems |
+| `padZeros` | `(number: NumericInput, length: number, options?: PadOptions) => string` | Left-padded with zeros |
+| `roundNepali` | `(number: NumericInput, decimals?: number) => string` | Rounded, fixed decimals, Nepali digits |
+
+---
+
+## `normalize(input)`
+
+Cleans up typed input: trims, removes **all** whitespace, and collapses runs of commas or
+decimal points into one. It does not convert digits and does not validate.
+
+```ts
+normalize(input: string): string
+```
+
+```ts
+import { normalize } from "nepali-number"
+
+normalize("  १२३  ४५६  ")     // → "१२३४५६"
+normalize("1,,234..5")        // → "1,234.5"
+normalize("१ २ ३")            // → "१२३"
+normalize("")                 // → ""
+```
+
+---
+
+## `detectNumberSystem(input)`
+
+Reports which digit systems appear anywhere in the input.
+
+```ts
+detectNumberSystem(input: string): NumberSystem
+```
+
+**Returns.** `"mixed"` when both appear, `"nepali"` or `"english"` when one does, and `"none"`
+when the input has no digits.
+
+```ts
+import { detectNumberSystem } from "nepali-number"
+
+detectNumberSystem("123")         // → "english"
+detectNumberSystem("१२३")         // → "nepali"
+detectNumberSystem("12३४")        // → "mixed"
+detectNumberSystem("Price 25")    // → "english"
+detectNumberSystem("abc")         // → "none"
+detectNumberSystem("")            // → "none"
+```
+
+---
+
+## `isValidNumber(input)`
+
+Checks whether the **whole** string is a number, in English, Nepali or mixed digits, by the rules
+in [how a number is read](./conversion.mdx#how-a-number-is-read): an optional sign, digits, at
+most one `.`, with commas and spaces between the integer digits ignored.
+
+```ts
+isValidNumber(input: string): boolean
+```
+
+```ts
+import { isValidNumber } from "nepali-number"
+
+isValidNumber("123")          // → true
+isValidNumber("१२३")          // → true
+isValidNumber("12३")          // → true
+isValidNumber("-1,234.5")     // → true
+isValidNumber(".५")           // → true
+isValidNumber("")             // → false
+isValidNumber("abc")          // → false
+isValidNumber("12abc")        // → false
+isValidNumber("1.2.3")        // → false
+```
+
+**Notes.** Any string this accepts is read by every number-reading function in the package, and
+any string it rejects gets that function's invalid-input result.
+
+---
+
+## `validateNepaliNumber(input)`
+
+Checks whether the whole string is a number written in **Nepali digits**: the same rules as
+[`isValidNumber`](#isvalidnumberinput), with English digits refused.
+
+```ts
+validateNepaliNumber(input: string): boolean
+```
+
+```ts
+import { validateNepaliNumber } from "nepali-number"
+
+validateNepaliNumber("१२३")          // → true
+validateNepaliNumber("१२३.४५")       // → true
+validateNepaliNumber("१,२३४")        // → true
+validateNepaliNumber(" १२ ")         // → true
+validateNepaliNumber("-१२३")         // → true
+validateNepaliNumber("+१२")          // → true
+validateNepaliNumber(".५")           // → true
+validateNepaliNumber("१२.")          // → true
+validateNepaliNumber("१२.३.४")       // → false    two decimal points
+validateNepaliNumber("१२abc")        // → false
+validateNepaliNumber("123")          // → false    English digits
+validateNepaliNumber(".")            // → false
+validateNepaliNumber("")             // → false
+```
+
+**Notes.** Runs in time proportional to the input length.
+
+---
+
+## `isNepaliDigit(char)`
+
+```ts
+isNepaliDigit(char: string): boolean
+```
+
+**Returns.** `true` only when `char` is exactly one character and that character is `०`–`९`.
+
+```ts
+import { isNepaliDigit } from "nepali-number"
+
+isNepaliDigit("५")    // → true
+isNepaliDigit("५६")   // → false
+isNepaliDigit("5")    // → false
+isNepaliDigit("a")    // → false
+isNepaliDigit("")     // → false
+```
+
+---
+
+## `isEnglishDigit(char)`
+
+```ts
+isEnglishDigit(char: string): boolean
+```
+
+**Returns.** `true` only when `char` is exactly one character and that character is `0`–`9`.
+
+```ts
+import { isEnglishDigit } from "nepali-number"
+
+isEnglishDigit("5")    // → true
+isEnglishDigit("56")   // → false
+isEnglishDigit("5a")   // → false
+isEnglishDigit(" 5")   // → false
+isEnglishDigit("५")    // → false
+isEnglishDigit("")     // → false
+```
+
+---
+
+## `isMixedNumber(input)`
+
+```ts
+isMixedNumber(input: string): boolean
+```
+
+```ts
+import { isMixedNumber } from "nepali-number"
+
+isMixedNumber("12३४")    // → true
+isMixedNumber("123")     // → false
+isMixedNumber("१२३")     // → false
+isMixedNumber("abc")     // → false
+isMixedNumber("")        // → false
+```
+
+---
+
+## `padZeros(number, length, options?)`
+
+Left-pads a number with zeros to `length` characters. A minus sign stays in front of the zeros
+and counts toward the length.
+
+```ts
+padZeros(number: NumericInput, length: number, options?: PadOptions): string
+```
+
+| Parameter | Type | Default | Notes |
+|---|---|---|---|
+| `number` | `number \| bigint \| string` | — | The sign and the decimal point count as characters |
+| `length` | `number` | — | Target length, at most 1000. Input already this long or longer is not truncated. A value that is not a finite integer adds no padding |
+| `options.useNepaliDigits` | `boolean` | `true` | `false` pads with `0` and keeps English digits |
+
+**Returns.** The padded string. Invalid input returns `""`.
+
+```ts
+import { padZeros } from "nepali-number"
+
+padZeros(42, 5)                              // → "०००४२"
+padZeros("१२", 4)                            // → "००१२"
+padZeros(5, 3)                               // → "००५"
+padZeros(-5, 4)                              // → "-००५"
+padZeros(1.5, 5)                             // → "००१.५"
+padZeros(12345, 3)                           // → "१२३४५"
+padZeros(5, 0)                               // → "५"
+padZeros(5, 3, { useNepaliDigits: false })   // → "005"
+padZeros("abc", 5)                           // → ""
+```
+
+---
+
+## `roundNepali(number, decimals?)`
+
+Rounds to a fixed number of decimals and returns Nepali digits, **without** grouping commas.
+
+```ts
+roundNepali(number: NumericInput, decimals?: number): string
+```
+
+| Parameter | Type | Default | Notes |
+|---|---|---|---|
+| `number` | `number \| bigint \| string` | — | Grouped input is accepted |
+| `decimals` | `number` | `2` | Always shown, trailing zeros kept. A value that is not an integer from 0 to 100 is read as `2` |
+
+**Returns.** The rounded string. Invalid input returns `""`.
+
+```ts
+import { roundNepali } from "nepali-number"
+
+roundNepali(3.14159)            // → "३.१४"
+roundNepali(3.14159, 4)         // → "३.१४१६"
+roundNepali(1.005)              // → "१.०१"
+roundNepali("१२.३४५", 1)        // → "१२.३"
+roundNepali("१,२३४.५६७")        // → "१२३४.५७"
+roundNepali(2.5, 0)             // → "३"
+roundNepali(-2.5, 0)            // → "-३"
+roundNepali(0)                  // → "०.००"
+roundNepali("abc")              // → ""
+```
+
+**Notes.** Rounding is half away from zero on the decimal digits as written
+([how a number is read](./conversion.mdx#how-a-number-is-read)).

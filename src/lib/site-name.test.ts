@@ -110,7 +110,7 @@ describe('the site name (ADR-0036)', () => {
   });
 
   describe('the reworded ADRs (ADR-0038)', () => {
-    const adrFolder = 'content/docs/maintain/adr';
+    const adrFolder = 'content/docs/maintainer-guide/adr';
     const adrs = readdirSync(join(root, adrFolder))
       .filter((name) => /^ADR-\d{4}-/.test(name))
       .sort();

@@ -7,7 +7,7 @@ import { remarkLLMs } from 'fumadocs-core/mdx-plugins/remark-llms';
 import { markdownFilter, remarkDiagrams } from './remark-diagrams';
 
 // The same parse as the site's MDX pipeline: Markdown with MDX syntax.
-async function check(value: string, path = '/repo/content/example-cli/use/dev/internals.mdx') {
+async function check(value: string, path = '/repo/content/example-cli/user-guide/dev/internals.mdx') {
   const processor = unified().use(remarkParse).use(remarkMdx).use(remarkDiagrams);
   const file = new VFile({ value, path });
   await processor.run(processor.parse(file), file);
@@ -45,7 +45,7 @@ describe('remarkDiagrams', () => {
   });
 
   test('templates may keep a bare fence', async () => {
-    await expect(check(`${fence}\n`, '/repo/content/docs/maintain/_templates/sequence.mdx')).resolves.toBeUndefined();
+    await expect(check(`${fence}\n`, '/repo/content/docs/maintainer-guide/_templates/sequence.mdx')).resolves.toBeUndefined();
   });
 
   test('a <Diagram> without a fence, with two, or with other content fails', async () => {

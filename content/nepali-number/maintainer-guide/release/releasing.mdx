@@ -1,0 +1,115 @@
+---
+title: "Releasing"
+description: "What nepali-number's CI and release workflows run, the gaps that stop automated publishing today, and the manual release checklist."
+---
+
+- **Status:** Current
+- **Last updated:** 2026-11-15
+- **Related ADRs:** [ADR-0005](../adr/ADR-0005-security-as-a-standing-practice.mdx), [ADR-0008](../adr/ADR-0008-public-api-changes-ship-their-reference.mdx), [ADR-0019](../adr/ADR-0019-add-github-community-files-dependabot-and-codeql.mdx)
+
+> Snapshot of the process as it stands today. Edit in place; never record what changed.
+
+## Flow
+
+<Diagram src="/diagrams/nepali-number/release-flow.html" title="Release flow">
+
+```mermaid
+flowchart LR
+  W["Working tree<br/>(agent or owner)"] -->|owner commits,<br/>Conventional Commit| B["Branch / PR"]
+  B -->|push or PR| CI["CI workflow<br/>type-check · test · build<br/>Node 20 / 22 / 24"]
+  CI --> PKG["test-package job<br/>npm pack · install · require"]
+  B -->|merge| M["main · beta · alpha"]
+  M --> CI2["CI on the branch"]
+  CI2 -->|success| R["Release workflow<br/>bun run release"]
+  R --> NPM["npm + GitHub release + tag"]
+```
+
+</Diagram>
+
+## CI — `.github/workflows/ci.yml`
+
+Runs on every push and on pull requests (opened, synchronised, reopened). Newer runs on the
+same ref cancel older ones.
+
+| Job | Steps |
+|---|---|
+| `quality` (Node 20, 22, 24 on `ubuntu-latest`) | Bun `latest` · `bun install --frozen-lockfile` · `bun run type-check` · `bun run test` · Codecov upload (Node 24 only, `CODECOV_TOKEN`, fails the job on upload error) · `bun run build` |
+| `test-package` (after `quality`) | Build · `npm pack` · install the tarball into a fresh project · `require("nepali-number")` and call `toNepali`, `toEnglish`, `formatNepaliNumber` |
+
+## CodeQL — `.github/workflows/codeql.yml`
+
+Runs on a pull request to `main`, on a push to `main`, and every Monday at 03:17 UTC. It scans the
+TypeScript and the workflows without building, and uploads the findings to the repository's
+*Security* tab. Permissions: `contents: read`, and `security-events: write` on the job. Its actions
+are pinned to commit SHAs. It is not named **CI**, so it never starts a release
+([ADR-0019](../adr/ADR-0019-add-github-community-files-dependabot-and-codeql.mdx)).
+
+## Dependency updates — `.github/dependabot.yml`
+
+Every Monday Dependabot opens at most a few pull requests: one for minor and patch updates of the
+dev dependencies, one for each `tsdown` update, one for the GitHub Actions. A version is proposed
+once it is 7 days old; a security update is not delayed. `@types/bun` is ignored and moves by hand
+with the Bun version. Commits are prefixed `chore(deps)`, so they change no version number.
+
+Nothing merges by itself. The owner reviews the lockfile diff and merges. A minor or patch update
+of a dependency or action already in use needs no ADR; a major version, and any `tsdown` 0.x
+minor, does. CI on these pull requests reads `CODECOV_TOKEN` from the Dependabot secrets
+([secrets](../security/secrets.mdx)).
+
+## Release — `.github/workflows/release.yml`
+
+Triggered by `workflow_run` when the **CI** workflow completes on `main`, `beta` or `alpha`.
+One release per branch at a time; an in-progress release is never cancelled. Permissions:
+`contents: write`. It checks out, sets up Node 20 and Bun, installs, and runs
+**`bun run release`** with `GITHUB_TOKEN`.
+
+## Current gaps
+
+These are observed facts about the repository today. Fixing any of them is a CI/release
+tooling change and needs an ADR (`AGENTS.md` §2).
+
+1. **There is no `release` script.** `package.json` defines `build`, `dev`, `test`,
+   `type-check`, `clean` and `clean:fresh`. `bun run release` fails, so the workflow cannot
+   publish.
+2. **The workflow runs on any completed CI run**, including failed ones. `workflow_run` with
+   `types: [completed]` fires for every conclusion; the job has no
+   `if: github.event.workflow_run.conclusion == 'success'` guard.
+3. **It checks out the default ref, not the commit CI tested.** `actions/checkout` without
+   `ref: ${{ github.event.workflow_run.head_sha }}` checks out the latest default-branch commit
+   for a `workflow_run` event.
+4. **No npm credential or provenance is configured.** There is no `NPM_TOKEN` in the workflow
+   and no `id-token: write` permission for npm trusted publishing.
+5. **npm and git disagree.** npm's `latest` is **1.0.3** (published 2019-08-25); no 2.x has
+   been published. `package.json` on `main` says `2.0.0`. Tags `v2.0.1` and `v2.1.0` exist (the
+   latter also on `origin`) on "chore: bump version" commits that are **not** on `main`.
+
+## Manual release checklist
+
+Until the workflow is complete, a release is the owner's manual step:
+
+- [ ] `main` is green in CI.
+- [ ] The audit in the [release security checklist](../security/checklist.mdx) passes.
+- [ ] `npm pack --dry-run` lists only `dist/*`, `package.json`, `README.md`, `LICENSE`.
+- [ ] `README.md` and the API reference in `user-guide/dev/api/` match the build.
+- [ ] Version bumped according to [versioning](./versioning.mdx); tag and GitHub release
+      notes written from the Conventional Commits since the last tag.
+
+## The documentation's part of a release
+
+The User guide has one folder per version line in the documentation submodule,
+`content/nepali-number/user-guide/`. `dev/` describes unreleased work on `main`; `v2/` is the line
+marked `latest`. A released line keeps describing its version: only mistakes are corrected in
+it, and new behaviour is written in `dev/`.
+
+When a version is released, following the submodule's `nepal-dev-project-versions` skill:
+
+- [ ] Copy `user-guide/dev/` to a new line folder.
+- [ ] In the new folder's `meta.json`, set its `name`, its `version` (the released version) and
+      `channel: "latest"`.
+- [ ] In the previous `latest` line's `meta.json`, set `channel: "legacy"`.
+- [ ] In `user-guide/dev/meta.json`, set the next `version`, and keep working in `dev/`.
+- [ ] The owner commits and pushes the submodule, then commits the moved pointer in this
+      repository. Pushing the submodule's `main` publishes the site at once.
+
+Whether a minor or patch release gets a line of its own, or replaces the line of its major, is
+the owner's call at release time.

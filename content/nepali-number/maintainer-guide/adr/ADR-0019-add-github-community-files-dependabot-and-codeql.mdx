@@ -1,0 +1,263 @@
+---
+title: "ADR-0019 — Add GitHub community files, Dependabot and CodeQL"
+description: "nepali-number gains a contributing guide, code of conduct, security policy, issue forms, a pull request template, code owners, funding and citation files, weekly Dependabot updates and CodeQL scanning."
+---
+
+- **Status:** Approved
+- **Date:** 2026-11-15
+- **Deciders:** [@puncoz](https://github.com/puncoz)
+- **Approved by:** [@puncoz](https://github.com/puncoz)
+- **Approved on:** 2026-11-15
+- **Supersedes:** —
+- **Superseded by:** —
+- **Semver impact:** none. Nothing in `dist/` changes. `package.json` changes only its `homepage`,
+  `repository` and `bugs` addresses (decision 9), which npm shows on the package page with the next
+  release.
+- **Design documents:** [`../security/index.mdx`](../security/index.mdx),
+  [`../security/threat-model.mdx`](../security/threat-model.mdx),
+  [`../security/secrets.mdx`](../security/secrets.mdx),
+  [`../release/releasing.mdx`](../release/releasing.mdx), `README.md`, `AGENTS.md`,
+  `docs/agent-skills/nepali-number-stack-and-map/SKILL.md`,
+  `docs/agent-skills/nepali-number-security-check/SKILL.md`
+
+## Context
+
+- The repository holds `LICENSE` (MIT), `README.md` and two workflows, `ci.yml` and `release.yml`.
+  It has no contributing guide, code of conduct, security policy, issue or pull request template,
+  code owners file, or dependency automation. GitHub's community profile lists most of these as
+  missing.
+- How to contribute is a section of `README.md`: the ADR gate in one paragraph, the setup
+  commands, the `src/` tree and a line on reporting security issues. The rules themselves are in
+  `AGENTS.md`, which a first-time contributor is unlikely to open.
+- A vulnerability is reported by email to `info@puncoz.com` (`README.md` and
+  [`../security/index.mdx`](../security/index.mdx)). GitHub shows no *Report a vulnerability*
+  button, because the repository has no `SECURITY.md`.
+- The four dev dependencies and the actions in both workflows move by hand. The threat model
+  records two gaps: `@types/bun` is `latest`, and actions are pinned to a major version, not a
+  commit.
+- The documentation repository, `nepal-dev-com/docs.nepal-dev.com`, already has this set:
+  `CONTRIBUTING.md`, `CODE_OF_CONDUCT.md` (Contributor Covenant 2.1), `SECURITY.md`, `CODEOWNERS`,
+  three issue forms, a pull request template, `dependabot.yml` and `codeql.yml`. They were read on
+  2026-11-15 and are the model for the files below.
+- The repository moved on 2026-11-15 from `puncoz-official/nepali-number-js` to
+  **`nepal-dev-com/nepali-number-js`**. The owner develops in a fork under
+  [@puncoz](https://github.com/puncoz). The old address is written in 18 places: `package.json`,
+  `README.md`, `LICENSE`, and the documentation pages, `meta.json` among them. GitHub redirects it.
+- `ci.yml` uploads coverage with `secrets.CODECOV_TOKEN` and `fail_ci_if_error: true`. GitHub does
+  not give Actions secrets to a run started by Dependabot; it reads Dependabot's own secrets.
+
+The owner chose the options marked *Chosen* below on 2026-11-15, before this ADR was written.
+
+## Decision
+
+### 1. Community files
+
+| File | Holds |
+|---|---|
+| `CONTRIBUTING.md` | Ways to contribute; the ADR gate and what needs one; setup and the three checks; that Nepali spelling and wording questions are asked, never guessed; how a pull request is reviewed and merged; working with an AI agent (`AGENTS.md`); the licence of a contribution (MIT). It takes over the setup commands and the `src/` tree from `README.md`. |
+| `CODE_OF_CONDUCT.md` | Contributor Covenant 2.1, unchanged. Reports go to [@puncoz](https://github.com/puncoz) through the contact on that GitHub profile, as in the documentation repository. |
+| `SECURITY.md` | Decision 2. |
+| `SUPPORT.md` | Where to go: the documentation, then **GitHub Discussions** for a usage question, an issue form for a bug or a proposal, `SECURITY.md` for a vulnerability. |
+| `CITATION.cff` | CFF 1.2.0. Title `nepali-number`, type `software`, one author as an entity named **`nepal-dev.com`** with website `https://nepal-dev.com`, licence MIT, the repository and documentation addresses. No `version` and no `date-released`: a field nobody bumps at release would go stale. |
+| `.github/CODEOWNERS` | `* @puncoz`. |
+| `.github/FUNDING.yml` | `github: [puncoz]`. |
+| `.github/PULL_REQUEST_TEMPLATE.md` | What changes; the ADR, or why none is needed; a checklist: ADR approved, API reference and semver decision when a consumer can see the change, tests for the happy path and the obvious failures, documents updated, `bun run type-check`, `bun run test` and `bun run build` pass. |
+| `.github/ISSUE_TEMPLATE/bug.yml` | A function returns something other than what the reference says: the call, the output, the expected output, package version, runtime. Label `bug`. |
+| `.github/ISSUE_TEMPLATE/language.yml` | A Nepali word, spelling, ordinal or scale name is wrong or has a better form: the output today, the proposed output, a source. Label `language`. Says that a changed output is a breaking change and starts with an ADR. |
+| `.github/ISSUE_TEMPLATE/proposal.yml` | A new function, option or domain: the problem, the proposal, other options. Label `proposal`. Says that it starts with an ADR, not a pull request. |
+| `.github/ISSUE_TEMPLATE/docs.yml` | A page is wrong, unclear or missing: the page, what is wrong, what it should say. Label `documentation`. |
+| `.github/ISSUE_TEMPLATE/config.yml` | `blank_issues_enabled: false`; contact links to the security policy, to Discussions for questions, and to the documentation. |
+
+`LICENSE` keeps its text and its copyright holder. Only its repository address changes (decision 9).
+
+`README.md` keeps a short *Contributing* section that links to `CONTRIBUTING.md`,
+`CODE_OF_CONDUCT.md` and `SECURITY.md`.
+
+### 2. A vulnerability is reported through GitHub, with email as the fallback
+
+`SECURITY.md` says: never in a public issue, discussion or pull request. Report through GitHub's
+private vulnerability reporting at
+`https://github.com/nepal-dev-com/nepali-number-js/security/advisories/new`. If that page is not
+available, email `info@puncoz.com`. It lists what to report (a hang or crash on crafted input, a
+compromised release or dependency, a secret in the repository), what to include, what happens
+next, with no promise of response times, and the supported versions: the latest release on npm.
+
+`README.md` and [`../security/index.mdx`](../security/index.mdx) say the same.
+
+### 3. Dependabot, weekly
+
+`.github/dependabot.yml`, on the documentation repository's settings:
+
+- **`bun`**, directory `/`: weekly on Monday, a 7-day cooldown, one group for minor and patch
+  updates, commit prefix `chore(deps)`, label `dependencies`.
+  - `@types/bun` is ignored: it moves by hand with the Bun version in CI.
+  - `tsdown` is left out of the group, so each of its updates arrives alone. It is pre-1.0, and a
+    0.x minor can change the build.
+- **`github-actions`**, directory `/`: weekly on Monday, a 7-day cooldown, one group, the same
+  prefix and label.
+
+Security updates are not delayed by the cooldown. Nothing merges by itself.
+
+### 4. Which upgrades this ADR approves
+
+A minor or patch upgrade of a dependency already in `package.json`, or of an action a workflow
+already uses, is approved by this ADR as a class. The owner still reviews the lockfile diff and
+merges by hand.
+
+These still need their own ADR: a new dependency; a major version; any `tsdown` 0.x minor.
+
+The first row of the per-change table in `nepali-number-security-check` is reworded to say so.
+
+### 5. CodeQL
+
+`.github/workflows/codeql.yml`: languages `javascript-typescript` and `actions`,
+`build-mode: none`; on a pull request to `main`, a push to `main`, and weekly. Workflow permission
+`contents: read`; the job adds `security-events: write` to upload results, and nothing else. The
+checkout does not keep credentials. Actions are pinned to a commit, with the version in a comment:
+
+| Action | Commit | Version |
+|---|---|---|
+| `actions/checkout` | `3d3c42e5aac5ba805825da76410c181273ba90b1` | v7.0.1 |
+| `github/codeql-action/init` and `/analyze` | `33d7b85da1a04171e211befe2c739303b9a4c066` | v4.39.3 |
+
+Both commits were read from the actions' repositories with `git ls-remote` on 2026-11-15.
+
+`release.yml` runs after the workflow named `CI` only, so this workflow never starts a release.
+
+### 6. `ci.yml` and `release.yml` do not change
+
+Their pins stay on major versions. Moving them to commits, and the release gaps, are their own
+decisions. Dependabot will propose their updates as pull requests.
+
+### 7. Settings the owner changes on GitHub
+
+Files cannot do these. Each is needed for a file above to work:
+
+| Setting on `nepal-dev-com/nepali-number-js` | Needed by |
+|---|---|
+| Enable *Private vulnerability reporting* | `SECURITY.md` |
+| Enable *Discussions* | `SUPPORT.md`, `config.yml` |
+| Add `CODECOV_TOKEN` as a **Dependabot** secret | CI on a Dependabot pull request; without it the coverage upload fails the run |
+| Create the labels `language`, `proposal`, `dependencies` (`bug`, `documentation` and `question` exist by default) | Issue forms, Dependabot |
+| GitHub Sponsors is set up on [@puncoz](https://github.com/puncoz) | `FUNDING.yml` |
+| Code scanning is allowed for the repository | `codeql.yml` |
+
+### 8. A test checks the files
+
+`src/community-files.test.ts`, in the manner of `src/agent-docs.test.ts`: each file in decision 1
+exists; each issue form, `config.yml`, `dependabot.yml`, `FUNDING.yml` and `CITATION.cff` parses as
+YAML with `Bun.YAML.parse` (present in the installed Bun 1.4.4); each form has a `name`, a
+`description` and a `body`; relative links in the root Markdown files resolve; no file names the
+old repository address. The check is a function that takes a root folder, so the failure cases run
+on fixtures.
+
+### 9. Every address names the repository's new home
+
+`puncoz-official/nepali-number-js` becomes `nepal-dev-com/nepali-number-js` in `package.json`
+(`homepage`, `repository`, `bugs`), `README.md`, `LICENSE`, the living documentation pages and the catalogue entry `meta.json`.
+Approved ADRs are left as written; their links still resolve through GitHub's redirect.
+
+The *Related packages* links in `README.md` name other repositories and are not touched.
+
+## Options considered
+
+| Option | Pros | Cons | Verdict |
+|---|---|---|---|
+| **Files** A — the documentation repository's set, plus `SUPPORT.md`, `FUNDING.yml`, `CITATION.cff` | Both repositories read the same way; the community profile is complete | Thirteen files to keep true | **Chosen** |
+| B — the documentation repository's set only | Fewer files | No named place for questions, no Sponsor button | Rejected |
+| C — `CONTRIBUTING.md`, `SECURITY.md`, one bug form, the pull request template | Least upkeep | No code of conduct or code owners | Rejected |
+| **Automation** A — Dependabot and CodeQL | Updates arrive reviewed and grouped; the workflows and the code are scanned | One more workflow and two more actions to keep pinned | **Chosen** |
+| B — Dependabot only | The package has no runtime dependencies, so CodeQL finds little | Workflow mistakes go unscanned | Rejected |
+| C — none | Nothing to maintain | Dependencies and actions keep moving by hand | Rejected |
+| **Reporting** A — GitHub private report, email fallback | A report becomes a draft advisory; the email still works | The owner must enable the setting | **Chosen** |
+| B — email only | Nothing to enable | Reports arrive outside GitHub | Rejected |
+| C — GitHub only | One channel | A reporter without a GitHub account has none | Rejected |
+| **Conduct** A — Covenant 2.1, GitHub profile contact | One code of conduct across both repositories | The contact is one step from the file | **Chosen** |
+| B — Covenant 2.1, `info@puncoz.com` | The contact is in the file | The address is published in one more place | Rejected |
+| **Questions** A — GitHub Discussions | Issues stay for bugs and proposals | The owner must enable Discussions | **Chosen** |
+| B — a *Question* issue form | Nothing to enable | Questions mix with bugs | Rejected |
+| **Citation author** A — the entity `nepal-dev.com` | Names the owner of the repository | Differs from the copyright holder in `LICENSE`, Puncoz Nepal | **Chosen** |
+| B — the entity `Puncoz Nepal` | Matches `package.json` and `LICENSE` | Names the maintainer, not the owner | Rejected |
+| **Upgrades** A — minor and patch covered, majors and `tsdown` 0.x minors need an ADR | Routine updates need no paperwork; a breaking tool change is still decided | Two rules to remember | **Chosen** |
+| B — every Dependabot upgrade covered | Least paperwork | A breaking build-tool change arrives without a decision | Rejected |
+| C — security updates only | The existing rule stays whole | Versions drift | Rejected |
+| **Old address** A — update every living file in this change | No file sends a reader through a redirect | Touches `package.json` and eight pages | **Chosen** |
+| B — new files only; the rest later | Smaller change | Two addresses in one repository | Rejected |
+
+## Consequences
+
+**Positive**
+
+- A first-time contributor meets the ADR gate in `CONTRIBUTING.md`, in an issue form and in the
+  pull request template, before writing code.
+- A wrong Nepali word has its own form, which asks for a source.
+- A vulnerability has a private channel inside GitHub.
+- Dependency and action updates arrive weekly, grouped, at least a week old.
+
+**Negative / accepted trade-offs**
+
+- Fifteen new files. The contributing rules are now written in `AGENTS.md` and summarised in
+  `CONTRIBUTING.md`; the summary links to `AGENTS.md` for each rule and restates none in full.
+- Six settings depend on the owner (decision 7). Until each is set, the file that needs it points
+  at a page that is not there, or CI fails on a Dependabot pull request.
+- `codeql.yml` pins to commits while `ci.yml` and `release.yml` pin to majors.
+- Unverified: whether a pull request from a fork passes the Codecov step in `ci.yml` without the
+  token. This ADR does not change that step.
+
+**For consumers**
+
+- No export, output or type changes. The npm page shows the new repository address after the next
+  release.
+
+## Package invariants
+
+None is touched. No runtime dependency and no dev dependency is added. Nothing under `src/` changes
+except one new test file. `files` stays `["dist"]`, so none of the new files is published.
+
+## Security considerations
+
+- **Reporting.** Private vulnerability reporting shows a report to repository administrators only.
+  The fallback address is already public in `README.md`.
+- **CodeQL workflow.** `contents: read` for the workflow; the job's one write is
+  `security-events`. No secret is read. The checkout drops its credentials. Both actions are
+  GitHub's own and pinned to a commit. A pull request from a fork runs with a read-only token and
+  cannot upload results; that is GitHub's default and is accepted.
+- **Dependabot.** It opens pull requests and merges nothing. Its runs read Dependabot secrets
+  only, so adding `CODECOV_TOKEN` there exposes a token that can upload coverage and nothing else
+  ([secrets](../security/secrets.mdx)). The 7-day cooldown keeps a release that was published and
+  withdrawn within days from being proposed.
+- **Upgrades without an ADR** (decision 4) widen what merges without a recorded decision. The
+  control is the owner's review of the lockfile diff, and the exclusion of majors and of `tsdown`.
+- **Issue forms.** Each says not to paste secrets and sends security problems to the policy.
+  Blank issues are off.
+- **`CODEOWNERS`** requests a review; it enforces nothing until branch protection requires it.
+  Branch protection is not part of this ADR.
+- **Tarball.** Unchanged; checked with `npm pack --dry-run`.
+- The new test reads files with fixed paths under the repository root and runs no regular
+  expression on untrusted input.
+
+## Implementation notes
+
+- [ ] The thirteen community files of decision 1.
+- [ ] `.github/dependabot.yml` and `.github/workflows/codeql.yml`.
+- [ ] `README.md`: the short *Contributing* section; the new reporting text.
+- [ ] The repository address in `package.json`, `README.md`, `LICENSE` and the living pages.
+- [ ] `src/community-files.test.ts`, with fixtures for a missing file, a form that does not
+      parse, a form without a `body`, a broken link and the old address.
+- [ ] `npm pack --dry-run` lists only `dist/`, `package.json`, `README.md`, `LICENSE`.
+- [ ] `bun run type-check`, `bun run test` and `bun run build` pass.
+- [ ] Hand the owner the list of settings in decision 7.
+
+## Docs to update on implementation
+
+- [ ] [`../security/index.mdx`](../security/index.mdx): how to report.
+- [ ] [`../security/threat-model.mdx`](../security/threat-model.mdx): the dev-dependency and
+      action rows name Dependabot and CodeQL.
+- [ ] [`../security/secrets.mdx`](../security/secrets.mdx): `CODECOV_TOKEN` as a Dependabot secret.
+- [ ] [`../release/releasing.mdx`](../release/releasing.mdx): the CodeQL workflow and Dependabot's
+      pull requests.
+- [ ] [`../index.mdx`](../index.mdx): *Contributing?* points to `CONTRIBUTING.md`.
+- [ ] `AGENTS.md` §10 and `nepali-number-stack-and-map`: the repository map and the CI row.
+- [ ] `nepali-number-security-check`: the dependency row (decision 4).
+- [ ] [`./index.mdx`](./index.mdx): this ADR's row and status.
+- [ ] Proposed commit message: `chore(repo): add community files, Dependabot and CodeQL`

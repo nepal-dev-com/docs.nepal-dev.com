@@ -1,0 +1,94 @@
+---
+title: "ADR-0009 — Hold the package invariants: zero dependencies, environment-agnostic, pure, non-throwing"
+description: "The constraints every nepali-number change keeps: zero dependencies, no host globals, pure functions, no throwing, and one-way module layering."
+---
+
+- **Status:** Approved
+- **Date:** 2026-10-30
+- **Deciders:** [@puncoz](https://github.com/puncoz)
+- **Approved by:** [@puncoz](https://github.com/puncoz)
+- **Approved on:** 2026-11-14
+- **Supersedes:** —
+- **Superseded by:** —
+- **Semver impact:** none (records existing constraints)
+- **Design documents:** `AGENTS.md` §6, `docs/architecture/system.md`
+
+## Context
+
+The previous `AGENTS.md` listed a set of non-negotiable constraints — zero runtime
+dependencies, no environment-specific APIs, strict TypeScript, pure functions, no throwing,
+explicit return types, Unicode safety. They were stated as rules but never recorded as a
+decision, and some of them did not match the code:
+
+- "Input normalisation via `normalize()` at the top of every function" — no function does this.
+- "Importing a domain from another domain is a pitfall" — the code does it throughout
+  (`words` imports `formatting` and `utils`; `currency` imports `formatting` and `words`;
+  `utils` imports `formatting`), in one direction, with no cycles.
+- "No throwing" — true for every value of the declared parameter types; `null` and
+  `undefined`, which the types exclude, throw in `toNepali`, `toEnglish`,
+  `formatNepaliNumber`, `normalize` and others.
+
+This ADR records the invariants that actually hold, so they can be relied on and so departing
+from one is a visible decision.
+
+## Decision
+
+The invariants in `AGENTS.md` §6 hold for every change:
+
+1. **Zero runtime dependencies.** `dependencies` and `peerDependencies` stay empty.
+2. **Environment-agnostic.** No host globals (`window`, `document`, `process`, `Buffer`, `fs`, …)
+   in `src/`.
+3. **Pure and stateless.** No module-level mutable state, no import side effects, no classes in
+   the public API.
+4. **No throwing for declared input types.** Invalid content returns a documented safe default.
+   Values outside the declared types (`null`, `undefined`, objects) are not part of the contract;
+   accepting them is a minor-version decision (ADR-0008).
+5. **Output strings are the contract** (ADR-0008).
+6. **Language data lives in `src/constants.ts`.**
+7. **Unicode-aware string handling** — explicit `[०-९]` ranges, never `\d` for Nepali digits.
+8. **Small and tree-shakeable** — named exports only, no default export.
+
+And one structural rule: **domain dependencies point one way** —
+`constants` ← `conversion` ← `formatting` ← `utils` ← `words` ← `currency` — with no cycles,
+as drawn in [`docs/architecture/system.md`](../architecture/system.mdx).
+
+## Options considered
+
+| Option | Pros | Cons | Verdict |
+|---|---|---|---|
+| A — Record the invariants that hold, and the actual layering | Rules match the code; departures are visible | Drops two rules the old file stated | Chosen |
+| B — Keep the old rules and refactor the code to match | Stricter isolation between domains | Large refactor for no consumer benefit; `words` genuinely needs `formatting` | Rejected |
+| C — No recorded invariants | No overhead | Agents re-derive or violate them | Rejected |
+
+## Consequences
+
+**Positive**
+
+- An agent can rely on §6 being true of the current code.
+
+**Negative / accepted trade-offs**
+
+- Domains are not independently extractable. Accepted: they ship as one small bundle.
+
+**For consumers**
+
+- None; this records the current behaviour.
+
+## Package invariants
+
+This ADR defines them.
+
+## Security considerations
+
+Zero runtime dependencies and no host globals are the package's main supply-chain and
+capability controls (ADR-0005).
+
+## Implementation notes
+
+- [ ] `AGENTS.md` §6 lists the invariants; §5 the layering.
+- [ ] `docs/architecture/system.md` draws the layering.
+- Tests: not applicable (records existing constraints).
+
+## Docs to update on implementation
+
+- [ ] `docs/adr/README.md` — status.

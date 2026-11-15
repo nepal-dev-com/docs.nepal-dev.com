@@ -3,14 +3,14 @@ import { renderToStaticMarkup } from 'react-dom/server';
 import { Diagram } from './diagram';
 import { presentHref } from './diagram-frame';
 
-// Runs from the repository root, where diagrams/docs/site-pages.html is committed (903 × 1024).
+// Runs from the repository root, where diagrams/docs/site-pages.html is committed (1021 × 1024).
 const src = '/diagrams/docs/site-pages.html';
 
 test('a sandboxed, lazy frame sized from the viewBox, with the caption and full-screen link', () => {
   const html = renderToStaticMarkup(<Diagram src={src} title="Site pages" />);
   expect(html).toContain(`<iframe src="${src}?frame=1&amp;theme=dark" title="Site pages" sandbox="allow-scripts allow-downloads" loading="lazy" allow="fullscreen"`);
   expect(html).not.toContain('allow-same-origin');
-  expect(html).toContain(`--diagram-ratio:${1024 / 903}`);
+  expect(html).toContain(`--diagram-ratio:${1024 / 1021}`);
   expect(html).toContain(`<a href="${src}?theme=dark">Open full screen`);
   expect(html).toContain('<span>Site pages</span>');
   expect(html).not.toContain('data-wide');

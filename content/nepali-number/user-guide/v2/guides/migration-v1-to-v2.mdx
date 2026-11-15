@@ -1,0 +1,96 @@
+---
+title: "Migrating from v1 to v2"
+description: "Replace each nepali-number v1 function with its v2 equivalent, with the renamed calls and changed outputs side by side."
+---
+
+> v2 outputs below were produced by running the v2 build; v1 outputs are quoted from the
+> v1.0.3 README.
+
+v2 is a rewrite. Every v1 function was renamed or replaced, the `locale` string arguments are
+gone, and many new functions were added. There is no compatibility layer.
+
+## What changed
+
+| | v1 (1.0.3) | v2 |
+|---|---|---|
+| Exports | 6 functions | 21 functions in 5 domains |
+| Digit choice | A `locale` argument: `"en"` (default) or `"ne"` | `useNepaliDigits` option, **default `true`** |
+| Formatting engine | `Intl.NumberFormat` | Own implementation, no `Intl` |
+| International grouping (`123,456,789`) | `englishNumberFormat` | Not provided |
+| Invalid locale / type | Throws `TypeError` | Nothing throws for declared input types |
+| Builds | CJS + ESM | ESM, CJS, UMD, IIFE + `.d.ts` / `.d.cts` |
+
+## Function by function
+
+### `englishToNepaliNumber` → `toNepali`
+
+```ts
+// v1
+englishToNepaliNumber("12,34,56,789.01")   // "१२,३४,५६,७८९.०१"
+
+// v2
+toNepali("12,34,56,789.01")                // → "१२,३४,५६,७८९.०१"
+```
+
+### `nepaliToEnglishNumber` → `toEnglish`
+
+```ts
+// v1
+nepaliToEnglishNumber("१२,३४,५६,७८९.०१")   // "12,34,56,789.01"
+
+// v2
+toEnglish("१२,३४,५६,७८९.०१")               // → "12,34,56,789.01"
+```
+
+### `nepaliNumberFormat` → `formatNepaliNumber`
+
+v1 defaulted to **English** digits; v2 defaults to **Nepali** digits.
+
+```ts
+// v1
+nepaliNumberFormat("123456789")            // "12,34,56,789"
+nepaliNumberFormat("123456789", "ne")      // "१२,३४,५६,७८९"
+
+// v2
+formatNepaliNumber("123456789", { useNepaliDigits: false })   // → "12,34,56,789"
+formatNepaliNumber("123456789")                               // → "१२,३४,५६,७८९"
+```
+
+### `nepaliAmountFormat` → `formatNepaliNumber` with `precision`, or `toNepaliCurrency`
+
+```ts
+// v1
+nepaliAmountFormat("123456789.0154")          // "12,34,56,789.02"
+nepaliAmountFormat("123456789.0154", 3, "ne") // "१२,३४,५६,७८९.०१५"
+
+// v2
+formatNepaliNumber("123456789.0154", { useNepaliDigits: false })  // → "12,34,56,789.02"
+formatNepaliNumber("123456789.0154", { precision: 3 })            // → "१२,३४,५६,७८९.०१५"
+toNepaliCurrency(123456789.0154)                                  // → "रू १२,३४,५६,७८९.०२"
+```
+
+`formatNepaliNumber` drops an all-zero decimal part by default (`1000` → `"१,०००"`); pass
+`trimZero: false` to keep it.
+
+### `englishNumberFormat` / `englishAmountFormat` → no direct equivalent
+
+v2 formats only in the Nepali (lakh/crore) system. For international grouping, use the
+platform and convert the digits:
+
+```ts
+import { toNepali } from "nepali-number"
+
+const intl = new Intl.NumberFormat("en-US", { maximumFractionDigits: 2 })
+
+intl.format(123456789)              // → "123,456,789"
+toNepali(intl.format(123456789))    // → "१२३,४५६,७८९"
+```
+
+## Checklist
+
+- [ ] Replace each import using the table above.
+- [ ] Wherever v1 relied on the default `"en"` locale, pass `{ useNepaliDigits: false }`.
+- [ ] Remove `try`/`catch` around v1 calls that guarded the `TypeError` for an invalid locale.
+- [ ] Re-check snapshot tests: trimmed `.00`, and Nepali digits by default.
+- [ ] Read [limitations](../api/limitations.mdx) — especially comma-grouped string input to
+      `formatNepaliNumber`.

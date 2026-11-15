@@ -1,9 +1,7 @@
 import type { LoaderPlugin } from 'fumadocs-core/source';
 import type * as PageTree from 'fumadocs-core/page-tree';
 import type { CatalogMeta, Channel } from './catalog-schema';
-
-export const trackNames = ['use', 'maintain'] as const;
-export type TrackName = (typeof trackNames)[number];
+import { maintainerGuide, trackSegments, userGuide } from './tracks';
 
 export const devLine = 'dev';
 
@@ -57,15 +55,15 @@ export interface LineInfo {
  */
 export function lineSlugs(path: string, slugs: string[], getMeta: (path: string) => CatalogMeta | undefined): string[] {
   const [slug, track, folder, ...rest] = path.split('/');
-  if (track !== 'use' || !folder || rest.length === 0) {
+  if (track !== userGuide || !folder || rest.length === 0) {
     return slugs;
   }
-  const info = lineInfo(folder, getMeta(`${slug}/use/${folder}/meta.json`));
+  const info = lineInfo(folder, getMeta(`${slug}/${userGuide}/${folder}/meta.json`));
   return info ? [...slugs.slice(0, 2), info.segment, ...slugs.slice(3)] : slugs;
 }
 
 /**
- * The version line a Use folder holds, or undefined when its `meta.json` doesn't make it one.
+ * The version line a User guide folder holds, or undefined when its `meta.json` doesn't make it one.
  */
 export function lineInfo(folder: string, meta: CatalogMeta | undefined): LineInfo | undefined {
   if (!meta?.version || !meta.channel) {
@@ -77,7 +75,7 @@ export function lineInfo(folder: string, meta: CatalogMeta | undefined): LineInf
 }
 
 /**
- * Version-menu order: latest, dev, then older lines in `use/meta.json`'s `pages` order, or newest
+ * Version-menu order: latest, dev, then older lines in `user-guide/meta.json`'s `pages` order, or newest
  * version first when it doesn't list them.
  */
 export function compareLines(
@@ -145,7 +143,7 @@ export function checkCatalogue(files: string[], read: (path: string) => CatalogM
 
     const lineMetas = metas.filter((meta) => {
       const parts = meta.path.split('/');
-      return parts.length === 4 && parts[0] === slug && parts[1] === 'use';
+      return parts.length === 4 && parts[0] === slug && parts[1] === userGuide;
     });
     const declared = lineMetas.filter(
       (line) => line.data.version !== undefined || line.data.channel !== undefined || line.data.name !== undefined,
@@ -162,10 +160,10 @@ export function checkCatalogue(files: string[], read: (path: string) => CatalogM
         problems.push(`${at}: a version line needs \`channel\``);
       }
       if (line.data.channel === 'dev' && folder !== devLine) {
-        problems.push(`${at}: only \`use/dev/\` has \`channel: "dev"\``);
+        problems.push(`${at}: only \`${userGuide}/dev/\` has \`channel: "dev"\``);
       }
       if (folder === devLine && line.data.channel !== undefined && line.data.channel !== 'dev') {
-        problems.push(`${at}: \`use/dev/\` is the work-in-progress line and has \`channel: "dev"\``);
+        problems.push(`${at}: \`${userGuide}/dev/\` is the work-in-progress line and has \`channel: "dev"\``);
       }
       const info = lineInfo(folder, line.data);
       if (!info) {
@@ -186,8 +184,8 @@ export function checkCatalogue(files: string[], read: (path: string) => CatalogM
     if (lines.length > 0) {
       for (const file of files) {
         const parts = file.split('/');
-        if (parts.length === 3 && parts[0] === slug && parts[1] === 'use' && file.endsWith('.mdx')) {
-          problems.push(`content/${file}: a versioned package's \`use/\` holds only version lines`);
+        if (parts.length === 3 && parts[0] === slug && parts[1] === userGuide && file.endsWith('.mdx')) {
+          problems.push(`content/${file}: a versioned package's \`${userGuide}/\` holds only version lines`);
         }
       }
     }
@@ -255,17 +253,17 @@ export function catalogPlugin(): LoaderPlugin {
           return node;
         }
 
-        if (parts.length === 2 && (trackNames as readonly string[]).includes(parts[1])) {
+        if (parts.length === 2 && (trackSegments as readonly string[]).includes(parts[1])) {
           // Typed roots: the sidebar shows only the current track and line, and Fumadocs groups
           // same-typed roots into one switcher that keeps the reader on the same page.
           node.root = 'track';
-          if (parts[1] === 'use') {
+          if (parts[1] === userGuide) {
             sortLines(node, (path) => readMeta(this.storage, path), readMeta(this.storage, `${folderPath}/meta.json`));
           }
           return node;
         }
 
-        if (parts.length === 3 && parts[1] === 'use') {
+        if (parts.length === 3 && parts[1] === userGuide) {
           const info = lineInfo(parts[2], readMeta(this.storage, `${folderPath}/meta.json`));
           if (info) {
             node.root = 'line';
@@ -297,12 +295,12 @@ export function isOverviewItem(node: PageTree.Node | undefined): boolean {
 
 function trackRank(node: PageTree.Node): number {
   const track = node.type === 'folder' && node.root === 'track' ? node.$ref?.folder.split('/').pop() : undefined;
-  return track === 'use' ? 0 : track === 'maintain' ? 1 : 2;
+  return track === userGuide ? 0 : track === maintainerGuide ? 1 : 2;
 }
 
 /**
- * Moves each entry's overview into its tracks: an *Overview* item first in every Use line (or an
- * unversioned Use) and in Maintain, with Use first, so Fumadocs resolves the overview into its
+ * Moves each entry's overview into its tracks: an *Overview* item first in every User guide line (or an
+ * unversioned User guide) and in the Maintainer guide, with the User guide first, so Fumadocs resolves the overview into its
  * default track and shows that track's sidebar (ADR-0025).
  */
 export function overviewInTracks(root: PageTree.Root): PageTree.Root {
@@ -383,16 +381,16 @@ export function withoutOverviewItems(root: PageTree.Root): PageTree.Root {
 
 /**
  * The repository's name for a repository folder without its own title: `<slug>/<track>/<id>`, or
- * `<slug>/use/<line>/<id>` in a project with lines (ADR-0024 decision 2).
+ * `<slug>/user-guide/<line>/<id>` in a project with lines (ADR-0024 decision 2).
  */
 export function repositoryName(folderPath: string, read: (path: string) => CatalogMeta | undefined): string | undefined {
   const parts = folderPath.split('/');
   const [slug, track] = parts;
   const repositories = read(`${slug}/meta.json`)?.catalog?.repositories;
-  if (!repositories || !(trackNames as readonly string[]).includes(track)) {
+  if (!repositories || !(trackSegments as readonly string[]).includes(track)) {
     return undefined;
   }
-  const inLine = parts.length === 4 && track === 'use' && lineInfo(parts[2], read(`${slug}/use/${parts[2]}/meta.json`));
+  const inLine = parts.length === 4 && track === userGuide && lineInfo(parts[2], read(`${slug}/${userGuide}/${parts[2]}/meta.json`));
   if (parts.length !== 3 && !inLine) {
     return undefined;
   }
@@ -436,7 +434,7 @@ export interface PageVersion {
 }
 
 /**
- * The version line a page belongs to, from its file path (`<slug>/use/<folder>/…`) and that
+ * The version line a page belongs to, from its file path (`<slug>/user-guide/<folder>/…`) and that
  * folder's `meta.json`.
  */
 export function pageVersion(
@@ -444,11 +442,11 @@ export function pageVersion(
   getMeta: (path: string) => CatalogMeta | undefined,
 ): PageVersion | undefined {
   const [slug, track, folder, ...rest] = path.split('/');
-  if (track !== 'use' || !folder || rest.length === 0) {
+  if (track !== userGuide || !folder || rest.length === 0) {
     return undefined;
   }
   const root = getMeta(`${slug}/meta.json`);
-  const info = lineInfo(folder, getMeta(`${slug}/use/${folder}/meta.json`));
+  const info = lineInfo(folder, getMeta(`${slug}/${userGuide}/${folder}/meta.json`));
   if (!root?.catalog || !info) {
     return undefined;
   }

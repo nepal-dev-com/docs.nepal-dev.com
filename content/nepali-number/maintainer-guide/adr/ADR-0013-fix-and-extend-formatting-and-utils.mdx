@@ -1,0 +1,280 @@
+---
+title: "ADR-0013 — Fix and extend formatting and utils"
+description: "Formatting and utils read numbers exactly, fix the documented limitations, run in linear time, and gain international grouping, a sign option, formatPercent and isValidNumber."
+---
+
+- **Status:** Approved
+- **Date:** 2026-11-14
+- **Deciders:** [@puncoz](https://github.com/puncoz)
+- **Approved by:** [@puncoz](https://github.com/puncoz)
+- **Approved on:** 2026-11-14
+- **Supersedes:** —
+- **Superseded by:** —
+- **Semver impact:** major — absorbed by the unreleased 2.0.0 (owner decision, 2026-11-14)
+- **Design documents:** [`user-guide/dev/api/formatting.mdx`](../../user-guide/dev/api/formatting.mdx),
+  [`user-guide/dev/api/utils.mdx`](../../user-guide/dev/api/utils.mdx),
+  `user-guide/dev/api/types.mdx`, `user-guide/dev/api/limitations.mdx`
+
+## Context
+
+[ADR-0012](./ADR-0012-read-every-number-once-exactly.mdx) gives the package one exact way to
+read a number, one invalid-input rule and one rounding rule. This ADR applies them to the
+`formatting` and `utils` domains, fixes what
+[limitations](../../user-guide/dev/api/limitations.mdx) documents for them, and adds what a
+formatter for this script is expected to have.
+
+Run against the built package today:
+
+| Call | Today | Problem |
+|---|---|---|
+| `formatNepaliNumber("1,234")` | `"१"` | Limitation 2 |
+| `formatNepaliNumber(1234, { currency: true })` | `"१,२३४"` | Limitation 4: `currency` and `currencySymbol` are never read |
+| `formatNepaliNumber(1.5, { precision: -1 })` | throws `RangeError` | Invariant 4 |
+| `addNepaliCommas("१२३४५६७")` | `"१२३४,५६७"` | Limitation 3 |
+| `addNepaliCommas("1,234,567")` | `"1,2,34,,567"` | Already-grouped input is mangled |
+| `addNepaliCommas("abc")` | `"abc"` | Not a number, returned as if grouped |
+| `removeFormatting("abc")` | `0` | Limitation 7 |
+| `padZeros(-5, 4)` | `"००-५"` | Limitation 11 |
+| `padZeros(5, Infinity)` | throws `RangeError` | Invariant 4 |
+| `padZeros("abc", 5)` | `"००abc"` | Not a number |
+| `isNepaliDigit("५६")` | `true` | Limitation 8 |
+| `isEnglishDigit("5a")` | `true` | Limitation 8 |
+| `detectNumberSystem("abc")` | `NaN` | A `number` used as a marker; return type is `NumberSystem \| number` |
+| `validateNepaliNumber("-१२३")` | `false` | Limitation 9 |
+| `roundNepali(1.5, 101)` | throws `RangeError` | Invariant 4 |
+
+`validateNepaliNumber` and `addNepaliCommas` also take time proportional to the square of the
+input length: about 5.5 s and 6.4 s on 100 000 characters (limitation 14).
+
+There is no way today to group in threes, to show a `+`, to format a percentage, or to check
+that an English-digit string is a number.
+
+## Decision
+
+Written on ADR-0012's recommended D1 (invalid → `""` / `NaN` / `false`) and D2 (half away from
+zero), assumed until the owner picks.
+
+### Formatting
+
+```ts
+interface FormatOptions {
+  useNepaliDigits?: boolean                  // true
+  addCommas?: boolean                        // true
+  grouping?: "nepali" | "international"      // "nepali"   — new
+  precision?: number                         // 2
+  trimZero?: boolean                         // true
+  sign?: "auto" | "always"                   // "auto"     — new
+}
+
+interface PercentOptions {
+  useNepaliDigits?: boolean                  // true
+  precision?: number                         // 2
+  trimZero?: boolean                         // true
+  addCommas?: boolean                        // true
+  isRatio?: boolean                          // false
+  symbol?: string                            // "%"
+}
+
+formatNepaliNumber(number: NumericInput, options?: FormatOptions): string
+addNepaliCommas(number: NumericInput, grouping?: "nepali" | "international"): string
+formatPercent(value: NumericInput, options?: PercentOptions): string        // new
+removeFormatting(formattedString: string | number): number
+```
+
+- `FormatOptions.currency` and `FormatOptions.currencySymbol` are **removed**. They were never
+  read.
+- `trimZero` keeps its meaning: it drops the fraction only when it is all zeros.
+- `precision` (and `decimals` in `roundNepali`) that is not an integer from 0 to 100 is read as
+  `2`.
+- `addNepaliCommas` keeps each digit in the script it was written in, replaces existing commas,
+  keeps the fraction as written, and runs in one pass.
+- `removeFormatting` stays a **lenient extractor**: it drops everything except digits, the sign
+  and the dot. It is the one function that reads text that is not wholly a number.
+- `formatPercent` formats like `formatNepaliNumber` and appends `symbol`. With `isRatio` the
+  value is multiplied by 100 exactly, by moving the decimal point.
+
+| Input | Today | After |
+|---|---|---|
+| `formatNepaliNumber("1,234")` | `"१"` | `"१,२३४"` |
+| `formatNepaliNumber(1.005)` | `"१"` | `"१.०१"` |
+| `formatNepaliNumber(-0.001)` | `"-०"` | `"०"` |
+| `formatNepaliNumber("abc")` | `"०"` | `""` |
+| `formatNepaliNumber("")` | `"०"` | `""` |
+| `formatNepaliNumber(NaN)` | `"०"` | `""` |
+| `formatNepaliNumber(Infinity)` | `"Infin,ity"` | `""` |
+| `formatNepaliNumber(1e21)` | `"१e,+२१"` | `"१,००,००,००,००,००,००,००,००,००,०००"` |
+| `formatNepaliNumber(12345678901234567890n)` | throws `TypeError` | `"१,२३,४५,६७,८९,०१,२३,४५,६७,८९०"` |
+| `formatNepaliNumber(1.5, { precision: 101 })` | throws `RangeError` | `"१.५०"` |
+| `formatNepaliNumber(1.5, { precision: 1.5 })` | `"१.५"` | `"१.५०"` |
+| `formatNepaliNumber(1234567)` | `"१२,३४,५६७"` | `"१२,३४,५६७"` |
+| `formatNepaliNumber(1234.5)` | `"१,२३४.५०"` | `"१,२३४.५०"` |
+| `formatNepaliNumber(0, { trimZero: false })` | `"०.००"` | `"०.००"` |
+| `formatNepaliNumber(1234567, { grouping: "international" })` | — | `"१,२३४,५६७"` |
+| `formatNepaliNumber(1234, { sign: "always" })` | — | `"+१,२३४"` |
+| `addNepaliCommas("१२३४५६७")` | `"१२३४,५६७"` | `"१२,३४,५६७"` |
+| `addNepaliCommas("1,234,567")` | `"1,2,34,,567"` | `"12,34,567"` |
+| `addNepaliCommas("abc")` | `"abc"` | `""` |
+| `addNepaliCommas("-1234567.891")` | `"-12,34,567.891"` | `"-12,34,567.891"` |
+| `removeFormatting("abc")` | `0` | `NaN` |
+| `removeFormatting("")` | `0` | `NaN` |
+| `removeFormatting("रू १२,३४,५६७.८९")` | `1234567.89` | `1234567.89` |
+| `formatPercent(12.5)` | — | `"१२.५०%"` |
+| `formatPercent(0.125, { isRatio: true })` | — | `"१२.५०%"` |
+
+### Utils
+
+```ts
+type NumberSystem = "english" | "nepali" | "mixed" | "none"
+interface PadOptions { useNepaliDigits?: boolean }   // true
+
+padZeros(number: NumericInput, length: number, options?: PadOptions): string
+roundNepali(number: NumericInput, decimals?: number): string
+isNepaliDigit(char: string): boolean
+isEnglishDigit(char: string): boolean
+isMixedNumber(input: string): boolean                 // unchanged
+detectNumberSystem(input: string): NumberSystem
+validateNepaliNumber(input: string): boolean
+isValidNumber(input: string): boolean                 // new
+normalize(input: string): string                      // unchanged
+```
+
+- `padZeros` puts the sign first, and the sign counts toward `length`. A `length` that is not a
+  finite integer adds no padding; it is capped at 1000.
+- `isNepaliDigit` and `isEnglishDigit` are `true` only for exactly one character.
+- `detectNumberSystem` returns `"none"` when there are no digits.
+- `validateNepaliNumber` is ADR-0012's string grammar restricted to Nepali digits, so it now
+  allows a leading sign. `isValidNumber` is the same grammar in either script. Both are one pass.
+
+| Input | Today | After |
+|---|---|---|
+| `padZeros(-5, 4)` | `"००-५"` | `"-००५"` |
+| `padZeros(5, Infinity)` | throws `RangeError` | `"५"` |
+| `padZeros(5, 2.5)` | `"०५"` | `"५"` |
+| `padZeros("abc", 5)` | `"००abc"` | `""` |
+| `padZeros("", 3)` | `"०००"` | `""` |
+| `padZeros(42, 5)` | `"०००४२"` | `"०००४२"` |
+| `padZeros(1.5, 5)` | `"००१.५"` | `"००१.५"` |
+| `padZeros(5, 3, { useNepaliDigits: false })` | — | `"005"` |
+| `roundNepali(1.005)` | `"१.००"` | `"१.०१"` |
+| `roundNepali(-2.5, 0)` | `"-२"` | `"-३"` |
+| `roundNepali("abc")` | `"०.००"` | `""` |
+| `roundNepali(1.5, 101)` | throws `RangeError` | `"१.५०"` |
+| `roundNepali(3.14159)` | `"३.१४"` | `"३.१४"` |
+| `isNepaliDigit("५६")` | `true` | `false` |
+| `isEnglishDigit("5a")` | `true` | `false` |
+| `isEnglishDigit(" 5")` | `true` | `false` |
+| `detectNumberSystem("abc")` | `NaN` | `"none"` |
+| `detectNumberSystem("")` | `NaN` | `"none"` |
+| `validateNepaliNumber("-१२३")` | `false` | `true` |
+| `validateNepaliNumber("+१२")` | `false` | `true` |
+| `validateNepaliNumber("123")` | `false` | `false` |
+| `isValidNumber("-1,234.5")` | — | `true` |
+| `isValidNumber("12abc")` | — | `false` |
+
+## Options considered
+
+| Option | Pros | Cons | Verdict |
+|---|---|---|---|
+| A — Fix the existing exports in place and add options to them | One function per job; the documented defaults become correct | Outputs change | Chosen |
+| B — Leave the exports as they are; add `formatNumber`, `groupDigits`, `pad` … beside them | Nothing breaks | Two of everything; the wrong ones stay the obvious names | Rejected (owner chose to fold fixes into 2.0.0) |
+| C — A separate `formatInternationalNumber` instead of a `grouping` option | Discoverable name | Duplicates every option of `formatNepaliNumber` | Rejected |
+| D — Make `removeFormatting` strict too | One rule everywhere | Removes the only way to pull a number out of `"रू १,२३४ मात्र"`; that is its job | Rejected |
+
+### Owner decisions
+
+| Decision | Options (with the actual outputs) | Recommended | Consequence |
+|---|---|---|---|
+| **D1** — `detectNumberSystem` with no digits | **(a)** `detectNumberSystem("abc")` → `"none"`, return type `NumberSystem`. **(b)** Keep `NaN`, return type `NumberSystem \| number`. **(c)** `null`, return type `NumberSystem \| null` | (a) | (a) Every result is a string and a `switch` covers it. Code using `Number.isNaN(result)` must compare with `"none"`. (b) No change, and the odd type stays. (c) Conventional "nothing", but a second kind of value to handle |
+| **D2** — `padZeros` and the sign | **(a)** Sign counts toward the length: `padZeros(-5, 4)` → `"-००५"`. **(b)** Length counts digits only: `padZeros(-5, 4)` → `"-०००५"` | (a) | (a) The result is `length` characters wide, which is what fixed-width output needs. (b) Digit count is constant, width is not |
+| **D3** — Out-of-range `precision` / `decimals` | **(a)** Read as the default: `formatNepaliNumber(1.5, { precision: 101 })` → `"१.५०"`. **(b)** Clamped to the nearest bound: 100 decimals, or `"२"` for `-1`. **(c)** Invalid: `""` | (a) | (a) A bad option never produces a surprising width. (b) Follows the caller's intent more closely, and prints 100 decimals. (c) Punishes a bad option by hiding a good number |
+| **D4** — `addNepaliCommas` on non-numbers | **(a)** `addNepaliCommas("abc")` → `""`. **(b)** Passed through: `"abc"` | (a) | (a) Same invalid rule as everything else. (b) Keeps today's result for text |
+| **D5** — `validateNepaliNumber` and the sign | **(a)** Allowed: `validateNepaliNumber("-१२३")` → `true`. **(b)** Still refused: `false` | (a) | (a) It accepts exactly what the Nepali-digit readers accept. (b) Stays "unsigned only", and limitation 9 stays |
+
+## Consequences
+
+**Positive**
+
+- Limitations 2, 3, 4, 8, 9, 11 and 14 are fixed, and 6, 7, 12 and 13 for these two domains.
+- No function in either domain throws for its declared types.
+- Grouping in threes, an explicit `+`, percentages and a both-script validator exist.
+
+**Negative / accepted trade-offs**
+
+- Two more exports and three new options. The minified build grows; measured at implementation
+  (invariant 8).
+- `removeFormatting` follows a different, lenient rule from every other reader. This is
+  deliberate and documented on its page.
+
+**For consumers**
+
+- Keeps working: valid input with default options, apart from float-rounded cases.
+- Breaks: `FormatOptions.currency` / `currencySymbol` no longer type-check; code comparing
+  `detectNumberSystem` with `NaN`; snapshots of `padZeros` with negatives; code expecting `"०"`
+  or `0` for invalid input.
+- Must change: remove the two dead options; compare with `"none"`; drop the workarounds listed
+  in limitations (they still work, they are no longer needed).
+
+## Package invariants
+
+- **1, 2, 3, 6** — kept.
+- **4** — the `RangeError` cases above are removed.
+- **5** — outputs change as tabled; semver decided by the owner on 2026-11-14.
+- **7** — the scanners match explicit `0-9` and `०-९` code points. `isNepaliDigit` and
+  `isEnglishDigit` count characters with `Array.from`, not `.length`.
+- **8** — named exports only; build size measured at implementation.
+
+No invariant is departed from.
+
+## Security considerations
+
+- **Regular expressions.** The two quadratic expressions (`/^[०-९]*\.?[०-९]*$/` after a global
+  replace in `validateNepaliNumber`, and the look-ahead grouping expression in
+  `addNepaliCommas`) are removed. Both functions become single-pass scanners on top of
+  ADR-0012's reader, with time proportional to the input length.
+- **Hostile input.** Each number-reading export in both domains is tested with a
+  100 000-character string of digits, of commas and of garbage, under a time bound. The current
+  5.5 s and 6.4 s measurements in `maintainer-guide/security/threat-model.mdx` are replaced by
+  the new ones.
+- **Bounded output.** `padZeros` caps `length` at 1000 and `precision` is bounded at 100, so a
+  small input cannot ask for an unbounded string.
+- `removeFormatting` keeps its two simple character-class replacements; neither has nested or
+  overlapping quantifiers. It is included in the hostile-input test.
+- `PercentOptions.symbol` is appended as given and never interpreted. Escaping for HTML stays
+  the caller's job, as with `currencySymbol`.
+- No dependency, no CI or publishing change, no logging.
+
+## Implementation notes
+
+- [ ] Depends on ADR-0012 being approved and implemented first.
+- [ ] `src/formatting/types.ts`: `FormatOptions` (add `grouping`, `sign`; remove `currency`,
+      `currencySymbol`), `PercentOptions`.
+- [ ] `src/formatting/formatting.ts`: `formatNepaliNumber`, `addNepaliCommas`, `formatPercent`,
+      `removeFormatting`, on the digit-string helpers; TSDoc on each.
+- [ ] `src/utils/types.ts`: `NumberSystem` with `"none"`, `PadOptions`.
+- [ ] `src/utils/utils.ts`: `padZeros`, `roundNepali`, `isNepaliDigit`, `isEnglishDigit`,
+      `detectNumberSystem`, `validateNepaliNumber`, `isValidNumber`; TSDoc on each (several lack
+      it today).
+- [ ] `utils` no longer needs `removeFormatting` for `roundNepali`; the import direction is
+      unchanged.
+- [ ] Tests — the happy path **and** the obvious failure paths (ADR-0007): English, Nepali and
+      mixed digits, `bigint`, empty, zero, negative, decimal, ≥ 1 crore, above 2^53, invalid,
+      out-of-range `precision` / `length`, every option, 100 000-character hostile strings.
+- [ ] `bun run type-check`, `bun run test` and `bun run build` pass.
+- [ ] Built CJS loaded with `node`; outputs match `user-guide/dev/api/`.
+
+## Docs to update on implementation
+
+- [ ] `user-guide/dev/api/formatting.mdx`, `user-guide/dev/api/utils.mdx` — replace the
+      "Proposed in" line once every output is checked against the build.
+- [ ] `user-guide/dev/api/types.mdx` — `FormatOptions`, `PercentOptions`, `PadOptions`,
+      `NumberSystem`.
+- [ ] `user-guide/dev/api/index.mdx` — the export table.
+- [ ] `user-guide/dev/api/limitations.mdx` — delete limitations 2, 3, 4, 8, 9, 11 and 14.
+- [ ] `user-guide/dev/guides/migration-v1-to-v2.mdx` and `recipes.mdx`.
+- [ ] `maintainer-guide/security/threat-model.mdx` — the new hostile-input measurements.
+- [ ] `README.md` — API summary, examples.
+- [ ] The `nepali-number-stack-and-map` skill — export count and test count.
+- [ ] `maintainer-guide/adr/index.mdx` — index row + status.
+- [ ] Proposed commit message:
+      `feat!: fix formatting and utils, add grouping, sign, formatPercent and isValidNumber`
+      with a `BREAKING CHANGE:` footer listing the removed options and the changed outputs.

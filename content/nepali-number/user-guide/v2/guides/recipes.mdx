@@ -1,0 +1,142 @@
+---
+title: "Recipes"
+description: "Copy-ready nepali-number solutions for form input, displaying amounts, prices in words, mixed-language text and framework helpers."
+---
+
+> Every output below was produced by running the built package.
+
+Short, copy-ready solutions to common tasks. Each one works around the package's
+[limitations](../api/limitations.mdx) where they apply.
+
+## Read a number a person typed
+
+People type with either keyboard, add spaces and commas, and double a key by accident.
+Normalise, then parse — and tell "zero" apart from "not a number".
+
+```ts
+import { normalize, toEnglish, parseNepaliNumber } from "nepali-number"
+
+function readAmount(raw: string): number | null {
+  const cleaned = toEnglish(normalize(raw)).replace(/,/g, "")
+  if (!/^-?(\d+\.?\d*|\.\d+)$/.test(cleaned)) {
+    return null
+  }
+  return parseNepaliNumber(cleaned)
+}
+
+readAmount(" १२,३४,,५६७ ")   // → 1234567
+readAmount("12३4.5")          // → 1234.5
+readAmount("०")               // → 0
+readAmount("abc")             // → null
+```
+
+## Display an amount
+
+```ts
+import { formatNepaliNumber, toNepaliCurrency, removeFormatting } from "nepali-number"
+
+formatNepaliNumber(1234567.5)                            // → "१२,३४,५६७.५०"
+formatNepaliNumber(1234567.5, { useNepaliDigits: false }) // → "12,34,567.50"
+toNepaliCurrency(1234567.5)                              // → "रू १२,३४,५६७.५०"
+toNepaliCurrency(1234567.5, { showPaisa: false })        // → "रू १२,३४,५६८"
+
+// A value that is already a formatted string: strip it first.
+formatNepaliNumber(removeFormatting("12,34,567"))        // → "१२,३४,५६७"
+```
+
+## Write a cheque or invoice amount in words
+
+```ts
+import { toNepaliCurrencyWords, toEnglishWords } from "nepali-number"
+
+toNepaliCurrencyWords(1250.5)    // → "एक हजार दुई सय पचास रुपैयाँ पचास पैसा"
+
+// English, capitalised, with "only" — composed in your code.
+const words = toEnglishWords(Math.trunc(1250.5))
+const sentence = words.charAt(0).toUpperCase() + words.slice(1) + " rupees only"
+// → "One thousand two hundred fifty rupees only"
+```
+
+## Headline figures
+
+```ts
+import { toDecimalWord } from "nepali-number"
+
+toDecimalWord(1200000)     // → "१२ लाख"
+toDecimalWord(25000000)    // → "२.५० करोड"
+toDecimalWord(1000000000)  // → "१ अर्ब"
+```
+
+## Convert digits inside text
+
+```ts
+import { convert } from "nepali-number"
+
+convert("मेरो उमेर 25 वर्ष छ")                 // → "मेरो उमेर २५ वर्ष छ"
+convert("मेरो तलब रू ५०,०००", false)          // → "मेरो तलब रू 50,000"
+```
+
+## Rank, position, edition
+
+```ts
+import { toNepaliOrdinal } from "nepali-number"
+
+const places = [1, 2, 3, 4, 5].map(toNepaliOrdinal)
+// → ["पहिलो", "दोस्रो", "तेस्रो", "चौथो", "पाँचौं"]
+```
+
+## Zero-padded identifiers
+
+```ts
+import { padZeros } from "nepali-number"
+
+padZeros(42, 5)    // → "०००४२"
+```
+
+## Show digits in the reader's language
+
+A pattern for apps with an English / Nepali switch:
+
+```ts
+import { formatNepaliNumber } from "nepali-number"
+
+type Locale = "en" | "ne"
+
+const formatFor = (locale: Locale, value: number): string =>
+  formatNepaliNumber(value, { useNepaliDigits: locale === "ne" })
+
+formatFor("en", 1234567)   // → "12,34,567"
+formatFor("ne", 1234567)   // → "१२,३४,५६७"
+```
+
+### React
+
+```tsx
+import { formatNepaliNumber } from "nepali-number"
+
+export function Amount({ value, nepali = true }: { value: number; nepali?: boolean }) {
+  return <data value={value}>{formatNepaliNumber(value, { useNepaliDigits: nepali })}</data>
+}
+```
+
+### Vue
+
+```vue
+<script setup lang="ts">
+import { computed } from "vue"
+import { toNepaliCurrency } from "nepali-number"
+
+const props = defineProps<{ amount: number }>()
+const label = computed(() => toNepaliCurrency(props.amount))
+</script>
+
+<template><span>{{ label }}</span></template>
+```
+
+All functions are pure and synchronous, so they are safe in server rendering, React Server
+Components and edge functions.
+
+## See also
+
+- [API reference](../api/index.mdx)
+- [Limitations](../api/limitations.mdx)
