@@ -5,7 +5,7 @@
     "kind": "package",
     "ecosystem": "npm",
     "visibility": "public",
-    "repository": "https://github.com/puncoz-official/nepali-number-js",
+    "repository": "https://github.com/nepal-dev-com/nepali-number-js",
     "registry": "https://www.npmjs.com/package/nepali-number",
     "featured": true
   }

@@ -16,7 +16,7 @@ two declaration files. `package.json` points each kind of consumer at the right 
 
 ## Build
 
-`bun run build` runs `tsdown --clean --dts` with [`tsdown.config.ts`](https://github.com/puncoz-official/nepali-number-js/blob/main/tsdown.config.ts):
+`bun run build` runs `tsdown --clean --dts` with [`tsdown.config.ts`](https://github.com/nepal-dev-com/nepali-number-js/blob/main/tsdown.config.ts):
 
 | Setting | Value | Why it matters |
 |---|---|---|
@@ -98,7 +98,7 @@ object. Each one exposes the same 45 functions.
 
 ## Type-checking
 
-`bun run type-check` runs `tsc --noEmit` over `src` and `tsdown.config.ts`, with [`tsconfig.json`](https://github.com/puncoz-official/nepali-number-js/blob/main/tsconfig.json):
+`bun run type-check` runs `tsc --noEmit` over `src` and `tsdown.config.ts`, with [`tsconfig.json`](https://github.com/nepal-dev-com/nepali-number-js/blob/main/tsconfig.json):
 `strict`, `noUncheckedIndexedAccess`, `noUnusedLocals`, `noUnusedParameters`,
 `noPropertyAccessFromIndexSignature`, `noImplicitOverride`, `noFallthroughCasesInSwitch`,
 `isolatedDeclarations`, `verbatimModuleSyntax`. `tsc` never emits; tsdown does.

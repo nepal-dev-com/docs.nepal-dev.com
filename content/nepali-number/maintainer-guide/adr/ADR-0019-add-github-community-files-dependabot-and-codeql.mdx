@@ -3,11 +3,11 @@ title: "ADR-0019 — Add GitHub community files, Dependabot and CodeQL"
 description: "nepali-number gains a contributing guide, code of conduct, security policy, issue forms, a pull request template, code owners, funding and citation files, weekly Dependabot updates and CodeQL scanning."
 ---
 
-- **Status:** Proposed
+- **Status:** Approved
 - **Date:** 2026-11-15
 - **Deciders:** [@puncoz](https://github.com/puncoz)
-- **Approved by:** —
-- **Approved on:** —
+- **Approved by:** [@puncoz](https://github.com/puncoz)
+- **Approved on:** 2026-11-15
 - **Supersedes:** —
 - **Superseded by:** —
 - **Semver impact:** none. Nothing in `dist/` changes. `package.json` changes only its `homepage`,
@@ -42,7 +42,7 @@ description: "nepali-number gains a contributing guide, code of conduct, securit
 - The repository moved on 2026-11-15 from `puncoz-official/nepali-number-js` to
   **`nepal-dev-com/nepali-number-js`**. The owner develops in a fork under
   [@puncoz](https://github.com/puncoz). The old address is written in 18 places: `package.json`,
-  `README.md`, `LICENSE`, and eight documentation pages. GitHub redirects it.
+  `README.md`, `LICENSE`, and the documentation pages, `meta.json` among them. GitHub redirects it.
 - `ci.yml` uploads coverage with `secrets.CODECOV_TOKEN` and `fail_ci_if_error: true`. GitHub does
   not give Actions secrets to a run started by Dependabot; it reads Dependabot's own secrets.
 
@@ -154,7 +154,7 @@ on fixtures.
 ### 9. Every address names the repository's new home
 
 `puncoz-official/nepali-number-js` becomes `nepal-dev-com/nepali-number-js` in `package.json`
-(`homepage`, `repository`, `bugs`), `README.md`, `LICENSE` and the living documentation pages.
+(`homepage`, `repository`, `bugs`), `README.md`, `LICENSE`, the living documentation pages and the catalogue entry `meta.json`.
 Approved ADRs are left as written; their links still resolve through GitHub's redirect.
 
 The *Related packages* links in `README.md` name other repositories and are not touched.
@@ -181,8 +181,8 @@ The *Related packages* links in `README.md` name other repositories and are not 
 | **Upgrades** A — minor and patch covered, majors and `tsdown` 0.x minors need an ADR | Routine updates need no paperwork; a breaking tool change is still decided | Two rules to remember | **Chosen** |
 | B — every Dependabot upgrade covered | Least paperwork | A breaking build-tool change arrives without a decision | Rejected |
 | C — security updates only | The existing rule stays whole | Versions drift | Rejected |
-| **Old address** A — update every living file in this change | No file sends a reader through a redirect | Touches `package.json` and eight pages | Proposed by the agent |
-| B — new files only; the rest later | Smaller change | Two addresses in one repository | Open to the owner |
+| **Old address** A — update every living file in this change | No file sends a reader through a redirect | Touches `package.json` and eight pages | **Chosen** |
+| B — new files only; the rest later | Smaller change | Two addresses in one repository | Rejected |
 
 ## Consequences
 

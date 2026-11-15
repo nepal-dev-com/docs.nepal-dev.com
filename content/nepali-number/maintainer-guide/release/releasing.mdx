@@ -4,8 +4,8 @@ description: "What nepali-number's CI and release workflows run, the gaps that s
 ---
 
 - **Status:** Current
-- **Last updated:** 2026-10-30
-- **Related ADRs:** [ADR-0005](../adr/ADR-0005-security-as-a-standing-practice.mdx), [ADR-0008](../adr/ADR-0008-public-api-changes-ship-their-reference.mdx)
+- **Last updated:** 2026-11-15
+- **Related ADRs:** [ADR-0005](../adr/ADR-0005-security-as-a-standing-practice.mdx), [ADR-0008](../adr/ADR-0008-public-api-changes-ship-their-reference.mdx), [ADR-0019](../adr/ADR-0019-add-github-community-files-dependabot-and-codeql.mdx)
 
 > Snapshot of the process as it stands today. Edit in place; never record what changed.
 
@@ -35,6 +35,26 @@ same ref cancel older ones.
 |---|---|
 | `quality` (Node 20, 22, 24 on `ubuntu-latest`) | Bun `latest` · `bun install --frozen-lockfile` · `bun run type-check` · `bun run test` · Codecov upload (Node 24 only, `CODECOV_TOKEN`, fails the job on upload error) · `bun run build` |
 | `test-package` (after `quality`) | Build · `npm pack` · install the tarball into a fresh project · `require("nepali-number")` and call `toNepali`, `toEnglish`, `formatNepaliNumber` |
+
+## CodeQL — `.github/workflows/codeql.yml`
+
+Runs on a pull request to `main`, on a push to `main`, and every Monday at 03:17 UTC. It scans the
+TypeScript and the workflows without building, and uploads the findings to the repository's
+*Security* tab. Permissions: `contents: read`, and `security-events: write` on the job. Its actions
+are pinned to commit SHAs. It is not named **CI**, so it never starts a release
+([ADR-0019](../adr/ADR-0019-add-github-community-files-dependabot-and-codeql.mdx)).
+
+## Dependency updates — `.github/dependabot.yml`
+
+Every Monday Dependabot opens at most a few pull requests: one for minor and patch updates of the
+dev dependencies, one for each `tsdown` update, one for the GitHub Actions. A version is proposed
+once it is 7 days old; a security update is not delayed. `@types/bun` is ignored and moves by hand
+with the Bun version. Commits are prefixed `chore(deps)`, so they change no version number.
+
+Nothing merges by itself. The owner reviews the lockfile diff and merges. A minor or patch update
+of a dependency or action already in use needs no ADR; a major version, and any `tsdown` 0.x
+minor, does. CI on these pull requests reads `CODECOV_TOKEN` from the Dependabot secrets
+([secrets](../security/secrets.mdx)).
 
 ## Release — `.github/workflows/release.yml`
 
