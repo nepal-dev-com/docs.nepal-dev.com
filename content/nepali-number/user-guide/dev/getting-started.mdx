@@ -18,6 +18,24 @@ will have converted, formatted and spelled out a number.
   so it also runs in Bun, Deno, browsers, web workers and edge runtimes.
 - **Dependencies.** None. The package adds about 7.5 kB gzipped.
 
+## Or hand it to your coding agent
+
+Paste this into Claude Code, Cursor, Copilot or another coding agent, and change the last line
+to your task. It installs the package and reads the reference before writing code.
+
+```text
+Add the npm package "nepali-number" (version 2) to this project with the package manager the
+project already uses. Before writing code, read
+https://docs.nepal-dev.com/nepali-number/user-guide/latest/api.md and use only the functions it
+lists, imported by name from "nepali-number". If the installed version is 1.x, stop and tell me.
+Invalid input returns NaN or "" and never throws: handle it, and do not assume zero.
+
+My task: show prices in Nepali digits with the rupee symbol on the cart page.
+```
+
+Fuller prompts, rules to keep in your `AGENTS.md`, and where an agent reads these docs are in
+[using an AI coding agent](./guides/ai-agents.mdx).
+
 ## 1. Install
 
 ```bash
@@ -152,4 +170,5 @@ sortNumbers(["१०", 9, "1,000", "२.५"])                     // → ["२.
 ## See also
 
 - [Recipes](./guides/recipes.mdx)
+- [Using an AI coding agent](./guides/ai-agents.mdx)
 - [API reference](./api/index.mdx)

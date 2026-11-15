@@ -3,6 +3,7 @@
   "pages": [
     "index",
     "recipes",
+    "ai-agents",
     "migration-v1-to-v2"
   ]
 }
