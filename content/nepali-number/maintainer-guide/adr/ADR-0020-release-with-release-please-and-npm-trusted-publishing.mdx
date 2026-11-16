@@ -1,0 +1,315 @@
+---
+title: "ADR-0020 — Release with release-please and npm trusted publishing"
+description: "nepali-number's tests, build, changelog, release notes and npm publish run from GitHub Actions: release-please proposes each version in a pull request, and merging it publishes with no stored token."
+---
+
+- **Status:** Approved
+- **Date:** 2026-11-15
+- **Deciders:** [@puncoz](https://github.com/puncoz)
+- **Approved by:** [@puncoz](https://github.com/puncoz)
+- **Approved on:** 2026-11-15
+- **Supersedes:** —
+- **Superseded by:** —
+- **Semver impact:** none for the code: nothing in `dist/` changes. The first release this workflow
+  cuts publishes **2.0.0**, which moves npm's `latest` from 1.0.3 to a breaking major.
+- **Design documents:** [`../release/releasing.mdx`](../release/releasing.mdx),
+  [`../release/versioning.mdx`](../release/versioning.mdx),
+  [`../security/threat-model.mdx`](../security/threat-model.mdx),
+  [`../security/secrets.mdx`](../security/secrets.mdx),
+  [`../security/checklist.mdx`](../security/checklist.mdx), `AGENTS.md`, `CONTRIBUTING.md`,
+  `docs/agent-skills/nepali-number-stack-and-map/SKILL.md`,
+  `docs/agent-skills/nepali-number-security-check/SKILL.md`
+
+## Context
+
+The release workflow cannot publish. [Releasing](../release/releasing.mdx#current-gaps) lists why:
+
+1. `release.yml` runs `bun run release`, and `package.json` has no such script.
+2. It runs after any completed CI run, failed ones included.
+3. It checks out the default branch, not the commit CI tested.
+4. No npm credential and no provenance is configured.
+5. npm's `latest` is **1.0.3**. `package.json` says `2.0.0`. No 2.x was ever published.
+
+Also true today, checked on 2026-11-15:
+
+- **Stale tags.** `v2.0.1` and `v2.1.0` are on "chore: bump version" commits that are not on
+  `main`; `v2.1.0` is also on the owner's fork. The repository `nepal-dev-com/nepali-number-js`
+  holds a tag **`v3.0.0`** on a commit this checkout does not have. None was published to npm.
+  `v1.0.3` is an ancestor of `main`, with 11 commits after it, one of them `feat!:`.
+- `ci.yml` runs on every push and on pull requests, so a pull request from a branch of the
+  repository runs twice. It installs Bun `latest`. Its actions are pinned to major versions. It
+  declares no `permissions:`. The Codecov step fails the job when the token is missing, which is
+  the case for a pull request from a fork.
+- There is no `CHANGELOG.md`. Release notes are written by hand.
+- Commits are Conventional Commits, and [versioning](../release/versioning.mdx) maps each prefix
+  to a bump.
+
+What the tools' documentation says, read on 2026-11-15:
+
+- **npm trusted publishing** needs npm 11.5.1 or later and Node 22.14.0 or later, and the
+  workflow permission `id-token: write`. On npmjs.com the package names the organisation, the
+  repository, the workflow **file name**, and optionally a GitHub environment. A publish from a
+  public repository of a public package gets provenance by default, with no flag and no token.
+  When the publish step is in a workflow started by `workflow_call`, npm checks the calling
+  workflow's name. npm recommends *Require two-factor authentication and disallow tokens* once a
+  trusted publisher is set.
+- **release-please-action** needs `contents: write`, `pull-requests: write` and `issues: write`,
+  and the repository setting *Allow GitHub Actions to create and approve pull requests*. What it
+  creates with `GITHUB_TOKEN` starts no other workflow: CI does not run on its pull request, and
+  a workflow that listens for a release does not start. Its output `release_created` says when a
+  release was made.
+
+The owner chose the tool, the npm authentication, the channel and the first version on
+2026-11-15, before this ADR was written.
+
+## Decision
+
+### 1. How a release happens
+
+1. A pull request passes CI and the owner merges it to `main`.
+2. `release.yml` runs release-please, which opens or updates the release pull request.
+3. The owner merges the release pull request.
+4. `release.yml` runs again: release-please tags the commit and creates the GitHub release.
+5. The `publish` job checks, builds and publishes that tag to npm.
+
+The diagram of this flow is on the [releasing](../release/releasing.mdx) page and is redrawn with
+the implementation.
+
+- Every push to `main` runs release-please. While there are `feat:`, `fix:` or `perf:` commits
+  since the last release, it keeps **one release pull request** open, holding the next version in
+  `package.json` and the new section of `CHANGELOG.md`.
+- **Merging that pull request is the release.** release-please tags `vX.Y.Z` and creates the
+  GitHub release, with the changelog section as its notes. The `publish` job then checks out the
+  tag, runs the checks, builds, and publishes to npm.
+- A commit with only `docs:`, `test:`, `chore:`, `ci:` or `refactor:` opens no release pull request.
+
+### 2. `release.yml`
+
+```yaml
+name: Release
+on:
+  push:
+    branches: [main]
+permissions:
+  contents: read
+concurrency:
+  group: release
+  cancel-in-progress: false
+
+jobs:
+  release-please:
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: write
+      pull-requests: write
+      issues: write
+    outputs:
+      release_created: ${{ steps.release.outputs.release_created }}
+      tag_name: ${{ steps.release.outputs.tag_name }}
+    steps:
+      - id: release
+        uses: googleapis/release-please-action@45996ed1f6d02564a971a2fa1b5860e934307cf7 # v5.0.0
+
+  publish:
+    needs: release-please
+    if: needs.release-please.outputs.release_created == 'true'
+    runs-on: ubuntu-24.04
+    environment: npm
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      # checkout the tag · Node 24 · Bun from .bun-version
+      # bun install --frozen-lockfile · type-check · test · build
+      # npm pack --dry-run · npm publish --access public
+```
+
+- The `publish` job is in this file, not in a called workflow, so npm sees `release.yml`.
+- It builds from the tag and runs every check before `npm publish`. A failed check publishes
+  nothing.
+- A step fails the job when npm is older than 11.5.1.
+- No secret is read. `id-token: write` exists only on the `publish` job, inside the `npm`
+  environment.
+
+### 3. release-please configuration
+
+`release-please-config.json`: release type `node`, one package at the root, tag `vX.Y.Z` without
+the package name, changelog at `CHANGELOG.md`. Sections shown: *Breaking changes*, *Features*,
+*Bug fixes*, *Performance*. Other prefixes are left out of the changelog.
+
+`.release-please-manifest.json`: `{ ".": "1.0.3" }`, the version on npm. With the `feat!:` commit
+since `v1.0.3`, the first release pull request proposes **2.0.0**.
+
+If the first release pull request proposes another number, the owner corrects it with a commit
+whose footer is `Release-As: 2.0.0`. That footer is release-please's documented override; it was
+not tested here.
+
+`CHANGELOG.md` is written by release-please only. Nobody edits it by hand, and it is not a living
+document under ADR-0002: it is the record of releases.
+
+### 4. `ci.yml`
+
+- Runs on a push to `main` and on every pull request. A pull request runs once.
+- `permissions: contents: read`. The checkout keeps no credentials.
+- Bun comes from a new file, `.bun-version`, holding `1.4.4`, the version installed locally. It
+  moves by hand, together with `@types/bun`.
+- The cache step is removed. Four dev dependencies install in seconds, and a cache shared between
+  runs is one more thing a pull request could poison.
+- The Codecov step runs only when the code comes from this repository, so a pull request from a
+  fork passes without the token.
+- `test-package` also imports the packed tarball as an ES module, next to the `require` it does
+  today.
+- Node.js 20, 22 and 24 stay. Dropping one is a major version ([versioning](../release/versioning.mdx)).
+
+### 5. Every action is pinned to a commit
+
+In all three workflows, with the version in a comment. Read with `git ls-remote` on 2026-11-15:
+
+| Action | Commit | Version |
+|---|---|---|
+| `actions/checkout` | `3d3c42e5aac5ba805825da76410c181273ba90b1` | v7.0.1 |
+| `actions/setup-node` | `949feb2413d6458794dcd2491c4babbbce0c15c1` | v7.1.0 |
+| `oven-sh/setup-bun` | `0c5077e51419868618aeaa5fe8019c62421857d6` | v2.2.0 |
+| `codecov/codecov-action` | `303a32d7a59b442fa8d48b6a1cc6825c09c847a5` | v7.1.1 |
+| `googleapis/release-please-action` | `45996ed1f6d02564a971a2fa1b5860e934307cf7` | v5.0.0 |
+
+Dependabot keeps them current (ADR-0019). `ci.yml` moves from `checkout@v5`, `setup-node@v5` and
+`codecov-action@v5` to these majors; each action's release notes are read before the change, and
+a breaking input is reported to the owner.
+
+### 6. One channel
+
+Only `main` releases. `beta` and `alpha` leave the workflow, and the *Pre-releases* section leaves
+[versioning](../release/versioning.mdx). A pre-release channel is its own ADR.
+
+### 7. CI does not run on the release pull request
+
+release-please opens it with `GITHUB_TOKEN`, and GitHub starts no workflow for that. This is
+accepted: the pull request changes only `package.json`'s version, `CHANGELOG.md` and the manifest,
+`main` was tested by the push before it, and the `publish` job runs every check on the tag before
+publishing. When the owner wants CI on it, closing and reopening the pull request starts a run.
+
+### 8. Who edits the version
+
+release-please, in its pull request, and nothing else. Agents and people still never edit
+`version`, `CHANGELOG.md` or `.release-please-manifest.json`, and never run `npm publish`
+(`AGENTS.md` §3).
+
+### 9. What the owner does once
+
+| Where | What |
+|---|---|
+| Git | Delete the tags `v2.0.1`, `v2.1.0` and `v3.0.0`, and any GitHub release made from them, on `nepal-dev-com/nepali-number-js` and on the fork |
+| GitHub → Settings → Actions → General | Allow GitHub Actions to create and approve pull requests |
+| GitHub → Settings → Environments | Create `npm`, limited to the `main` branch. Adding the owner as a required reviewer makes each publish wait for one more approval; that is the owner's choice |
+| npmjs.com → `nepali-number` → Settings → Trusted publisher | GitHub Actions; organisation `nepal-dev-com`; repository `nepali-number-js`; workflow `release.yml`; environment `npm` |
+| npmjs.com, after the first release succeeds | *Require two-factor authentication and disallow tokens* |
+
+### 10. What stays manual
+
+- Merging the release pull request.
+- The documentation's part of a release: copying `user-guide/dev/` to a version line
+  ([releasing](../release/releasing.mdx#the-documentations-part-of-a-release)).
+- The [release security checklist](../security/checklist.mdx), before merging the release pull
+  request.
+
+## Options considered
+
+| Option | Pros | Cons | Verdict |
+|---|---|---|---|
+| **Tool** A — release-please | No dev dependency; the owner sees the version and the changelog before they ship; one action | One click per release; CI does not run on its pull request | **Chosen** |
+| B — semantic-release | No click at all | Several dev dependencies with a few hundred packages behind them; a wrong prefix publishes at once | Rejected |
+| C — Changesets | Changelog text written by the author | Ignores the Conventional Commit prefixes the versioning policy is built on; a dev dependency | Rejected |
+| **npm** A — trusted publishing | No stored token; provenance by default | One-time setup on npmjs.com | **Chosen** |
+| B — `NPM_TOKEN` | Works anywhere | A long-lived secret that can leak and expires | Rejected |
+| C — no publish | Nothing can publish by mistake | Not automated | Rejected |
+| **Channels** A — `main` only | One path to secure | No pre-releases | **Chosen** |
+| B — `main` and `beta`; C — and `alpha` | Pre-releases | More branches and configuration | Rejected |
+| **First version** A — 2.0.0, stale tags deleted | Matches `package.json` and the v2 documentation line | The owner deletes three tags | **Chosen** |
+| B — 2.2.0; C — 3.0.0 | Nothing deleted | Version, docs line and migration guide all change | Rejected |
+| **Release pull request checks** A — accept none; `publish` re-checks | No extra secret | A red check after the merge leaves a tag and a GitHub release with no npm version | **Chosen** |
+| B — a personal access token or GitHub App for release-please | CI runs on the release pull request | A stored secret that can write to the repository | Rejected |
+| **Publish job** A — in a GitHub environment `npm` | The npm identity is bound to one job; a reviewer can be required | One more setting | **Chosen** |
+| B — no environment | Less setup | Any job in `release.yml` could ask for the npm identity | Rejected |
+
+## Consequences
+
+**Positive**
+
+- All five gaps close. A release is one merge.
+- `CHANGELOG.md` and the GitHub release notes come from the commits.
+- No npm credential exists to leak. Each version on npm links to its commit and workflow run.
+- Workflows are least-privilege and pinned to commits.
+
+**Negative / accepted trade-offs**
+
+- The version depends on commit prefixes. A wrong prefix proposes a wrong version; the owner sees
+  it in the release pull request before anything ships.
+- If a check fails in `publish`, the tag and the GitHub release exist and npm has no such version.
+  The fix is a new commit and the next release.
+- None of this can be run locally. The workflows are checked by a test for their shape, and for
+  real only by the first run on GitHub.
+- `v3.0.0` on the main repository points to a commit that was not inspected.
+
+**For consumers**
+
+- Merging the first release pull request publishes 2.0.0 as `latest`. `npm install nepali-number`
+  then installs a breaking major; the
+  [migration guide](../../user-guide/dev/guides/migration-v1-to-v2.mdx) covers it.
+
+## Package invariants
+
+None is touched. No dependency is added: release-please runs as an action. No lifecycle script is
+added to `package.json`. `files` stays `["dist"]`; `CHANGELOG.md`, `.bun-version` and the
+release-please files are not published.
+
+## Security considerations
+
+- **Publishing identity.** npm accepts a publish only from `release.yml` in
+  `nepal-dev-com/nepali-number-js`, in the `npm` environment. A fork, another workflow or a
+  maintainer's laptop cannot use it. Disallowing tokens afterwards removes the other way in.
+- **Permissions.** `contents: write`, `pull-requests: write` and `issues: write` on the
+  `release-please` job only; `id-token: write` on the `publish` job only; `contents: read`
+  everywhere else. `pull_request_target` is not used. A pull request from a fork runs `ci.yml`
+  with a read-only token and no secret.
+- **What reaches npm** is built in CI from the tag, after `bun install --frozen-lockfile` and the
+  full checks. `npm pack --dry-run` prints the file list in the log.
+- **release-please-action** is Google's, pinned to a commit. It holds a token that can write to
+  the repository and open pull requests. It cannot publish.
+- **A malicious commit prefix** can raise the proposed version, not publish: the owner merges the
+  release pull request.
+- **Secrets.** `CODECOV_TOKEN` stays the only stored secret. `NPM_TOKEN` is never created.
+- **Residual risk.** A compromised dev dependency still runs in the `publish` job before the
+  publish step and could alter `dist/`. The controls are the frozen lockfile, Dependabot's 7-day
+  cooldown and the owner's review of lockfile changes (ADR-0019).
+
+## Implementation notes
+
+- [ ] `.github/workflows/release.yml` and `.github/workflows/ci.yml` as decided; `codeql.yml`
+      unchanged.
+- [ ] `release-please-config.json`, `.release-please-manifest.json`, `.bun-version`.
+- [ ] Read `oven-sh/setup-bun`'s `action.yml` for the version-file input, and each action's
+      release notes for breaking inputs.
+- [ ] `src/workflows.test.ts`: every `uses:` is pinned to a 40-character commit; every workflow
+      declares `permissions:`; none uses `pull_request_target`; only `release.yml` has
+      `id-token: write`; the release-please files parse and name the root package. Failure cases
+      run on fixtures.
+- [ ] `src/community-files.test.ts` requires the new files.
+- [ ] `npm pack --dry-run` lists only `dist/`, `package.json`, `README.md`, `LICENSE`.
+- [ ] `bun run type-check`, `bun run test` and `bun run build` pass.
+- [ ] Hand the owner the steps of decision 9, with the commands for the tags.
+
+## Docs to update on implementation
+
+- [ ] [`../release/releasing.mdx`](../release/releasing.mdx): the flow, both workflows, no gaps
+      list, the release checklist; its diagram and the Archify view.
+- [ ] [`../release/versioning.mdx`](../release/versioning.mdx): no *Pre-releases* section.
+- [ ] [`../release/index.mdx`](../release/index.mdx): who bumps the version.
+- [ ] [`../security/threat-model.mdx`](../security/threat-model.mdx): the publish credential,
+      untested release, action pinning and Bun version rows.
+- [ ] [`../security/secrets.mdx`](../security/secrets.mdx): the tokens of `release.yml`; no npm token.
+- [ ] [`../security/checklist.mdx`](../security/checklist.mdx): the account and CI items.
+- [ ] `AGENTS.md` §3, §5 and §10; `CONTRIBUTING.md`; `nepali-number-stack-and-map`;
+      `nepali-number-security-check` (actions pinned to a commit).
+- [ ] [`./index.mdx`](./index.mdx): this ADR's row and status.
+- [ ] Proposed commit message: `ci: release with release-please and npm trusted publishing`
