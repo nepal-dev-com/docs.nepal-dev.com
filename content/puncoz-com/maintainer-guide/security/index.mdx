@@ -1,0 +1,55 @@
+---
+title: "Security"
+description: "What puncoz.com exposes to attack, which environment variables and third parties it depends on, and where its security notes and audits are kept."
+---
+
+- **Status:** Current
+- **Last updated:** 2026-11-23
+- **Related ADRs:** —
+
+The rules are in [`AGENTS.md`](https://github.com/puncoz/puncoz.com/blob/main/AGENTS.md) §9.
+The per-change check and the full audit are in the repository's
+[`puncoz-com-security-check`](https://github.com/puncoz/puncoz.com/blob/main/docs/agent-skills/puncoz-com-security-check/SKILL.md)
+skill. A security note for a change or an area is written from
+[`docs/_templates/security.md`](https://github.com/puncoz/puncoz.com/blob/main/docs/_templates/security.md)
+into this folder and listed below.
+
+This page is published. It lists names and categories only, never a value.
+
+## Surface
+
+| Surface | State |
+|---|---|
+| Server Functions | None |
+| Route Handlers | None |
+| `proxy.ts` | None |
+| Forms | None |
+| Content rendered from outside the source tree | None |
+| Client Components | None |
+| Security headers and Content Security Policy | None set by the app |
+
+## Secrets and environment variables
+
+| Variable | Public (`NEXT_PUBLIC_`)? | Used by | Held in |
+|---|---|---|---|
+
+The application reads no environment variables. `.env*` files are git-ignored.
+
+## Third parties
+
+Every origin a visitor's browser contacts, or that learns about a visit.
+
+| Third party | What for | What it learns |
+|---|---|---|
+
+None at runtime. Geist and Geist Mono are fetched from Google Fonts at build time by
+`next/font` and served from the site's own origin.
+
+## Install-time scripts
+
+`trustedDependencies` in `package.json` allows lifecycle scripts for `sharp` and
+`unrs-resolver`. Both arrived with the scaffold.
+
+## Documents
+
+No security notes or audits yet.

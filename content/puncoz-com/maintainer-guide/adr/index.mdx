@@ -1,0 +1,35 @@
+---
+title: "Architecture Decision Records"
+description: "Every decision about how puncoz.com is built, documented and shipped, with its status, from the first ADR to the latest."
+---
+
+Every feature and functional change starts here
+([`AGENTS.md`](https://github.com/puncoz/puncoz.com/blob/main/AGENTS.md) §2). Template:
+[`docs/_templates/adr.md`](https://github.com/puncoz/puncoz.com/blob/main/docs/_templates/adr.md)
+in the repository.
+
+**Next free number: 0001**
+
+## Conventions
+
+- File name: `ADR-NNNN-kebab-title.mdx`, in this folder, numbered from the *next free number*
+  above. Add the index row and bump the number **in the same change** that creates the file, so
+  ADRs in flight cannot collide.
+- Title: `ADR-NNNN — ` and a short imperative statement of the decision, with a `description`
+  saying what was decided.
+- Status: `Proposed` → `Approved` (by the owner, with name and date) → optionally `Superseded`.
+  A rejected proposal is marked `Rejected` and kept.
+- People are GitHub usernames written as profile links:
+  `[@puncoz](https://github.com/puncoz)`.
+- An approved ADR's **Decision** is never edited. Supersede it with a new ADR and cross-link
+  both.
+- Every ADR states its **visitor impact**, and one that changes a published URL names the
+  redirect that covers it.
+- The **Security considerations** section is mandatory.
+
+## Index
+
+| ADR | Title | Status | Date |
+|---|---|---|---|
+
+No decision has been recorded yet.

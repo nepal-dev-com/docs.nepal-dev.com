@@ -1,0 +1,57 @@
+---
+title: "System"
+description: "The routes puncoz.com serves, the components behind them, how Cache Components renders each one, and what each configuration file sets."
+---
+
+- **Status:** Current
+- **Last updated:** 2026-11-23
+- **Related ADRs:** —
+
+## Context
+
+puncoz.com is a single Next.js App Router application. Today it is the `create-next-app`
+scaffold: one page with the starter content and the scaffold's default metadata. It reads no
+data, no environment variables, and has no server entry points beyond page rendering.
+
+## Routes
+
+| Route | File | Renders as | Data |
+|---|---|---|---|
+| `/` | `src/app/page.tsx` | Static (`○`) | None |
+| `/_not-found` | Built in | Static (`○`) | None |
+
+## Components
+
+| Component | Server or Client | Responsibility | Depends on |
+|---|---|---|---|
+| `RootLayout` (`src/app/layout.tsx`) | Server | `<html>` and `<body>`, loads Geist and Geist Mono through `next/font/google`, imports `globals.css`, sets site metadata | `next/font`, `globals.css` |
+| `Home` (`src/app/page.tsx`) | Server | The starter page | `next/image`, files in `public/` |
+
+There are no Client Components.
+
+## Rendering model
+
+`next.config.ts` enables Cache Components and Partial Prefetching. Every route is validated to
+produce a static shell: shared data is cached with `"use cache"`, and request-time data streams
+behind `<Suspense>`. Both routes that exist today are fully static.
+
+## Configuration
+
+| File | Sets |
+|---|---|
+| `next.config.ts` | `cacheComponents: true`, `partialPrefetching: true`, a Turbopack rule sending `*.css` through `@tailwindcss/turbopack` |
+| `tsconfig.json` | `strict`, `moduleResolution: bundler`, the `@/*` → `./src/*` alias, the Next.js TypeScript plugin; excludes `node_modules` and `docs` |
+| `eslint.config.mjs` | `eslint-config-next` `core-web-vitals` and `typescript`, ignoring `.next/`, `out/`, `build/`, `next-env.d.ts` and `docs/` |
+| `src/app/globals.css` | The Tailwind import, with `docs/` excluded from class detection; `--background` and `--foreground`, switching on `prefers-color-scheme`; `@theme` tokens for those colours and the two fonts |
+
+`docs/` is left out of type-checking, linting and Tailwind's class detection because it holds
+the documentation submodule, which is a separate application with its own setup.
+
+## Key decisions in force
+
+None recorded. See the [decision records](../adr/index.mdx).
+
+## Constraints
+
+The app invariants in
+[`AGENTS.md`](https://github.com/puncoz/puncoz.com/blob/main/AGENTS.md) §6.

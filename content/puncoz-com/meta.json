@@ -1,0 +1,10 @@
+{
+  "title": "puncoz.com",
+  "description": "The personal website of Puncoz Nepal: a Next.js App Router application in TypeScript, styled with Tailwind CSS.",
+  "catalog": {
+    "kind": "project",
+    "visibility": "public",
+    "repository": "https://github.com/puncoz/puncoz.com",
+    "featured": true
+  }
+}
