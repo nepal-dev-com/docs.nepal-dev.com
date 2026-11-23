@@ -3,7 +3,7 @@
   "diagram_type": "workflow",
   "meta": {
     "title": "Release flow",
-    "subtitle": "From the working tree through CI to the release workflow and npm",
+    "subtitle": "From a pull request through release-please to npm",
     "quality_profile": "showcase",
     "output": "release-flow.html"
   },
@@ -22,129 +22,129 @@
     }
   ],
   "mainPath": [
-    "tree",
-    "branch",
+    "pr",
     "main",
-    "ci-branch",
-    "release",
+    "rp",
+    "rpr",
+    "tag",
+    "pub",
     "npm"
   ],
   "nodes": [
     {
-      "id": "tree",
+      "id": "pr",
       "lane": "owner",
       "col": 0,
       "type": "external",
-      "label": "Working tree",
-      "sublabel": "agent or owner"
-    },
-    {
-      "id": "branch",
-      "lane": "owner",
-      "col": 1,
-      "type": "frontend",
-      "label": "Branch / PR",
-      "sublabel": ""
+      "label": "Pull request",
+      "sublabel": "Conventional Commit"
     },
     {
       "id": "main",
       "lane": "owner",
-      "col": 2,
+      "col": 1,
       "type": "frontend",
-      "label": "main · beta · alpha",
+      "label": "main",
       "sublabel": ""
     },
     {
       "id": "ci",
       "lane": "checks",
-      "col": 2,
+      "col": 1,
       "type": "backend",
       "label": "CI workflow",
       "sublabel": "type-check · test · build, Node 20 / 22 / 24"
     },
     {
-      "id": "package",
-      "lane": "checks",
-      "col": 3,
-      "type": "backend",
-      "label": "test-package job",
-      "sublabel": "npm pack · install · require"
-    },
-    {
-      "id": "ci-branch",
+      "id": "rp",
       "lane": "release",
-      "col": 3,
-      "type": "backend",
-      "label": "CI on the branch",
-      "sublabel": ""
-    },
-    {
-      "id": "release",
-      "lane": "release",
-      "col": 4,
+      "col": 1,
       "type": "cloud",
       "label": "Release workflow",
-      "sublabel": "bun run release"
+      "sublabel": "release-please"
+    },
+    {
+      "id": "rpr",
+      "lane": "owner",
+      "col": 2,
+      "type": "frontend",
+      "label": "Release pull request",
+      "sublabel": "version + CHANGELOG.md"
+    },
+    {
+      "id": "tag",
+      "lane": "release",
+      "col": 3,
+      "type": "cloud",
+      "label": "Tag + GitHub release",
+      "sublabel": "with release notes"
+    },
+    {
+      "id": "pub",
+      "lane": "release",
+      "col": 4,
+      "type": "backend",
+      "label": "publish job",
+      "sublabel": "type-check · test · build"
     },
     {
       "id": "npm",
       "lane": "release",
       "col": 5,
       "type": "external",
-      "label": "npm + GitHub release + tag",
+      "label": "npm",
       "sublabel": ""
     }
   ],
   "edges": [
     {
-      "id": "commit",
-      "from": "tree",
-      "to": "branch",
-      "label": "owner commits, Conventional Commit",
-      "variant": "emphasis"
-    },
-    {
-      "id": "push",
-      "from": "branch",
+      "id": "runs",
+      "from": "pr",
       "to": "ci",
-      "label": "push or PR",
-      "variant": "default",
-      "role": "branch"
-    },
-    {
-      "id": "pack",
-      "from": "ci",
-      "to": "package",
-      "label": "",
+      "label": "runs",
       "variant": "default",
       "role": "branch"
     },
     {
       "id": "merge",
-      "from": "branch",
+      "from": "pr",
       "to": "main",
-      "label": "merge",
+      "label": "owner merges",
       "variant": "emphasis"
     },
     {
-      "id": "run",
+      "id": "push",
       "from": "main",
-      "to": "ci-branch",
-      "label": "",
+      "to": "rp",
+      "label": "push",
       "variant": "emphasis"
     },
     {
-      "id": "success",
-      "from": "ci-branch",
-      "to": "release",
-      "label": "success",
+      "id": "propose",
+      "from": "rp",
+      "to": "rpr",
+      "label": "opens or updates",
+      "variant": "emphasis"
+    },
+    {
+      "id": "release",
+      "from": "rpr",
+      "to": "tag",
+      "label": "owner merges",
+      "variant": "emphasis"
+    },
+    {
+      "id": "build",
+      "from": "tag",
+      "to": "pub",
+      "label": "",
       "variant": "emphasis"
     },
     {
       "id": "publish",
-      "from": "release",
+      "from": "pub",
       "to": "npm",
-      "label": "",
+      "label": "trusted publishing, provenance",
       "variant": "emphasis"
     }
   ]

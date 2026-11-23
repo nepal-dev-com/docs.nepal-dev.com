@@ -4,8 +4,8 @@ description: "Which nepali-number changes are a patch, a minor or a major under 
 ---
 
 - **Status:** Current
-- **Last updated:** 2026-10-30
-- **Related ADRs:** [ADR-0008](../adr/ADR-0008-public-api-changes-ship-their-reference.mdx)
+- **Last updated:** 2026-11-15
+- **Related ADRs:** [ADR-0008](../adr/ADR-0008-public-api-changes-ship-their-reference.mdx), [ADR-0020](../adr/ADR-0020-release-with-release-please-and-npm-trusted-publishing.mdx)
 
 > Snapshot of the policy as it stands today. Edit in place; never record what changed.
 
@@ -31,6 +31,10 @@ returns for each input**, plus the published shape (entry points, formats, globa
 
 A breaking commit carries a `BREAKING CHANGE:` footer that says what consumers must change.
 
+release-please reads these prefixes and proposes the next version in its release pull request
+([releasing](./releasing.mdx)). A wrong prefix proposes a wrong version, so the prefix is checked
+when a pull request is merged and again before the release pull request is.
+
 ## Why output changes are breaking
 
 Applications render these strings and compare them in snapshot tests. Changing
@@ -40,12 +44,6 @@ own reference*: once the API reference documents a behaviour, code that disagree
 
 Entries in [limitations](../../user-guide/dev/api/limitations.mdx) are **documented current behaviour**, not
 bugs; changing them is a major unless the owner decides otherwise in the ADR.
-
-## Pre-releases
-
-The release workflow listens on `beta` and `alpha` as well as `main`. Pre-release versions
-(`2.1.0-beta.1`) publish under the matching dist-tag, so `npm install nepali-number` keeps
-installing the latest stable.
 
 ## Internal surface
 

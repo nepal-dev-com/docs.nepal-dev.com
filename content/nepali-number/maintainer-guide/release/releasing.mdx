@@ -1,11 +1,11 @@
 ---
 title: "Releasing"
-description: "What nepali-number's CI and release workflows run, the gaps that stop automated publishing today, and the manual release checklist."
+description: "How a nepali-number release happens: what CI checks, how release-please proposes a version and changelog, and how merging its pull request publishes to npm."
 ---
 
 - **Status:** Current
 - **Last updated:** 2026-11-15
-- **Related ADRs:** [ADR-0005](../adr/ADR-0005-security-as-a-standing-practice.mdx), [ADR-0008](../adr/ADR-0008-public-api-changes-ship-their-reference.mdx), [ADR-0019](../adr/ADR-0019-add-github-community-files-dependabot-and-codeql.mdx)
+- **Related ADRs:** [ADR-0005](../adr/ADR-0005-security-as-a-standing-practice.mdx), [ADR-0008](../adr/ADR-0008-public-api-changes-ship-their-reference.mdx), [ADR-0019](../adr/ADR-0019-add-github-community-files-dependabot-and-codeql.mdx), [ADR-0020](../adr/ADR-0020-release-with-release-please-and-npm-trusted-publishing.mdx)
 
 > Snapshot of the process as it stands today. Edit in place; never record what changed.
 
@@ -15,33 +15,50 @@ description: "What nepali-number's CI and release workflows run, the gaps that s
 
 ```mermaid
 flowchart LR
-  W["Working tree<br/>(agent or owner)"] -->|owner commits,<br/>Conventional Commit| B["Branch / PR"]
-  B -->|push or PR| CI["CI workflow<br/>type-check · test · build<br/>Node 20 / 22 / 24"]
-  CI --> PKG["test-package job<br/>npm pack · install · require"]
-  B -->|merge| M["main · beta · alpha"]
-  M --> CI2["CI on the branch"]
-  CI2 -->|success| R["Release workflow<br/>bun run release"]
-  R --> NPM["npm + GitHub release + tag"]
+  PR["Pull request<br/>Conventional Commit"] -->|runs| CI["CI workflow<br/>type-check · test · build<br/>Node 20 / 22 / 24"]
+  PR -->|owner merges| M["main"]
+  M -->|push| RP["Release workflow<br/>release-please"]
+  RP -->|opens or updates| RPR["Release pull request<br/>version + CHANGELOG.md"]
+  RPR -->|owner merges| TAG["Tag + GitHub release<br/>with release notes"]
+  TAG --> PUB["publish job<br/>type-check · test · build"]
+  PUB -->|trusted publishing,<br/>provenance| NPM["npm"]
 ```
 
 </Diagram>
 
+A release is one merge:
+
+1. Pull requests are merged to `main` with Conventional Commit messages.
+2. On every push to `main`, release-please looks at the commits since the last release. While any
+   is `feat:`, `fix:` or `perf:`, it keeps **one release pull request** open. It holds the next
+   version in `package.json`, the new section of `CHANGELOG.md` and
+   `.release-please-manifest.json`.
+3. **The owner merges the release pull request.** release-please tags the commit `vX.Y.Z` and
+   creates the GitHub release, with the changelog section as its notes.
+4. The `publish` job checks out that tag, runs the checks, builds, and publishes to npm.
+
+Commits with only `docs:`, `test:`, `chore:`, `ci:` or `refactor:` open no release pull request.
+Only `main` releases.
+
 ## CI — `.github/workflows/ci.yml`
 
-Runs on every push and on pull requests (opened, synchronised, reopened). Newer runs on the
-same ref cancel older ones.
+Runs on every pull request and on a push to `main`. Newer runs on the same ref cancel older ones.
+Permissions: `contents: read`. Actions are pinned to commit SHAs, and the checkout keeps no
+credentials.
 
 | Job | Steps |
 |---|---|
-| `quality` (Node 20, 22, 24 on `ubuntu-latest`) | Bun `latest` · `bun install --frozen-lockfile` · `bun run type-check` · `bun run test` · Codecov upload (Node 24 only, `CODECOV_TOKEN`, fails the job on upload error) · `bun run build` |
-| `test-package` (after `quality`) | Build · `npm pack` · install the tarball into a fresh project · `require("nepali-number")` and call `toNepali`, `toEnglish`, `formatNepaliNumber` |
+| `quality` (Node 20, 22, 24 on `ubuntu-24.04`) | Bun from `.bun-version` · `bun install --frozen-lockfile` · `bun run type-check` · `bun run test` · Codecov upload (Node 24 only, `CODECOV_TOKEN`, fails the job on upload error; skipped for a pull request from a fork) · `bun run build` |
+| `test-package` (after `quality`) | Build · `npm pack` · install the tarball into an empty project · load it with `require` and with `import`, and compare `toNepali(123)` and `toEnglish("१२३")` with their expected values |
+
+The Bun version is in `.bun-version` and moves by hand, together with `@types/bun`.
 
 ## CodeQL — `.github/workflows/codeql.yml`
 
 Runs on a pull request to `main`, on a push to `main`, and every Monday at 03:17 UTC. It scans the
 TypeScript and the workflows without building, and uploads the findings to the repository's
 *Security* tab. Permissions: `contents: read`, and `security-events: write` on the job. Its actions
-are pinned to commit SHAs. It is not named **CI**, so it never starts a release
+are pinned to commit SHAs. It releases nothing
 ([ADR-0019](../adr/ADR-0019-add-github-community-files-dependabot-and-codeql.mdx)).
 
 ## Dependency updates — `.github/dependabot.yml`
@@ -58,41 +75,55 @@ minor, does. CI on these pull requests reads `CODECOV_TOKEN` from the Dependabot
 
 ## Release — `.github/workflows/release.yml`
 
-Triggered by `workflow_run` when the **CI** workflow completes on `main`, `beta` or `alpha`.
-One release per branch at a time; an in-progress release is never cancelled. Permissions:
-`contents: write`. It checks out, sets up Node 20 and Bun, installs, and runs
-**`bun run release`** with `GITHUB_TOKEN`.
+Runs on every push to `main`. One run at a time; a run that has started is never cancelled.
+Actions are pinned to commit SHAs.
 
-## Current gaps
+| Job | Runs | Permissions | Does |
+|---|---|---|---|
+| `release-please` | Always | `contents: write`, `pull-requests: write`, `issues: write` | Opens or updates the release pull request; after that pull request is merged, pushes the tag and creates the GitHub release |
+| `publish` | Only when `release-please` created a release | `contents: read`, `id-token: write`, in the GitHub environment `npm` | Checks out the tag · Node 24 · Bun · fails if npm is older than 11.5.1 · `bun install --frozen-lockfile` · type-check · test · build · `npm pack --dry-run` · `npm publish --access public` |
 
-These are observed facts about the repository today. Fixing any of them is a CI/release
-tooling change and needs an ADR (`AGENTS.md` §2).
+- **No npm token exists.** npm trusts this repository's `release.yml`, in the `npm` environment,
+  as a publisher. GitHub proves each run's identity to npm, and npm attaches provenance to the
+  version: a link to the commit and the workflow run that built it.
+- **The `publish` job stays in `release.yml`.** npm checks the name of the workflow file, and what
+  release-please creates with `GITHUB_TOKEN` starts no other workflow.
+- **A failed check publishes nothing.** The tag and the GitHub release then exist without a
+  version on npm. The fix is a new commit and the next release.
+- **CI does not run on the release pull request**, because release-please opens it with
+  `GITHUB_TOKEN`. It changes only the version, the changelog and the manifest; the `publish` job
+  runs every check on the tag. To run CI on it, close and reopen the pull request.
 
-1. **There is no `release` script.** `package.json` defines `build`, `dev`, `test`,
-   `type-check`, `clean` and `clean:fresh`. `bun run release` fails, so the workflow cannot
-   publish.
-2. **The workflow runs on any completed CI run**, including failed ones. `workflow_run` with
-   `types: [completed]` fires for every conclusion; the job has no
-   `if: github.event.workflow_run.conclusion == 'success'` guard.
-3. **It checks out the default ref, not the commit CI tested.** `actions/checkout` without
-   `ref: ${{ github.event.workflow_run.head_sha }}` checks out the latest default-branch commit
-   for a `workflow_run` event.
-4. **No npm credential or provenance is configured.** There is no `NPM_TOKEN` in the workflow
-   and no `id-token: write` permission for npm trusted publishing.
-5. **npm and git disagree.** npm's `latest` is **1.0.3** (published 2019-08-25); no 2.x has
-   been published. `package.json` on `main` says `2.0.0`. Tags `v2.0.1` and `v2.1.0` exist (the
-   latter also on `origin`) on "chore: bump version" commits that are **not** on `main`.
+### The release files
 
-## Manual release checklist
+| File | Holds | Edited by |
+|---|---|---|
+| `release-please-config.json` | Release type `node`, tag `vX.Y.Z`, which commit types appear in the changelog (features, bug fixes, performance; breaking changes always) | A change to it is a tooling ADR |
+| `.release-please-manifest.json` | The last released version | release-please only |
+| `CHANGELOG.md` | One section per release, written from the commits. It appears with the first release | release-please only |
+| `version` in `package.json` | The released version | release-please only |
 
-Until the workflow is complete, a release is the owner's manual step:
+To release a version other than the one release-please proposes, add a commit whose message ends
+with the footer `Release-As: X.Y.Z`.
+
+## Settings outside the repository
+
+The workflows depend on these. The owner keeps them.
+
+| Where | Setting |
+|---|---|
+| GitHub → Settings → Actions → General | *Allow GitHub Actions to create and approve pull requests* is on |
+| GitHub → Settings → Environments | `npm` exists and is limited to the `main` branch |
+| npmjs.com → `nepali-number` → Settings → Trusted publisher | GitHub Actions; organisation `nepal-dev-com`; repository `nepali-number-js`; workflow `release.yml`; environment `npm` |
+| npmjs.com → `nepali-number` → Settings → Publishing access | *Require two-factor authentication and disallow tokens* |
+
+## Before merging the release pull request
 
 - [ ] `main` is green in CI.
+- [ ] The version it proposes matches [versioning](./versioning.mdx) for the changes in its
+      changelog section.
 - [ ] The audit in the [release security checklist](../security/checklist.mdx) passes.
-- [ ] `npm pack --dry-run` lists only `dist/*`, `package.json`, `README.md`, `LICENSE`.
 - [ ] `README.md` and the API reference in `user-guide/dev/api/` match the build.
-- [ ] Version bumped according to [versioning](./versioning.mdx); tag and GitHub release
-      notes written from the Conventional Commits since the last tag.
 
 ## The documentation's part of a release
 
