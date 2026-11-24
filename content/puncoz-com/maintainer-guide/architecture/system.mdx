@@ -1,39 +1,106 @@
 ---
 title: "System"
-description: "The routes puncoz.com serves, the components behind them, how Cache Components renders each one, and what each configuration file sets."
+description: "The routes puncoz.com serves, the components behind them, how content reaches the page, how Cache Components renders each route, and what each configuration file sets."
 ---
 
 - **Status:** Current
 - **Last updated:** 2026-11-23
-- **Related ADRs:** —
+- **Related ADRs:** [ADR-0001](../adr/ADR-0001-build-the-portfolio-as-one-static-page-driven-by-json-content.mdx)
 
 ## Context
 
-puncoz.com is a single Next.js App Router application. Today it is the `create-next-app`
-scaffold: one page with the starter content and the scaffold's default metadata. It reads no
-data, no environment variables, and has no server entry points beyond page rendering.
+puncoz.com is a single Next.js App Router application: one page, `/`, made of twelve
+sections, the hero first. Every word on it comes from JSON files in the source tree. It fetches no data, reads
+no environment variables, and has no server entry points beyond page rendering.
 
 ## Routes
 
 | Route | File | Renders as | Data |
 |---|---|---|---|
-| `/` | `src/app/page.tsx` | Static (`○`) | None |
+| `/` | `src/app/page.tsx` | Static (`○`) | `src/content/*.json`, imported at build time |
+| `/opengraph-image` | `src/app/opengraph-image.tsx` | Static (`○`) | `site.json`, `hero.json`, the wordmark and a bundled font file |
+| `/icon.png` | `src/app/icon.png` | Static (`○`) | None |
+| `/sitemap.xml` | `src/app/sitemap.ts` | Static (`○`) | `site.json` |
+| `/robots.txt` | `src/app/robots.ts` | Static (`○`) | `site.json` |
 | `/_not-found` | Built in | Static (`○`) | None |
+
+The page's sections are anchors on `/`, in this order: `#top` (hero and the stack marquee),
+`#trace`, `#services`, `#diagnose`, `#chaos`, `#slo`, `#playbook`, `#notes`, `#casefiles`,
+`#handshake`, `#faq`, `#connect`. The header links to them as `/#trace` and so on.
+
+## Content flow
+
+1. Each section has one file in `src/content/`, named after it (`hero.json`, `trace.json`, …).
+   `site.json` holds what is shared: the name, the URL, metadata, navigation, contact links and
+   the footer. `stack.json` holds the technology list used by the marquee and the trace section.
+2. `src/content/types.ts` declares the shape of each file. `src/content/index.ts` imports every
+   file and assigns it to its type, so a missing or misspelt field fails `bun run type-check`.
+3. Section components import from `@/content` and render. Nothing is read at request time.
+
+Content names colours and variants by key (`"accent": "cyan"`, `"size": "wide"`). Those keys are
+resolved through `lookup()` in `src/lib/lookup.ts`, which throws on a key nobody defined. A JSON
+import widens every string, so the type-checker cannot catch a misspelt key; the build does.
 
 ## Components
 
-| Component | Server or Client | Responsibility | Depends on |
-|---|---|---|---|
-| `RootLayout` (`src/app/layout.tsx`) | Server | `<html>` and `<body>`, loads Geist and Geist Mono through `next/font/google`, imports `globals.css`, sets site metadata | `next/font`, `globals.css` |
-| `Home` (`src/app/page.tsx`) | Server | The starter page | `next/image`, files in `public/` |
+| Folder | Server or Client | Holds |
+|---|---|---|
+| `src/app/layout.tsx` | Server | `<html>` and `<body>`, the four typefaces, site metadata, and the page frame: backdrop, header, `<main>`, footer |
+| `src/components/layout/` | Server, except `LiveClock` and `UptimeCounter` | The header, navigation, logo, footer and the fixed backdrop with the scroll-progress bar |
+| `src/components/ui/` | Server | Primitives shared by every section: `Container`, `Section`, `SectionHeader`, `Card`, `Chip`, `MonoLabel`, `ButtonLink`, `SmartLink`, `ToggleCard`, `Pill`, `CellGrid` and others |
+| `src/components/sections/<section>/` | Server, with the Client Components listed below | One folder per section: a `…Section` component that composes the section, and its parts |
+| `src/lib/` | Either | Pure helpers: class joining, accent lookup, template filling, timeline and availability arithmetic, the chaos-lab model, the `mailto:` builder, and two small stores |
 
-There are no Client Components.
+### Client Components
+
+Each is the smallest part of its section that needs state or a browser API.
+
+| Component | Why it runs in the browser |
+|---|---|
+| `layout/LiveClock`, `layout/UptimeCounter` | Show the current time. They render a fixed placeholder on the server and the value after mount, so the static HTML never contains a time |
+| `trace/TraceExplorer` | Switches between two views and selects a career span |
+| `diagnose/SymptomPicker`, `diagnose/FirstMoves` | Toggle symptoms and list the matching first moves |
+| `chaos/ChaosLab` | Runs the toy availability model as the visitor changes traffic, faults and defences |
+| `slo/SloLadder` | Selects an availability target and a dependency-chain length |
+| `playbook/PlaybookTabs`, `QuestionsSheet`, `PhasesSheet`, `LedgerSheet` | Tabs, and the selections inside three of the sheets. Every sheet is in the HTML; the tabs only choose which is shown |
+| `connect/RequestBuilder`, `connect/CopyButton` | Compose the `mailto:` link from the visitor's choices; copy the example message |
+
+Two stores in `src/lib/` share state without a context provider, through
+`useSyncExternalStore`: `now-store.ts` runs one timer for every clock on the page, and
+`selection-store.ts` keeps the symptoms chosen in `#diagnose` in step with those in `#connect`.
+
+The chaos lab's arithmetic is in `src/lib/chaos/simulate.ts` and the text it produces in
+`src/lib/chaos/describe.ts`. Both are pure functions with no React in them.
 
 ## Rendering model
 
 `next.config.ts` enables Cache Components and Partial Prefetching. Every route is validated to
-produce a static shell: shared data is cached with `"use cache"`, and request-time data streams
-behind `<Suspense>`. Both routes that exist today are fully static.
+produce a static shell. Every route here is fully static: nothing is fetched, so nothing is
+cached with `"use cache"` and nothing streams behind `<Suspense>`.
+
+## Design system
+
+Dark only. The tokens are declared once, under `@theme` in `src/app/globals.css`:
+
+| Kind | Tokens |
+|---|---|
+| Breakpoints | `md` at 721px, `lg` at 1101px |
+| Surfaces | `ink`, `well`, `inset`, `panel`, `raised`, `card`, `active` |
+| Lines | `line-faint`, `line`, `line-strong`, `line-hover`, `line-muted` |
+| Text | `fg`, `fg-soft`, `fg-muted`, `fg-dim` |
+| Accents | `cyan`, `violet`, `orange`, `lime`, `amber`, `gold`, `red`, `coral`, `pink`, `blue` |
+| Typefaces | `font-sans` (Geist), `font-mono` (Geist Mono), `font-display` (Unbounded), `font-serif` (Instrument Serif italic) |
+| Motion | `animate-rise`, `blink`, `live`, `float`, `marquee`, `scan`, `flow`, `travel`, `travel-back`, `cut`, `cut-rest` |
+
+An element takes an accent through a class, `accent-cyan` and so on, which sets `--accent`; its
+descendants use `text-(--accent)`, `bg-(--accent)` and `border-(--accent)`.
+
+Motion is CSS only. Sections fade in as they scroll into view through a scroll-driven animation,
+applied only where the browser supports `animation-timeline`; elsewhere they are simply visible.
+`prefers-reduced-motion: reduce` turns every animation off.
+
+The share image cannot read the stylesheet, so `src/app/opengraph-image.tsx` repeats six colour
+values and loads Unbounded from `src/assets/fonts/`.
 
 ## Configuration
 
@@ -42,14 +109,17 @@ behind `<Suspense>`. Both routes that exist today are fully static.
 | `next.config.ts` | `cacheComponents: true`, `partialPrefetching: true`, a Turbopack rule sending `*.css` through `@tailwindcss/turbopack` |
 | `tsconfig.json` | `strict`, `moduleResolution: bundler`, the `@/*` → `./src/*` alias, the Next.js TypeScript plugin; excludes `node_modules` and `docs` |
 | `eslint.config.mjs` | `eslint-config-next` `core-web-vitals` and `typescript`, ignoring `.next/`, `out/`, `build/`, `next-env.d.ts` and `docs/` |
-| `src/app/globals.css` | The Tailwind import, with `docs/` excluded from class detection; `--background` and `--foreground`, switching on `prefers-color-scheme`; `@theme` tokens for those colours and the two fonts |
+| `src/app/globals.css` | The Tailwind import, with `docs/` excluded from class detection; the design tokens; the accent classes; a few component classes for gradients, dotted backgrounds and scroll-driven motion |
+| `src/app/fonts.ts` | The four typefaces, loaded through `next/font/google` and exposed as CSS variables |
 
 `docs/` is left out of type-checking, linting and Tailwind's class detection because it holds
 the documentation submodule, which is a separate application with its own setup.
 
 ## Key decisions in force
 
-None recorded. See the [decision records](../adr/index.mdx).
+| Decision | Record |
+|---|---|
+| One static page, JSON content, dark-only tokens, CSS-only motion, no new dependency | [ADR-0001](../adr/ADR-0001-build-the-portfolio-as-one-static-page-driven-by-json-content.mdx) |
 
 ## Constraints
 

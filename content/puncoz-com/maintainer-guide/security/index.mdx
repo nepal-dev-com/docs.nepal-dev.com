@@ -5,7 +5,7 @@ description: "What puncoz.com exposes to attack, which environment variables and
 
 - **Status:** Current
 - **Last updated:** 2026-11-23
-- **Related ADRs:** —
+- **Related ADRs:** [ADR-0001](../adr/ADR-0001-build-the-portfolio-as-one-static-page-driven-by-json-content.mdx)
 
 The rules are in [`AGENTS.md`](https://github.com/puncoz/puncoz.com/blob/main/AGENTS.md) §9.
 The per-change check and the full audit are in the repository's
@@ -23,9 +23,10 @@ This page is published. It lists names and categories only, never a value.
 | Server Functions | None |
 | Route Handlers | None |
 | `proxy.ts` | None |
-| Forms | None |
-| Content rendered from outside the source tree | None |
-| Client Components | None |
+| Forms | None. The contact section builds a `mailto:` link in the browser from the visitor's choices; nothing is sent to the site |
+| Content rendered from outside the source tree | None. All copy is JSON in `src/content/`, rendered as text, never as HTML |
+| Client Components | Thirteen, listed in [System](../architecture/system.mdx). They receive only the copy they display; none reads storage, cookies or the network. `CopyButton` writes the example message to the clipboard when pressed |
+| Outbound links | LinkedIn, GitHub, the blog and one source repository, each with `rel="noopener noreferrer"` |
 | Security headers and Content Security Policy | None set by the app |
 
 ## Secrets and environment variables
@@ -42,8 +43,9 @@ Every origin a visitor's browser contacts, or that learns about a visit.
 | Third party | What for | What it learns |
 |---|---|---|
 
-None at runtime. Geist and Geist Mono are fetched from Google Fonts at build time by
-`next/font` and served from the site's own origin.
+None at runtime. Geist, Geist Mono, Unbounded and Instrument Serif are fetched from Google Fonts
+at build time by `next/font` and served from the site's own origin. A copy of Unbounded Bold,
+under the SIL Open Font License, is kept in `src/assets/fonts/` for the share image.
 
 ## Install-time scripts
 

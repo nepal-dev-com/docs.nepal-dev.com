@@ -7,8 +7,8 @@ description: "The source of puncoz.com, the personal website of Puncoz Nepal: a 
 Nepal. It is a Next.js App Router application written in TypeScript, styled with Tailwind CSS
 and managed with Bun.
 
-The repository holds the `create-next-app` scaffold and the working agreement for building on
-it. The site itself has not been built yet.
+The site is one static page of twelve sections, the hero first: who Puncoz is, the work on
+offer and how to get in touch. Its copy lives in JSON files, so changing the page rarely means changing code.
 
 ## Stack
 
@@ -17,7 +17,8 @@ it. The site itself has not been built yet.
 | Framework | Next.js 16, App Router, Turbopack, with Cache Components and Partial Prefetching enabled |
 | UI | React 19, Server Components by default |
 | Language | TypeScript 5, `strict` |
-| Styling | Tailwind CSS 4, through the `@tailwindcss/turbopack` loader |
+| Styling | Tailwind CSS 4, through the `@tailwindcss/turbopack` loader; dark only, with tokens in one stylesheet |
+| Content | JSON files in `src/content/`, typed and imported at build time |
 | Linting | ESLint 9 with `eslint-config-next` |
 | Package manager | Bun 1.4 |
 
@@ -28,6 +29,7 @@ Testing, formatting, CI and the deployment target have not been chosen. Each wil
 
 - **Running it locally:** the repository's
   [`README.md`](https://github.com/puncoz/puncoz.com/blob/main/README.md).
+- **Changing what it says:** [Edit the site's content](./maintainer-guide/guides/editing-content.mdx).
 - **Working on it:** the [Maintainer guide](./maintainer-guide/index.mdx), and the working
   agreement in [`AGENTS.md`](https://github.com/puncoz/puncoz.com/blob/main/AGENTS.md).
 

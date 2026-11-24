@@ -1,0 +1,93 @@
+---
+title: "Edit the site's content"
+description: "How to change copy, add or remove an item, change a colour or swap the logo on puncoz.com by editing its JSON content files and design tokens."
+---
+
+- **Status:** Current
+- **Last updated:** 2026-11-23
+- **Related ADRs:** [ADR-0001](../adr/ADR-0001-build-the-portfolio-as-one-static-page-driven-by-json-content.mdx)
+
+> Snapshot of the site as it stands today. Edit in place; never record what changed.
+> Every command below was run, and every path exists.
+
+For anyone changing what the page says or how it is coloured. At the end the change is on the
+page, type-checked and built. Copy edits inside an existing section need no ADR; a new section,
+a new token or a new typeface does.
+
+## Before you start
+
+Bun 1.4 or later, and the dependencies installed with `bun install`. No environment variables.
+
+## Steps
+
+### 1. Find the file
+
+Every section reads one file in `src/content/`.
+
+| On the page | File |
+|---|---|
+| Name, URL, page title and description, navigation, contact links, footer, logo | `site.json` |
+| Hero | `hero.json` |
+| The scrolling stack strip and the stack-depth card | `stack.json` |
+| `#trace`: career spans and layers | `trace.json` |
+| `#services` | `services.json` |
+| `#diagnose`, and the symptom choices in `#connect` | `diagnose.json` |
+| `#chaos` | `chaos.json` |
+| `#slo` | `slo.json` |
+| `#playbook` | `playbook.json` |
+| `#notes` | `notes.json` |
+| `#casefiles` | `case-files.json` |
+| `#handshake` | `handshake.json` |
+| `#faq` | `faq.json` |
+| `#connect` | `connect.json` |
+
+### 2. Change copy, or add an item
+
+Edit the text in place. To add an item, copy a neighbouring object in the same array and change
+its values; to remove one, delete its object. Lists size themselves.
+
+The shape each file must have is in `src/content/types.ts`. Text with a word in braces, such as
+`{count}` or `{traffic}`, is a template: keep the braces and the word, and move them where the
+sentence needs them.
+
+### 3. Change a colour
+
+Content names a colour by token: `"accent": "cyan"`. The names are `cyan`, `violet`, `orange`,
+`lime`, `amber`, `gold`, `red`, `coral`, `pink` and `blue`.
+
+To change what a token looks like everywhere, edit its value under `@theme` in
+`src/app/globals.css`. The share image keeps its own copy of six values at the top of
+`src/app/opengraph-image.tsx`; change them together.
+
+### 4. Swap the logo
+
+Replace `public/brand/wordmark.png` (header and share image) or `public/brand/mark.png` (the
+centre of the hero illustration). If the new wordmark has different proportions, update its
+`width` and `height` in `site.json`. The browser-tab icon is `src/app/icon.png`.
+
+### 5. Check it
+
+```bash
+bun run lint && bun run type-check && bun run build
+```
+
+All three finish without errors, and the build lists `/` as `○ (Static)`. Then open the page
+with `bun run dev` and look at the section you changed.
+
+## Pitfalls
+
+- **A misspelt colour or variant name passes the type-check and fails the build**, with
+  `Unknown accent "…" in content.` The message names the key; fix it in the JSON.
+- **The symptoms in `diagnose.json` appear in two sections.** `#connect` offers the same list,
+  and a choice made in one shows in the other.
+- **The portrait in `#trace` is a drawing in code**, `src/components/sections/trace/PortraitCard.tsx`,
+  not an image file. Its name and caption are in `trace.json`.
+- **The chaos lab's diagram has fixed positions** in
+  `src/components/sections/chaos/ChaosTopology.tsx`. Its labels and messages are content; where
+  the boxes sit is not.
+- **The numbers on the page are the owner's.** Change one only on the owner's word.
+
+## See also
+
+- [System](../architecture/system.mdx)
+- [Documentation map](../index.mdx)

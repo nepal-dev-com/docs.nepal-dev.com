@@ -1,0 +1,320 @@
+---
+title: "ADR-0001 — Build the portfolio as one static page driven by JSON content"
+description: "puncoz.com becomes a single prerendered page in twelve sections, with all copy in JSON files, a dark token-based theme, CSS-only motion and no new dependency."
+---
+
+- **Status:** Approved
+- **Date:** 2026-11-23
+- **Deciders:** [@puncoz](https://github.com/puncoz)
+- **Approved by:** [@puncoz](https://github.com/puncoz)
+- **Approved on:** 2026-11-23
+- **Supersedes:** —
+- **Superseded by:** —
+- **Visitor impact:** content — `/` keeps its address and shows the portfolio instead of the
+  scaffold's starter page
+- **Design documents:** `maintainer-guide/architecture/system.mdx`,
+  `maintainer-guide/security/index.mdx`, `maintainer-guide/guides/editing-content.mdx`
+
+## Context
+
+The site is the `create-next-app` scaffold: one route, `/`, with the starter page and the
+scaffold's default title and description. The design system holds two colour variables and two
+typefaces. Nothing under `src/` beyond `src/app/` exists.
+
+The owner designed the portfolio in Claude Design and exported it as one HTML file. The export
+is a single long page, dark only, with a sticky header, twelve sections, a footer, and six
+interactive widgets driven by one block of state. Its copy, colours, type, spacing, motion and
+widget logic are all readable from the export.
+
+The owner asked for the site to be built from that design with: components as small and
+reusable as they can be; all copy and data in JSON or YAML, split so it is easy to edit; a
+header and footer that stay consistent; smooth animation and transitions; a theme and
+configuration kept in files; SOLID, KISS and DRY; and Next.js practices for caching,
+deduplication and image optimisation.
+
+Decisions the owner made on 2026-11-23, before this ADR was written:
+
+| Question | Owner's answer |
+|---|---|
+| Is the copy in the design final and cleared to publish? | Yes, published verbatim |
+| The portrait card labelled "photo slot" | Keep the illustration, drop the label |
+| The "Blog" button, which pointed at this site | Points to `https://blog.puncoz.com` |
+| Logo source | The owner's PNG files in `temp/`; SVG versions may replace them later |
+
+## Decision
+
+### One route, twelve sections
+
+`/` is the whole site. Sections are `<section>` elements with stable ids, linked from the
+header as `/#id` so the links keep working if another route is ever added.
+
+| Order | Id | Section | Interactive |
+|---|---|---|---|
+| 1 | `top` | Hero: headline, introduction, two calls to action, four figures, orbital illustration | Uptime counter |
+| — | — | Marquee of tools | No |
+| 2 | `trace` | Career as a trace: employers or skill layers on a timeline, portrait card, stack by depth | Span and view selection |
+| 3 | `services` | Five services, six situations, when the answer is no | No |
+| 4 | `diagnose` | Symptoms and the first moves for each | Symptom selection |
+| 5 | `chaos` | Chaos lab: a toy system with traffic, faults and defences | Simulation |
+| 6 | `slo` | Availability targets, downtime budgets, dependency chain | Target and chain selection |
+| 7 | `playbook` | Seven reference sheets in tabs | Tabs, selections, accordion |
+| 8 | `notes` | Six rules | No |
+| 9 | `casefiles` | Five case files | No |
+| 10 | `handshake` | Six steps of an engagement | No |
+| 11 | `faq` | Six practical answers | No |
+| 12 | `connect` | Request builder that composes an email, contact links | Selections, copy, `mailto:` |
+
+The header (logo, section links, Tokyo time, "Open for work") and the footer render from the
+root layout, so every route, including the not-found page, gets the same ones.
+
+| Route | Purpose | Static shell | Cached (`cacheLife`) | Streams behind `<Suspense>` |
+|---|---|---|---|---|
+| `/` | The portfolio | The whole page | Nothing: no data is fetched | Nothing |
+| `/opengraph-image` | Share image, drawn at build | The image | Nothing | Nothing |
+| `/sitemap.xml`, `/robots.txt` | For crawlers | The file | Nothing | Nothing |
+| `/icon.png` | Favicon, the "p" mark on its disc | The file | Nothing | Nothing |
+
+`/` builds as fully static (`○`). There is no `"use cache"`, `cacheTag` or revalidation in this
+change because nothing is fetched: content is part of the build, and it changes by deploying.
+Request deduplication has nothing to act on for the same reason. The two values that depend on
+the clock, Tokyo time and the uptime counter, are rendered only in the browser after mount,
+inside a fixed-width placeholder, so they neither enter the static shell nor shift the layout.
+
+### Content is JSON under `src/content/`
+
+One file per section, plus one for what the whole site shares. Components hold no copy.
+
+| File | Holds |
+|---|---|
+| `site.json` | Name, site URL, metadata title and description, header links, availability label, email, social links, footer lines, time zone, career start date |
+| `hero.json` | Chips, headline parts, introduction, calls to action, figures, floating cards |
+| `stack.json` | Marquee tools; stack groups with each tool's depth |
+| `trace.json` | Heading, summary, highlight tiles, portrait caption, spans, layers, timeline range |
+| `services.json` | Services, situations, refusals |
+| `diagnose.json` | Symptoms with move, duration and reasoning; verdict lines |
+| `chaos.json` | Traffic levels, faults, defences, presets, node layout and labels, incident messages, principles |
+| `slo.json` | Targets with value, architecture and fit; chain lengths; labels |
+| `playbook.json` | The seven sheets: decisions, questions, scale steps, phases, ledger, stores, contracts |
+| `notes.json`, `case-files.json`, `handshake.json`, `faq.json` | Their sections' items |
+| `connect.json` | Heading, scales, team sizes, example message, email subject and body template |
+
+`src/content/types.ts` declares the shape of each file, and `src/content/index.ts` exports each
+file assigned to its type. A missing or misspelt field fails `bun run type-check` and
+`bun run build`; there is no runtime validation and no schema library.
+
+Content names a colour by token (`"cyan"`, `"violet"`), never by hex. One map in
+`src/lib/accent.ts` turns a token name into complete Tailwind class strings.
+
+### Theme and configuration live in `src/app/globals.css`
+
+The palette, typefaces, radii, easing curves and keyframes from the design are declared once
+under `@theme`. Components use them by name.
+
+| Token group | Values taken from the design |
+|---|---|
+| Surfaces | `#06080F` page, `#070A14`, `#080C18`, `#0A0F1C`, `#0B1020`, `#0D1324` |
+| Lines | `#141B30`, `#1C2540`, `#2A3452`, `#34406A`, `#5A6488` |
+| Text | `#E8ECF5`, `#D5DBE8`, `#B7BFD3`, `#9AA4BC` |
+| Accents | cyan `#4FE3F0`, violet `#A78BFA`, orange `#FF8A4C`, lime `#B8F25C`, amber `#FFC24B`, gold `#FFB547`, red `#FF5A4E`, coral `#FF8A7F`, pink `#FF5C8A`, blue `#7C9CFF` |
+| Typefaces | Geist (text), Geist Mono (labels), Unbounded (display), Instrument Serif italic (emphasis) |
+
+The site is dark only: `color-scheme: dark`, with no light variant and no theme switch. The
+scaffold's `prefers-color-scheme` switch is removed.
+
+All four typefaces load through `next/font/google`, which downloads them at build and serves
+them from the site's own origin.
+
+### Motion is CSS
+
+Keyframes and transitions only: entry rise, scroll-driven reveal and the reading-progress bar
+behind `@supports (animation-timeline: …)`, the marquee, orbit rotation, edge flow and packet
+travel. A browser without scroll-driven animation shows the content without the reveal.
+`prefers-reduced-motion: reduce` stops every animation and smooth scrolling. No animation
+library is added.
+
+### Components
+
+| Folder | Holds | Server or Client |
+|---|---|---|
+| `src/components/layout/` | `SiteHeader`, `SiteFooter`, `Container`, `BackgroundGlow`, `ScrollProgress` | Server, except the clock leaf |
+| `src/components/ui/` | Primitives used by several sections: `Button`, `Chip`, `Card`, `Pill`, `ToggleButton`, `SectionHeading`, `RouteLabel`, `Kicker`, `Reveal`, `StatTile`, `ArrowIcon`, `LiveDot` | Server |
+| `src/components/sections/<section>/` | One folder per section: the section component and the parts only it uses | Server; interactive parts are Client leaves |
+| `src/lib/` | Logic with no markup: `chaos/simulate.ts`, `slo.ts`, `timeline.ts`, `mailto.ts`, `accent.ts`, `engagement-store.ts` | Shared |
+
+Client Components, each the smallest piece that needs state:
+
+| Component | Why it cannot be a Server Component | Receives |
+|---|---|---|
+| `LiveClock`, `UptimeCounter` | Ticks every second | Time zone, start date |
+| `TraceExplorer` | Selected span and view | Spans, layers |
+| `SymptomPicker`, `FirstMoves` | Selected symptoms | Symptoms |
+| `ChaosLab` | Simulation state | `chaos.json` |
+| `SloLadder` | Selected target and chain | `slo.json` |
+| `PlaybookTabs` and the interactive sheets | Selected tab, question, phase, open row | `playbook.json` |
+| `RequestBuilder` | Selections, composed email | Symptoms, scales, teams, email |
+| `CopyButton` | Clipboard | The text to copy |
+
+The symptoms chosen in `diagnose` and in `connect` are the same selection. It is held in a
+small module store read with `useSyncExternalStore`, so no context provider wraps the page.
+
+The simulation, the downtime arithmetic and the email composition are pure functions in
+`src/lib/`, separate from the components that display them.
+
+### Metadata and assets
+
+| Item | Value |
+|---|---|
+| `metadataBase` | `https://puncoz.com` |
+| Title | `Puncoz Nepal — Principal engineer · Architect` |
+| Description | `I design systems that keep answering when parts of them stop. Systems architect in Tokyo: architecture reviews, migrations, Kubernetes and GitOps, reliability, fractional tech lead.` |
+| Canonical | `/` |
+| Share image | `src/app/opengraph-image.tsx`, 1200 × 630: page background, the hero headline in Unbounded, the wordmark, the three-colour gradient rule |
+| Icon | `src/app/icon.png`, from the owner's 192 × 192 `favion.png`; `favicon.ico` from the scaffold is removed |
+| Wordmark (header) | `public/brand/wordmark.png`, the 720 × 316 file embedded in the design export: the same artwork as the owner's 256 × 112 `wordmark-dark.png`, at a size that stays sharp on dense screens |
+| Mark (hero, footer) | `public/brand/mark.png`, from the owner's 1500 × 1500 `logo-icon-dark.png` |
+
+Both logos render through `next/image`, which resizes them and serves a modern format. Replacing
+either with an SVG later is an image swap and needs no ADR.
+
+The scaffold's five SVG files in `public/` are removed.
+
+## Options considered
+
+| Option | Pros | Cons | Verdict |
+|---|---|---|---|
+| Content A — JSON files, typed in TypeScript | Imported natively; checked at build; no dependency | No comments in the files; long text on one line | Chosen |
+| Content B — YAML files | Comments and multi-line text | Needs a parser dependency or a build loader; types are not inferred | Rejected |
+| Content C — TypeScript objects | Typed directly | Copy lives in code, which is what the owner asked to avoid | Rejected |
+| Structure A — one page with anchors | Matches the design; one prerender; shared selection between sections needs no URL state | A long page | Chosen |
+| Structure B — a route per section | Smaller pages | Departs from the design; the header's links, the shared selection and the scroll narrative would all be redesigned | Rejected |
+| Motion A — CSS only | No JavaScript cost; matches the export exactly | No reveal in browsers without scroll-driven animation | Chosen |
+| Motion B — an animation library | Same reveal everywhere | A dependency and client JavaScript for an effect the page works without | Rejected |
+| Shared selection A — module store | No provider; two leaves subscribe | A module-level singleton | Chosen |
+| Shared selection B — context provider around the page | Familiar | A client boundary wrapped around ten sections that do not need it | Rejected |
+| Validation A — TypeScript types | No dependency | Shape only, at build | Chosen |
+| Validation B — a schema library | Runtime checks, richer rules | A dependency for files that only change with a deploy | Rejected |
+
+Open, for the owner to settle while reviewing:
+
+| Question | Options | Recommendation |
+|---|---|---|
+| Metadata title and description | The values in the table above, which reuse the design's own words; or text the owner supplies | The table's values |
+| Share image | The composition in the table above; or no custom image until the owner designs one | The table's composition |
+| Not-found page | The framework's built-in message inside the site's header and footer; or a designed page with copy from the owner | Built in, for now |
+
+## Content and design
+
+The copy is the text of the design export, published verbatim by the owner's decision, with
+two changes the owner made: the portrait card has no "photo slot" label, and the "Blog" link
+goes to `https://blog.puncoz.com`.
+
+The design reference is the export itself: its markup gives every size, spacing, colour and
+animation timing, and its script gives the behaviour of each widget. The build reproduces it;
+it does not reinterpret it.
+
+Published by this change, by the owner's decision: the email address `puncoz138@gmail.com`, and
+links to the owner's LinkedIn profile, GitHub profile, blog and one GitHub repository.
+
+Three values in the copy are fixed text and will age: the star and fork counts on the open
+source card, the copyright year, and the end of the timeline. Each is one field in a content
+file.
+
+The owner's other logo files (`logo.png`, `logo-dark.png`, `logo-icon-light.png`,
+`wordmark.png`) are not used: the design shows the wordmark and the mark only, on a dark page.
+
+## Consequences
+
+**Positive**
+
+- Every word on the site is edited in a JSON file, with the type checker catching a broken shape.
+- The page is one static file from the CDN: no server work per visit.
+- Colours, type and motion are defined once.
+- Interactive logic is plain functions, ready for tests when a runner is adopted.
+
+**Negative / accepted trade-offs**
+
+- No light theme.
+- Scroll reveals depend on browser support for scroll-driven animation.
+- A content change needs a deploy.
+- No tests are written: no runner is installed, and adopting one is a separate ADR.
+- A selection made in one widget is lost on reload; nothing is stored.
+
+**For visitors**
+
+- The portfolio replaces the starter page.
+- Their browser loads four self-hosted typefaces and the JavaScript for the widgets listed
+  above. The static sections ship no JavaScript of their own.
+- No request goes to a third party. Following a contact link or sending the composed email is
+  the visitor's own action.
+
+## App invariants
+
+| Invariant (`AGENTS.md` §6) | How this change keeps it |
+|---|---|
+| 1 — Server Components by default | Layout, page and every section are Server Components; `"use client"` is on the leaves listed above |
+| 2 — Static shell | `/` is fully static; clock values render after mount |
+| 3 — Secrets | None exist; no environment variable is read |
+| 4 — Server entry points | None are added |
+| 5 — URLs | `/` is kept |
+| 6 — Framework primitives | `next/link`, `next/image`, `next/font`, the Metadata API and file conventions |
+| 7 — Accessible | One `<h1>`, ordered headings, landmarks, `aria-pressed` and tab roles on controls, live regions on results, visible focus, reduced motion respected, decorative art hidden from assistive technology |
+| 8 — Findable | Title, description, canonical, share image, sitemap and robots |
+| 9 — One styling system | Tailwind utilities and `@theme` tokens; inline `style` only for values computed at runtime, such as a bar's position |
+| 10 — Strictly typed | Content types; no `any` |
+| 11 — Lean | No dependency added |
+
+No invariant is departed from. The working agreement's check of "both colour schemes" becomes a
+check of the one dark scheme.
+
+## Security considerations
+
+Rows of `puncoz-com-security-check` that apply: dependencies, user-supplied content, third
+parties, logging.
+
+- **Dependencies:** none added.
+- **Server entry points, environment variables, `proxy.ts`:** none.
+- **Input:** the widgets take clicks on fixed options only; there is no free-text field. The
+  composed email is built from the site's own strings, passed through `encodeURIComponent`, and
+  opened by the visitor's mail client. Nothing is sent by the site.
+- **Rendered content:** all of it comes from the repository's JSON through React's escaping.
+  `dangerouslySetInnerHTML` is not used.
+- **Third parties:** none at runtime. Outbound links open with `rel="noopener noreferrer"`.
+- **Visitor data:** none is collected, stored or logged. The clipboard is written, never read.
+- **Published personal data:** the owner's email address and profile links, by the owner's
+  decision.
+
+## Implementation notes
+
+- [ ] Logo PNGs copied to `public/brand/`; `src/app/icon.png` from `favion.png`; scaffold
+      assets removed.
+- [ ] `src/app/globals.css`: tokens, keyframes, reduced-motion rule; scaffold variables removed.
+- [ ] `src/app/layout.tsx`: four typefaces, metadata, header, footer, background, progress bar.
+- [ ] `src/content/`: the JSON files, `types.ts`, `index.ts`, with the design's copy verbatim.
+- [ ] `src/components/ui/`, `src/components/layout/`, `src/components/sections/` as above.
+- [ ] `src/lib/`: simulation, downtime, timeline, email, accent map, selection store.
+- [ ] `src/app/page.tsx` composes the twelve sections.
+- [ ] `src/app/opengraph-image.tsx`, `sitemap.ts`, `robots.ts`.
+- [ ] `bun run lint`, `bun run type-check` and `bun run build` pass; the build's route table
+      matches the table above.
+- [ ] `/` opened in a browser: no console errors, no dev-overlay insights, keyboard, narrow
+      viewport, reduced motion.
+
+## Docs to update on implementation
+
+- [x] `maintainer-guide/architecture/system.mdx` — routes, components, rendering, content flow,
+      configuration
+- [x] `maintainer-guide/security/index.mdx` — Client Components, the `mailto:` form of contact,
+      outbound links
+- [x] `maintainer-guide/guides/editing-content.mdx` — how to change copy, add an item, change a
+      colour or swap the portrait; listed in the folder's `index.mdx` and `meta.json`
+- [x] `content/puncoz-com/index.mdx` — the overview and its stack table
+- [x] `docs/agent-skills/puncoz-com-stack-and-map/SKILL.md` — current state, fonts, design
+      system, file map, where new code goes
+- [x] `docs/agent-skills/puncoz-com-writing-code/SKILL.md` — dark-only styling, content and
+      accent conventions
+- [x] `README.md` — what the site is, where content lives
+- [x] `AGENTS.md` — the repository map (§10) and the colour-scheme check (§11)
+- [x] `maintainer-guide/adr/index.mdx` — index row, status, next free number
+- [x] `maintainer-guide/index.mdx` — the new guide page
+- [x] The submodule commands from `PROJECT_AGENTS.md` §10, handed to the owner
+- [x] Proposed commit message: `feat(home): build the portfolio from the approved design`
