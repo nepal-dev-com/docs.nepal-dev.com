@@ -1,0 +1,11 @@
+{
+  "title": "Maintainer guide",
+  "description": "Decisions, architecture, guides and security documents for puncoz.com",
+  "pages": [
+    "index",
+    "adr",
+    "architecture",
+    "guides",
+    "security"
+  ]
+}

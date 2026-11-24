@@ -1,0 +1,36 @@
+---
+title: puncoz.com
+description: "The source of puncoz.com, the personal website of Puncoz Nepal: a Next.js App Router application in TypeScript, styled with Tailwind CSS and managed with Bun."
+---
+
+`puncoz-com` is the source of [puncoz.com](https://puncoz.com), the personal website of Puncoz
+Nepal. It is a Next.js App Router application written in TypeScript, styled with Tailwind CSS
+and managed with Bun.
+
+The site is one static page of twelve sections, the hero first: who Puncoz is, the work on
+offer and how to get in touch. Its copy lives in JSON files, so changing the page rarely means changing code.
+
+## Stack
+
+| Concern | Choice |
+|---|---|
+| Framework | Next.js 16, App Router, Turbopack, with Cache Components and Partial Prefetching enabled |
+| UI | React 19, Server Components by default |
+| Language | TypeScript 5, `strict` |
+| Styling | Tailwind CSS 4, through the `@tailwindcss/turbopack` loader; dark only, with tokens in one stylesheet |
+| Content | JSON files in `src/content/`, typed and imported at build time |
+| Linting | ESLint 9 with `eslint-config-next` |
+| Package manager | Bun 1.4 |
+
+Testing, formatting, CI and the deployment target have not been chosen. Each will be a
+[decision record](./maintainer-guide/adr/index.mdx).
+
+## Where to go
+
+- **Running it locally:** the repository's
+  [`README.md`](https://github.com/puncoz/puncoz.com/blob/main/README.md).
+- **Changing what it says:** [Edit the site's content](./maintainer-guide/guides/editing-content.mdx).
+- **Working on it:** the [Maintainer guide](./maintainer-guide/index.mdx), and the working
+  agreement in [`AGENTS.md`](https://github.com/puncoz/puncoz.com/blob/main/AGENTS.md).
+
+There is no User guide: the site is used by visiting it.

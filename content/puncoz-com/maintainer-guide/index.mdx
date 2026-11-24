@@ -1,0 +1,60 @@
+---
+title: "Maintainer documentation"
+description: "The map of puncoz.com's maintainer documentation: decisions, architecture, guides and security, and the rules every page follows."
+---
+
+The map of what lives where. Each directory's `index.mdx` holds its own conventions.
+
+**Working on the site?** Read
+[`AGENTS.md`](https://github.com/puncoz/puncoz.com/blob/main/AGENTS.md) first. It holds the
+rules every task needs; the depth is in the repository's own skills,
+[`docs/agent-skills/`](https://github.com/puncoz/puncoz.com/tree/main/docs/agent-skills),
+which it names task by task.
+
+## Where the documentation lives
+
+The repository mounts the Nepal Dev Verse documentation repository as a git submodule at
+`docs/nepal-dev-docs/`. Everything about puncoz.com is in two folders of it:
+
+| Folder in the submodule | Holds | Published at |
+|---|---|---|
+| `content/puncoz-com/index.mdx` | The overview | `/puncoz-com` |
+| `content/puncoz-com/maintainer-guide/` | **Maintainer guide**: this track, not versioned | `/puncoz-com/maintainer-guide` |
+| `diagrams/puncoz-com/` | The Archify view of every diagram, with its source | `/diagrams/puncoz-com/` |
+
+There is no User guide track: the site has no install step, API or configuration for its
+visitors. How pages and diagrams are written here is set by the submodule's `PROJECT_AGENTS.md`
+and the skills it names.
+
+Three things stay in the repository itself, because they are read there and not published:
+`README.md`, `AGENTS.md` with its skills in `docs/agent-skills/`, and the document templates in
+`docs/_templates/`.
+
+## Two kinds of document
+
+| Kind | Directory | Changes how |
+|---|---|---|
+| **Decisions** | [`adr/`](./adr/index.mdx) | **Immutable once approved.** A change of mind is a new ADR that supersedes the old one. |
+| **Living documents** | everything else, and the repository's `README.md` | **Snapshots.** Describe the site as it stands right now, edited in place. What is no longer true is deleted, not annotated. |
+
+## Directories
+
+| Directory | Holds | Required when |
+|---|---|---|
+| [`adr/`](./adr/index.mdx) | Decision records and their index | Every feature and functional change, before any code |
+| [`architecture/`](./architecture/index.mdx) | How the site is built as it stands: routes, rendering, data flow, configuration | A route, a data source, the rendering of a page or the configuration changes |
+| [`guides/`](./guides/index.mdx) | How-to documents for a task done more than once | A change introduces a repeatable procedure |
+| [`security/`](./security/index.mdx) | Attack surface, secrets inventory, third parties, audits | A server entry point, an environment variable, a third-party script or a dependency with network or install-time behaviour is added |
+
+## Rules for every page
+
+- Start from the template in the repository's
+  [`docs/_templates/`](https://github.com/puncoz/puncoz.com/tree/main/docs/_templates).
+- Every page is `.mdx` with a `title` and a `description` written for someone reading a search
+  result.
+- Every route, file path, command and version written down is checked against the repository
+  at the time of writing.
+- Every diagram is a Mermaid fence inside a `<Diagram>`, with its Archify view in
+  `diagrams/puncoz-com/`.
+- Everything here is published. No secret values, no personal data the site does not already
+  publish, no unpublished drafts.
